@@ -1,81 +1,4 @@
--- Detalles de los triggers relacionados con la tabla 
-
-[
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_170828",
-    "trigger_timing": "AFTER",
-    "trigger_events": [],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_ins",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
-  },
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_170829",
-    "trigger_timing": "AFTER",
-    "trigger_events": [
-      "DELETE"
-    ],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_upd",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
-  },
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_170833",
-    "trigger_timing": "AFTER",
-    "trigger_events": [],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_ins",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
-  },
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_170834",
-    "trigger_timing": "AFTER",
-    "trigger_events": [
-      "DELETE"
-    ],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_upd",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
-  },
-  {
-    "trigger_name": "update_classes_updated_at",
-    "trigger_timing": "AFTER",
-    "trigger_events": [
-      "DELETE"
-    ],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "update_updated_at_column",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin\r\n    new.updated_at = now();\r\n    return new;\r\nend;\r\n$function$\n"
-  },
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_228973",
-    "trigger_timing": "AFTER",
-    "trigger_events": [],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_ins",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
-  },
-  {
-    "trigger_name": "RI_ConstraintTrigger_c_228974",
-    "trigger_timing": "AFTER",
-    "trigger_events": [
-      "DELETE"
-    ],
-    "table_name": "classes",
-    "table_schema": "public",
-    "function_name": "RI_FKey_check_upd",
-    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
-  }
-]
-
 -- Información básica de la tabla
-
 [
   {
     "table_schema": "public",
@@ -283,8 +206,31 @@
   }
 ]
 
--- Restricciones
+-- Índices de la tabla
+[
+  {
+    "indexname": "classes_pkey",
+    "indexdef": "CREATE UNIQUE INDEX classes_pkey ON public.classes USING btree (id)"
+  },
+  {
+    "indexname": "idx_classes_visibility",
+    "indexdef": "CREATE INDEX idx_classes_visibility ON public.classes USING btree (visibility)"
+  },
+  {
+    "indexname": "idx_classes_status",
+    "indexdef": "CREATE INDEX idx_classes_status ON public.classes USING btree (status)"
+  },
+  {
+    "indexname": "idx_classes_start_date",
+    "indexdef": "CREATE INDEX idx_classes_start_date ON public.classes USING btree (start_date)"
+  },
+  {
+    "indexname": "idx_classes_empresa_id",
+    "indexdef": "CREATE INDEX idx_classes_empresa_id ON public.classes USING btree (empresa_id)"
+  }
+]
 
+-- Restricciones
 [
   {
     "constraint_name": "classes_branch_id_fkey",
@@ -352,9 +298,101 @@
   }
 ]
 
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "created_by",
+    "referenced_table": "users",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "branch_id",
+    "referenced_table": "sedes",
+    "referenced_column": "id"
+  }
+]
+
+    -- Detalles de los triggers relacionados con la tabla 
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170828",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170829",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170833",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170834",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_classes_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "update_updated_at_column",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = TIMEZONE('utc', NOW());\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_228973",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_228974",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]
+
 -- Listar las políticas asociadas con la tabla
-
-
 [
   {
     "policy_name": "Actualizar clases",
@@ -362,7 +400,7 @@
     "roles": [
       0
     ],
-    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 824} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 837}) :location 835}",
+    "using_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 66} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 80 :constvalue 8 [ 32 0 0 0 97 110 111 110 ]}) :location 78}",
     "with_check_expression": null
   },
   {
@@ -372,7 +410,7 @@
       0
     ],
     "using_expression": null,
-    "with_check_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 684} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 697}) :location 695}"
+    "with_check_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 67} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 81 :constvalue 9 [ 36 0 0 0 97 100 109 105 110 ]}) :location 79}"
   },
   {
     "policy_name": "Eliminar clases",
@@ -389,56 +427,48 @@
     "roles": [
       0
     ],
-    "using_expression": "{BOOLEXPR :boolop or :args ({OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({RELABELTYPE :arg {VAR :varno 1 :varattno 7 :vartype 1043 :vartypmod 54 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location 520} :resulttype 25 :resulttypmod -1 :resultcollid 100 :relabelformat 2 :location -1} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 533 :constvalue 10 [ 40 0 0 0 112 117 98 108 105 99 ]}) :location 531} {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 551} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 564}) :location 562}) :location 548}",
+    "using_expression": "{BOOLEXPR :boolop or :args ({OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({RELABELTYPE :arg {VAR :varno 1 :varattno 7 :vartype 1043 :vartypmod 54 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location 61} :resulttype 25 :resulttypmod -1 :resultcollid 100 :relabelformat 1 :location 72} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 81 :constvalue 10 [ 40 0 0 0 112 117 98 108 105 99 ]}) :location 79} {OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 101} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 115 :constvalue 9 [ 36 0 0 0 97 100 109 105 110 ]}) :location 113}) :location 97}",
     "with_check_expression": null
   }
 ]
 
--- Índices de la tabla
-
-
+-- Información sobre las políticas RLS de la tabla 'classes'
 [
   {
-    "indexname": "classes_pkey",
-    "indexdef": "CREATE UNIQUE INDEX classes_pkey ON public.classes USING btree (id)"
+    "schema_name": "public",
+    "table_name": "classes",
+    "policy_name": "Actualizar clases",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.role() = 'anon'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
   },
   {
-    "indexname": "idx_classes_visibility",
-    "indexdef": "CREATE INDEX idx_classes_visibility ON public.classes USING btree (visibility)"
+    "schema_name": "public",
+    "table_name": "classes",
+    "policy_name": "Crear clases",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.role() = 'admin'::text",
+    "roles": "{}"
   },
   {
-    "indexname": "idx_classes_status",
-    "indexdef": "CREATE INDEX idx_classes_status ON public.classes USING btree (status)"
+    "schema_name": "public",
+    "table_name": "classes",
+    "policy_name": "Eliminar clases",
+    "policy_command": "DELETE",
+    "policy_condition": "created_by = auth.uid()",
+    "with_check_condition": "None",
+    "roles": "{}"
   },
   {
-    "indexname": "idx_classes_start_date",
-    "indexdef": "CREATE INDEX idx_classes_start_date ON public.classes USING btree (start_date)"
-  },
-  {
-    "indexname": "idx_classes_empresa_id",
-    "indexdef": "CREATE INDEX idx_classes_empresa_id ON public.classes USING btree (empresa_id)"
-  }
-]
-
-
--- Relaciones (Llaves foráneas)
-
-
-[
-  {
-    "foreign_key": "created_by",
-    "referenced_table": "users",
-    "referenced_column": "id"
-  },
-  {
-    "foreign_key": "empresa_id",
-    "referenced_table": "empresas",
-    "referenced_column": "id"
-  },
-  {
-    "foreign_key": "branch_id",
-    "referenced_table": "sedes",
-    "referenced_column": "id"
+    "schema_name": "public",
+    "table_name": "classes",
+    "policy_name": "Ver clases",
+    "policy_command": "SELECT",
+    "policy_condition": "visibility::text = 'public'::text OR auth.role() = 'admin'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
   }
 ]
 

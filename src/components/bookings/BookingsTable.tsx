@@ -26,6 +26,8 @@ import { format } from 'date-fns'
 import type { SelectedBooking } from '@/types/bookings'
 import { useBusinessHours } from '@/hooks/useBusinessHours'
 import { DateTime } from 'luxon'
+import { useClasses } from '@/hooks/useClasses'
+import type { TransformedClass } from '@/types/classes'
 
 const ScrollContainer = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -169,27 +171,37 @@ export function BookingsTable() {
     });
 }, [bookings, businessHours?.timezone]);
 
-  // Función para verificar si una celda tiene una reserva existente
+  // Obtener las clases usando el nuevo hook
+  const { data: classes = [], isLoading: isLoadingClasses } = useClasses({
+    date: selectedDate,
+    branchId: currentBranch?.id,
+    status: 'active',
+    visibility: 'public'
+  })
+
+  // Función modificada para verificar si una celda tiene una reserva o clase existente
   const getExistingBooking = (courtId: string, time: string) => {
     if (!businessHours?.timezone) return null;
 
-    const transformedBookings = bookings.map(booking => {
-      const startDateTime = DateTime.fromFormat(
-        booking.startTime,
-        'HH:mm:ss',
-        { zone: 'UTC' }
-      ).setZone(businessHours.timezone);
+    // Primero buscar en las clases
+    const existingClass = classes.find(classData => 
+      classData.courtId === courtId &&
+      timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
+      timeToMinutes(time) < timeToMinutes(classData.endTime)
+    )
 
-      const endDateTime = DateTime.fromFormat(
-        booking.endTime,
-        'HH:mm:ss',
-        { zone: 'UTC' }
-      ).setZone(businessHours.timezone);
+    if (existingClass) return existingClass;
+
+    // Si no hay clase, buscar en las reservas
+    const transformedBookings = bookings.map(booking => {
+      const bookingDate = DateTime.fromISO(booking.date);
+      const startTime = DateTime.fromFormat(booking.startTime, 'HH:mm:ss', { zone: 'UTC' });
+      const endTime = DateTime.fromFormat(booking.endTime, 'HH:mm:ss', { zone: 'UTC' });
 
       return {
         ...booking,
-        startTime: startDateTime.toFormat('HH:mm'),
-        endTime: endDateTime.toFormat('HH:mm')
+        startTime: startTime.setZone(businessHours.timezone).toFormat('HH:mm'),
+        endTime: endTime.setZone(businessHours.timezone).toFormat('HH:mm')
       };
     });
 
@@ -257,7 +269,7 @@ export function BookingsTable() {
     }
   }, [handleMouseUp])
 
-  // Renderizado condicional
+  // Renderizado condicional actualizado
   if (!currentBranch) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -266,10 +278,10 @@ export function BookingsTable() {
     )
   }
 
-  if (isLoading) {
+  if (isLoading || isLoadingClasses) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">Cargando reservas...</p>
+        <p className="text-gray-500">Cargando datos...</p>
       </div>
     )
   }
@@ -277,7 +289,7 @@ export function BookingsTable() {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-red-500">Error al cargar las reservas</p>
+        <p className="text-red-500">Error al cargar los datos</p>
       </div>
     )
   }
@@ -289,7 +301,6 @@ export function BookingsTable() {
           selectedDate={selectedDate}
           onDateChange={handleDateChange}
           onConfigClick={handleConfigButtonClick}
-          onCreateClassClick={() => setShowNewBookingModal(true)}
           onRefreshClick={handleRefresh}
           isRefreshing={isRefreshing}
           currentBranch={currentBranch}
@@ -307,7 +318,7 @@ export function BookingsTable() {
               <TableBody
                 timeSlots={timeSlots}
                 visibleCourts={visibleCourts}
-                selection={selection}
+                selection={selection as Selection}
                 isMouseDown={isMouseDown}
                 isDragging={isDragging}
                 getExistingBooking={getExistingBooking}
@@ -321,7 +332,6 @@ export function BookingsTable() {
                 }}
                 isSlotSelected={isSlotSelected}
                 getCourtColumnWidth={getCourtColumnWidth}
-                bookings={transformedBookings}
               />
             </div>
           </div>

@@ -1,10 +1,8 @@
 import { cn } from "@/lib/utils"
 import { Court } from "@/types/courts"
-import { Selection, SelectionState, SelectedBooking } from "@/types/bookings"
+import { Selection, SelectedBooking } from "@/types/bookings"
 import { BookingBlock } from "./BookingBlock/BookingBlock"
-import { ClassBlock } from "./BookingBlock/ClassBlock"
 import { Z_LAYERS } from "@/constants/zIndex"
-import { TransformedClass, isTransformedClass } from "@/types/classes"
 
 interface TimeSlot {
   hour: string
@@ -18,10 +16,10 @@ interface TimeSlot {
 interface TableBodyProps {
   timeSlots: TimeSlot[]
   visibleCourts: Court[]
-  selection: SelectionState
+  selection: Selection | null
   isMouseDown: boolean
   isDragging: boolean
-  getExistingBooking: (courtId: string, time: string) => (TransformedClass | SelectedBooking | null)
+  getExistingBooking: (courtId: string, time: string) => any
   onMouseDown: (courtId: string, hour: string, slotIndex: number, event: React.MouseEvent) => void
   onMouseMove: (courtId: string, hour: string, slotIndex: number, event: React.MouseEvent) => void
   onMouseEnter: (courtId: string, hour: string, slotIndex: number, event: React.MouseEvent) => void
@@ -30,33 +28,12 @@ interface TableBodyProps {
   getCourtColumnWidth: () => string
 }
 
-const TIME_COLUMN_WIDTH = 75
+const TIME_COLUMN_WIDTH = 60
 const CELL_HEIGHT = 48
 const DISABLED_CELL_STYLES = {
   background: "repeating-linear-gradient(45deg, #f3f4f6, #f3f4f6 4px, #f9fafb 4px, #f9fafb 8px)",
   opacity: "0.6",
   borderColor: "transparent"
-}
-
-// Estilos CSS más específicos para la columna de tiempo
-const TIME_COLUMN_STYLES = {
-  width: `${TIME_COLUMN_WIDTH}px`,
-  minWidth: `${TIME_COLUMN_WIDTH}px`,
-  maxWidth: `${TIME_COLUMN_WIDTH}px`,
-  flex: `0 0 ${TIME_COLUMN_WIDTH}px`,
-  boxSizing: 'border-box' as const,
-  overflow: 'hidden' as const,
-  whiteSpace: 'nowrap' as const,
-  position: 'sticky' as const,
-  left: 0,
-  zIndex: Z_LAYERS.STICKY_HEADER
-}
-
-// Estilos para las columnas de las pistas
-const COURT_COLUMN_STYLES = {
-  minWidth: "150px",
-  boxSizing: 'border-box' as const,
-  width: '100%'
 }
 
 export function TableBody({
@@ -74,15 +51,15 @@ export function TableBody({
   getCourtColumnWidth
 }: TableBodyProps) {
   return (
-    <table className="w-full border-collapse relative table-fixed">
+    <table className="w-full border-collapse">
       <colgroup>
-        <col style={TIME_COLUMN_STYLES} />
+        <col style={{ width: `${TIME_COLUMN_WIDTH}px`, minWidth: `${TIME_COLUMN_WIDTH}px` }} />
         {visibleCourts.map(court => (
           <col 
             key={court.id} 
             style={{ 
               width: getCourtColumnWidth(),
-              ...COURT_COLUMN_STYLES
+              minWidth: "150px"
             }} 
           />
         ))}
@@ -93,15 +70,9 @@ export function TableBody({
           <th 
             className={cn(
               "sticky left-0 text-left font-semibold text-sm text-gray-900 p-3",
-              "border-b border-r border-gray-200/60 bg-gray-50",
-              "w-[75px] min-w-[75px] max-w-[75px] overflow-hidden whitespace-nowrap"
+              "border-b border-r border-gray-200/60 bg-gray-50"
             )}
-            style={{ 
-              zIndex: Z_LAYERS.STICKY_HEADER,
-              ...TIME_COLUMN_STYLES,
-              position: 'sticky',
-              left: 0
-            }}
+            style={{ zIndex: Z_LAYERS.STICKY_HEADER }}
           >
             Horario
           </th>
@@ -109,13 +80,9 @@ export function TableBody({
             <th 
               key={court.id}
               className={cn(
-                "text-center font-semibold text-sm text-gray-900 p-3 border-b border-gray-200 relative",
-                index < visibleCourts.length - 1 && "border-r border-gray-200/60"
+                "text-center font-semibold text-sm text-gray-900 p-3 border-b border-gray-200",
+                index < visibleCourts.length - 1 && "border-r"
               )}
-              style={{
-                boxSizing: 'border-box',
-                minWidth: "150px"
-              }}
             >
               {court.name}
             </th>
@@ -125,18 +92,10 @@ export function TableBody({
 
       <tbody>
         {timeSlots.map((slot, rowIndex) => (
-          <tr key={slot.hour} className="relative">
+          <tr key={slot.hour}>
             <td 
-              className={cn(
-                "sticky left-0 z-10 text-sm font-medium text-gray-900 p-3 border-r border-gray-200 bg-white",
-                "w-[75px] min-w-[75px] max-w-[75px] overflow-hidden whitespace-nowrap"
-              )}
-              style={{ 
-                zIndex: Z_LAYERS.STICKY_HEADER,
-                ...TIME_COLUMN_STYLES,
-                position: 'sticky',
-                left: 0
-              }}
+              className="sticky left-0 z-10 text-sm font-medium text-gray-900 p-3 border-r border-gray-200 bg-white"
+              style={{ zIndex: Z_LAYERS.STICKY_HEADER }}
             >
               {slot.hour}
             </td>
@@ -149,10 +108,7 @@ export function TableBody({
                     ? "cursor-not-allowed" 
                     : "cursor-pointer"
                 )}
-                style={{ 
-                  height: `${CELL_HEIGHT}px`,
-                  boxSizing: 'border-box'
-                }}
+                style={{ height: `${CELL_HEIGHT}px` }}
               >
                 <div className="absolute inset-0 pointer-events-none">
                   {colIndex < visibleCourts.length - 1 && (
@@ -196,69 +152,35 @@ export function TableBody({
                             }}
                           >
                             {existingBooking && (
-                              isTransformedClass(existingBooking) ? (
-                                <ClassBlock
-                                  startTime={existingBooking.startTime}
-                                  endTime={existingBooking.endTime}
-                                  currentTime={slotTime}
-                                  classData={existingBooking}
-                                  onClick={() => {
-                                    onBookingClick({
-                                      id: existingBooking.id,
-                                      courtId: existingBooking.courtId,
-                                      court: court.name,
-                                      date: existingBooking.date,
-                                      startTime: existingBooking.startTime,
-                                      endTime: existingBooking.endTime,
-                                      totalAmount: 0,
-                                      depositAmount: 0,
-                                      courtPrice: 0,
-                                      rentalItemsPrice: 0,
-                                      paymentStatus: 'completed',
-                                      paymentMethod: 'cash',
-                                      paymentType: 'booking',
-                                      title: existingBooking.title,
-                                      description: existingBooking.description || '',
-                                      participants: [],
-                                      rentedItems: []
-                                    })
-                                  }}
-                                />
-                              ) : (
-                                <BookingBlock
-                                  startTime={existingBooking.startTime}
-                                  endTime={existingBooking.endTime}
-                                  currentTime={slotTime}
-                                  paymentStatus={existingBooking.paymentStatus}
-                                  participants={existingBooking.participants}
-                                  onClick={() => {
-                                    onBookingClick({
-                                      id: existingBooking.id,
-                                      courtId: existingBooking.courtId,
-                                      court: court.name,
-                                      date: existingBooking.date,
-                                      startTime: existingBooking.startTime,
-                                      endTime: existingBooking.endTime,
-                                      totalAmount: existingBooking.totalAmount,
-                                      depositAmount: existingBooking.depositAmount,
-                                      courtPrice: existingBooking.courtPrice,
-                                      rentalItemsPrice: existingBooking.rentalItemsPrice,
-                                      paymentStatus: existingBooking.paymentStatus,
-                                      paymentMethod: existingBooking.paymentMethod,
-                                      paymentType: 'booking',
-                                      title: existingBooking.title,
-                                      description: existingBooking.description,
-                                      participants: existingBooking.participants,
-                                      rentedItems: existingBooking.rentedItems
-                                    })
-                                  }}
-                                />
-                              )
+                              <BookingBlock
+                                startTime={existingBooking.startTime}
+                                endTime={existingBooking.endTime}
+                                currentTime={slotTime}
+                                paymentStatus={existingBooking.paymentStatus}
+                                participants={existingBooking.participants}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onBookingClick({
+                                    id: existingBooking.id,
+                                    date: new Date().toISOString(),
+                                    startTime: existingBooking.startTime,
+                                    endTime: existingBooking.endTime,
+                                    court: existingBooking.courtId,
+                                    price: existingBooking.price || 0,
+                                    totalAmount: existingBooking.totalAmount || existingBooking.price || 0,
+                                    depositAmount: existingBooking.depositAmount || 0,
+                                    paymentMethod: existingBooking.paymentMethod || '',
+                                    participants: existingBooking.participants || [],
+                                    paymentStatus: existingBooking.paymentStatus || 'pending',
+                                    rentedItems: existingBooking.rentedItems || []
+                                  })
+                                }}
+                              />
                             )}
 
                             {!isSlotAvailable && (
                               <div className="absolute inset-0 flex items-center justify-center border-0">
-                                <div className="w-full border-t border-gray-100/10" />
+                                <div className="w-full border-t border-gray-200/10" />
                               </div>
                             )}
                             

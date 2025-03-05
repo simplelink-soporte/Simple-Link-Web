@@ -1,0 +1,142 @@
+# Estrategia para la Visualización de Clases en la Tabla de Reservas
+
+## 1. Análisis de la Estructura Actual
+
+### 1.1 Componentes Existentes
+- BookingsTable.tsx: Componente principal que maneja la visualización de la tabla
+- BookingBlock.tsx: Componente que renderiza los bloques de reservas
+- bookingQueryService.ts: Servicio que maneja las consultas de reservas
+
+### 1.2 Flujo de Datos Actual
+- Se obtienen las reservas a través del bookingQueryService
+- Se transforman los datos para su visualización
+- Se renderizan en la tabla usando BookingBlock
+
+## 2. Propuesta de Implementación
+
+### 2.1 Nuevo Servicio: classQueryService.ts
+```typescript
+interface ClassSchedule {
+  days: number[];
+  timeSlots: {
+    price: number;
+    endTime: string;
+    capacity: number;
+    courtIds: string[];
+    startTime: string;
+    instructors: string[];
+  }[];
+}
+
+interface Class {
+  id: string;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string | null;
+  is_recurring: boolean;
+  schedule_config: ClassSchedule;
+  status: string;
+}
+```
+
+### 2.2 Nuevas Funcionalidades
+
+#### 2.2.1 Servicio de Consulta de Clases
+- Crear `classQueryService.ts` con las siguientes funciones:
+  - `getClassesByDate(date: string, branchId?: string)`
+  - `transformClassesToBookingFormat(classes: Class[])`
+  - `isClassActive(class: Class, date: string)`
+
+#### 2.2.2 Integración con BookingsTable
+- Modificar useBookings hook para incluir clases
+- Implementar lógica de merge entre reservas y clases
+- Añadir diferenciación visual para clases
+
+### 2.3 Modificaciones Necesarias
+
+#### 2.3.1 BookingBlock.tsx
+```typescript
+interface BookingBlockProps {
+  // Propiedades existentes...
+  type: 'booking' | 'class'; // Nueva propiedad
+  instructor?: string; // Para clases
+}
+```
+
+#### 2.3.2 Tipos y Constantes
+- Crear nuevos tipos en `types/classes.ts`
+- Añadir constantes para colores en tema
+
+## 3. Plan de Implementación
+
+### 3.1 Fase 1: Servicio de Clases
+1. Crear classQueryService.ts
+2. Implementar consulta a Supabase
+3. Añadir transformación de datos
+4. Implementar validación de fechas
+
+### 3.2 Fase 2: Integración Visual
+1. Modificar BookingBlock
+2. Actualizar tema de colores
+3. Implementar lógica de renderizado
+
+### 3.3 Fase 3: Integración con Tabla
+1. Modificar useBookings
+2. Implementar merge de datos
+3. Actualizar lógica de selección
+
+## 4. Consideraciones Técnicas
+
+### 4.1 Rendimiento
+- Implementar memorización para transformaciones
+- Usar índices eficientes en Supabase
+- Optimizar consultas combinadas
+
+### 4.2 UX/UI
+- Diferenciación clara entre clases y reservas
+- Tooltips informativos
+- Estados de carga apropiados
+
+### 4.3 Mantenibilidad
+- Separación clara de responsabilidades
+- Documentación detallada
+- Tests unitarios
+
+## 5. Buenas Prácticas
+
+### 5.1 Código
+- Usar TypeScript estricto
+- Implementar manejo de errores robusto
+- Seguir principios SOLID
+
+### 5.2 Estado
+- Usar Zustand para estado global
+- Implementar cache efectivo
+- Manejar actualizaciones optimistas
+
+### 5.3 Performance
+- Lazy loading donde sea posible
+- Minimizar re-renders
+- Optimizar consultas a BD
+
+## 6. Siguientes Pasos
+
+1. Crear classQueryService.ts
+2. Implementar transformaciones básicas
+3. Modificar BookingBlock
+4. Integrar en BookingsTable
+5. Pruebas y ajustes
+6. Documentación
+
+## 7. Riesgos y Mitigaciones
+
+### 7.1 Riesgos
+- Conflictos entre reservas y clases
+- Rendimiento con muchos datos
+- Complejidad en UI
+
+### 7.2 Mitigaciones
+- Implementar sistema de prioridades
+- Paginación y lazy loading
+- Diseño modular y escalable

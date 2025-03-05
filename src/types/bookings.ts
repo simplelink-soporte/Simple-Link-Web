@@ -55,6 +55,8 @@ export interface Selection {
   slots: number
 }
 
+export type SelectionState = Selection | null;
+
 export interface Court {
   id: string
   name: string

@@ -13,22 +13,25 @@ import {
 } from "@/components/ui/tooltip"
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Branch } from "@/types/branches"
 
-interface TableHeaderProps {
+export interface TableHeaderProps {
   selectedDate: Date
   onDateChange: (date: Date) => void
   onConfigClick: () => void
+  onCreateClassClick?: () => void
   onRefreshClick: () => void
-  isRefreshing?: boolean
-  currentBranch: { timezone: string }
+  isRefreshing: boolean
+  currentBranch: Branch
 }
 
 export function TableHeader({
   selectedDate,
   onDateChange,
   onConfigClick,
+  onCreateClassClick,
   onRefreshClick,
-  isRefreshing = false,
+  isRefreshing,
   currentBranch
 }: TableHeaderProps) {
   const [direction, setDirection] = useState<'up' | 'down'>('up')
