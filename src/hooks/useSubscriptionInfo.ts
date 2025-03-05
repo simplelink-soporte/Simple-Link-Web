@@ -41,7 +41,7 @@ export function useSubscriptionInfo(empresaId: string) {
           .single()
 
         if (error) {
-          console.error('Error fetching subscription:', error)
+          console.error('Error fetching subscription:', error?.message || 'Unknown error')
           return null
         }
         

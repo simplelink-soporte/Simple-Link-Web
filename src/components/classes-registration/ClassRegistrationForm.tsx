@@ -176,7 +176,7 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
 
   const stepConfig = getStepConfig(state.step)
 
-  // Si estamos en el paso de noCredits, mostramos ese componente
+  // Si el usuario no tiene créditos
   if (state.step === 'noCredits') {
     return (
       <div className={cn(
@@ -187,7 +187,8 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
       )}>
         <div className={cn(
           "flex-1",
-          "overflow-y-auto scrollbar-none"
+          // Evitamos el overflow-y-auto aquí para evitar duplicación de scroll
+          "overflow-hidden"
         )}>
           <NoCreditsClass />
         </div>
@@ -204,7 +205,8 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
     )}>
       <div className={cn(
         "flex-1",
-        "overflow-y-auto scrollbar-none"
+        // Evitamos el overflow-y-auto aquí para evitar duplicación de scroll
+        "overflow-hidden"
       )}>
         <StepRenderer />
       </div>

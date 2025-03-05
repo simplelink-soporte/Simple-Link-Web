@@ -32,6 +32,10 @@
     --gap-large: 1.5rem;
     --gap-xlarge: 2rem;
     
+    /* Variables para alturas de componentes fijos */
+    --user-badge-height: 4rem; /* Altura aproximada del UserBadge incluyendo padding */
+    --navigation-height: 5rem; /* Altura aproximada de la navegación */
+    
     /* Variables para z-index */
     --z-base: 1;
     --z-overlay: 10;
@@ -235,6 +239,38 @@
 
   .scrollbar-none::-webkit-scrollbar-thumb {
     display: none !important;
+  }
+
+  /* Clase scrollbar-custom para componentes que necesitan scroll personalizado */
+  .scrollbar-custom {
+    /* Firefox */
+    scrollbar-width: thin;
+    /* Internet Explorer 10+ */
+    -ms-overflow-style: auto;
+    /* Comportamiento suave al scrollear */
+    scroll-behavior: smooth;
+    /* Mejor soporte táctil */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Estilo para scrollbar en WebKit */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
   }
 }
 

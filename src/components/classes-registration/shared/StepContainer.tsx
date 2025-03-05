@@ -36,18 +36,21 @@ export function StepContainer({
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       className={cn(
         // Layout base
-        "w-full h-full",
+        "w-full",
+        // Establecemos una altura fija para que el scroll sea dentro del contenedor
+        "h-[calc(100vh-var(--user-badge-height)-var(--navigation-height))]",
         "max-w-[var(--container-default)]",
-        "min-h-[calc(100vh-8rem)]",
-        // Centrado y scroll
+        // Centrado
         "mx-auto",
-        "overflow-auto scrollbar-custom",
+        // Habilitamos el scroll en este contenedor específico con scrollbar-none
+        // que está bien definida en globals.css
+        "overflow-y-auto scrollbar-none",
         // Padding horizontal responsivo
         "px-[var(--padding-container-mobile)]",
         "sm:px-[var(--padding-container-tablet)]",
         "lg:px-[var(--padding-container-desktop)]",
         // Padding inferior para la navegación y superior para el UserBadge
-        "pb-24 pt-20",
+        "pb-20 pt-16", // Ajustados para dar espacio al UserBadge y navegación
         className
       )}
     >

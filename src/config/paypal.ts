@@ -21,15 +21,15 @@ if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
 export const PAYPAL_CONFIG: PayPalConfig = {
   SUBSCRIPTION_PLANS: {
     PRO_MONTHLY: {
-      plan_id: 'P-955286686J182661EM53OPXY',
+      plan_id: 'P-0N2995358Y537620XM7EH2GY',
       price: 24.70
     },
     PRO_QUARTERLY: {
-      plan_id: 'P-63U48172X4193282XM53OQ5Y',
+      plan_id: 'P-3VP556308G528934UM7EH2ZI',
       price: 69.69
     },
     PRO_ANNUALLY: {
-      plan_id: 'P-1PF98802FS266405HM6X3NSA',
+      plan_id: 'P-4DN15863T7613990EM7EH3EY',
       price: 192.66
     }
   },

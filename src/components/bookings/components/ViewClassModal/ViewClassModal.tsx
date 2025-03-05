@@ -7,8 +7,11 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
-import { IconUsers, IconCalendar } from "@tabler/icons-react"
+import { IconUsers, IconCalendar, IconUserPlus, IconEye } from "@tabler/icons-react"
 import type { TransformedClass } from "@/types/classes"
+import { AddParticipantModal } from "./components/AddParticipant/AddParticipantModal"
+import { ViewParticipantsModal } from "./components/ViewParticipant/ViewParticipantsModal"
+import { toast } from "@/components/ui/use-toast"
 
 interface ViewClassModalProps {
   isOpen: boolean
@@ -29,6 +32,8 @@ export function ViewClassModal({
 }: ViewClassModalProps) {
   const { currentBranch } = useBranchContext()
   const { data: courts = [] } = useCourts({ branchId: currentBranch?.id })
+  const [showAddParticipant, setShowAddParticipant] = useState(false)
+  const [showParticipants, setShowParticipants] = useState(false)
 
   // Si no hay datos o el modal está cerrado, no renderizar
   if (!isOpen || !classData) return null
@@ -114,7 +119,6 @@ export function ViewClassModal({
                     {/* Instructor */}
                     <div className="space-y-2">
                       <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <IconUsers size={16} className="text-gray-400" />
                         Instructor
                       </h3>
                       <div className="flex items-center gap-3">
@@ -134,25 +138,47 @@ export function ViewClassModal({
                       <h3 className="text-sm font-medium text-gray-900">
                         Pista asignada
                       </h3>
-                      <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <p className="text-sm text-gray-600">{court?.name || 'Pista no especificada'}</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between py-1.5">
+                          <span className="text-sm text-gray-600">Pista</span>
+                          <span className="text-sm text-gray-900">
+                            {court?.name || 'Pista no especificada'}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Estado de ocupación */}
                     <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <IconUsers size={16} className="text-gray-400" />
+                      <h3 className="text-sm font-medium text-gray-900">
                         Participantes
                       </h3>
-                      <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <p className="text-xs text-gray-500">
+                        Estado actual de ocupación de la clase
+                      </p>
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Capacidad total</span>
-                          <span className="text-sm font-medium text-gray-900">
-                            {classData.currentParticipants}/{classData.capacity}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Capacidad total</span>
+                            <span className="text-xs font-light text-gray-600">
+                              {classData.currentParticipants}/{classData.capacity}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setShowParticipants(true)}
+                            className={cn(
+                              "inline-flex items-center gap-1.5",
+                              "text-xs text-gray-500",
+                              "px-2 py-1 rounded-md",
+                              "hover:bg-gray-50",
+                              "transition-colors duration-200"
+                            )}
+                          >
+                            <IconEye size={14} />
+                            Ver participantes
+                          </button>
                         </div>
-                        <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className={cn(
                               "h-full rounded-full transition-all duration-300",
@@ -168,36 +194,68 @@ export function ViewClassModal({
                           />
                         </div>
                       </div>
+
+                      {/* Botón para agregar participantes */}
+                      <div className="mt-4 pt-3 border-t border-gray-100/50">
+                        <button
+                          onClick={() => setShowAddParticipant(true)}
+                          className={cn(
+                            "w-full px-3 py-2 rounded-lg",
+                            "text-xs text-gray-600",
+                            "border border-gray-200/75",
+                            "hover:bg-gray-50 hover:border-gray-300/75",
+                            "transition-all duration-200",
+                            "flex items-center justify-center gap-2"
+                          )}
+                        >
+                          <IconUserPlus size={14} className="text-gray-400" />
+                          Agregar participante
+                        </button>
+                      </div>
+
+                      {/* Modal para agregar participantes */}
+                      <AddParticipantModal
+                        isOpen={showAddParticipant}
+                        onClose={() => setShowAddParticipant(false)}
+                        onParticipantAdd={(participant) => {
+                          console.log('Participante agregado:', participant)
+                          // TODO: Implementar lógica para agregar participante a la clase
+                          toast({
+                            title: "Participante agregado",
+                            description: `${participant.fullName} ha sido agregado a la clase.`,
+                            variant: "default"
+                          })
+                        }}
+                      />
+
+                      {/* Modal para ver participantes */}
+                      <ViewParticipantsModal
+                        isOpen={showParticipants}
+                        onClose={() => setShowParticipants(false)}
+                        participants={[]} // TODO: Pasar la lista real de participantes
+                      />
+                    </div>
+
+                    {/* Línea divisora sutil */}
+                    <div className="flex justify-center">
+                      <div className="w-24 h-px bg-gray-100/75" />
                     </div>
 
                     {/* Información adicional */}
                     <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <IconCalendar size={16} className="text-gray-400" />
+                      <h3 className="text-sm font-medium text-gray-900">
                         Información adicional
                       </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between py-1.5">
                           <span className="text-sm text-gray-600">Visibilidad</span>
-                          <span className={cn(
-                            "px-2 py-1 rounded-full text-xs font-medium",
-                            classData.visibility === 'public' 
-                              ? "bg-green-100 text-green-700" 
-                              : "bg-gray-100 text-gray-700"
-                          )}>
+                          <span className="text-sm text-gray-900">
                             {classData.visibility === 'public' ? 'Pública' : 'Privada'}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div className="flex items-center justify-between py-1.5">
                           <span className="text-sm text-gray-600">Estado</span>
-                          <span className={cn(
-                            "px-2 py-1 rounded-full text-xs font-medium",
-                            {
-                              'bg-green-100 text-green-700': classData.status === 'active',
-                              'bg-yellow-100 text-yellow-700': classData.status === 'inactive',
-                              'bg-red-100 text-red-700': classData.status === 'cancelled'
-                            }
-                          )}>
+                          <span className="text-sm text-gray-900">
                             {classData.status === 'active' ? 'Activa' : 
                              classData.status === 'inactive' ? 'Inactiva' : 'Cancelada'}
                           </span>

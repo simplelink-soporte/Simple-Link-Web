@@ -30,7 +30,7 @@ export default function ClassesLayout({ children }: ClassesLayoutProps) {
               "sm:px-[var(--padding-container-tablet)]",
               "lg:px-[var(--padding-container-desktop)]",
               "relative",
-              "overflow-y-auto scrollbar-none"
+              "overflow-hidden"
             )}>
               <UserBadge />
               {children}
