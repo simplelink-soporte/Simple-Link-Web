@@ -1,0 +1,287 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "booking_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "item_id",
+    "ordinal_position": 3,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "quantity",
+    "ordinal_position": 4,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "price_per_unit",
+    "ordinal_position": 5,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "total_price",
+    "ordinal_position": 6,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "created_at",
+    "ordinal_position": 7,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "booking_rentals",
+    "column_name": "time_range",
+    "ordinal_position": 10,
+    "data_type": "tsrange",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "idx_booking_rentals_item_price",
+    "indexdef": "CREATE INDEX idx_booking_rentals_item_price ON public.booking_rentals USING btree (item_id, price_per_unit)"
+  },
+  {
+    "indexname": "idx_booking_rentals_total",
+    "indexdef": "CREATE INDEX idx_booking_rentals_total ON public.booking_rentals USING btree (booking_id, total_price)"
+  },
+  {
+    "indexname": "booking_rentals_pkey",
+    "indexdef": "CREATE UNIQUE INDEX booking_rentals_pkey ON public.booking_rentals USING btree (id)"
+  },
+  {
+    "indexname": "booking_rentals_booking_id_idx",
+    "indexdef": "CREATE INDEX booking_rentals_booking_id_idx ON public.booking_rentals USING btree (booking_id)"
+  },
+  {
+    "indexname": "idx_booking_rentals_item_time",
+    "indexdef": "CREATE INDEX idx_booking_rentals_item_time ON public.booking_rentals USING gist (item_id, time_range)"
+  },
+  {
+    "indexname": "idx_booking_rentals_item_booking",
+    "indexdef": "CREATE INDEX idx_booking_rentals_item_booking ON public.booking_rentals USING btree (item_id, booking_id)"
+  },
+  {
+    "indexname": "idx_booking_rentals_item",
+    "indexdef": "CREATE INDEX idx_booking_rentals_item ON public.booking_rentals USING btree (item_id)"
+  },
+  {
+    "indexname": "idx_booking_rentals_item_time_range",
+    "indexdef": "CREATE INDEX idx_booking_rentals_item_time_range ON public.booking_rentals USING gist (item_id, time_range)"
+  },
+  {
+    "indexname": "idx_booking_rentals_booking_id",
+    "indexdef": "CREATE INDEX idx_booking_rentals_booking_id ON public.booking_rentals USING btree (booking_id)"
+  },
+  {
+    "indexname": "idx_booking_rentals_time_range",
+    "indexdef": "CREATE INDEX idx_booking_rentals_time_range ON public.booking_rentals USING gist (time_range)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "booking_rentals_booking_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "booking_rentals_item_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "booking_rentals_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "booking_rentals_quantity_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_6_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_7_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_42573_10_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "item_id",
+    "referenced_table": "items",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "booking_id",
+    "referenced_table": "bookings",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla booking_rentals
+[
+  {
+    "trigger_name": "update_rental_items_price_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT",
+      "DELETE"
+    ],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "update_booking_rental_items_price",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_booking_rental_items_price()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    UPDATE bookings\r\n    SET rental_items_price = (\r\n        SELECT COALESCE(SUM(total_price), 0)\r\n        FROM booking_rentals\r\n        WHERE booking_id = NEW.booking_id\r\n    )\r\n    WHERE id = NEW.booking_id;\r\n    \r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_147895",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_147896",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_rental_total_price",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "calculate_rental_total_price",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.calculate_rental_total_price()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    -- Validación mejorada\r\n    IF NEW.quantity IS NULL OR NEW.price_per_unit IS NULL THEN\r\n        INSERT INTO trigger_logs (\r\n            trigger_name, \r\n            booking_data, \r\n            error_message\r\n        ) VALUES (\r\n            'calculate_rental_total_price',\r\n            jsonb_build_object(\r\n                'quantity', NEW.quantity,\r\n                'price_per_unit', NEW.price_per_unit\r\n            ),\r\n            'Error: Datos incompletos'\r\n        );\r\n        RAISE EXCEPTION 'Cantidad y precio por unidad son requeridos';\r\n    END IF;\r\n\r\n    -- Redondeo a 2 decimales\r\n    NEW.total_price = ROUND(NEW.quantity * NEW.price_per_unit, 2);\r\n\r\n    -- Log exitoso\r\n    INSERT INTO trigger_logs (\r\n        trigger_name, \r\n        booking_data, \r\n        error_message\r\n    ) VALUES (\r\n        'calculate_rental_total_price',\r\n        jsonb_build_object(\r\n            'quantity', NEW.quantity,\r\n            'price_per_unit', NEW.price_per_unit,\r\n            'total_price', NEW.total_price,\r\n            'booking_id', NEW.booking_id\r\n        ),\r\n        'Cálculo exitoso'\r\n    );\r\n\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "check_item_availability_booking_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "check_item_availability_for_booking",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.check_item_availability_for_booking()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nDECLARE\r\n    v_item_stock INTEGER;\r\n    v_max_booked INTEGER;\r\n    v_booking_time_range tsrange;\r\n    v_debug_info TEXT;\r\nBEGIN\r\n    -- Obtener el stock total del item\r\n    SELECT stock INTO v_item_stock\r\n    FROM items\r\n    WHERE id = NEW.item_id;\r\n\r\n    IF v_item_stock IS NULL THEN\r\n        RAISE EXCEPTION 'Item no encontrado';\r\n    END IF;\r\n\r\n    -- Obtener el rango de tiempo de la reserva\r\n    SELECT tsrange(\r\n        (b.date || ' ' || b.start_time)::timestamp,\r\n        (b.date || ' ' || b.end_time)::timestamp,\r\n        '[)'\r\n    ) INTO v_booking_time_range\r\n    FROM bookings b\r\n    WHERE b.id = NEW.booking_id;\r\n\r\n    IF v_booking_time_range IS NULL THEN\r\n        RAISE EXCEPTION 'Reserva no encontrada';\r\n    END IF;\r\n\r\n    -- Encontrar la cantidad máxima reservada en cualquier punto del rango de tiempo\r\n    WITH RECURSIVE\r\n    overlapping_ranges AS (\r\n        SELECT \r\n            br.quantity as booking_quantity,\r\n            br.time_range\r\n        FROM booking_rentals br\r\n        JOIN bookings b ON b.id = br.booking_id\r\n        WHERE br.item_id = NEW.item_id\r\n        AND b.payment_status != 'cancelled'\r\n        AND br.booking_id != NEW.booking_id\r\n        -- Modificada la condición de solapamiento para excluir los bordes exactos\r\n        AND (\r\n            lower(br.time_range) < upper(v_booking_time_range)\r\n            AND upper(br.time_range) > lower(v_booking_time_range)\r\n        )\r\n    ),\r\n    time_points AS (\r\n        SELECT \r\n            (lower(time_range))::timestamp as point,\r\n            booking_quantity\r\n        FROM overlapping_ranges\r\n        UNION\r\n        SELECT \r\n            (upper(time_range))::timestamp as point,\r\n            booking_quantity\r\n        FROM overlapping_ranges\r\n    ),\r\n    total_at_points AS (\r\n        SELECT \r\n            tp.point,\r\n            SUM(r.booking_quantity) FILTER (\r\n                WHERE tp.point >= lower(r.time_range) \r\n                AND tp.point < upper(r.time_range)\r\n            ) as total_booked\r\n        FROM time_points tp\r\n        CROSS JOIN overlapping_ranges r\r\n        GROUP BY tp.point\r\n    )\r\n    SELECT COALESCE(MAX(total_booked), 0)\r\n    INTO v_max_booked\r\n    FROM total_at_points;\r\n\r\n    -- Registrar información detallada para debugging\r\n    RAISE NOTICE E'Verificación de disponibilidad:\\nItem ID: %\\nStock Total: %\\nMáximo Reservado: %\\nCantidad Solicitada: %\\nDisponible: %',\r\n        NEW.item_id,\r\n        v_item_stock,\r\n        v_max_booked,\r\n        NEW.quantity,\r\n        (v_item_stock - v_max_booked);\r\n\r\n    -- Verificar si hay suficiente stock disponible\r\n    IF (v_max_booked + NEW.quantity) > v_item_stock THEN\r\n        RAISE EXCEPTION 'Stock insuficiente para el horario seleccionado. Stock total: %, Máximo reservado: %, Solicitado: %, Disponible: %',\r\n            v_item_stock, v_max_booked, NEW.quantity, (v_item_stock - v_max_booked);\r\n    END IF;\r\n\r\n    -- Establecer el time_range del nuevo rental\r\n    NEW.time_range := v_booking_time_range;\r\n    \r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_42589",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_42590",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "booking_rentals",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]

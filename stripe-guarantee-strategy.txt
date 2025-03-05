@@ -1,0 +1,617 @@
+# Estrategia de Implementación: Sistema de Garantías con Stripe Connect [ACTUALIZADO]
+
+## Estado Actual [✅]
+
+### Componentes Implementados
+1. **API Base** ✅
+   - `/api/stripe/charge-no-show/route.ts` - Implementado
+   - `StripePaymentService` - Implementado y actualizado para usar payment_method_id específico
+   - Tipos y interfaces en `api.ts` - Implementados
+
+2. **UI** ✅
+   - `ViewBookingModal` - Implementado
+   - `CancelBookingModal` - Implementado
+   - Integración con `OrganizationContext` - Implementada
+
+3. **Base de Datos** ✅
+   - Tabla `stripe_connections` - Configurada
+   - Tabla `stripe_customers` - Configurada
+   - Tabla `bookings` con soporte para garantías - Configurada
+   - Tabla `payments` con stripe_payment_method_id - Configurada
+   - Funciones de transacción para no-show - Implementadas
+
+4. **Servicios** ✅
+   - `StripePaymentService` - Actualizado para usar payment_method_id específico
+   - `StripeCustomerService` - Implementado
+   - `StripeSetupIntentService` - Implementado
+   - `ValidationService` - Actualizado para validar payment_method_id
+
+## Manejo de Métodos de Pago [NUEVO] ⚡
+
+### 1. Flujo de Datos Actualizado
+```mermaid
+graph TD
+    A[Reserva] -->|create| B[Payment Record]
+    B -->|store| C[stripe_payment_method_id]
+    D[CancelBookingModal] -->|trigger| E[NoShowCharge]
+    E -->|validate| F[ValidationService]
+    F -->|retrieve| C
+    E -->|process| G[StripePaymentService]
+    G -->|use| C
+```
+
+### 2. Validaciones Implementadas
+1. **A nivel de Reserva**
+   - Verificación de existencia de payment_method_id
+   - Validación de estado del método de pago
+   - Comprobación de permisos de cargo
+
+2. **A nivel de Proceso**
+   - Uso específico del método de pago guardado
+   - Manejo de errores específicos de tarjeta
+   - Registro de resultados del cargo
+
+### 3. Próximos Pasos [🎯]
+
+1. **Testing Específico** [ALTA]
+   - [ ] Pruebas de cargos con métodos de pago específicos
+   - [ ] Validación de errores de tarjeta
+   - [ ] Verificación de logs y trazabilidad
+
+2. **Mejoras UI** [MEDIA]
+   - [ ] Mostrar información del método de pago en el modal
+   - [ ] Mejorar mensajes de error específicos
+   - [ ] Añadir indicadores de estado del proceso
+
+3. **Documentación** [MEDIA]
+   - [ ] Actualizar diagramas de flujo
+   - [ ] Documentar nuevos códigos de error
+   - [ ] Crear guía de troubleshooting
+
+## Áreas de Mejora Identificadas [⚠️]
+
+### 1. Validaciones y Seguridad [ALTA]
+1. **Validación de Elegibilidad**
+   ```typescript
+   interface EligibilityCheck {
+     booking: {
+       status: string;
+       payment_type: string;
+       cancelled_at: string | null;
+     };
+     stripe: {
+       account_status: string;
+       charges_enabled: boolean;
+     };
+     customer: {
+       status: string;
+       payment_methods_count: number;
+     };
+   }
+   ```
+
+2. **Seguridad en Transacciones**
+   - Implementar bloqueos a nivel de base de datos
+   - Validar permisos en cada paso
+   - Registrar intentos de cargo
+
+3. **Manejo de Errores**
+   - Categorización de errores
+   - Respuestas específicas por tipo
+   - Logging estructurado
+
+### 2. Proceso de Cargo [ALTA]
+1. **Preparación**
+   - Verificar estado de la reserva
+   - Validar método de pago
+   - Calcular monto correcto
+
+2. **Ejecución**
+   - Crear PaymentIntent
+   - Confirmar cargo
+   - Registrar resultado
+
+3. **Post-Proceso**
+   - Actualizar estado de reserva
+   - Notificar a usuarios
+   - Registrar en historial
+
+### 3. UI/UX [MEDIA]
+1. **Feedback al Usuario**
+   - Mensajes claros de estado
+   - Indicadores de progreso
+   - Confirmaciones explícitas
+
+2. **Manejo de Estados**
+   - Loading states
+   - Error states
+   - Success states
+
+### 4. Testing [ALTA]
+1. **Unit Tests**
+   - Servicios
+   - Componentes
+   - Utilidades
+
+2. **Integration Tests**
+   - Flujo completo
+   - Casos edge
+   - Errores comunes
+
+## Plan de Implementación [🎯]
+
+### Fase 1: Robustez del Sistema [2-3 días]
+
+1. **Validaciones Mejoradas**
+   ```typescript
+   // stripe-payment.service.ts
+   interface ValidationContext {
+     booking: BookingDetails;
+     stripeAccount: StripeAccountInfo;
+     customer: CustomerInfo;
+   }
+
+   class ValidationService {
+     async validateCharge(context: ValidationContext): Promise<ValidationResult> {
+       // 1. Validar booking
+       await this.validateBooking(context.booking);
+       
+       // 2. Validar cuenta Stripe
+       await this.validateStripeAccount(context.stripeAccount);
+       
+       // 3. Validar customer
+       await this.validateCustomer(context.customer);
+       
+       // 4. Validar límites y restricciones
+       await this.validateLimits(context);
+     }
+   }
+   ```
+
+2. **Manejo de Errores Robusto**
+   ```typescript
+   class NoShowError extends Error {
+     constructor(
+       public code: string,
+       public message: string,
+       public details?: any
+     ) {
+       super(message);
+     }
+   }
+
+   const ERROR_CODES = {
+     BOOKING_INVALID: 'BOOKING_INVALID',
+     STRIPE_ACCOUNT_INVALID: 'STRIPE_ACCOUNT_INVALID',
+     CUSTOMER_INVALID: 'CUSTOMER_INVALID',
+     PAYMENT_FAILED: 'PAYMENT_FAILED'
+   } as const;
+   ```
+
+3. **Sistema de Logging**
+   ```typescript
+   interface ChargeLog {
+     requestId: string;
+     bookingId: string;
+     amount: number;
+     status: string;
+     error?: any;
+     metadata: {
+       empresa_id: string;
+       user_id: string;
+       stripe_account_id: string;
+     };
+   }
+   ```
+
+### Fase 2: Mejoras en UI [2 días]
+
+1. **Estados de Carga**
+   ```typescript
+   interface ChargeState {
+     isValidating: boolean;
+     isProcessing: boolean;
+     isComplete: boolean;
+     error?: string;
+   }
+   ```
+
+2. **Feedback al Usuario**
+   ```typescript
+   interface UserFeedback {
+     title: string;
+     message: string;
+     type: 'info' | 'warning' | 'error' | 'success';
+     action?: {
+       label: string;
+       handler: () => void;
+     };
+   }
+   ```
+
+### Fase 3: Testing [2-3 días]
+
+1. **Unit Tests**
+   ```typescript
+   describe('NoShowChargeService', () => {
+     it('should validate booking eligibility');
+     it('should handle invalid stripe accounts');
+     it('should process successful charges');
+     it('should handle failed charges');
+   });
+   ```
+
+2. **Integration Tests**
+   ```typescript
+   describe('No-Show Charge Flow', () => {
+     it('should complete full charge process');
+     it('should handle concurrent requests');
+     it('should maintain data consistency');
+   });
+   ```
+
+## Próximos Pasos Inmediatos [⚡]
+
+1. **Implementar Validaciones Robustas**
+   - [ ] Crear ValidationService
+   - [ ] Integrar con StripePaymentService
+   - [ ] Agregar logging detallado
+
+2. **Mejorar Manejo de Errores**
+   - [ ] Implementar sistema de errores tipados
+   - [ ] Agregar manejo de retry
+   - [ ] Mejorar mensajes de error
+
+3. **Completar Testing**
+   - [ ] Escribir unit tests
+   - [ ] Implementar integration tests
+   - [ ] Configurar CI/CD
+
+## Consideraciones de Seguridad [🔒]
+
+1. **Transacciones**
+   - Usar bloqueos de base de datos
+   - Implementar rollback automático
+   - Validar consistencia de datos
+
+2. **Autenticación**
+   - Verificar permisos en cada paso
+   - Validar tokens de sesión
+   - Registrar intentos de acceso
+
+3. **Datos Sensibles**
+   - No almacenar datos de tarjeta
+   - Encriptar información sensible
+   - Implementar auditoría de accesos
+
+## Métricas de Éxito [📊]
+
+1. **Técnicas**
+   - Tasa de éxito en cargos > 95%
+   - Tiempo de respuesta < 2s
+   - Cobertura de tests > 90%
+
+2. **Negocio**
+   - Reducción de no-shows > 30%
+   - Satisfacción del usuario > 85%
+   - Tasa de disputas < 2%
+
+## Documentación [📚]
+
+1. **Técnica**
+   - API Reference
+   - Diagramas de flujo
+   - Guías de implementación
+
+2. **Usuario**
+   - Guías de uso
+   - FAQs
+   - Troubleshooting
+
+## Timeline Estimado [📅]
+
+1. **Semana 1**
+   - Implementar validaciones
+   - Mejorar manejo de errores
+   - Iniciar testing
+
+2. **Semana 2**
+   - Completar testing
+   - Mejorar UI/UX
+   - Documentación
+
+3. **Semana 3**
+   - Testing en producción
+   - Monitoreo y ajustes
+   - Lanzamiento gradual
+
+## Preguntas Resueltas ✅
+
+1. **Configuración Stripe Connect**
+   - Confirmado: Cuenta de pruebas configurada
+   - No se requiere configuración adicional
+
+2. **Contexto de Empresa**
+   - Confirmado: `empresa_id` disponible en `OrganizationContext.tsx`
+   - No se requieren cambios adicionales
+
+3. **Estructura de Base de Datos**
+   - Confirmado: Tablas necesarias ya implementadas
+   - No se requieren migraciones adicionales
+
+4. **Empresas sin Stripe Connect**
+   - Decidido: No se manejará este caso por el momento
+   - Validación previa impide reservas con garantía
+
+## Plan de Implementación Revisado
+
+### Fase 1: Testing [2-3 días]
+1. Implementar suite de pruebas
+2. Validar flujos principales
+3. Documentar casos de prueba
+
+### Fase 2: Webhooks [2 días]
+1. Revisar configuración actual
+2. Implementar manejadores de eventos
+3. Probar notificaciones
+
+### Fase 3: Monitoreo [1-2 días]
+1. Configurar sistema de logging
+2. Implementar métricas
+3. Establecer alertas
+
+## Consideraciones Técnicas Actualizadas
+
+1. **Manejo de Errores**
+   - Ya implementado en `stripe-payment.service.ts`
+   - Requiere testing exhaustivo
+
+2. **Seguridad**
+   - Autenticación implementada
+   - Validaciones de permisos existentes
+   - No requiere cambios adicionales
+
+3. **Performance**
+   - Monitorear tiempos de respuesta
+   - Implementar cache si necesario
+
+## Métricas de Éxito [ACTUALIZADAS]
+
+1. **Técnicas**
+   - Tasa de éxito en cargos > 95%
+   - Tiempo de respuesta < 2s
+   - Cobertura de tests > 80%
+
+2. **Negocio**
+   - Reducción de no-shows
+   - Satisfacción del usuario
+   - Adopción del sistema
+
+## Riesgos Identificados
+
+1. **Técnicos**
+   - Fallos en la conexión con Stripe
+   - Errores en el procesamiento de pagos
+   - Problemas de concurrencia
+
+2. **Negocio**
+   - Resistencia de usuarios
+   - Disputas de cargos
+   - Problemas de comunicación
+
+## Plan de Rollout Actualizado
+
+1. **Fase de Pruebas [1 semana]**
+   - Testing interno
+   - Validación de flujos
+   - Corrección de errores
+
+2. **Fase Piloto [1 semana]**
+   - Selección de usuarios beta
+   - Monitoreo intensivo
+   - Recolección de feedback
+
+3. **Lanzamiento General [1 semana]**
+   - Rollout gradual
+   - Monitoreo continuo
+   - Soporte dedicado
+
+## Análisis de Relaciones y Flujo de Datos [NUEVO]
+
+### 1. Estructura de Relaciones
+
+```mermaid
+graph TD
+    A[Panel/Empresa] -->|empresa_id| B[stripe_connections]
+    B -->|stripe_account_id| C[Stripe Connect Account]
+    D[Usuario] -->|user_id| E[stripe_customers]
+    E -->|stripe_customer_id| F[Stripe Customer]
+    E -->|stripe_account_id| B
+    G[Reserva] -->|empresa_id| A
+    G -->|user_id| D
+    G -->|payment_type='guarantee'| H[Payment Method]
+    H -->|stripe_payment_method_id| F
+```
+
+### 2. Flujo de Cobro por No-Show
+
+1. **Inicio del Proceso** [✅ VALIDADO]
+   ```typescript
+   // En ViewBookingModal
+   interface BookingContext {
+     empresa_id: string;      // ID de la empresa del panel
+     user_id: string;         // ID del usuario con la reserva
+     payment_type: string;    // Debe ser 'guarantee'
+     stripe_account_id?: string; // ID de cuenta Stripe de la empresa
+   }
+   ```
+
+2. **Verificación de Elegibilidad** [⚡ EN PROGRESO]
+   - Confirmar que la reserva es de tipo garantía
+   - Verificar que la empresa tiene Stripe Connect activo
+   - Validar que existe un customer y método de pago válido
+
+3. **Proceso de Cargo** [⚡ EN PROGRESO]
+   ```typescript
+   interface ChargeContext {
+     booking_id: string;
+     empresa_id: string;
+     stripe_account_id: string;
+     customer_id: string;
+     payment_method_id: string;
+     amount: number;
+   }
+   ```
+
+### 3. Validaciones Necesarias
+
+1. **Nivel Empresa** [❗IMPORTANTE]
+   - ¿Tiene cuenta Stripe Connect activa?
+   - ¿Puede recibir pagos?
+   - ¿Tiene las configuraciones necesarias?
+
+2. **Nivel Usuario** [❗IMPORTANTE]
+   - ¿Existe el customer en Stripe?
+   - ¿Está vinculado a la cuenta correcta?
+   - ¿Tiene método de pago válido?
+
+3. **Nivel Reserva** [❗IMPORTANTE]
+   - ¿Es de tipo garantía?
+   - ¿No está ya cancelada?
+   - ¿El monto es correcto?
+
+### 4. Mejoras en Componentes Existentes
+
+1. **ViewBookingModal** [⚡ ACTUALIZAR]
+   ```typescript
+   // Agregar verificaciones
+   const verifyStripeEligibility = async (booking: Booking) => {
+     // 1. Verificar empresa
+     const connection = await getStripeConnection(booking.empresa_id);
+     if (!connection) throw new Error('Empresa sin Stripe');
+
+     // 2. Verificar customer
+     const customer = await getStripeCustomer(booking.user_id, connection.stripe_account_id);
+     if (!customer) throw new Error('Usuario sin método de pago');
+
+     return {
+       stripeAccountId: connection.stripe_account_id,
+       stripeCustomerId: customer.stripe_customer_id
+     };
+   };
+   ```
+
+2. **CancelBookingModal** [⚡ ACTUALIZAR]
+   ```typescript
+   interface CancelBookingModalProps {
+     booking: Booking;
+     stripeContext?: {
+       accountId: string;
+       customerId: string;
+     };
+     onCancel: (params: CancelParams) => Promise<void>;
+   }
+   ```
+
+### 5. Manejo de Errores y Casos Edge
+
+1. **Errores de Configuración**
+   - Empresa sin Stripe Connect
+   - Usuario sin customer_id
+   - Método de pago inválido
+
+2. **Errores de Proceso**
+   - Fallo en el cargo
+   - Timeout en la operación
+   - Problemas de conexión
+
+3. **Casos Edge**
+   - Cancelación simultánea
+   - Cambio de método de pago
+   - Desconexión de Stripe Connect
+
+### 6. Plan de Pruebas
+
+1. **Ambiente de Desarrollo**
+   ```typescript
+   // Configuración de prueba
+   const TEST_CONTEXT = {
+     empresa: {
+       id: 'test_empresa',
+       stripe_account_id: 'acct_test123'
+     },
+     usuario: {
+       id: 'test_user',
+       stripe_customer_id: 'cus_test123'
+     },
+     reserva: {
+       id: 'test_booking',
+       payment_type: 'guarantee',
+       amount: 1000
+     }
+   };
+   ```
+
+2. **Casos de Prueba**
+   - Cargo exitoso
+   - Tarjeta declinada
+   - Fondos insuficientes
+   - Errores de configuración
+   - Timeouts y reintentos
+
+### 7. Monitoreo y Logging
+
+1. **Métricas Clave**
+   - Tasa de éxito en cargos
+   - Tiempo de proceso
+   - Errores por tipo
+   - Montos procesados
+
+2. **Logs Estructurados**
+   ```typescript
+   interface ChargeLog {
+     requestId: string;
+     empresa_id: string;
+     booking_id: string;
+     stripe_account_id: string;
+     amount: number;
+     status: string;
+     error?: any;
+     duration: number;
+   }
+   ```
+
+### Preguntas Pendientes [❓ RESOLVER]
+
+1. **Configuración**
+   - ¿Cómo manejar empresas sin Stripe Connect?
+   - ¿Qué hacer si el usuario no tiene tarjeta?
+   - ¿Permitir múltiples intentos de cargo?
+
+2. **Proceso**
+   - ¿Implementar sistema de retry automático?
+   - ¿Cómo manejar cargos parcialmente exitosos?
+   - ¿Qué hacer si Stripe está caído?
+
+3. **Negocio**
+   - ¿Notificar al usuario antes del cargo?
+   - ¿Permitir disputar el cargo?
+   - ¿Establecer límites de tiempo para el cargo?
+
+### Próximos Pasos Inmediatos
+
+1. **Desarrollo** [1-2 días]
+   - Implementar verificaciones de elegibilidad
+   - Actualizar componentes UI
+   - Agregar manejo de errores robusto
+
+2. **Pruebas** [2-3 días]
+   - Configurar ambiente de prueba
+   - Ejecutar casos de prueba
+   - Validar flujo completo
+
+3. **Documentación** [1 día]
+   - Actualizar documentación técnica
+   - Crear guía de usuario
+   - Documentar códigos de error
+

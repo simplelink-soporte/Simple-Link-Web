@@ -1,0 +1,56 @@
+[
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Administradores pueden ver todas las empresas",
+    "policy_command": "SELECT",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM usuarios u\n  WHERE u.id = auth.uid() AND (u.metadata ->> 'is_admin'::text) = 'true'::text))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Enable access for all",
+    "policy_command": "ALL",
+    "policy_condition": "true",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Enable read access for all users",
+    "policy_command": "SELECT",
+    "policy_condition": "true",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Usuarios pueden actualizar su empresa",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.uid() = auth_user_id",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Usuarios pueden insertar su empresa",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.uid() = auth_user_id",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "empresas",
+    "policy_name": "Usuarios pueden ver su empresa",
+    "policy_command": "SELECT",
+    "policy_condition": "auth.uid() = auth_user_id",
+    "with_check_condition": "None",
+    "roles": "{}"
+  }
+]

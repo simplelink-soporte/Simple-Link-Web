@@ -1,0 +1,278 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos base */
+@layer base {
+  :root {
+    --background: #F5F5F5;
+    --foreground: theme(colors.gray.950);
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    
+    /* Variables para gaps */
+    --gap-small: 0.5rem;
+    --gap-medium: 1rem;
+    --gap-large: 1.5rem;
+    --gap-xlarge: 2rem;
+    
+    /* Variables para z-index */
+    --z-base: 1;
+    --z-overlay: 10;
+    --z-dropdown: 20;
+    --z-sticky: 30;
+    --z-drawer: 40;
+    --z-modal: 50;
+    --z-popover: 60;
+    --z-tooltip: 70;
+    --z-toast: 80;
+    --z-alert: 90;
+    --z-max: 9999;
+    
+    /* Variables para transiciones */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
+    --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html, body {
+    height: 100%;
+    @apply bg-[#F5F5F5] text-[hsl(var(--foreground))] antialiased;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    @apply border-[hsl(var(--border))];
+  }
+}
+
+/* Componente de scroll personalizado */
+@layer components {
+  .smooth-scroll {
+    @apply overflow-y-auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: scroll-position;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y proximity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+  }
+
+  /* Contenedor principal con scroll */
+  .scroll-container {
+    @apply relative h-full;
+    overflow: hidden;
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* Contenido scrolleable */
+  .scroll-content {
+    @apply absolute inset-0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000;
+    -webkit-perspective: 1000;
+  }
+  
+  /* Clases predefinidas para gaps */
+  .gap-small {
+    gap: var(--gap-small);
+  }
+  
+  .gap-medium {
+    gap: var(--gap-medium);
+  }
+  
+  .gap-large {
+    gap: var(--gap-large);
+  }
+  
+  .gap-xlarge {
+    gap: var(--gap-xlarge);
+  }
+  
+  /* Clases para z-index */
+  .z-base { z-index: var(--z-base); }
+  .z-overlay { z-index: var(--z-overlay); }
+  .z-dropdown { z-index: var(--z-dropdown); }
+  .z-sticky { z-index: var(--z-sticky); }
+  .z-drawer { z-index: var(--z-drawer); }
+  .z-modal { z-index: var(--z-modal); }
+  .z-popover { z-index: var(--z-popover); }
+  .z-tooltip { z-index: var(--z-tooltip); }
+  .z-toast { z-index: var(--z-toast); }
+  .z-alert { z-index: var(--z-alert); }
+  .z-max { z-index: var(--z-max); }
+  
+  /* Clases para transiciones */
+  .transition-fast {
+    transition: all var(--transition-fast) var(--transition-timing);
+  }
+  
+  .transition-normal {
+    transition: all var(--transition-normal) var(--transition-timing);
+  }
+  
+  .transition-slow {
+    transition: all var(--transition-slow) var(--transition-timing);
+  }
+}
+
+/* Utilidades para el scroll */
+@layer utilities {
+  /* Clase unificada para ocultar scrollbar */
+  .scrollbar-hide {
+    /* Firefox */
+    scrollbar-width: none;
+    /* Internet Explorer 10+ */
+    -ms-overflow-style: none;
+  }
+  
+  /* WebKit y Chrome */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  /* Remover clases duplicadas y mantener solo las esenciales */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animaciones */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Prevenir rebote en iOS */
+  .prevent-bounce {
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: auto;
+  }
+
+  /* Scroll suave */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y proximity;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* Transiciones suaves para cambios de altura */
+  .height-transition {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .scrollbar-none::-webkit-scrollbar-track {
+    display: none !important;
+  }
+
+  .scrollbar-none::-webkit-scrollbar-thumb {
+    display: none !important;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Estilos específicos para el contenedor de reservaciones */
+.bookings-scroll-container {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bookings-scroll-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.bookings-scroll-container::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+.bookings-scroll-container::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+

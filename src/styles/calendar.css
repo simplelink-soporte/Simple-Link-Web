@@ -1,0 +1,97 @@
+@import 'react-day-picker/dist/style.css';
+
+/* Estilos del calendario */
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #000;
+  --rdp-background-color: #f3f4f6;
+  margin: 0;
+}
+
+.rdp-months {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+}
+
+.rdp-month {
+  width: 100% !important;
+  border-collapse: collapse;
+}
+
+.rdp-table {
+  width: 100% !important;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.rdp-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.rdp-head_cell {
+  width: var(--rdp-cell-size);
+  height: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  text-align: center;
+}
+
+.rdp-cell {
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  text-align: center;
+  padding: 0;
+}
+
+.rdp-button {
+  width: 38px;
+  height: 38px;
+  font-size: 0.875rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.rdp-button:hover:not([disabled]) {
+  background-color: var(--rdp-background-color);
+}
+
+.rdp-button.rdp-day_selected {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-button.rdp-day_selected:hover {
+  background-color: var(--rdp-accent-color);
+}
+
+/* Estilos para el rango de fechas */
+.rdp-day_range_start,
+.rdp-day_range_end {
+  background-color: var(--rdp-accent-color) !important;
+  color: white !important;
+}
+
+.rdp-day_range_middle {
+  background-color: var(--rdp-background-color) !important;
+  color: var(--rdp-accent-color) !important;
+}
+
+.rdp-day_range_start:not(.rdp-day_range_end) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rdp-day_range_end:not(.rdp-day_range_start) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rdp-day_range_middle {
+  border-radius: 0;
+} 

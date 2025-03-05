@@ -1,0 +1,68 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Datos sin procesar:",
+      {
+        "id": "97d39e02-3671-4d8d-92f8-0afa0cb6be1a",
+        "paymentType": "guarantee",
+        "isValid": true,
+        "rawType": "string",
+        "timestamp": "2025-03-04T22:54:20.109Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Validación de paymentType:",
+      {
+        "original": "guarantee",
+        "type": "string",
+        "isValid": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Datos sin procesar:",
+      {
+        "id": "97d39e02-3671-4d8d-92f8-0afa0cb6be1a",
+        "paymentType": "guarantee",
+        "isValid": true,
+        "rawType": "string",
+        "timestamp": "2025-03-04T22:54:20.110Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Validación de paymentType:",
+      {
+        "original": "guarantee",
+        "type": "string",
+        "isValid": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💾 Estado actual de la reserva:",
+      {
+        "id": "97d39e02-3671-4d8d-92f8-0afa0cb6be1a",
+        "paymentType": "guarantee",
+        "isGuarantee": true,
+        "timestamp": "2025-03-04T22:54:20.129Z"
+      }
+    ]
+  }
+]

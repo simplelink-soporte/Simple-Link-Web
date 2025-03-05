@@ -1,0 +1,1580 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Seleccionando tipo de pago: deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      {
+        "id": "deposit",
+        "name": "Pago con Seña",
+        "description": "Pagar solo la seña ahora",
+        "requiresCard": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] handlePaymentTypeSelect: deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Actualizando tipo de pago global: deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Flujo directo para tipo especial: deposit, evitando modal"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] No hay método seleccionado, forzando actualización de tipo = deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Enviando evento especial de tipo de pago: deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "special_type_update_1741122669807",
+        "type": "special",
+        "brand": "none",
+        "last4": "0000",
+        "expMonth": 1,
+        "expYear": 2030,
+        "name": "Actualización de tipo",
+        "description": "Evento especial para actualizar tipo de pago",
+        "__paymentContext": {
+          "selectedPaymentType": "deposit",
+          "isTypeOnlyUpdate": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "deposit",
+        "isTypeOnlyUpdate": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "deposit",
+        "source": "handleSelectPaymentType"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Evento especial de actualización solo de tipo de pago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Tipo de pago actualizado en estado global"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": null,
+          "type": null
+        },
+        "type": null,
+        "hasMethod": false,
+        "hasSelectedMethod": false,
+        "hasType": false
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Método de pago inválido o faltante:",
+      {
+        "method": null
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Tipo de pago faltante"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 2,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-04T21:11:11.480Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 2,
+        "lastUpdate": "2025-03-04T21:11:11.682Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Seleccionando tarjeta:",
+      "pm_1Qy2jKC4oQv4vCtFbLHgXCs5"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando selección directa de tarjeta:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Actualizando método de pago global con:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global con:",
+      {
+        "method": "stripe",
+        "type": "deposit",
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado de pago actualizado desde MobilePaymentContainer"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "deposit"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "deposit"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "deposit",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global de pago:",
+      {
+        "method": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "deposit",
+        "currentState": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Objeto de pago a actualizar:",
+      {
+        "method": "stripe",
+        "type": "deposit",
+        "config": {
+          "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032
+        },
+        "selectedPaymentMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado global actualizado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "deposit"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "deposit"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "deposit",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "deposit",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Gestión de siguiente paso:",
+      {
+        "currentView": "payment",
+        "selectedType": "deposit",
+        "selectedMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "hasStripeCustomerId": true,
+        "timestamp": "2025-03-04T21:11:14.930Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Iniciando procesamiento de pago con seña (30%)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Datos de customerId para seña:",
+      {
+        "fromState": "cus_Rn8J5Wbe3ag16g",
+        "fromHook": "cus_Rn8J5Wbe3ag16g",
+        "fromHookAlt": "cus_Rn8J5Wbe3ag16g",
+        "effective": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando pago con seña (30%) on-session con tarjeta guardada:",
+      {
+        "cardId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "last4": "4444",
+        "brand": "mastercard",
+        "totalAmount": 118.5,
+        "depositPercentage": 30,
+        "depositAmount": 35.55,
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [nyxwjjukd8nas48093bmm89y] Iniciando proceso de pago con seña:",
+      {
+        "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "amount": 35.55,
+        "totalAmount": 118.5,
+        "depositPercentage": 30,
+        "timestamp": "2025-03-04T21:11:14.962Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [nyxwjjukd8nas48093bmm89y] Datos calculados para el pago con seña:",
+      {
+        "totalAmount": 118.5,
+        "depositPercentage": 30,
+        "depositAmount": 35.55
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 1142ms"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [nyxwjjukd8nas48093bmm89y] Error en respuesta HTTP: 400",
+      "{\"success\":false,\"error\":{\"code\":\"stripe_error\",\"message\":\"You cannot confirm with `off_session=true` when `setup_future_usage` is also set on the PaymentIntent. The customer needs to be on-session to perform the steps which may be required to set up the PaymentMethod for future usage. Please confirm this PaymentIntent with your customer on-session.\",\"details\":{\"type\":\"StripeInvalidRequestError\",\"raw\":{\"message\":\"You cannot confirm with `off_session=true` when `setup_future_usage` is also set on the PaymentIntent. The customer needs to be on-session to perform the steps which may be required to set up the PaymentMethod for future usage. Please confirm this PaymentIntent with your customer on-session.\",\"request_log_url\":\"https://dashboard.stripe.com/acct_1QddDLC4oQv4vCtF/test/logs/req_onixxZ56ikwuWs?t=1741122677\",\"type\":\"invalid_request_error\",\"headers\":{\"server\":\"nginx\",\"date\":\"Tue, 04 Mar 2025 21:11:17 GMT\",\"content-type\":\"application/json\",\"content-length\":\"487\",\"connection\":\"keep-alive\",\"access-control-allow-credentials\":\"true\",\"access-control-allow-methods\":\"GET, HEAD, PUT, PATCH, POST, DELETE\",\"access-control-allow-origin\":\"*\",\"access-control-expose-headers\":\"Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required\",\"access-control-max-age\":\"300\",\"cache-control\":\"no-cache, no-store\",\"content-security-policy\":\"base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=zXZlHT79wLpUIYaslu5PAjzguWYJ8Du0xeUFS7gQH1l-JTJ_Yql7Klzj_20xLy0efd49sGwwBcDkWLl-\",\"cross-origin-opener-policy-report-only\":\"same-origin; report-to=\\\"coop\\\"\",\"idempotency-key\":\"stripe-node-retry-3edfc169-2ebd-446a-814d-a1492a292297\",\"original-request\":\"req_onixxZ56ikwuWs\",\"report-to\":\"{\\\"group\\\":\\\"coop\\\",\\\"max_age\\\":8640,\\\"endpoints\\\":[{\\\"url\\\":\\\"https://q.stripe.com/coop-report\\\"}],\\\"include_subdomains\\\":true}\",\"reporting-endpoints\":\"coop=\\\"https://q.stripe.com/coop-report\\\"\",\"request-id\":\"req_onixxZ56ikwuWs\",\"stripe-account\":\"acct_1QddDLC4oQv4vCtF\",\"stripe-should-retry\":\"false\",\"stripe-version\":\"2025-02-24.acacia\",\"vary\":\"Origin\",\"x-stripe-priority-routing-enabled\":\"true\",\"x-stripe-routing-context-priority-tier\":\"api-testmode\",\"x-wc\":\"AB\",\"strict-transport-security\":\"max-age=63072000; includeSubDomains; preload\"},\"statusCode\":400,\"requestId\":\"req_onixxZ56ikwuWs\"},\"rawType\":\"invalid_request_error\",\"headers\":{\"server\":\"nginx\",\"date\":\"Tue, 04 Mar 2025 21:11:17 GMT\",\"content-type\":\"application/json\",\"content-length\":\"487\",\"connection\":\"keep-alive\",\"access-control-allow-credentials\":\"true\",\"access-control-allow-methods\":\"GET, HEAD, PUT, PATCH, POST, DELETE\",\"access-control-allow-origin\":\"*\",\"access-control-expose-headers\":\"Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required\",\"access-control-max-age\":\"300\",\"cache-control\":\"no-cache, no-store\",\"content-security-policy\":\"base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=zXZlHT79wLpUIYaslu5PAjzguWYJ8Du0xeUFS7gQH1l-JTJ_Yql7Klzj_20xLy0efd49sGwwBcDkWLl-\",\"cross-origin-opener-policy-report-only\":\"same-origin; report-to=\\\"coop\\\"\",\"idempotency-key\":\"stripe-node-retry-3edfc169-2ebd-446a-814d-a1492a292297\",\"original-request\":\"req_onixxZ56ikwuWs\",\"report-to\":\"{\\\"group\\\":\\\"coop\\\",\\\"max_age\\\":8640,\\\"endpoints\\\":[{\\\"url\\\":\\\"https://q.stripe.com/coop-report\\\"}],\\\"include_subdomains\\\":true}\",\"reporting-endpoints\":\"coop=\\\"https://q.stripe.com/coop-report\\\"\",\"request-id\":\"req_onixxZ56ikwuWs\",\"stripe-account\":\"acct_1QddDLC4oQv4vCtF\",\"stripe-should-retry\":\"false\",\"stripe-version\":\"2025-02-24.acacia\",\"vary\":\"Origin\",\"x-stripe-priority-routing-enabled\":\"true\",\"x-stripe-routing-context-priority-tier\":\"api-testmode\",\"x-wc\":\"AB\",\"strict-transport-security\":\"max-age=63072000; includeSubDomains; preload\"},\"requestId\":\"req_onixxZ56ikwuWs\",\"statusCode\":400}}}"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MobilePaymentContainer] Error al procesar pago con seña:",
+      {
+        "code": "stripe_error",
+        "message": "You cannot confirm with `off_session=true` when `setup_future_usage` is also set on the PaymentIntent. The customer needs to be on-session to perform the steps which may be required to set up the PaymentMethod for future usage. Please confirm this PaymentIntent with your customer on-session.",
+        "details": {
+          "type": "StripeInvalidRequestError",
+          "raw": {
+            "message": "You cannot confirm with `off_session=true` when `setup_future_usage` is also set on the PaymentIntent. The customer needs to be on-session to perform the steps which may be required to set up the PaymentMethod for future usage. Please confirm this PaymentIntent with your customer on-session.",
+            "request_log_url": "https://dashboard.stripe.com/acct_1QddDLC4oQv4vCtF/test/logs/req_onixxZ56ikwuWs?t=1741122677",
+            "type": "invalid_request_error",
+            "headers": {
+              "server": "nginx",
+              "date": "Tue, 04 Mar 2025 21:11:17 GMT",
+              "content-type": "application/json",
+              "content-length": "487",
+              "connection": "keep-alive",
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=zXZlHT79wLpUIYaslu5PAjzguWYJ8Du0xeUFS7gQH1l-JTJ_Yql7Klzj_20xLy0efd49sGwwBcDkWLl-",
+              "cross-origin-opener-policy-report-only": "same-origin; report-to=\"coop\"",
+              "idempotency-key": "stripe-node-retry-3edfc169-2ebd-446a-814d-a1492a292297",
+              "original-request": "req_onixxZ56ikwuWs",
+              "report-to": "{\"group\":\"coop\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/coop-report\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "coop=\"https://q.stripe.com/coop-report\"",
+              "request-id": "req_onixxZ56ikwuWs",
+              "stripe-account": "acct_1QddDLC4oQv4vCtF",
+              "stripe-should-retry": "false",
+              "stripe-version": "2025-02-24.acacia",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "AB",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload"
+            },
+            "statusCode": 400,
+            "requestId": "req_onixxZ56ikwuWs"
+          },
+          "rawType": "invalid_request_error",
+          "headers": {
+            "server": "nginx",
+            "date": "Tue, 04 Mar 2025 21:11:17 GMT",
+            "content-type": "application/json",
+            "content-length": "487",
+            "connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+            "access-control-allow-origin": "*",
+            "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+            "access-control-max-age": "300",
+            "cache-control": "no-cache, no-store",
+            "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=zXZlHT79wLpUIYaslu5PAjzguWYJ8Du0xeUFS7gQH1l-JTJ_Yql7Klzj_20xLy0efd49sGwwBcDkWLl-",
+            "cross-origin-opener-policy-report-only": "same-origin; report-to=\"coop\"",
+            "idempotency-key": "stripe-node-retry-3edfc169-2ebd-446a-814d-a1492a292297",
+            "original-request": "req_onixxZ56ikwuWs",
+            "report-to": "{\"group\":\"coop\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/coop-report\"}],\"include_subdomains\":true}",
+            "reporting-endpoints": "coop=\"https://q.stripe.com/coop-report\"",
+            "request-id": "req_onixxZ56ikwuWs",
+            "stripe-account": "acct_1QddDLC4oQv4vCtF",
+            "stripe-should-retry": "false",
+            "stripe-version": "2025-02-24.acacia",
+            "vary": "Origin",
+            "x-stripe-priority-routing-enabled": "true",
+            "x-stripe-routing-context-priority-tier": "api-testmode",
+            "x-wc": "AB",
+            "strict-transport-security": "max-age=63072000; includeSubDomains; preload"
+          },
+          "requestId": "req_onixxZ56ikwuWs",
+          "statusCode": 400
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  }
+]

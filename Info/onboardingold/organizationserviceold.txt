@@ -1,0 +1,146 @@
+import { supabase } from '@/lib/supabase'
+
+export const organizationService = {
+  async getCurrentOrganization() {
+    try {
+      console.log('📍 Obteniendo organización actual...')
+      
+      const userId = process.env.NEXT_PUBLIC_DEFAULT_USER_ID
+
+      if (!userId) {
+        throw new Error('ID de usuario no configurado')
+      }
+
+      console.log('🔍 Buscando empresa para el usuario:', userId)
+
+      // Intentamos obtener la empresa específica
+      const { data, error } = await supabase
+        .from('empresas')
+        .select('*')
+        .eq('auth_user_id', userId)
+        .single()
+
+      if (error) {
+        console.error('❌ Error al obtener organización:', error)
+        throw error
+      }
+
+      if (!data) {
+        console.log('⚠️ No se encontró la organización')
+        return { data: null, error: new Error('No se encontró la organización') }
+      }
+
+      console.log('✅ Organización obtenida:', data)
+      return { data, error: null }
+    } catch (error: any) {
+      console.error('❌ Error getting empresa:', {
+        error,
+        message: error.message,
+        code: error.code,
+        details: error.details
+      })
+      return { 
+        data: null, 
+        error: {
+          message: error.message || 'Error al obtener la organización',
+          code: error.code,
+          details: error.details
+        }
+      }
+    }
+  },
+
+  async updateOrganization(data: {
+    name: string;
+    email: string;
+    phone: string;
+    country: string;
+  }) {
+    try {
+      const userId = process.env.NEXT_PUBLIC_DEFAULT_USER_ID;
+      
+      if (!userId) {
+        throw new Error('ID de usuario no configurado en las variables de entorno');
+      }
+
+      console.log('🔍 Verificando existencia de empresa para el usuario:', userId);
+
+      // Primero verificamos si la empresa existe
+      const { data: existingCompany, error: checkError } = await supabase
+        .from('empresas')
+        .select('id, auth_user_id')
+        .eq('auth_user_id', userId)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('❌ Error al verificar empresa:', checkError);
+        throw new Error('Error al verificar la existencia de la empresa');
+      }
+
+      if (!existingCompany) {
+        console.error('❌ No se encontró la empresa para el usuario:', userId);
+        throw new Error('No se encontró la empresa a actualizar');
+      }
+
+      // Validaciones básicas
+      if (!data.name?.trim()) {
+        throw new Error('El nombre de la empresa es requerido');
+      }
+
+      if (!data.email?.trim()) {
+        throw new Error('El email de la empresa es requerido');
+      }
+
+      if (!data.phone?.trim()) {
+        throw new Error('El teléfono de la empresa es requerido');
+      }
+
+      if (!data.country?.trim()) {
+        throw new Error('El país de la empresa es requerido');
+      }
+
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        throw new Error('El formato del email no es válido');
+      }
+
+      console.log('📍 Actualizando empresa...', {
+        userId,
+        companyId: existingCompany.id,
+        data
+      });
+
+      // Realizamos la actualización usando el ID de la empresa
+      const { data: result, error: updateError } = await supabase
+        .from('empresas')
+        .update({
+          business_name: data.name.trim(),
+          email: data.email.trim(),
+          phone: data.phone.trim(),
+          country: data.country.trim(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('auth_user_id', userId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('❌ Error al actualizar empresa:', updateError);
+        throw new Error('Error al actualizar la información de la empresa');
+      }
+
+      console.log('✅ Empresa actualizada correctamente:', result);
+      return result;
+
+    } catch (error: any) {
+      console.error('❌ Error en updateOrganization:', {
+        error,
+        message: error.message,
+        code: error.code,
+        details: error.details
+      });
+      throw error;
+    }
+  }
+} 

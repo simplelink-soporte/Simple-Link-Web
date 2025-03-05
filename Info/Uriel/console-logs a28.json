@@ -1,0 +1,3438 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Seleccionando tipo de pago: full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      {
+        "id": "full",
+        "name": "Pago Completo",
+        "description": "Pagar el monto total de la reserva",
+        "requiresCard": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] handlePaymentTypeSelect: full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Actualizando tipo de pago global: full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Flujo directo para tipo especial: full, evitando modal"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] No hay método seleccionado, forzando actualización de tipo = full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Enviando evento especial de tipo de pago: full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "special_type_update_1741133061798",
+        "type": "special",
+        "brand": "none",
+        "last4": "0000",
+        "expMonth": 1,
+        "expYear": 2030,
+        "name": "Actualización de tipo",
+        "description": "Evento especial para actualizar tipo de pago",
+        "__paymentContext": {
+          "selectedPaymentType": "full",
+          "isTypeOnlyUpdate": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "full",
+        "isTypeOnlyUpdate": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "full",
+        "source": "handleSelectPaymentType"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Evento especial de actualización solo de tipo de pago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Tipo de pago actualizado en estado global"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": null,
+          "type": null
+        },
+        "type": null,
+        "hasMethod": false,
+        "hasSelectedMethod": false,
+        "hasType": false
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Método de pago inválido o faltante:",
+      {
+        "method": null
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Tipo de pago faltante"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 2,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-05T00:04:23.641Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 2,
+        "lastUpdate": "2025-03-05T00:04:23.852Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Seleccionando tarjeta:",
+      "pm_1QtY3rC4oQv4vCtF9xVlSf3x"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando selección directa de tarjeta:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Actualizando método de pago global con:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global con:",
+      {
+        "method": "stripe",
+        "type": "full",
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado de pago actualizado desde MobilePaymentContainer"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029"
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global de pago:",
+      {
+        "method": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029"
+        },
+        "type": "full",
+        "currentState": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Objeto de pago a actualizar:",
+      {
+        "method": "stripe",
+        "type": "full",
+        "config": {
+          "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029
+        },
+        "selectedPaymentMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado global actualizado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029"
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Gestión de siguiente paso:",
+      {
+        "currentView": "payment",
+        "selectedType": "full",
+        "selectedMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "hasStripeCustomerId": true,
+        "timestamp": "2025-03-05T00:04:26.191Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Iniciando procesamiento de pago completo"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Datos de customerId:",
+      {
+        "fromState": "cus_Rn8J5Wbe3ag16g",
+        "fromHook": "cus_Rn8J5Wbe3ag16g",
+        "fromHookAlt": "cus_Rn8J5Wbe3ag16g",
+        "effective": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando pago on-session con tarjeta guardada:",
+      {
+        "cardId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "last4": "4242",
+        "brand": "visa",
+        "amount": 54,
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [yjkrtt889g5dqht4hs20v31f] Iniciando procesamiento de pago completo:",
+      {
+        "amount": 54,
+        "paymentMethodId": "pm_1QtY3rC...",
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "hasCustomerId": true,
+        "hasAccountId": true,
+        "timestamp": "2025-03-05T00:04:26.228Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [yjkrtt889g5dqht4hs20v31f] Datos para procesamiento directo:",
+      {
+        "customerId": "cus_Rn8J5W...",
+        "accountId": "acct_1QddDLC4oQv4vCtF"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [yjkrtt889g5dqht4hs20v31f] Enviando solicitud para procesamiento de pago on-session"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [yjkrtt889g5dqht4hs20v31f] Respuesta HTTP recibida: 200 OK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [yjkrtt889g5dqht4hs20v31f] Pago procesado exitosamente:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+        "status": "succeeded",
+        "timestamp": "2025-03-05T00:04:28.435Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Pago procesado exitosamente:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+        "status": "succeeded"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] PaymentIntentId guardado en localStorage como respaldo"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando tipo de pago:",
+      {
+        "prevType": "full",
+        "newType": null,
+        "source": "handleSelectPaymentType"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      null
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global con:",
+      {
+        "method": "stripe",
+        "type": "full",
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado de pago actualizado desde MobilePaymentContainer"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029",
+        "_additionalData": {
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029",
+        "_additionalData": {
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global con:",
+      {
+        "method": "stripe",
+        "type": "full",
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado de pago actualizado desde MobilePaymentContainer"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de pago global actualizado con PaymentIntent:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+        "method": "card",
+        "type": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Avanzando al siguiente paso con pago procesado:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Formulario válido, procediendo a farewell"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "summary",
+        "currentType": "summary",
+        "currentStep": 3,
+        "nextStep": 4,
+        "hasNextField": true,
+        "totalFields": 5
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Validando orden:",
+      {
+        "currentType": "summary",
+        "nextType": "farewell",
+        "STEP_ORDER": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ],
+        "totalSteps": 6
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Resultado de validación:",
+      {
+        "currentOrder": 4,
+        "nextOrder": 5,
+        "isValid": true,
+        "isSummaryToFarewell": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "summary",
+        "currentType": "summary",
+        "currentStep": 3,
+        "nextStep": 4,
+        "hasNextField": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Navegación completada al paso:",
+      4
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "card",
+          "type": "full",
+          "processed": true,
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "status": "completed",
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "card",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "hasPaymentIntentId": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "incoming": {
+          "method": "card",
+          "type": "full",
+          "processed": true,
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "status": "completed",
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "card",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          }
+        },
+        "updated": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "hasPaymentIntentId": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "hasPaymentIntentId": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "full",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "card",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029"
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "hasPaymentIntentId": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029",
+          "_additionalData": {
+            "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+          }
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormContent] Estado actual:",
+      {
+        "currentStep": 4,
+        "totalSteps": 4,
+        "showNextButton": false,
+        "isNextDisabled": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 4,
+        "expYear": 2029,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 04/2029",
+        "_additionalData": {
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029",
+          "_additionalData": {
+            "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+          }
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[FarewellPreview] Iniciando creación de reserva",
+      {
+        "isValid": true,
+        "validationErrors": [],
+        "currentPayment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "isCreating": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Iniciando creación de reserva con estado:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "calculations": {
+          "selectedItems": [
+            {
+              "id": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+              "name": "Artículo 2",
+              "price": 12,
+              "quantity": 1,
+              "total": 12
+            },
+            {
+              "id": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+              "name": "Artículo 3",
+              "price": 12,
+              "quantity": 1,
+              "total": 12
+            }
+          ],
+          "courtPrice": 30,
+          "itemsTotal": 24,
+          "subtotal": 54,
+          "discount": 0,
+          "total": 54
+        },
+        "validationErrors": [],
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "rentals": [],
+        "selectedItems": {
+          "61c7b47d-a093-4a9b-bacc-6f04b104d3ca": 1,
+          "8e76de4a-d5d0-4083-afee-581ecf0c9dc9": 1
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029",
+          "_additionalData": {
+            "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+          }
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Calculando duración: 09:30 a 10:30 = 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Transformando item a rental:",
+      {
+        "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+        "quantity": 1,
+        "duration": 60,
+        "pricePerUnit": 12,
+        "price": 12,
+        "totalPrice": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Transformando item a rental:",
+      {
+        "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+        "quantity": 1,
+        "duration": 60,
+        "pricePerUnit": 12,
+        "price": 12,
+        "totalPrice": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Rentals transformados:",
+      [
+        {
+          "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+          "quantity": 1,
+          "duration": 60,
+          "pricePerUnit": 12,
+          "price": 12,
+          "totalPrice": 12
+        },
+        {
+          "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+          "quantity": 1,
+          "duration": 60,
+          "pricePerUnit": 12,
+          "price": 12,
+          "totalPrice": 12
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Items transformados a rentals:",
+      [
+        {
+          "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+          "quantity": 1,
+          "duration": 60,
+          "pricePerUnit": 12,
+          "price": 12,
+          "totalPrice": 12
+        },
+        {
+          "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+          "quantity": 1,
+          "duration": 60,
+          "pricePerUnit": 12,
+          "price": 12,
+          "totalPrice": 12
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Datos de reserva preparados:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-05",
+        "startTime": "09:30",
+        "endTime": "10:30",
+        "courtPrice": 30,
+        "rentalItemsPrice": 24,
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "paymentStatus": "pending",
+        "depositAmount": 54,
+        "participants": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          }
+        ],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "rentals": [
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          }
+        ],
+        "paymentConfig": {
+          "type": "booking",
+          "defaultMethod": "cash",
+          "defaultStatus": "pending"
+        },
+        "originalPaymentType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Verificando pago completo:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+        "method": "stripe",
+        "hasPaymentMethod": true,
+        "hasSelectedPaymentMethod": true,
+        "processed": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Reserva configurada con PaymentIntentId:",
+      {
+        "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+        "method": "cash",
+        "status": "completed"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Verificando disponibilidad para:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-05",
+        "startTime": "09:30",
+        "endTime": "10:30"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "full",
+          "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4",
+          "config": {
+            "paymentMethodId": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029,
+            "type": "card",
+            "name": "visa terminada en 4242",
+            "description": "Expira: 04/2029",
+            "_additionalData": {
+              "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+            }
+          },
+          "processed": true,
+          "status": "completed"
+        },
+        "selectedMethod": {
+          "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029",
+          "_additionalData": {
+            "paymentIntentId": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+          }
+        },
+        "type": "full",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Reservas encontradas:",
+      [
+        {
+          "id": "6e73f1db-36f8-4ac8-b70f-577178b63664",
+          "start": "07:00:00",
+          "end": "08:30:00",
+          "status": "pending"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Cancha disponible:",
+      {
+        "court": "Pista 5",
+        "date": "2025-03-05",
+        "time": "09:30 - 10:30"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📝 Creando reserva con datos:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-05",
+        "startTime": "09:30",
+        "endTime": "10:30",
+        "courtPrice": 30,
+        "rentalItemsPrice": 24,
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "paymentStatus": "completed",
+        "depositAmount": 54,
+        "participants": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "pricePerUnit": 12,
+            "totalPrice": 12
+          }
+        ],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripe_payment_intent_id": "pi_3Qz5RnC4oQv4vCtF1YghHXn4"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-03-05",
+          "start": "09:30",
+          "end": "10:30",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-05T09:30:00.000+01:00",
+          "localEnd": "2025-03-05T10:30:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-05",
+          "start": "08:30:00",
+          "end": "09:30:00",
+          "fullStartUTC": "2025-03-05T08:30:00.000Z",
+          "fullEndUTC": "2025-03-05T09:30:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Participantes transformados:",
+      {
+        "original": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "transformed": [
+          {
+            "user_id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Parámetros de la reserva:",
+      {
+        "p_court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "p_date": "2025-03-05",
+        "p_start_time": "08:30:00",
+        "p_end_time": "09:30:00",
+        "p_court_price": 30,
+        "p_rental_items_price": 24,
+        "p_payment_method": "cash",
+        "p_payment_status": "completed",
+        "p_payment_type": "booking",
+        "p_deposit_amount": 54,
+        "p_title": null,
+        "p_description": null,
+        "p_participants": [
+          {
+            "user_id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "p_rental_items": [
+          {
+            "item_id": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "price_per_unit": 12,
+            "total_price": 12
+          },
+          {
+            "item_id": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "price_per_unit": 12,
+            "total_price": 12
+          }
+        ],
+        "p_empresa_id": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 1015ms"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cambio en estado de autenticación:",
+      {
+        "event": "SIGNED_IN",
+        "timestamp": "2025-03-05T00:04:37.204Z",
+        "storageKey": "sb-padel-auth-token"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Usando organización en caché"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Usando organización en caché"
+    ]
+  }
+]

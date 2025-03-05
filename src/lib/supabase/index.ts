@@ -1,0 +1,2 @@
+// Este archivo se elimina ya que su funcionalidad está siendo manejada por los singletons en src/supabase/admin.ts y src/supabase/client.ts
+// Mantener este comentario como referencia de que el archivo fue eliminado intencionalmente 

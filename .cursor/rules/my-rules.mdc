@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+---
+---
+description: Reglas Generales al Aplicar Cambios
+globs: 
+---
+
+When entrusting a task you must use chain reasoning to search for related files and have greater context of the situation.
+
+Also, apply good developer practices in the process. Be orderly and neat.
+
+Respond in Spanish and when applying changes, do so precisely to avoid many redundant changes.

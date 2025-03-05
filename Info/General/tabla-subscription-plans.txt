@@ -1,0 +1,175 @@
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "name",
+    "ordinal_position": 2,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "code",
+    "ordinal_position": 3,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 50,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "type",
+    "ordinal_position": 4,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "price",
+    "ordinal_position": 5,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "daily_booking_limit",
+    "ordinal_position": 6,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "reset_period",
+    "ordinal_position": 7,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "features",
+    "ordinal_position": 8,
+    "data_type": "jsonb",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'[]'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "is_active",
+    "ordinal_position": 9,
+    "data_type": "boolean",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "created_at",
+    "ordinal_position": 10,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "CURRENT_TIMESTAMP"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "updated_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "CURRENT_TIMESTAMP"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'booking_participants'
+
+
+[
+  {
+    "trigger_name": "set_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "subscription_plans",
+    "table_schema": "public",
+    "function_name": "trigger_set_timestamp",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.trigger_set_timestamp()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin\r\n  new.updated_at = timezone('utc'::text, now());\r\n  return new;\r\nend;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_296044",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "subscription_plans",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_296045",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "subscription_plans",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  }
+]

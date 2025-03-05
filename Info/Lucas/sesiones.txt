@@ -1,0 +1,60 @@
+# Análisis del Sistema de Autenticación y Sesiones
+
+## 1. Componentes Principales
+
+### Formulario de Login (`AdminLoginForm.tsx`)
+- Maneja la autenticación administrativa
+- Utiliza react-hook-form y zod para validación
+- Integra autenticación con email/password y Google
+- Verifica roles administrativos
+
+### Contexto de Autenticación
+Existen dos implementaciones:
+1. `AuthContext.tsx`:
+   - Manejo principal de estado de autenticación
+   - Funciones: signIn, signInWithGoogle, signOut
+   - Gestión de tokens y sesiones
+
+2. `AuthProvider.tsx`:
+   - Implementación alternativa con Supabase
+   - Manejo de estado de autenticación
+   - Suscripción a cambios de estado
+
+### Middleware (`middleware.ts`)
+- Protección de rutas
+- Verificación de sesiones
+- Control de acceso basado en roles
+- Gestión de empresa_id
+
+### Estado Global y Configuración
+- `appStore.ts`: Estado global con Zustand
+- `AppInitializer.tsx`: Inicialización de la aplicación
+- `auth.ts`: Utilidades de autenticación
+- `auth.config.ts`: Configuración de rutas y cookies
+
+## 2. Flujo de Autenticación
+
+1. Entrada: `/admin/login`
+2. Procesamiento de credenciales (AdminLoginForm)
+3. Autenticación vía AuthContext/Supabase
+4. Verificación de permisos (Middleware)
+5. Inicialización de aplicación
+6. Redirección al dashboard
+
+## 3. Tipos y Definiciones (`supabase-auth.ts`)
+- Tipos para usuarios (BaseUser, AdminUser, ClientUser)
+- Configuraciones de autenticación
+- Tipos de sesiones y respuestas
+- Manejo de errores
+
+## 4. Observaciones Importantes
+
+### Seguridad
+- Sistema robusto de verificación
+- Múltiples capas de protección
+- Manejo seguro de tokens
+
+### Arquitectura
+- Bien estructurada pero con duplicación
+- Múltiples implementaciones de estado
+- Configuración clara y mantenible

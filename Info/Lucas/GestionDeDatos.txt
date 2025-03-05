@@ -1,0 +1,98 @@
+# Análisis de Gestión de Datos - Panel Administrativo Padel
+
+## 1. Situación Actual
+
+### 1.1 Estructura de la Aplicación
+- Aplicación Next.js con React Query para gestión de estado y caché
+- Componentes principales: ClassesTable, CompanyLinkSection, PackagesTable
+- Servicios: useClasses, usePackages, useCompanyLink
+- Sistema de autenticación con Supabase
+
+### 1.2 Problemas Identificados
+1. Recarga innecesaria de datos:
+   - Al navegar entre pestañas
+   - Al salir y volver a la pestaña
+   - Al cambiar de ruta y regresar
+
+2. Gestión ineficiente de caché:
+   - Invalidación agresiva de queries
+   - No se aprovecha el sistema de caché de React Query
+   - Múltiples llamadas innecesarias a Supabase
+
+3. Configuración React Query:
+   - Falta de configuración global optimizada
+   - No se aprovechan características como staleTime y cacheTime
+   - Ausencia de estrategias de prefetching
+
+## 2. Análisis de Componentes
+
+### 2.1 Página Principal (page.tsx)
+- Invalidación manual de queries en useEffect
+- No hay coordinación entre componentes para la carga de datos
+- Posible waterfall de requests
+
+### 2.2 Componentes de Datos
+- ClassesTable: Carga independiente de datos
+- CompanyLinkSection: Estado local con useEffect
+- PackagesTable: Gestión separada de caché
+
+### 2.3 Custom Hooks
+- useClasses: Configuración básica de staleTime
+- usePackages: Manejo independiente de caché
+- useCompanyLink: No utiliza React Query
+
+## 3. Impacto en el Rendimiento
+
+### 3.1 Servidor
+- Múltiples llamadas innecesarias a Supabase
+- Sobrecarga en el servidor
+- Consumo excesivo de recursos
+
+### 3.2 Cliente
+- Experiencia de usuario subóptima
+- Estados de carga frecuentes
+- Posible parpadeo de UI
+
+## 4. Áreas de Mejora
+
+### 4.1 Configuración React Query
+- Implementar configuración global optimizada
+- Establecer políticas de staleTime y cacheTime
+- Configurar estrategias de prefetching
+
+### 4.2 Gestión de Caché
+- Implementar invalidación selectiva
+- Coordinar la carga de datos entre componentes
+- Optimizar el uso de background updates
+
+### 4.3 Optimización de Recursos
+- Reducir llamadas a Supabase
+- Implementar estrategias de revalidación
+- Mejorar la gestión del estado compartido
+
+## 5. Consideraciones para la Solución
+
+### 5.1 Prioridades
+1. Optimizar configuración global de React Query
+2. Implementar estrategias de caché efectivas
+3. Reducir llamadas innecesarias al servidor
+4. Mejorar la experiencia de usuario
+
+### 5.2 Aspectos Técnicos
+- Revisar queryClient configuration
+- Implementar HydrationBoundary
+- Optimizar query invalidation
+- Coordinar data fetching
+
+### 5.3 Métricas de Éxito
+- Reducción de llamadas al servidor
+- Mejora en tiempos de carga
+- Optimización de recursos
+- Mejor experiencia de usuario
+
+## 6. Próximos Pasos
+1. Implementar configuración optimizada de React Query
+2. Refactorizar hooks de datos
+3. Implementar estrategias de prefetching
+4. Optimizar invalidación de caché
+5. Validar y medir mejoras

@@ -1,0 +1,39 @@
+## Contexto sobre la Gestión de Zonas Horarias en el Sistema de Reservas
+
+Actualmente, estamos integrando la funcionalidad de zonas horarias en nuestro sistema de reservas, dado que el software será lanzado en Europa. Las empresas que adquieren nuestro software pueden tener múltiples "sedes", y cada sede tiene la opción de seleccionar su propia zona horaria.
+
+### Proceso de Configuración de la Sede
+Durante el proceso de onboarding, específicamente en el paso `BranchesStep.tsx`, los usuarios pueden elegir la zona horaria para cada sede. Esta información se guarda en la tabla `sedes` de Supabase, lo que permite que cada sede tenga su propia configuración de zona horaria.
+
+### Manejo de Reservas y Zonas Horarias
+El sistema de reservas de canchas y clases debe funcionar correctamente con las zonas horarias configuradas. El enfoque que estamos implementando es el siguiente:
+1. Al crear una reserva, se toma la hora en la zona horaria de la sede y se transforma a UTC antes de almacenarla en la tabla `bookings`.
+2. Al mostrar las reservas en el panel, se extraen los datos en UTC y se convierten a la zona horaria de la sede correspondiente.
+
+### Manejo de Horarios Disponibles y Zona Horaria
+
+La gestión de horarios disponibles para las reservas se realiza a través del hook `useBusinessHours`. Este hook obtiene la información de horarios de la sede desde la tabla `sedes`, incluyendo la configuración de `opening_hours` y la `timezone`.
+
+- **Validación de Horarios**: Se verifica si hay horarios configurados para el día de la semana solicitado. Si no hay, se lanza un error, asegurando que se manejen adecuadamente los casos donde no se han definido horarios.
+
+- **Conversión de Días**: Se utiliza un mapeo de días en español a inglés para facilitar la consulta de horarios.
+
+- **Cálculo de Horarios**: Se determina el horario más temprano y más tardío a partir de los rangos de tiempo disponibles, lo que permite mostrar los horarios de apertura de la sede.
+
+- **Manejo de la Zona Horaria**: La zona horaria se almacena y se utiliza para las conversiones, lo que es crucial para manejar correctamente los cambios de horario de verano (DST).
+
+- **Uso de `useQuery`**: La implementación de `useQuery` de TanStack Query permite manejar el estado de carga y error de manera eficiente, manteniendo la interfaz de usuario reactiva y gestionando adecuadamente los datos en caché.
+
+### Mejores Prácticas
+Estamos buscando las mejores prácticas para manejar las zonas horarias, asegurando que:
+- La zona horaria se valide correctamente al ser seleccionada por el usuario.
+- Se utilicen librerías adecuadas como `date-fns` y `date-fns-tz` para las conversiones de tiempo.
+- Se manejen adecuadamente los errores en las conversiones y validaciones.
+
+### Consideraciones sobre el Horario de Verano
+Es importante tener en cuenta los cambios de horario de verano (DST) al manejar reservas. Para evitar problemas en reservas futuras:
+- **Guardar la zona horaria de la sede** junto con la reserva (por ejemplo, `Europe/Madrid`).
+- **Convertir correctamente según la fecha de la reserva** al mostrar en el panel, utilizando librerías como `date-fns-tz` que detectan automáticamente el horario de verano según la fecha de la reserva.
+
+### Objetivo
+Nuestro objetivo es garantizar que el sistema funcione de manera precisa y eficiente, evitando errores comunes relacionados con el manejo de fechas y horas. Para ello, utilizamos razonamiento en cadena y análisis de los archivos del contexto para asegurar que cada paso del proceso esté bien fundamentado y documentado.

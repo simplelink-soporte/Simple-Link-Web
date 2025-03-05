@@ -1,0 +1,212 @@
+Tienes razón. Replanteemos la estrategia enfocándonos exclusivamente en la cuenta conectada, ya que es donde realmente necesitamos gestionar los métodos de pago.
+
+### 1. Análisis del Flujo Ideal
+
+1. **Inicialización de Stripe**:
+```typescript
+// En el componente padre o provider
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!, 
+  { 
+    stripeAccount: stripeAccountId // Inicializar directamente con la cuenta conectada
+  }
+);
+```
+
+2. **Estructura del Flujo**:
+```mermaid
+graph TD
+    A[Inicializar Stripe con cuenta conectada] --> B[Crear SetupIntent en cuenta conectada]
+    B --> C[Crear Elements en contexto de cuenta conectada]
+    C --> D[Confirmar SetupIntent directamente en cuenta conectada]
+    D --> E[PaymentMethod se crea automáticamente en cuenta conectada]
+```
+
+### 2. Implementación Propuesta
+
+1. **Modificación del Provider de Stripe**:
+```typescript
+// components/providers/stripe-provider.tsx
+export function StripeProvider({ 
+  stripeAccountId,
+  children 
+}: StripeProviderProps) {
+  const [stripePromise] = useState(() => 
+    loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!, {
+      stripeAccount: stripeAccountId
+    })
+  );
+
+  return (
+    <Elements stripe={stripePromise}>
+      {children}
+    </Elements>
+  );
+}
+```
+
+2. **Simplificación del CardSetupForm**:
+```typescript
+// components/CardSetupForm.tsx
+export function CardSetupForm({
+  stripeAccountId,
+  onSuccess,
+  onError
+}: CardSetupFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    try {
+      // 1. Crear SetupIntent
+      const setupIntentResponse = await fetch('/api/stripe/setup-intent', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Stripe-Account': stripeAccountId
+        },
+        body: JSON.stringify({ 
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      const { clientSecret } = await setupIntentResponse.json();
+
+      // 2. Confirmar SetupIntent (esto creará el PaymentMethod automáticamente)
+      const result = await stripe!.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card: elements!.getElement(CardNumberElement)!,
+          billing_details: {}
+        }
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      onSuccess(result.setupIntent.payment_method);
+    } catch (error) {
+      console.error('Error:', error);
+      onError(error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* ... resto del formulario ... */}
+    </form>
+  );
+}
+```
+
+3. **Simplificación del Servicio de SetupIntent**:
+```typescript
+// services/stripe-setup-intent.service.ts
+export class StripeSetupIntentService {
+  static async create({
+    stripeAccountId,
+    requestId = createId()
+  }: SetupIntentOptions) {
+    console.log(`📝 [${requestId}] Iniciando creación de Setup Intent`);
+
+    try {
+      const setupIntent = await stripe.setupIntents.create(
+        {
+          payment_method_types: ['card'],
+          usage: 'off_session',
+          metadata: {
+            requestId,
+            createdAt: new Date().toISOString()
+          }
+        },
+        {
+          stripeAccount: stripeAccountId
+        }
+      );
+
+      console.log(`✅ [${requestId}] Setup Intent creado:`, {
+        setupIntentId: setupIntent.id,
+        status: setupIntent.status
+      });
+
+      return {
+        setupIntentId: setupIntent.id,
+        clientSecret: setupIntent.client_secret,
+        status: setupIntent.status
+      };
+    } catch (error) {
+      console.error(`❌ [${requestId}] Error:`, error);
+      throw error;
+    }
+  }
+}
+```
+
+### 3. Ventajas de esta Estrategia
+
+1. **Simplicidad**:
+   - Todo ocurre en el contexto de la cuenta conectada
+   - No hay necesidad de transferir o adjuntar PaymentMethods
+   - Flujo más directo y menos propenso a errores
+
+2. **Seguridad**:
+   - Los datos de la tarjeta nunca tocan nuestro servidor
+   - Todo el proceso ocurre en el contexto correcto
+   - Mejor trazabilidad
+
+3. **Mantenibilidad**:
+   - Menos código para mantener
+   - Flujo más claro y directo
+   - Mejor separación de responsabilidades
+
+### 4. Consideraciones Importantes
+
+1. **Inicialización**:
+   - Stripe.js debe inicializarse con `stripeAccount` desde el principio
+   - Esto asegura que todas las operaciones ocurran en el contexto correcto
+
+2. **Manejo de Errores**:
+   - Implementar retry logic para operaciones críticas
+   - Logging detallado en cada paso
+   - Mensajes de error claros para el usuario
+
+3. **Validaciones**:
+   - Verificar siempre que `stripeAccountId` esté presente
+   - Validar el estado de la cuenta conectada
+   - Asegurar que los headers correctos estén presentes en las llamadas API
+
+### 5. Mejores Prácticas Adicionales
+
+1. **Logging**:
+```typescript
+// Implementar un sistema de logging consistente
+const loggerService = {
+  info: (requestId: string, message: string, data?: any) => {
+    console.log(`ℹ️ [${requestId}]`, message, data || '');
+  },
+  error: (requestId: string, message: string, error: any) => {
+    console.error(`❌ [${requestId}]`, message, error);
+  },
+  success: (requestId: string, message: string, data?: any) => {
+    console.log(`✅ [${requestId}]`, message, data || '');
+  }
+};
+```
+
+2. **Validaciones de Cuenta**:
+```typescript
+// Middleware para validar cuenta conectada
+async function validateConnectedAccount(
+  req: Request,
+  stripeAccountId: string
+) {
+  const account = await stripe.accounts.retrieve(stripeAccountId);
+  if (!account || account.capabilities?.card_payments !== 'active') {
+    throw new Error('Cuenta no válida o sin capacidades necesarias');
+  }
+  return account;
+}
+```
+

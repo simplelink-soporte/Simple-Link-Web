@@ -1,0 +1,381 @@
+-- Información básica de la tabla
+  [
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "organization_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "name",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "address",
+    "ordinal_position": 4,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "phone",
+    "ordinal_position": 5,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "manager_id",
+    "ordinal_position": 6,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "opening_hours",
+    "ordinal_position": 7,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "is_active",
+    "ordinal_position": 8,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "settings",
+    "ordinal_position": 9,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "created_at",
+    "ordinal_position": 10,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "updated_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "empresa_id",
+    "ordinal_position": 12,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "sedes",
+    "column_name": "timezone",
+    "ordinal_position": 13,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'UTC'::text"
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "sedes_pkey",
+    "indexdef": "CREATE UNIQUE INDEX sedes_pkey ON public.sedes USING btree (id)"
+  },
+  {
+    "indexname": "idx_sedes_empresa_id",
+    "indexdef": "CREATE INDEX idx_sedes_empresa_id ON public.sedes USING btree (empresa_id)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "fk_sedes_empresa",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "sedes_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "sedes_organization_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "sedes_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "2200_31234_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_31234_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_31234_12_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "organization_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'sedes'
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32835",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32836",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32491",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32492",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32634",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_setnull_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_setnull_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_setnull_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32635",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32861",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32862",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_31250",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_31251",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "set_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "sedes",
+    "table_schema": "public",
+    "function_name": "handle_updated_at",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.handle_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin\r\n  new.updated_at = now();\r\n  return new;\r\nend;\r\n$function$\n"
+  }
+]
+
+-- Listar las políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Enable delete for all users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 122 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Enable insert access for all users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 922 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}"
+  },
+  {
+    "policy_name": "Enable read access for all users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 820 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Enable update access for all users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 1019 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  }
+]

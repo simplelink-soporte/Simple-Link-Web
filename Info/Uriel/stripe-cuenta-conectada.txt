@@ -1,0 +1,78 @@
+/*
+Estrategia de Integración: Uso Exclusivo de la Cuenta Conectada en Stripe
+
+--------------------------------------------------------------------
+1. Objetivo y Contexto:
+--------------------------------------------------------------------
+- Esta estrategia define la razón y métodos para que todas las operaciones relacionadas con pagos (SetupIntent, creación y confirmación de PaymentMethods, etc.) se realicen únicamente en el contexto de la cuenta conectada y no en la cuenta de la plataforma.
+- El panel administrativo (administrative panel) del sistema de alquiler de pistas de pádel utiliza Stripe Connect, donde cada club debe gestionar sus propios métodos de pago. Utilizar la cuenta de la plataforma para almacenar o confirmar métodos de pago ocasiona errores y confusiones, ya que los PaymentMethods se crean con la clave pública de la plataforma.
+
+--------------------------------------------------------------------
+2. ¿Por qué utilizar la cuenta conectada exclusivamente?
+--------------------------------------------------------------------
+- **Consistencia en el Contexto:**
+  Al inicializar Stripe y crear recursos (como SetupIntents y PaymentMethods) utilizando el parámetro 'stripeAccount', garantizamos que todos los recursos se asocien a la cuenta conectada del club. Esto es fundamental, ya que Stripe exige que un PaymentMethod utilizado en una confirmación pertenezca a la misma cuenta (https://docs.stripe.com/connect/payment-methods#attaching-payment-methods).
+
+- **Error al Utilizar la Cuenta de la Plataforma:**
+  En el flujo actual, si el PaymentMethod se crea sin el contexto de la cuenta conectada (por ejemplo, en CardSetupForm.tsx), se obtiene un error: "No such PaymentMethod...". Esto indica que el PaymentMethod fue creado en la cuenta de la plataforma y no en la cuenta conectada.
+
+- **Seguridad y Trazabilidad:**
+  Mantener la coherencia en el contexto evita problemas de seguridad y facilita el seguimiento (logging). Todas las transacciones se registran correctamente en el contexto del club, lo que simplifica auditorías y debugging.
+
+--------------------------------------------------------------------
+3. Estrategia Completa y Flujo de Implementación:
+--------------------------------------------------------------------
+A continuación se describe el flujo ideal:
+
+A. Inicialización exclusiva de la cuenta conectada:
+   - En el proveedor de Stripe (por ejemplo, en el componente StripeProvider), se utiliza loadStripe con el parámetro "stripeAccount":
+     loadStripe(PUBLISHABLE_KEY, { stripeAccount: stripeAccountId });
+   - Esto asegura que cualquier operación con Elements o confirmaciones se realice en el contexto adecuado.
+
+B. Creación del SetupIntent:
+   - El endpoint /api/stripe/setup-intent debe crear el SetupIntent utilizando la clave secreta y pasando el parámetro { stripeAccount: stripeAccountId }.
+   - Ejemplo en el servicio (StripeSetupIntentService):
+     stripe.setupIntents.create({ payment_method_types: ['card'], usage: 'off_session', ... }, { stripeAccount: stripeAccountId });
+
+C. Confirmación del SetupIntent y Creación de PaymentMethod:
+   - En el frontend, en componentes como CardSetupForm.tsx o GuaranteeCardForm, se debe confirmar el SetupIntent utilizando métodos como stripe.confirmCardSetup. Aquí se asegura que los PaymentMethods se asocien mediante el mismo stripeAccountId.
+   - Es crítico que, en todas las llamadas (tanto en creación como en confirmación), se incluya el header 'Stripe-Account' con el stripeAccountId correcto.
+
+D. Validaciones y Manejo de Errores:
+   - Se deben implementar validaciones para confirmar que el stripeAccountId es válido y que la cuenta conectada tiene las capacidades necesarias (por ejemplo, charges_enabled).
+   - Utilizar logging detallado en cada paso (ver loggerService en el código base) para facilitar el debugging.
+
+--------------------------------------------------------------------
+4. Archivos y Código Base Relacionados:
+--------------------------------------------------------------------
+- **CardSetupForm.tsx:** Responsable de capturar los datos de la tarjeta y confirmar el SetupIntent. Se modifica para incluir el stripeAccount en la llamada a createPaymentMethod y en las solicitudes a la API.
+
+- **GuaranteeCardForm.tsx:** Similar a CardSetupForm, pero enfocado en la garantía. Se debe asegurar que las confirmaciones se realicen en el contexto de la cuenta conectada.
+
+- **StripeSetupIntentService (stripe-setup-intent.service.ts):** Servicio encargado de crear y confirmar SetupIntents utilizando la cuenta conectada (pasando stripeAccount en cada llamada a la API de Stripe).
+
+- **Endpoints de API (/api/stripe/setup-intent y /api/stripe/setup-intent/[id]/confirm):** Deben esperar el header 'Stripe-Account' y pasar dicho valor en las llamadas a las APIs de Stripe.
+
+- **Documentación Relevante:**
+   - [Stripe - Inicialización de Stripe.js con stripeAccount](https://docs.stripe.com/js/initializing#init_stripe_js-stripe-account)
+   - [Stripe - Adquisición y Administración de Payment Methods en Cuentas Conectadas](https://docs.stripe.com/connect/payment-methods#attaching-payment-methods)
+
+--------------------------------------------------------------------
+5. Conclusión y Beneficios:
+--------------------------------------------------------------------
+- **Integración Sencilla y Clara:** Utilizar siempre la cuenta conectada simplifica el flujo y reduce errores de contexto.
+- **Mejor Seguridad:** Evita confusiones y errores de autenticación entre la cuenta de la plataforma y la cuenta conectada.
+- **Mantenimiento y Escalabilidad:** Al tener un flujo unificado en el contexto correcto, el sistema es más fácil de mantener, auditar y escalar a medida que crece la base de usuarios.
+
+Esta estrategia garantiza que todas las operaciones de pago se realicen correctamente en la cuenta conectada, manteniendo la integridad y seguridad de las transacciones.
+
+*/
+
+
+Formulario Público
+└─ empresaId (del club)
+   └─ useStripeConfig
+      └─ Obtiene configuración de Stripe del club
+         └─ StripeProvider
+            └─ Inicializa Stripe con la cuenta del club
+               └─ Componentes de pago

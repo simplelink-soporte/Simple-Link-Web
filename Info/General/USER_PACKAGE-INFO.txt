@@ -1,0 +1,255 @@
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "user_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "package_id",
+    "ordinal_position": 3,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "sessions_left",
+    "ordinal_position": 4,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "expires_at",
+    "ordinal_position": 5,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "status",
+    "ordinal_position": 6,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'active'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "created_at",
+    "ordinal_position": 7,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "user_packages",
+    "column_name": "updated_at",
+    "ordinal_position": 8,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  }
+]
+
+-- Índices de la tabla
+
+[
+  {
+    "indexname": "user_packages_pkey",
+    "indexdef": "CREATE UNIQUE INDEX user_packages_pkey ON public.user_packages USING btree (id)"
+  }
+]
+
+-- Restricciones
+
+
+[
+  {
+    "constraint_name": "user_packages_package_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "user_packages_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "user_packages_user_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "2200_222606_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_222606_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_222606_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_222606_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_222606_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_222606_6_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+
+-- Relaciones (Llaves foráneas)
+
+
+[
+  {
+    "foreign_key": "user_id",
+    "referenced_table": "usuarios",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "package_id",
+    "referenced_table": "packages",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 
+
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_222620",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "user_packages",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_222621",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "user_packages",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_222625",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "user_packages",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_222626",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "user_packages",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]
+
+-- Listar las políticas asociadas con la tabla
+
+[
+  {
+    "policy_name": "Allow users to delete their own packages",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 709} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 722}) :location 720}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Allow users to insert their own packages",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 930} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 943}) :location 941}"
+  },
+  {
+    "policy_name": "Allow users to select their own packages",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 305} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 318}) :location 316}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Allow users to update their own packages",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 508} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 521}) :location 519}",
+    "with_check_expression": null
+  }
+]
+

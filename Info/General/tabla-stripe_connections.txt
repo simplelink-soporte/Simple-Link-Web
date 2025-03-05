@@ -1,0 +1,314 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "empresa_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "stripe_account_id",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "stripe_account_email",
+    "ordinal_position": 4,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "account_status",
+    "ordinal_position": 5,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'pending'::stripe_account_status"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "charges_enabled",
+    "ordinal_position": 6,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "false"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "payouts_enabled",
+    "ordinal_position": 7,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "false"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "requirements",
+    "ordinal_position": 8,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "created_at",
+    "ordinal_position": 9,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "updated_at",
+    "ordinal_position": 10,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "stripe_connections",
+    "column_name": "last_webhook_received_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "stripe_connections_pkey",
+    "indexdef": "CREATE UNIQUE INDEX stripe_connections_pkey ON public.stripe_connections USING btree (id)"
+  },
+  {
+    "indexname": "stripe_connections_stripe_account_id_key",
+    "indexdef": "CREATE UNIQUE INDEX stripe_connections_stripe_account_id_key ON public.stripe_connections USING btree (stripe_account_id)"
+  },
+  {
+    "indexname": "unique_empresa_connection",
+    "indexdef": "CREATE UNIQUE INDEX unique_empresa_connection ON public.stripe_connections USING btree (empresa_id)"
+  },
+  {
+    "indexname": "idx_stripe_connections_empresa_id",
+    "indexdef": "CREATE INDEX idx_stripe_connections_empresa_id ON public.stripe_connections USING btree (empresa_id)"
+  },
+  {
+    "indexname": "idx_stripe_connections_account_status",
+    "indexdef": "CREATE INDEX idx_stripe_connections_account_status ON public.stripe_connections USING btree (account_status)"
+  },
+  {
+    "indexname": "idx_stripe_connections_stripe_account_id",
+    "indexdef": "CREATE INDEX idx_stripe_connections_stripe_account_id ON public.stripe_connections USING btree (stripe_account_id)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "stripe_connections_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "stripe_connections_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "stripe_connections_stripe_account_id_key",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "unique_empresa_connection",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "2200_135315_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_135315_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_135315_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_135315_9_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_135315_10_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla stripe_connections
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_135335",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "stripe_connections",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_135336",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "stripe_connections",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_stripe_connections_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "stripe_connections",
+    "table_schema": "public",
+    "function_name": "update_stripe_connections_updated_at",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_stripe_connections_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = TIMEZONE('utc'::text, NOW());\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  }
+]
+
+-- Listado de las políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Permitir inserción anónima",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 196 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}"
+  },
+  {
+    "policy_name": "Empresas pueden ver sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 3079} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 3090} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname empresas :colnames (\"id\" \"name\" \"business_name\" \"\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"\" \"\" \"auth_user_id\" \"plan_type\" \"\" \"\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 3164} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 2 :location 3169}) :location 3167}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 3111} :resno 1 :resname auth_user_id :ressortgroupref 0 :resorigtbl 29374 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 3090}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Empresas pueden crear sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 3396} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 3407} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname empresas :colnames (\"id\" \"name\" \"business_name\" \"\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"\" \"\" \"auth_user_id\" \"plan_type\" \"\" \"\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 3481} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 2 :location 3486}) :location 3484}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 3428} :resno 1 :resname auth_user_id :ressortgroupref 0 :resorigtbl 29374 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 3407}"
+  },
+  {
+    "policy_name": "Empresas pueden actualizar sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 3717} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 3728} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname empresas :colnames (\"id\" \"name\" \"business_name\" \"\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"\" \"\" \"auth_user_id\" \"plan_type\" \"\" \"\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 3802} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 2 :location 3807}) :location 3805}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 3749} :resno 1 :resname auth_user_id :ressortgroupref 0 :resorigtbl 29374 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 3728}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Empresas pueden eliminar sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 4034} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 4045} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname empresas :colnames (\"id\" \"name\" \"business_name\" \"\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"\" \"\" \"auth_user_id\" \"plan_type\" \"\" \"\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 4119} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 2 :location 4124}) :location 4122}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 4066} :resno 1 :resname auth_user_id :ressortgroupref 0 :resorigtbl 29374 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 4045}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden ver sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{BOOLEXPR :boolop or :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 332} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 345}) :location 343} {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 359} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull false :location 372 :constvalue 16 [ 54 181 111 33 243 248 74 240 136 208 152 179 41 117 169 218 ]}) :location 370}) :location 356}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden eliminar sus propias conexiones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{BOOLEXPR :boolop or :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 547} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 560}) :location 558} {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 574} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull false :location 587 :constvalue 16 [ 54 181 111 33 243 248 74 240 136 208 152 179 41 117 169 218 ]}) :location 585}) :location 571}",
+    "with_check_expression": null
+  }
+]

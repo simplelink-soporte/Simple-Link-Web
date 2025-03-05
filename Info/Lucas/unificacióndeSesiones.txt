@@ -1,0 +1,171 @@
+# Plan de Autenticación y Control de Acceso
+
+## 1. Objetivo
+Implementar un sistema de autenticación simple y robusto que:
+- Mantenga una única sesión por navegador
+- Proporcione control de acceso basado en roles
+- Permita a administradores acceder a todas las áreas
+- Restrinja a clientes solo a la sección de clases
+
+## 2. Modelo de Autenticación
+
+### 2.1 Tipos y Interfaces
+```typescript
+interface AuthUser {
+  id: string;
+  email: string;
+  role: 'admin' | 'client';
+  metadata: {
+    name: string;
+    avatar_url?: string;
+  };
+}
+
+interface AuthSession {
+  user: AuthUser;
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+}
+```
+
+### 2.2 Permisos por Rol
+```typescript
+const ROLE_ACCESS = {
+  admin: {
+    routes: ['/', '/admin/*', '/clases/*'],
+    capabilities: ['manage_all', 'view_all', 'book_classes']
+  },
+  client: {
+    routes: ['/', '/clases/*'],
+    capabilities: ['view_classes', 'book_classes']
+  }
+};
+```
+
+## 3. Estructura del Proyecto
+
+### 3.1 Archivos a Mantener/Modificar
+```
+src/
+  ├── contexts/
+  │   └── AuthContext.tsx    # Contexto único de autenticación
+  ├── lib/
+  │   └── supabase.ts       # Cliente Supabase único
+  ├── config/
+  │   └── auth.config.ts    # Configuración de autenticación
+  └── middleware.ts         # Middleware de autenticación
+```
+
+### 3.2 Archivos a Eliminar
+```
+src/
+  ├── contexts/
+  │   ├── AdminAuthContext.tsx    # (eliminar)
+  │   └── ClientAuthContext.tsx   # (eliminar)
+  ├── hooks/
+  │   ├── useAdminAuth.ts        # (eliminar)
+  │   └── useClientAuth.ts       # (eliminar)
+  └── supabase/
+      ├── admin.ts               # (eliminar)
+      └── client.ts             # (eliminar)
+```
+
+## 4. Plan de Implementación
+
+### 4.1 Fase 1: Limpieza
+- Eliminar archivos duplicados de autenticación
+- Consolidar configuraciones en un único lugar
+- Limpiar imports y referencias obsoletas
+
+### 4.2 Fase 2: Implementación Core
+1. **Contexto de Autenticación**
+```typescript
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  // Manejar cambios de autenticación
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const { data: userData } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          setUser({
+            ...session.user,
+            role: userData.role
+          });
+          setSession(session);
+        } else {
+          setUser(null);
+          setSession(null);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // ... resto de la implementación
+}
+```
+
+2. **Middleware de Autorización**
+```typescript
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const supabase = createMiddlewareClient({ req, res });
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // Rutas públicas
+  if (isPublicRoute(pathname)) return NextResponse.next();
+
+  // Rutas protegidas
+  if (!session) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  // Rutas de admin
+  if (pathname.startsWith('/admin') && session.user.role !== 'admin') {
+    return NextResponse.redirect(new URL('/unauthorized', req.url));
+  }
+
+  return NextResponse.next();
+}
+```
+
+### 4.3 Fase 3: Migración de Componentes
+1. Actualizar componentes para usar el nuevo contexto
+2. Implementar nuevos guards de rutas
+3. Actualizar lógica de navegación
+
+## 5. Consideraciones de Seguridad
+
+1. **Manejo de Sesión**
+   - Cookie única en la raíz "/"
+   - Renovación automática de tokens
+   - Limpieza apropiada al cerrar sesión
+
+2. **Control de Acceso**
+   - Verificación de roles en el servidor
+   - Validación en rutas protegidas
+   - Manejo de errores consistente
+
+## 6. Pruebas y Validación
+
+1. **Escenarios de Prueba**
+   - Login como admin y acceso a todas las rutas
+   - Login como cliente y restricción a /clases
+   - Intentos de acceso no autorizado
+   - Cierre de sesión y limpieza
+
+2. **Puntos de Verificación**
+   - Redirecciones correctas
+   - Persistencia de sesión
+   - Manejo de errores
+   - Experiencia de usuario

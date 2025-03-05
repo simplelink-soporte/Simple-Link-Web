@@ -1,0 +1,84 @@
+# Solución Implementada para el Manejo de Zonas Horarias
+
+## 1. Almacenamiento en Base de Datos
+- Todas las reservas se almacenan en UTC en la tabla "bookings"
+- Campos relevantes: date (YYYY-MM-DD), start_time (HH:mm:ss), end_time (HH:mm:ss)
+- La zona horaria de cada sede se almacena en la tabla "sedes" (campo: timezone)
+
+## 2. Creación de Reservas (bookingService.ts)
+### Proceso de Transformación Local → UTC
+1. Se obtiene la zona horaria de la sede desde BranchContext
+2. Se reciben los horarios en la zona horaria local de la sede
+3. Transformación a UTC antes de guardar:
+```typescript
+const startDateTime = DateTime.fromFormat(startTime, 'HH:mm', {
+    zone: branchTimezone
+}).setZone('UTC');
+
+const endDateTime = DateTime.fromFormat(endTime, 'HH:mm', {
+    zone: branchTimezone
+}).setZone('UTC');
+
+// Se guarda en formato UTC
+const bookingData = {
+    start_time: startDateTime.toFormat('HH:mm:ss'),
+    end_time: endDateTime.toFormat('HH:mm:ss'),
+    // ... otros campos
+};
+```
+
+## 3. Visualización de Reservas (BookingsTable.tsx)
+### Proceso de Transformación UTC → Local
+1. Se obtienen las reservas en UTC desde la base de datos
+2. Se transforman a la zona horaria de la sede usando useMemo:
+```typescript
+const transformedBookings = useMemo(() => {
+    if (!bookings || !businessHours?.timezone) return [];
+    
+    // Solo procesar reservas activas
+    const activeBookings = bookings.filter(
+        booking => booking.paymentStatus !== 'cancelled'
+    );
+
+    return activeBookings.map(booking => {
+        // Convertir de UTC a zona horaria local
+        const startDateTime = DateTime.fromFormat(
+            booking.startTime,
+            'HH:mm:ss',
+            { zone: 'UTC' }
+        ).setZone(businessHours.timezone);
+
+        const endDateTime = DateTime.fromFormat(
+            booking.endTime,
+            'HH:mm:ss',
+            { zone: 'UTC' }
+        ).setZone(businessHours.timezone);
+
+        return {
+            ...booking,
+            startTime: startDateTime.toFormat('HH:mm'),
+            endTime: endDateTime.toFormat('HH:mm')
+        };
+    });
+}, [bookings, businessHours?.timezone]);
+```
+
+## 4. Optimizaciones Implementadas
+1. **Memorización de Transformaciones:**
+   - Uso de useMemo para evitar transformaciones innecesarias
+   - Solo se recalculan cuando cambian las reservas o la zona horaria
+
+2. **Filtrado de Datos:**
+   - Se procesan solo reservas activas (no canceladas)
+   - Se evitan transformaciones innecesarias
+
+3. **Consistencia de Datos:**
+   - Todas las operaciones de fecha/hora utilizan Luxon
+   - Se mantiene UTC como formato estándar en la base de datos
+   - Las transformaciones se realizan solo en los puntos de entrada/salida
+
+## 5. Beneficios
+- Consistencia en el manejo de horarios entre diferentes zonas horarias
+- Reducción de errores en la visualización de reservas
+- Optimización del rendimiento al minimizar transformaciones
+- Mantenimiento más sencillo al centralizar la lógica de transformación

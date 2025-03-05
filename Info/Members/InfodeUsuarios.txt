@@ -1,0 +1,127 @@
+# Sistema de Gestión de Usuarios
+
+## Estructura de Datos
+
+### 1. Tablas Principales
+
+#### Tabla `usuarios` (public)
+- Almacena información personal y de contacto
+- Campos principales:
+  - `id`: UUID (PK)
+  - `nombre`: VARCHAR(255)
+  - `email`: VARCHAR(255) UNIQUE
+  - `dni`: VARCHAR(20)
+  - `telefono`: VARCHAR(20)
+  - `genero`: VARCHAR(20)
+  - `fecha_nacimiento`: DATE
+  - `direccion`: TEXT
+  - `ciudad`: VARCHAR(100)
+  - `pais`: VARCHAR(100)
+  - `estado`: VARCHAR(20) DEFAULT 'activo'
+  - `metadata`: JSONB
+  - `created_at`: TIMESTAMP
+  - `updated_at`: TIMESTAMP
+
+#### Tabla `vinculaciones` (public)
+- Gestiona relaciones usuario-empresa
+- Campos principales:
+  - `id`: UUID (PK)
+  - `user_id`: UUID (FK -> usuarios.id)
+  - `empresa_id`: UUID (FK -> empresas.id)
+  - `estado`: VARCHAR(20) DEFAULT 'activo'
+  - `metadata`: JSONB
+  - `created_at`: TIMESTAMP
+  - `updated_at`: TIMESTAMP
+- Índices:
+  - `vinculaciones_pkey`: Índice único en id
+  - `idx_vinculaciones_user_empresa`: Índice compuesto para búsquedas eficientes
+  - `unique_user_empresa_vinculacion`: Garantiza vinculación única por usuario-empresa
+
+### 2. Relaciones y Dependencias
+
+#### Paquetes de Usuario
+- Un usuario puede tener múltiples paquetes activos
+- Los paquetes están vinculados a empresas específicas
+- Se gestionan a través de la tabla `user_packages`
+
+## Panel Administrativo
+
+### 1. Vista Principal (/admin/dashboard/users)
+- Tabla de usuarios vinculados implementada en `MembersTable.tsx`
+- Características:
+  - Paginación del lado del cliente
+  - Filtros de búsqueda en tiempo real
+  - Columnas configurables:
+    - Nombre
+    - Email
+    - Teléfono
+    - Ciudad
+    - Fecha de registro
+  - Acciones por usuario:
+    - Ver detalles
+    - Editar información
+    - Eliminar (pendiente de implementación)
+
+### 2. Gestión de Usuarios
+
+#### Modal de Detalles (`MemberDetailsModal.tsx`)
+- Permite editar información básica:
+  - Nombre
+  - Teléfono
+  - Género
+  - Notas
+- Muestra paquetes activos del usuario
+- Validaciones en tiempo real
+- Feedback inmediato al usuario
+
+### 3. Hooks y Servicios
+
+#### useUsers
+- Gestiona la obtención de usuarios vinculados
+- Funcionalidades:
+  - Obtiene usuarios de la empresa actual
+  - Maneja estados de carga y error
+  - Implementa caché con React Query
+  - Revalidación automática de datos
+
+#### useVinculaciones
+- Gestiona las relaciones usuario-empresa
+- Características:
+  - Consulta vinculaciones activas
+  - Manejo de estados (activo por defecto)
+  - Validaciones de unicidad
+
+#### useUserPackages
+- Gestiona los paquetes del usuario
+- Características:
+  - Consulta paquetes activos
+  - Relación con empresas
+  - Manejo de estados y caducidad
+
+## Seguridad y Optimización
+
+### 1. Políticas de Seguridad
+- Implementadas en Supabase:
+  - "Usuarios pueden ver sus vinculaciones"
+  - "Empresas pueden ver sus vinculaciones"
+  - "Empresas pueden crear vinculaciones"
+
+### 2. Optimizaciones
+- Uso de React Query para caché
+- Índices optimizados en base de datos
+- Paginación para manejo eficiente de datos
+- Columnas configurables para reducir carga de datos
+
+### 3. Consideraciones UX
+- Feedback inmediato en operaciones
+- Validaciones en tiempo real
+- Interfaz responsiva
+- Modales interactivos con animaciones
+- Gestión de estados de carga
+
+## Pendientes y Mejoras Futuras
+1. Implementar eliminación de usuarios
+2. Expandir opciones de filtrado
+3. Implementar límites de usuarios por empresa
+4. Mejorar la gestión de paquetes
+5. Optimizar paginación del lado del servidor

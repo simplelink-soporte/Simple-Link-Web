@@ -1,0 +1,60 @@
+# Guía: Configuración Correcta de Cookies en Supabase con Next.js
+
+## Problema
+Las cookies de sesión se estaban guardando en la ruta raíz "/" en lugar de en rutas específicas ("/admin" o "/clases").
+
+## Solución
+La solución implica configurar correctamente las opciones de cookie al crear el cliente de Supabase.
+
+### 1. Configuración Correcta
+```typescript
+const supabaseClient = createClientComponentClient<Database>({
+  cookieOptions: {
+    name: 'sb-admin-auth-token',  // Nombre específico para el tipo de usuario
+    path: '/admin',               // Ruta específica donde la cookie será válida
+    sameSite: 'lax',             // Configuración de seguridad
+    secure: process.env.NODE_ENV === 'production'  // HTTPS en producción
+  }
+})
+```
+
+### 2. Mejores Prácticas
+1. **Separación de Clientes**:
+   - Crear clientes Supabase separados para diferentes tipos de usuarios
+   - Usar Singleton pattern para mantener una única instancia del cliente
+
+2. **Configuración de Cookies**:
+   - Nombre único para cada tipo de usuario
+   - PATH específico para limitar el alcance de la cookie
+   - Configuraciones de seguridad apropiadas (sameSite, secure)
+
+3. **Manejo de SSR**:
+   - Crear un cliente básico para SSR sin persistencia de sesión
+   - Manejar la creación del cliente solo en el lado del cliente
+
+4. **Limpieza de Cookies**:
+   - Asegurarse de limpiar las cookies con el mismo PATH que se usó para crearlas
+   - Limpiar tanto la cookie principal como la de token
+
+### 3. Estructura de Archivos
+```
+src/
+  ├── supabase/
+  │   ├── admin.ts     # Cliente para administradores (/admin)
+  │   ├── client.ts    # Cliente para usuarios (/clases)
+  │   └── default.ts   # Cliente por defecto (/)
+  └── config/
+      └── auth.config.ts  # Configuración centralizada
+```
+
+### 4. Puntos Clave
+- Las cookies deben configurarse al crear el cliente, no después
+- Cada tipo de usuario debe tener su propia configuración de cookies
+- El PATH de la cookie determina su alcance en la aplicación
+- La limpieza de cookies debe hacerse con el mismo PATH
+
+### 5. Validación
+Para verificar que las cookies se están guardando correctamente:
+1. Inspeccionar las cookies en las DevTools del navegador
+2. Verificar que el PATH sea el correcto
+3. Comprobar que las cookies solo sean accesibles en las rutas especificadas

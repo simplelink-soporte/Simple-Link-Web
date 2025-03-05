@@ -1,0 +1,242 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "empresa_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "slug",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "type",
+    "ordinal_position": 4,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "is_active",
+    "ordinal_position": 5,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "settings",
+    "ordinal_position": 6,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "created_at",
+    "ordinal_position": 7,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "company_links",
+    "column_name": "updated_at",
+    "ordinal_position": 8,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "company_links_pkey",
+    "indexdef": "CREATE UNIQUE INDEX company_links_pkey ON public.company_links USING btree (id)"
+  },
+  {
+    "indexname": "company_links_slug_key",
+    "indexdef": "CREATE UNIQUE INDEX company_links_slug_key ON public.company_links USING btree (slug)"
+  },
+  {
+    "indexname": "company_links_empresa_id_idx",
+    "indexdef": "CREATE INDEX company_links_empresa_id_idx ON public.company_links USING btree (empresa_id)"
+  },
+  {
+    "indexname": "company_links_slug_idx",
+    "indexdef": "CREATE INDEX company_links_slug_idx ON public.company_links USING btree (slug)"
+  },
+  {
+    "indexname": "company_links_type_idx",
+    "indexdef": "CREATE INDEX company_links_type_idx ON public.company_links USING btree (type)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "company_links_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "company_links_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "company_links_slug_key",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "company_links_type_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_7_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_195762_8_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  }
+]
+
+   -- Detalles de los triggers relacionados con la tabla 
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_195780",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "company_links",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_195781",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "company_links",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_company_links_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "company_links",
+    "table_schema": "public",
+    "function_name": "update_updated_at_column",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = TIMEZONE('utc', NOW());\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  }
+]
+
+-- Políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Allow authenticated insert",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 87} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 101 :constvalue 8 [ 32 0 0 0 97 110 111 110 ]}) :location 99}"
+  },
+  {
+    "policy_name": "Allow authenticated update",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 1534} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1548 :constvalue 17 [ 68 0 0 0 97 117 116 104 101 110 116 105 99 97 116 101 100 ]}) :location 1546}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Allow public read access",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 1302 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  }
+]

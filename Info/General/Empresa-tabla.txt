@@ -1,0 +1,589 @@
+-- Detalles de los triggers relacionados con la tabla 
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_74795",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_74796",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_128437",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_128438",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32833",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32834",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_195778",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_135333",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_135334",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32629",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32630",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "handle_new_adminprofile_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "handle_new_adminprofile",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.handle_new_adminprofile()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    -- Log para insert o update\r\n    RAISE NOTICE 'Procesando evento para empresa_id: %, auth_user_id: %', NEW.id, NEW.auth_user_id;\r\n\r\n    -- Si es una inserción, creamos un nuevo admin_profile\r\n    IF TG_OP = 'INSERT' THEN\r\n        INSERT INTO public.admin_profiles (\r\n            id,                -- ID del usuario de auth\r\n            organization_id,   -- ID de la empresa\r\n            first_name,        -- Nombre de la empresa (business_name)\r\n            role,              -- Rol fijo como 'admin'\r\n            permissions,       -- Permisos como jsonb\r\n            is_active          -- Estado activo\r\n        ) \r\n        SELECT\r\n            NEW.auth_user_id,\r\n            NEW.id,\r\n            COALESCE(NEW.business_name, 'Pendiente'),  -- Usamos 'Pendiente' si business_name está vacío\r\n            'admin',\r\n            '[\"all\"]'::jsonb,\r\n            true\r\n        WHERE NOT EXISTS (\r\n            SELECT 1 \r\n            FROM public.admin_profiles \r\n            WHERE id = NEW.auth_user_id\r\n        );\r\n\r\n        RAISE NOTICE 'Admin profile creado exitosamente';\r\n\r\n    -- Si es una actualización, sincronizamos el nombre\r\n    ELSIF TG_OP = 'UPDATE' AND NEW.business_name IS DISTINCT FROM OLD.business_name THEN\r\n        UPDATE public.admin_profiles\r\n        SET first_name = COALESCE(NEW.business_name, 'Pendiente')\r\n        WHERE id = NEW.auth_user_id;\r\n\r\n        RAISE NOTICE 'Admin profile actualizado exitosamente';\r\n    END IF;\r\n\r\n    RETURN NEW;\r\nEXCEPTION \r\n    WHEN OTHERS THEN\r\n        -- Log de error\r\n        RAISE NOTICE 'Error procesando admin_profile: %', SQLERRM;\r\n        RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32859",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_32860",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_170831",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_170832",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_177562",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_177563",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_195779",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_29456",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_restrict_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_restrict_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_restrict_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_29457",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_31248",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_31249",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_198935",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_198936",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "empresas",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "auth_user_id",
+    "referenced_table": "users",
+    "referenced_column": "id"
+  }
+]
+
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "name",
+    "ordinal_position": 2,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "business_name",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "email",
+    "ordinal_position": 5,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "phone",
+    "ordinal_position": 6,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "address",
+    "ordinal_position": 7,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "city",
+    "ordinal_position": 8,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "state",
+    "ordinal_position": 9,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "is_active",
+    "ordinal_position": 12,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "settings",
+    "ordinal_position": 13,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "created_at",
+    "ordinal_position": 14,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "updated_at",
+    "ordinal_position": 15,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "auth_user_id",
+    "ordinal_position": 18,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "plan_type",
+    "ordinal_position": 19,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'Free'::plans_types_enums"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "onboarding",
+    "ordinal_position": 22,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "empresas",
+    "column_name": "country",
+    "ordinal_position": 23,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "organizations_pkey",
+    "indexdef": "CREATE UNIQUE INDEX organizations_pkey ON public.empresas USING btree (id)"
+  },
+  {
+    "indexname": "idx_empresas_email",
+    "indexdef": "CREATE INDEX idx_empresas_email ON public.empresas USING btree (email)"
+  },
+  {
+    "indexname": "idx_empresas_is_active",
+    "indexdef": "CREATE INDEX idx_empresas_is_active ON public.empresas USING btree (is_active)"
+  },
+  {
+    "indexname": "empresas_user_id_key",
+    "indexdef": "CREATE UNIQUE INDEX empresas_user_id_key ON public.empresas USING btree (auth_user_id)"
+  },
+  {
+    "indexname": "idx_empresas_user_id",
+    "indexdef": "CREATE INDEX idx_empresas_user_id ON public.empresas USING btree (auth_user_id)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "empresas_auth_user_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "empresas_user_id_key",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "organizations_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "2200_29374_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_29374_2_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+
+-- Listar las políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Enable access for all",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 128 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Enable read access for all users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 230 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden ver su empresa",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 664} {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 677}) :location 675}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden insertar su empresa",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 792} {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 805}) :location 803}"
+  },
+  {
+    "policy_name": "Usuarios pueden actualizar su empresa",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 917} {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 930}) :location 928}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Administradores pueden ver todas las empresas",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 0 :subLinkId 0 :testexpr <> :operName <> :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias {ALIAS :aliasname u :colnames <>} :eref {ALIAS :aliasname u :colnames (\"id\" \"nombre\" \"email\" \"dni\" \"telefono\" \"genero\" \"fecha_nacimiento\" \"direccion\" \"ciudad\" \"pais\" \"metadata\" \"estado\" \"created_at\" \"updated_at\")} :rtekind 0 :relid 183257 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 18) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {BOOLEXPR :boolop and :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 1192} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 1199}) :location 1197} {OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({OPEXPR :opno 3477 :opfuncid 3214 :opresulttype 25 :opretset false :opcollid 100 :inputcollid 100 :args ({VAR :varno 1 :varattno 11 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 11 :location 1220} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1233 :constvalue 12 [ 48 0 0 0 105 115 95 97 100 109 105 110 ]}) :location 1230} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1246 :constvalue 8 [ 32 0 0 0 116 114 117 101 ]}) :location 1244}) :location 1216}} :targetList ({TARGETENTRY :expr {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 1155 :constvalue 4 [ 1 0 0 0 0 0 0 0 ]} :resno 1 :resname ?column? :ressortgroupref 0 :resorigtbl 0 :resorigcol 0 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 1134}",
+    "with_check_expression": null
+  }
+]

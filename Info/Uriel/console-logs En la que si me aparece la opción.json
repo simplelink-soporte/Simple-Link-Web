@@ -1,0 +1,68 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Datos sin procesar:",
+      {
+        "id": "94c5fb1e-6409-4170-9e0c-94c1240db68a",
+        "paymentType": "deposit",
+        "isValid": true,
+        "rawType": "string",
+        "timestamp": "2025-03-04T22:53:50.900Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Validación de paymentType:",
+      {
+        "original": "deposit",
+        "type": "string",
+        "isValid": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Datos sin procesar:",
+      {
+        "id": "94c5fb1e-6409-4170-9e0c-94c1240db68a",
+        "paymentType": "deposit",
+        "isValid": true,
+        "rawType": "string",
+        "timestamp": "2025-03-04T22:53:50.901Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Validación de paymentType:",
+      {
+        "original": "deposit",
+        "type": "string",
+        "isValid": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💾 Estado actual de la reserva:",
+      {
+        "id": "94c5fb1e-6409-4170-9e0c-94c1240db68a",
+        "paymentType": "deposit",
+        "isGuarantee": false,
+        "timestamp": "2025-03-04T22:53:50.922Z"
+      }
+    ]
+  }
+]

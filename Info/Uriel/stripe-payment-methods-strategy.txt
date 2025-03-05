@@ -1,0 +1,207 @@
+# Estrategia de Implementación: Sistema de Tarjetas Guardadas con Stripe Connect
+
+## 1. Estado Actual y Contexto
+
+### 1.1 Componentes Existentes
+- `stripe-customer.service.ts`: Maneja la creación y gestión de customers
+- `CardSetupForm.tsx`: Formulario para guardar tarjetas
+- `PaymentMethodModal.tsx`: Modal para gestionar métodos de pago
+- `StripeProvider.tsx`: Proveedor de contexto de Stripe
+
+### 1.2 Flujo Actual
+1. Usuario accede al formulario de pago
+2. Se obtiene el stripeAccountId del club
+3. Se crea/obtiene un customer usando stripe-customer.service.ts
+4. Se intenta guardar la tarjeta
+
+## 2. Requisitos y Preferencias del Cliente
+
+### 2.1 Requisitos Funcionales
+- Permitir guardar múltiples tarjetas (máximo 10)
+- No requerir verificación 3D Secure
+- Enfoque en pagos únicos (no recurrentes por ahora)
+- Guardar tarjetas sin necesidad de realizar un pago inmediato
+
+### 2.2 Requisitos Técnicos
+- Usar modo desarrollo con variables de entorno (.env.local)
+- Mantener compatibilidad con futura autenticación
+- Seguir el flujo de Stripe para "Save directly without charging"
+
+### 2.3 Consideraciones de UX
+- Proceso simple y directo
+- Feedback claro al usuario
+- Manejo de errores amigable
+
+## 3. Estrategia de Implementación
+
+### 3.1 Modificaciones Necesarias
+
+#### A. Base de Datos
+```sql
+-- Agregar campo para contar tarjetas guardadas
+ALTER TABLE stripe_customers
+ADD COLUMN IF NOT EXISTS saved_cards_count integer DEFAULT 0;
+
+-- Trigger para actualizar contador
+CREATE OR REPLACE FUNCTION update_saved_cards_count()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE stripe_customers
+  SET saved_cards_count = saved_cards_count + 1
+  WHERE stripe_customer_id = NEW.customer;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+#### B. Hook useStoredCards
+```typescript
+interface UseStoredCardsConfig {
+  maxCards?: number;
+  stripeAccountId: string;
+  customerId?: string;
+}
+
+function useStoredCards({
+  maxCards = 10,
+  stripeAccountId,
+  customerId
+}: UseStoredCardsConfig) {
+  // ... lógica existente ...
+
+  const addCard = async (paymentMethod: string) => {
+    if (cards.length >= maxCards) {
+      throw new Error(`No puedes guardar más de ${maxCards} tarjetas`);
+    }
+    // ... resto de la lógica
+  };
+}
+```
+
+### 3.2 Flujo de Guardado de Tarjetas
+
+1. **Preparación**:
+```typescript
+// 1. Obtener/Crear Customer
+const customer = await stripeCustomerService.getOrCreateCustomer(
+  userId,
+  stripeAccountId
+);
+
+// 2. Verificar límite de tarjetas
+if (customer.saved_cards_count >= 10) {
+  throw new Error('Límite de tarjetas alcanzado');
+}
+```
+
+2. **Setup Intent**:
+```typescript
+// 3. Crear Setup Intent
+const setupIntent = await stripe.setupIntents.create({
+  customer: customer.stripeCustomerId,
+  payment_method_types: ['card'],
+  usage: 'off_session'
+}, {
+  stripeAccount: stripeAccountId
+});
+```
+
+3. **Confirmación**:
+```typescript
+// 4. Confirmar Setup Intent
+const result = await stripe.confirmCardSetup(clientSecret, {
+  payment_method: {
+    card: elements.getElement(CardElement)!,
+  }
+});
+```
+
+### 3.3 Manejo de Errores
+
+```typescript
+const handleSetupError = (error: any) => {
+  const errorMessages = {
+    card_error: 'Error con la tarjeta',
+    validation_error: 'Error de validación',
+    rate_limit: 'Demasiados intentos, espera un momento',
+    invalid_request: 'Solicitud inválida'
+  };
+
+  return errorMessages[error.type] || 'Error al procesar la tarjeta';
+};
+```
+
+## 4. Mejores Prácticas a Implementar
+
+### 4.1 Seguridad
+- No almacenar datos sensibles de tarjetas
+- Usar tokens y payment methods de Stripe
+- Validar límites y permisos
+
+### 4.2 Performance
+- Lazy loading de componentes de Stripe
+- Caché de listado de tarjetas
+- Optimistic updates en UI
+
+### 4.3 UX/UI
+- Indicadores claros de carga
+- Mensajes de error descriptivos
+- Confirmaciones de acciones importantes
+
+## 5. Plan de Implementación
+
+### Fase 1: Preparación [EN PROGRESO]
+- [x] Análisis de código existente
+- [x] Documentación de estrategia
+- [ ] Modificaciones en base de datos
+
+### Fase 2: Core [PENDIENTE]
+- [ ] Implementar límite de tarjetas
+- [ ] Mejorar manejo de errores
+- [ ] Actualizar useStoredCards
+
+### Fase 3: Testing [PENDIENTE]
+- [ ] Pruebas de integración
+- [ ] Validación de límites
+- [ ] Pruebas de error handling
+
+### Fase 4: Refinamiento [PENDIENTE]
+- [ ] Optimizaciones de UX
+- [ ] Documentación
+- [ ] Preparación para producción
+
+## 6. Consideraciones Futuras
+
+### 6.1 Autenticación
+- Preparar para integración con sistema de auth
+- Mantener compatibilidad con flujo actual
+- Considerar migración de datos de desarrollo
+
+### 6.2 Pagos Recurrentes
+- Estructura preparada para futura implementación
+- Campos necesarios ya incluidos
+- Documentación de cambios necesarios
+
+## 7. Métricas y Monitoreo
+
+### 7.1 Logs
+- Registro de intentos de guardado
+- Errores y sus causas
+- Uso del límite de tarjetas
+
+### 7.2 Analytics
+- Tasa de éxito en guardado
+- Tiempo promedio de proceso
+- Errores más comunes
+
+## 8. Documentación
+
+### 8.1 Para Desarrollo
+- Flujos y diagramas
+- Manejo de errores
+- Configuración de entorno
+
+### 8.2 Para Producción
+- Guía de migración
+- Checklist de seguridad
+- Procedimientos de mantenimiento 

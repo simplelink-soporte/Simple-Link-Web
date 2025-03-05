@@ -1,0 +1,44 @@
+Diagnóstico e Informe del Flujo de Autenticación - Simple-link
+Fecha: 02/02/2025
+1. Resumen del Contexto:
+El proyecto se organiza en carpetas clave:
+• /src/app/admin: contiene rutas para login y panel de administración (dashboard).
+• /src/app/clases: gestiona el acceso público de clientes mediante links como nuestrodominio/clases/[empresaSlug].
+• /src/app/unauthorized y /src/components/classes-registration, entre otras.
+
+Se utilizan distintos archivos para gestionar la autenticación:
+• middleware.ts: determina el tipo de usuario (admin o cliente) según la ruta y configura el acceso mediante cookies.
+• Archivos de Supabase (admin.ts, client.ts, lib/supabase/index.ts): configuran clientes específicos de Supabase para cada tipo de usuario.
+• providers.tsx: provee contexto y configuración para la aplicación en general.
+
+Flujo de Autenticación:
+
+Administrador:
+• Se accede mediante rutas en /admin.
+• El middleware asigna el tipo “admin” y utiliza cookies como “admin-session” (aunque en algunos módulos se usan otros nombres como “admin-auth-token” o “sl-admin-session”).
+• Si la sesión no existe o el rol del usuario no es el adecuado (admin o staff), se redirige al login o a la página de “no autorizado”.
+
+Cliente:
+• Se accede mediante rutas en /clases.
+• El middleware configura la sesión con cookies denominadas “client-session” (pero en otras partes pueden encontrarse nombres como “client-auth-token” o “sl-client-session”).
+• En las rutas protegidas se redirige a login si falta la sesión.
+
+3. Problemas Detectados:
+
+Inconsistencias en la configuración de autenticación:
+• Distribución de la configuración en varios puntos (middleware, admin.ts, client.ts, SupabaseManager) con distintos nombres para cookies y storageKeys, lo que puede provocar que las sesiones se sobrescriban.
+• Uso de propiedades no válidas según el tipado actual (por ejemplo, ‘options’ en createMiddlewareClient y ‘maxAge’ en admin.ts) que indica incompatibilidades con la API actual de @supabase/auth-helpers-nextjs.
+
+Problemas de alias/importación:
+• Se han detectado errores al importar ciertos módulos (como el de client.ts) que pueden indicar una configuración de alias o estructura de carpetas incorrecta.
+La dispersión de la lógica de autenticación dificulta el mantenimiento y hace propenso a errores en el manejo de sesiones, impactando tanto al flujo de administradores como al de clientes.
+
+4. Recomendaciones:
+
+Centralizar la configuración de autenticación:
+• Crear un módulo único donde se definan de forma coherente los nombres de cookies, paths y storageKeys para administradores y clientes.
+Actualizar la configuración según la documentación actual de @supabase/auth-helpers-nextjs:
+• Eliminar o ajustar propiedades no soportadas (por ejemplo, ‘maxAge’ y ‘options’).
+Verificar y corregir alias y rutas de importación para asegurar la correcta referencia a todos los módulos.
+Realizar pruebas integrales en ambos flujos (admin y cliente) para garantizar que las sesiones se gestionen de forma independiente y segura.
+Utilizar este diagnóstico como guía para futuras mejoras y que sirva de referencia para cualquier ajuste del sistema de autenticación.

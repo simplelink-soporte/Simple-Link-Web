@@ -1,0 +1,244 @@
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "user_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "empresa_id",
+    "ordinal_position": 3,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "estado",
+    "ordinal_position": 4,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 20,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'activo'::character varying"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "metadata",
+    "ordinal_position": 5,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "created_at",
+    "ordinal_position": 6,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "vinculaciones",
+    "column_name": "updated_at",
+    "ordinal_position": 7,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  }
+]
+
+-- Índices de la tabla
+
+[
+  {
+    "indexname": "vinculaciones_pkey",
+    "indexdef": "CREATE UNIQUE INDEX vinculaciones_pkey ON public.vinculaciones USING btree (id)"
+  },
+  {
+    "indexname": "idx_vinculaciones_user_empresa",
+    "indexdef": "CREATE INDEX idx_vinculaciones_user_empresa ON public.vinculaciones USING btree (user_id, empresa_id)"
+  },
+  {
+    "indexname": "unique_user_empresa_vinculacion",
+    "indexdef": "CREATE UNIQUE INDEX unique_user_empresa_vinculacion ON public.vinculaciones USING btree (user_id, empresa_id)"
+  }
+]
+
+-- Restricciones
+
+
+[
+  {
+    "constraint_name": "unique_user_empresa_vinculacion",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "vinculaciones_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "vinculaciones_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "vinculaciones_user_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "2200_183340_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_183340_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_183340_3_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "user_id",
+    "referenced_table": "usuarios",
+    "referenced_column": "id"
+  }
+]
+
+    -- Detalles de los triggers relacionados con la tabla 
+
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_198937",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "vinculaciones",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_198938",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "vinculaciones",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_183355",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "vinculaciones",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_183356",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "vinculaciones",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "set_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "vinculaciones",
+    "table_schema": "public",
+    "function_name": "set_updated_at",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.set_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = NOW();\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  }
+]
+
+-- Listar las políticas asociadas con la tabla
+
+
+[
+  {
+    "policy_name": "Usuarios pueden ver sus vinculaciones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 1017} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 1030}) :location 1028}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Empresas pueden ver sus vinculaciones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 1200} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 1211} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname classes :colnames (\"id\" \"empresa_id\" \"created_at\" \"updated_at\" \"name\" \"description\" \"visibility\" \"branch_id\" \"start_date\" \"end_date\" \"is_recurring\" \"schedule_config\" \"\" \"\" \"available_payment_methods\" \"payment_config\" \"status\" \"created_by\" \"\" \"min_students\")} :rtekind 0 :relid 170808 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 9 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 1289} {VAR :varno 1 :varattno 3 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 3 :location 1302}) :location 1300}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 1232} :resno 1 :resname created_by :ressortgroupref 0 :resorigtbl 170808 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 1211}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Empresas pueden crear vinculaciones",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 1497} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 1508} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname classes :colnames (\"id\" \"empresa_id\" \"created_at\" \"updated_at\" \"name\" \"description\" \"visibility\" \"branch_id\" \"start_date\" \"end_date\" \"is_recurring\" \"schedule_config\" \"\" \"\" \"available_payment_methods\" \"payment_config\" \"status\" \"created_by\" \"\" \"min_students\")} :rtekind 0 :relid 170808 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 9 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location 1586} {VAR :varno 1 :varattno 3 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 3 :location 1599}) :location 1597}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 1529} :resno 1 :resname created_by :ressortgroupref 0 :resorigtbl 170808 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 1508}"
+  }
+]
+

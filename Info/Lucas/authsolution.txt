@@ -1,0 +1,247 @@
+# Solución de Autenticación - Simple-link
+
+## Contexto del Problema
+- El sistema actual mezcla las sesiones entre el panel administrativo y los links de clientes
+- Se utiliza Supabase con auth-helpers-nextjs para la autenticación
+- Las cookies de sesión no están diferenciadas por contexto
+
+## Estrategia de Solución
+Se implementará la separación de sesiones mediante headers personalizados y middleware:
+- Panel administrativo: header 'x-client-type: admin'
+- Links de clientes: header 'x-client-type: client'
+
+## Plan de Implementación
+
+### Fase 1: Configuración Base ✅
+1. ✅ Crear utilidades de Supabase con configuraciones específicas
+   - Creado `createAdminSupabaseClient` y `createClientSupabaseClient`
+   - Implementado manejo de headers para diferenciar tipos de cliente
+2. ✅ Configurar middleware para manejar rutas protegidas
+   - Implementado middleware.ts con manejo de rutas admin y client
+   - Configurado redireccionamiento para rutas protegidas
+3. ✅ Implementar hooks de autenticación separados
+   - Creado `useAdminAuth` para el panel administrativo
+   - Creado `useClientAuth` para los links de clientes
+   - Implementada verificación de roles en `useAdminAuth`
+
+### Fase 2: Migración de Componentes ✅
+1. ✅ Implementación del Contexto Administrativo
+   - ✅ Creado `AdminAuthContext.tsx`:
+     * Estado global para autenticación administrativa
+     * Manejo de sesión y empresa asociada
+     * Validación de roles admin/staff
+     * Integración con cliente Supabase admin
+     * Redirecciones automáticas
+     * Manejo de errores detallado
+
+2. ✅ Implementación del Contexto Cliente
+   - ✅ Creado `ClientAuthContext.tsx`:
+     * Estado global para autenticación de clientes
+     * Manejo de sesión y vinculaciones
+     * Validación de roles de cliente
+     * Integración con cliente Supabase cliente
+     * Manejo de vinculaciones automático
+     * Sistema de registro y login completo
+
+3. ✅ Actualizar componentes de autenticación
+   - ✅ Migrado `RegisterForm.tsx`:
+     * Integración con ClientAuthContext
+     * Manejo de estado de carga
+     * Validación de formulario
+     * Creación automática de usuario y vinculación
+   - ✅ Migrado `AuthStep.tsx`:
+     * Uso de nuevo contexto de cliente
+     * Manejo de errores mejorado
+     * Estado de carga global
+     * Integración con estado de ClassRegistration
+   - ✅ Migrado `ClassRegistrationForm.tsx`:
+     * Integración con ClientAuthContext
+     * Manejo de estado de autenticación
+     * Estado de carga global
+     * Verificación de paquetes activos
+     * Mejora en la inicialización del formulario
+
+Cambios Realizados:
+
+1. En `RegisterForm.tsx`:
+   - Reemplazado useAuth por useClientAuth
+   - Agregada integración con organización actual
+   - Mejorado manejo de errores
+   - Implementada creación automática de vinculaciones
+
+2. En `AuthStep.tsx`:
+   - Migrado a nuevo sistema de autenticación
+   - Mejorado manejo de estado de carga
+   - Agregada validación de errores del contexto
+   - Implementada sincronización con estado global
+   - Optimizado flujo de autenticación
+
+3. En `ClassRegistrationForm.tsx`:
+   - Reemplazado useAuth por useClientAuth
+   - Eliminada dependencia directa de Supabase
+   - Mejorado manejo de estado de autenticación
+   - Agregado estado de carga global
+   - Optimizada verificación de paquetes
+   - Implementada inicialización condicional
+   - Mejorado feedback visual
+
+4. Mejoras Generales:
+   - Manejo consistente de estados de carga
+   - Validación robusta de errores
+   - Feedback inmediato al usuario
+   - Integración con sistema de notificaciones
+   - Manejo automático de vinculaciones
+   - Estado de carga global para autenticación
+
+Próximos Pasos:
+1. Implementar pruebas de integración:
+   - Flujos de autenticación
+   - Manejo de paquetes
+   - Estados de carga
+2. Documentar nuevos flujos
+3. Validar experiencia de usuario
+
+### Fase 3: Testing y Validación (Pendiente)
+1. Probar flujos de autenticación separados
+2. Verificar que no haya interferencia entre sesiones
+3. Validar permisos y roles en cada contexto
+
+## Mejoras Implementadas en useClientAuth
+
+1. Manejo de Sesión:
+   - Implementada verificación robusta de sesión
+   - Agregado manejo de estado de usuario
+   - Mejorado sistema de callbacks para cambios de autenticación
+
+2. Registro de Usuarios:
+   - Implementado registro con email/contraseña
+   - Agregada validación de datos
+   - Creación automática en tabla `usuarios`
+   - Vinculación automática con empresa
+
+3. Inicio de Sesión:
+   - Soporte para Google OAuth
+   - Soporte para email/contraseña
+   - Verificación de vinculaciones existentes
+   - Creación automática de vinculaciones faltantes
+
+4. Seguridad:
+   - Validación de empresas activas
+   - Manejo seguro de tokens y sesiones
+   - Logging detallado para debugging
+
+## Próximos Pasos
+1. Completar implementación de RegisterForm
+2. Actualizar AuthStep con nuevo flujo
+3. Implementar manejo de errores en UI
+4. Agregar validaciones de formularios
+5. Implementar redirecciones post-autenticación
+6. Agregar tests de integración
+7. Documentar flujos de autenticación
+
+## Notas Adicionales
+- Se mantiene compatibilidad con la estructura actual
+- Se ha mejorado el manejo de errores y logging
+- Se agregó soporte para múltiples métodos de autenticación
+- Se implementó vinculación automática con empresas
+
+## Consideraciones Importantes
+- Mantener compatibilidad con la estructura actual de Supabase
+- Asegurar que los permisos y roles se mantengan correctamente
+- Minimizar el impacto en la experiencia del usuario
+- Mantener la seguridad en ambos contextos
+
+## Estado de Implementación
+- [x] Fase 1: Configuración Base ✅
+- [x] Fase 2: Migración de Componentes (En progreso) ⏳
+- [ ] Fase 3: Testing y Validación
+
+## Cambios Realizados
+1. Modificado `src/lib/supabase.ts`:
+   - Agregados clientes específicos para admin y cliente
+   - Implementado manejo de headers para diferenciar contextos
+
+2. Creado `middleware.ts`:
+   - Implementado manejo de rutas protegidas
+   - Configurado manejo de headers según contexto
+   - Configurado redireccionamiento para rutas sin autenticación
+
+3. Creados hooks de autenticación:
+   - `src/hooks/useAdminAuth.ts`: Hook específico para administradores
+     - Verificación de roles admin/staff
+     - Rutas de redirección específicas para admin
+   - `src/hooks/useClientAuth.ts`: Hook específico para clientes
+     - Manejo de vinculación con empresas
+     - Rutas de redirección específicas para clientes
+
+4. Actualizados hooks del panel administrativo:
+   - `useUsers.ts`: 
+     - Migrado a `createAdminSupabaseClient`
+     - Agregada verificación de permisos de administrador
+     - Mejorado manejo de errores y logging
+   - `useClasses.ts`:
+     - Migrado a `createAdminSupabaseClient`
+     - Agregada verificación de permisos de administrador
+     - Mejorado manejo de sesión y permisos
+
+5. Actualizada página de inicio de sesión administrativa:
+   - Nuevo componente `AdminLoginForm`
+   - Nueva página `/admin/login`
+   - Integración con `useAdminAuth`
+   - Diseño moderno y responsivo
+   - Manejo de estados de carga y errores
+   - Soporte para inicio de sesión con:
+     - Email y contraseña
+     - Google OAuth
+
+6. Implementada autenticación con email/contraseña:
+   - Verificación en tabla `usuarios`
+   - Validación de permisos administrativos en metadatos
+   - Verificación de empresa asociada y activa
+   - Manejo de errores detallado
+   - Integración con Supabase Auth
+
+7. Mejorada la gestión de autenticación administrativa:
+   - Verificación de roles usando `app_metadata` de Supabase Auth
+   - Asignación automática de rol admin para usuarios con empresa
+   - Almacenamiento de información de empresa en localStorage
+   - Corrección de rutas de redirección post-login
+   - Integración con tablas `usuarios` y `empresas`
+
+## Flujo de Autenticación Administrativa
+1. Usuario intenta iniciar sesión:
+   - Con email/contraseña o Google OAuth
+   - Se verifica autenticación con Supabase Auth
+
+2. Verificaciones post-autenticación:
+   - Existencia en tabla `usuarios`
+   - Empresa asociada y activa
+   - Rol administrativo en `app_metadata`
+
+3. Almacenamiento de sesión:
+   - Token de autenticación en cookies (manejado por Supabase)
+   - Información de empresa en localStorage
+   - Metadatos de usuario en estado global
+
+4. Redirección y acceso:
+   - Redirección a `/dashboard`
+   - Acceso a funcionalidades administrativas
+   - Filtrado de datos por empresa
+
+## Consideraciones de Seguridad
+1. Verificación multinivel:
+   - Autenticación básica con Supabase Auth
+   - Validación de existencia en tabla `usuarios`
+   - Verificación de rol administrativo
+   - Validación de empresa asociada y activa
+
+2. Manejo de errores:
+   - Mensajes de error específicos para cada caso
+   - Logging detallado para debugging
+   - No exposición de información sensible al usuario
+
+3. Gestión de datos:
+   - Separación clara entre datos de autenticación y datos de aplicación
+   - Verificación multinivel de permisos
+   - Almacenamiento seguro de información de sesión
+   - Filtrado automático por empresa del usuario

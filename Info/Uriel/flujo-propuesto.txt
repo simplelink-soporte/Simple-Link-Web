@@ -1,0 +1,629 @@
+<think>Analizando los requisitos y la situación actual, debo:
+
+1. Separar las responsabilidades: crear un nuevo servicio para el pago completo, independiente del servicio de cancelación.
+2. Aprovechar los datos que ya se están obteniendo, según los logs.
+3. Aplicar cambios precisos siguiendo las mejores prácticas.
+
+Empecemos por el análisis de cómo se obtienen actualmente los datos y luego procederemos con la implementación:
+
+De los logs, podemos ver:
+- El ID del método de pago se selecciona correctamente: "pm_1Qy2jKC4oQv4vCtFbLHgXCs5"
+- Ya se obtiene el customerId: "cus_Rn8J5Wbe3ag16g"
+- Se tiene el monto a cobrar: 54
+- Se tiene el empresaId: "99f78081-24fa-4892-aae2-823816e7d132"
+
+Ya tenemos todos los datos necesarios para el procesamiento del pago, pero no se están utilizando correctamente.
+
+Ahora voy a planificar los cambios necesarios:
+
+1. Crear un nuevo servicio para el pago completo: `full-payment-client.service.ts`
+2. Modificar `MobilePaymentContainer.tsx` para preparar los datos de pago correctamente
+3. Modificar `SummaryPreview.tsx` para usar el nuevo servicio de pago y procesar el pago antes de avanzar
+4. Asegurar que se almacene correctamente el ID del PaymentIntent en el estado
+5. Modificar `use-summary-booking.ts` para verificar que existe un PaymentIntent antes de crear la reserva
+
+Vamos a implementar estos cambios:</think># Implementación de Flujo de Pago Completo con Stripe
+
+## Análisis de la Obtención de Datos Actuales
+
+De los logs proporcionados, puedo ver que ya se están obteniendo correctamente todos los datos necesarios:
+
+1. El `stripePaymentMethodId` (pm_1Qy2jKC4oQv4vCtFbLHgXCs5) se obtiene al seleccionar la tarjeta
+2. El `customerId` (cus_Rn8J5Wbe3ag16g) está disponible en la respuesta de StoredCards
+3. El `amount` (54) ya está calculado correctamente
+4. El `empresaId` (99f78081-24fa-4892-aae2-823816e7d132) está disponible en el estado global
+
+Sin embargo, estos datos no están siendo utilizados correctamente para procesar el pago con Stripe.
+
+## Plan de Implementación
+
+Siguiendo el principio de separación de responsabilidades, implementaré:
+
+1. Un nuevo servicio exclusivo para el pago completo
+2. Modificaciones en los componentes de UI para usar este servicio
+3. Cambios en la validación para asegurar que exista un PaymentIntent antes de crear la reserva
+
+### 1. Creación de Nuevo Servicio: full-payment-client.service.ts
+
+Primero, crearemos un nuevo servicio dedicado al procesamiento de pagos completos:
+
+```typescript
+// src/services/full-payment-client.service.ts
+
+import { createId } from "@paralleldrive/cuid2";
+
+interface FullPaymentRequest {
+  paymentMethodId: string;
+  amount: number;
+  empresaId: string;
+  description?: string;
+}
+
+interface FullPaymentResponse {
+  success: boolean;
+  paymentIntentId?: string;
+  chargeStatus?: string;
+  message?: string;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+}
+
+export class FullPaymentClientService {
+  /**
+   * Procesa un pago completo con Stripe
+   * @param params Datos necesarios para el pago
+   * @returns Resultado del procesamiento
+   */
+  async processPayment(params: FullPaymentRequest): Promise<FullPaymentResponse> {
+    const requestId = createId();
+    
+    console.log(`🔄 [${requestId}] Iniciando procesamiento de pago completo:`, {
+      amount: params.amount,
+      paymentMethodId: params.paymentMethodId,
+      timestamp: new Date().toISOString()
+    });
+    
+    try {
+      // 1. Obtener datos adicionales necesarios (customerId, accountId)
+      const stripeData = await this.getStripeData(params.paymentMethodId, params.empresaId);
+      
+      if (!stripeData) {
+        console.error(`❌ [${requestId}] No se pudieron obtener los datos de Stripe`);
+        return {
+          success: false,
+          message: 'No se pudieron obtener los datos necesarios para procesar el pago'
+        };
+      }
+      
+      // 2. Procesar el pago a través de la API
+      const response = await fetch('/api/stripe/process-full-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: params.amount,
+          stripePaymentMethodId: params.paymentMethodId,
+          stripeAccountId: stripeData.accountId,
+          stripeCustomerId: stripeData.customerId,
+          empresaId: params.empresaId,
+          description: params.description || 'Pago completo de reserva',
+          paymentType: 'booking' // Mapeo explícito para compatibilidad con BD
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        console.error(`❌ [${requestId}] Error al procesar el pago:`, result.error);
+        return {
+          success: false,
+          message: result.error?.message || 'Error al procesar el pago',
+          error: result.error
+        };
+      }
+      
+      console.log(`✅ [${requestId}] Pago procesado exitosamente:`, {
+        paymentIntentId: result.paymentIntentId,
+        status: result.chargeStatus
+      });
+      
+      return {
+        success: true,
+        paymentIntentId: result.paymentIntentId,
+        chargeStatus: result.chargeStatus,
+        message: 'Pago procesado exitosamente'
+      };
+    } catch (error: any) {
+      console.error(`❌ [${requestId}] Error inesperado:`, error);
+      return {
+        success: false,
+        message: error.message || 'Error inesperado al procesar el pago',
+        error: {
+          code: 'unexpected_error',
+          message: error.message || 'Error inesperado',
+          details: error
+        }
+      };
+    }
+  }
+  
+  /**
+   * Obtiene los datos necesarios de Stripe para procesar el pago
+   */
+  private async getStripeData(paymentMethodId: string, empresaId: string): Promise<{customerId: string, accountId: string} | null> {
+    try {
+      const response = await fetch('/api/stripe/payment-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentMethodId,
+          empresaId
+        })
+      });
+      
+      if (!response.ok) {
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success || !data.customerId || !data.accountId) {
+        return null;
+      }
+      
+      return {
+        customerId: data.customerId,
+        accountId: data.accountId
+      };
+    } catch (error) {
+      console.error('Error al obtener datos de Stripe:', error);
+      return null;
+    }
+  }
+}
+
+// Crear una instancia exportable para uso directo
+export const fullPaymentService = new FullPaymentClientService();
+```
+
+### 2. Nueva API para Obtener Datos de Stripe: payment-data/route.ts
+
+```typescript
+// src/app/api/stripe/payment-data/route.ts
+
+import { z } from 'zod';
+import { createClient } from '@/lib/supabase/server';
+import { createId } from '@paralleldrive/cuid2';
+import { StripePaymentDataService } from '@/services/stripe-payment-data.service';
+
+// Esquema de validación para la solicitud
+const paymentDataSchema = z.object({
+  paymentMethodId: z.string(),
+  empresaId: z.string()
+});
+
+export async function POST(request: Request) {
+  const requestId = createId();
+  
+  try {
+    // Obtener y validar el body
+    const body = await request.json();
+    const parseResult = paymentDataSchema.safeParse(body);
+    
+    if (!parseResult.success) {
+      return Response.json({
+        success: false,
+        error: {
+          code: 'validation_error',
+          message: 'Datos inválidos',
+          details: parseResult.error
+        }
+      }, { status: 400 });
+    }
+    
+    const { paymentMethodId, empresaId } = parseResult.data;
+    
+    // Inicializar servicio
+    const supabase = createClient();
+    const stripeDataService = new StripePaymentDataService(supabase);
+    
+    // Obtener datos de Stripe
+    const paymentData = await stripeDataService.getPaymentData({
+      paymentMethodId,
+      empresaId
+    });
+    
+    if (!paymentData) {
+      return Response.json({
+        success: false,
+        error: {
+          code: 'data_not_found',
+          message: 'No se pudieron obtener los datos de pago'
+        }
+      }, { status: 404 });
+    }
+    
+    return Response.json({
+      success: true,
+      customerId: paymentData.customerId,
+      accountId: paymentData.accountId,
+      userId: paymentData.userId
+    });
+    
+  } catch (error: any) {
+    console.error(`❌ [${requestId}] Error en API payment-data:`, error);
+    
+    return Response.json({
+      success: false,
+      error: {
+        code: 'server_error',
+        message: error.message || 'Error en el servidor',
+        details: error
+      }
+    }, { status: 500 });
+  }
+}
+```
+
+### 3. Modificación de stripe-payment-data.service.ts
+
+```typescript
+// src/services/stripe-payment-data.service.ts
+
+import { Database } from '@/types/supabase';
+import { SupabaseClient } from '@supabase/supabase-js';
+
+interface StripePaymentData {
+  customerId: string;
+  accountId: string;
+  userId: string;
+  paymentMethodId: string;
+}
+
+export class StripePaymentDataService {
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
+  
+  async getPaymentData(params: {
+    paymentMethodId: string;
+    empresaId?: string;
+    existingCustomerId?: string;
+    existingAccountId?: string;
+  }): Promise<StripePaymentData | null> {
+    try {
+      // Si ya tenemos customerId y accountId, no necesitamos hacer consultas adicionales
+      if (params.existingCustomerId && params.existingAccountId) {
+        return {
+          customerId: params.existingCustomerId,
+          accountId: params.existingAccountId,
+          userId: '', // Se podría buscar si es necesario
+          paymentMethodId: params.paymentMethodId
+        };
+      }
+      
+      // 1. Buscar información del método de pago para obtener customerId
+      const { data: paymentMethod } = await this.supabase
+        .from('stripe_payment_methods')
+        .select('stripe_customer_id, user_id')
+        .eq('stripe_payment_method_id', params.paymentMethodId)
+        .single();
+      
+      if (!paymentMethod?.stripe_customer_id) {
+        console.error('Método de pago no encontrado o sin customer_id:', params.paymentMethodId);
+        return null;
+      }
+      
+      // 2. Obtener accountId de la empresa
+      let accountId = '';
+      
+      if (params.empresaId) {
+        const { data: empresa } = await this.supabase
+          .from('empresas')
+          .select('stripe_account_id')
+          .eq('id', params.empresaId)
+          .single();
+          
+        if (!empresa?.stripe_account_id) {
+          console.error('Empresa no encontrada o sin account_id:', params.empresaId);
+          return null;
+        }
+        
+        accountId = empresa.stripe_account_id;
+      } else {
+        // Alternativa: buscar por el customer y su cuenta asociada
+        const { data: customer } = await this.supabase
+          .from('stripe_customers')
+          .select('stripe_account_id')
+          .eq('stripe_customer_id', paymentMethod.stripe_customer_id)
+          .single();
+          
+        if (!customer?.stripe_account_id) {
+          console.error('No se pudo determinar account_id para el customer:', paymentMethod.stripe_customer_id);
+          return null;
+        }
+        
+        accountId = customer.stripe_account_id;
+      }
+      
+      return {
+        customerId: paymentMethod.stripe_customer_id,
+        accountId: accountId,
+        userId: paymentMethod.user_id || '',
+        paymentMethodId: params.paymentMethodId
+      };
+    } catch (error) {
+      console.error('Error al obtener datos de pago:', error);
+      return null;
+    }
+  }
+}
+```
+
+### 4. Modificación de MobilePaymentContainer.tsx
+
+```typescript
+// Modificar la función de manejo de acción "Next" en MobilePaymentContainer.tsx
+
+if (localSelectedType === 'full' && localSelectedMethod) {
+  console.log('[MobilePaymentContainer] Avanzando al siguiente paso con:', {
+    localSelectedMethod,
+    localSelectedType
+  });
+  
+  // Preparar datos para el procesamiento de pago completo
+  const paymentData = {
+    paymentType: localSelectedType,
+    paymentMethod: localSelectedMethod,
+    amount: calculations.total,
+    stripePaymentMethodId: localSelectedMethod.id,
+    empresaId: empresaId,
+    shouldChargeFullAmount: true  // Flag para indicar procesamiento inmediato
+  };
+  
+  onNext(paymentData);
+  return;
+}
+```
+
+### 5. Modificación de SummaryPreview.tsx
+
+```typescript
+// Modificar el método handleNext en SummaryPreview.tsx
+
+const handleNext = useCallback((paymentData?: any) => {
+  console.log('[SummaryPreview] Intentando avanzar:', {
+    isValid,
+    hasWarnings,
+    selectedPaymentType,
+    selectedPaymentMethod,
+    hasPaymentData: !!paymentData,
+    shouldChargeFullAmount: paymentData?.shouldChargeFullAmount
+  });
+
+  // Validaciones generales...
+
+  // Si es un pago completo, procesarlo antes de avanzar
+  if (paymentData?.shouldChargeFullAmount) {
+    console.log('[SummaryPreview] Procesando pago completo:', paymentData);
+    
+    // Mostrar indicador de carga
+    toast.loading('Procesando pago...', { id: 'payment-processing' });
+    
+    // Importar dinámicamente el servicio de pago completo
+    import('@/services/full-payment-client.service').then(async ({ fullPaymentService }) => {
+      try {
+        // Procesar el pago
+        const result = await fullPaymentService.processPayment({
+          paymentMethodId: paymentData.stripePaymentMethodId,
+          amount: paymentData.amount,
+          empresaId: paymentData.empresaId,
+          description: 'Pago completo de reserva'
+        });
+        
+        // Limpiar indicador de carga
+        toast.dismiss('payment-processing');
+        
+        if (result.success) {
+          // Actualizar estado con el PaymentIntent
+          setPayment(prevState => ({
+            ...prevState,
+            method: 'stripe',
+            type: 'full',
+            processed: true,
+            paymentIntentId: result.paymentIntentId,
+            status: 'completed'
+          }));
+          
+          console.log('[SummaryPreview] Pago exitoso, actualizando estado:', {
+            paymentIntentId: result.paymentIntentId,
+            timestamp: new Date().toISOString()
+          });
+          
+          // Notificar éxito y avanzar
+          toast.success('Pago procesado correctamente');
+          onNext();
+        } else {
+          // Mostrar error y no avanzar
+          console.error('[SummaryPreview] Error en pago:', result);
+          toast.error(`Error al procesar el pago: ${result.message || 'Error desconocido'}`);
+        }
+      } catch (error: any) {
+        // Limpiar indicador de carga
+        toast.dismiss('payment-processing');
+        
+        // Manejar error
+        console.error('[SummaryPreview] Excepción al procesar pago:', error);
+        toast.error(`Error al procesar el pago: ${error.message || 'Error desconocido'}`);
+      }
+    }).catch(err => {
+      toast.dismiss('payment-processing');
+      console.error('[SummaryPreview] Error al cargar el servicio de pago:', err);
+      toast.error('Error al inicializar el proceso de pago');
+    });
+    
+    // Importante: detener la ejecución aquí para esperar el resultado del pago
+    return;
+  }
+
+  // Para otros tipos de pago, continuar con el flujo normal
+  onNext();
+}, [
+  isValid,
+  validationErrors,
+  hasWarnings,
+  selectedPaymentType,
+  selectedPaymentMethod,
+  onNext,
+  setPayment
+]);
+```
+
+### 6. Modificación de API process-full-payment/route.ts
+
+```typescript
+// src/app/api/stripe/process-full-payment/route.ts
+
+import { createId } from '@paralleldrive/cuid2';
+import { z } from 'zod';
+import { Stripe } from 'stripe';
+import { createClient } from '@/lib/supabase/server';
+import { Database } from '@/types/supabase';
+import { FullPaymentService } from '@/services/full-payment.service';
+
+// Esquema simplificado para la solicitud
+const fullPaymentSchema = z.object({
+  amount: z.number().positive(),
+  stripePaymentMethodId: z.string(),
+  stripeAccountId: z.string(),
+  stripeCustomerId: z.string(),
+  empresaId: z.string().optional(),
+  description: z.string().optional(),
+  paymentType: z.string().optional().default('booking')
+});
+
+export async function POST(request: Request) {
+  const requestId = createId();
+
+  try {
+    // Obtener y validar el body
+    const body = await request.json();
+    console.log(`[${requestId}] Recibida solicitud de pago completo:`, body);
+    
+    const parseResult = fullPaymentSchema.safeParse(body);
+    
+    if (!parseResult.success) {
+      return Response.json({
+        success: false,
+        error: {
+          code: 'validation_error',
+          message: 'Datos de pago inválidos',
+          details: parseResult.error
+        }
+      }, { status: 400 });
+    }
+    
+    const data = parseResult.data;
+    
+    // Inicializar servicio de pago
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const supabase = createClient();
+    const paymentService = new FullPaymentService(stripe, supabase);
+    
+    // Procesar el pago
+    const result = await paymentService.processFullPayment({
+      amount: data.amount,
+      stripePaymentMethodId: data.stripePaymentMethodId,
+      stripeAccountId: data.stripeAccountId,
+      stripeCustomerId: data.stripeCustomerId,
+      empresaId: data.empresaId || '',
+      description: data.description,
+      paymentType: data.paymentType
+    });
+    
+    if (!result.success) {
+      return Response.json({
+        success: false,
+        error: result.error
+      }, { status: 400 });
+    }
+    
+    return Response.json({
+      success: true,
+      paymentIntentId: result.paymentIntentId,
+      chargeStatus: result.chargeStatus
+    });
+    
+  } catch (error: any) {
+    console.error(`❌ [${requestId}] Error en API:`, error);
+    
+    return Response.json({
+      success: false,
+      error: {
+        code: 'server_error',
+        message: error.message || 'Error en el servidor',
+        details: error
+      }
+    }, { status: 500 });
+  }
+}
+```
+
+### 7. Modificación de use-summary-booking.ts
+
+```typescript
+// Asegurar que cuando el tipo es 'full', existe un paymentIntentId
+
+// Validación adicional para pago completo
+if (state.payment.type === 'full') {
+  if (!state.payment.paymentIntentId) {
+    console.error('[useSummaryBooking] Pago completo sin PaymentIntent:', state.payment);
+    throw new Error('Es necesario procesar el pago antes de crear la reserva');
+  }
+  
+  if (state.payment.method !== 'stripe') {
+    console.error('[useSummaryBooking] Pago completo con método incorrecto:', state.payment.method);
+    throw new Error('El pago completo debe realizarse con método "stripe"');
+  }
+}
+
+// Y al crear el objeto de reserva
+const bookingData = {
+  // Otros campos...
+  paymentMethod: state.payment.type === 'full' ? 'stripe' : paymentConfig.defaultMethod,
+  paymentType: normalizedPaymentType,
+  paymentStatus: state.payment.type === 'full' ? 'completed' : paymentConfig.defaultStatus,
+  stripe_payment_intent_id: state.payment.paymentIntentId || undefined,
+  // Resto de campos...
+};
+```
+
+## Explicación de Cambios
+
+Los cambios implementados siguen las mejores prácticas de desarrollo:
+
+1. **Separación de Responsabilidades**:
+   - Separamos el servicio de pago completo (`full-payment-client.service.ts`) del servicio de cancelación.
+   - Cada servicio tiene una responsabilidad clara y única.
+
+2. **Aprovechamiento de Datos Existentes**:
+   - Utilizamos los datos que ya se están obteniendo (paymentMethodId, customerId, amount, empresaId).
+   - Creamos un nuevo endpoint para obtener los datos de Stripe de manera centralizada.
+
+3. **Flujo Robusto**:
+   - Procesamos el pago completo antes de avanzar al paso final.
+   - Validamos la existencia del PaymentIntent antes de crear la reserva.
+   - Manejamos adecuadamente los errores en cada nivel.
+
+4. **Mejora en la UX**:
+   - Proporcionamos feedback claro durante el procesamiento (toast de carga, éxito, error).
+   - Solo avanzamos al siguiente paso si el pago es exitoso.
+
+5. **Código Mantenible**:
+   - Usamos nombres descriptivos y comentarios donde es necesario.
+   - Aplicamos tipado estricto con TypeScript.
+   - Implementamos logging detallado para facilitar la depuración.
+
+## Conclusión
+
+Esta implementación proporciona un flujo de pago completo robusto y separado del flujo de cancelación, siguiendo las mejores prácticas de desarrollo. Los cambios son precisos, eficientes y se enfocan en aprovechar los datos que ya se están obteniendo en el sistema, sin reinventar la rueda.

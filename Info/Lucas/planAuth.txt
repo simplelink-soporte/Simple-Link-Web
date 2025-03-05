@@ -1,0 +1,191 @@
+# Plan de Separación de Autenticación - Simple-link
+
+## 1. Análisis del Estado Actual
+
+### Problemas Identificados
+1. Mezcla de sesiones entre panel admin y links de clientes
+2. Uso compartido de instancias Supabase
+3. Conflictos en localStorage y cookies
+4. Manejo de roles no diferenciado
+5. Interferencia en la carga de sedes
+
+### Estructura Actual
+1. Tabla `users` (Auth)
+   - Manejo de roles básico
+   - Triggers para creación de usuarios
+   - Metadatos de usuario y aplicación
+
+2. Hooks de Autenticación
+   - `useAdminAuth`: Panel administrativo
+   - `useClientAuth`: Links de clientes
+   - `useAuth`: Wrapper para cliente
+
+## 2. Plan de Separación
+
+### Fase 1: Separación de Clientes Supabase ✅
+
+1. Modificar `src/lib/supabase.ts`: ✅
+   - ✅ Implementado patrón Singleton con `SupabaseClientManager`
+   - ✅ Separada configuración para admin y cliente
+   - ✅ Agregado manejo específico de cookies y storage
+   - ✅ Implementada limpieza de instancias
+   - ✅ Resueltos errores de tipado con nuevos tipos
+
+2. Crear tipos de autenticación: ✅
+   - ✅ Creado archivo `supabase-auth.ts`
+   - ✅ Definidos tipos para usuarios y sesiones
+   - ✅ Implementadas interfaces para configuración
+   - ✅ Tipado estricto para clientes Supabase
+
+3. Implementar Middleware: ✅
+   - ✅ Creado `middleware.ts` con validación de rutas
+   - ✅ Implementada protección de rutas por rol
+   - ✅ Agregado manejo de redirecciones
+   - ✅ Configurado manejo de errores
+
+Cambios Realizados:
+
+1. En `supabase.ts`:
+   - Implementado sistema de tipos estricto
+   - Mejorada tipado de clientes y configuraciones
+   - Agregados retornos tipados en funciones
+   - Optimizada gestión de instancias
+
+2. En `supabase-auth.ts`:
+   - Tipos para usuarios y sesiones
+   - Interfaces para configuración de clientes
+   - Tipos para respuestas de autenticación
+   - Soporte para metadatos de usuario
+
+3. En `middleware.ts`:
+   - Implementada protección de rutas
+   - Separación de rutas admin/cliente
+   - Validación de roles y permisos
+   - Manejo de redirecciones según contexto
+   - Headers específicos por tipo de cliente
+
+### Fase 2: Separación de Autenticación (Próximo paso)
+
+1. Panel Administrativo:
+   - Actualizar `useAdminAuth`:
+     * Validación estricta de roles
+     * Manejo de empresa asociada
+     * Sesión específica para admin
+   - Implementar `AdminAuthProvider`:
+     * Contexto específico para admin
+     * Estado global de autenticación admin
+     * Manejo de permisos
+
+2. Links de Clientes:
+   - Actualizar `useClientAuth`:
+     * Simplificar validaciones
+     * Manejo de vinculaciones
+     * Sesión específica para cliente
+   - Implementar `ClientAuthProvider`:
+     * Contexto específico para cliente
+     * Estado independiente
+     * Manejo de paquetes y clases
+
+### Fase 3: Manejo de Datos y Estado
+
+1. LocalStorage:
+   - Separar keys por contexto:
+     * `admin-supabase-auth`
+     * `client-supabase-auth`
+   - Implementar limpieza específica
+   - Manejar datos de empresa
+
+2. Cookies:
+   - Separar cookies por dominio/path
+   - Implementar expiración adecuada
+   - Manejar refresh tokens
+
+3. Estado Global:
+   - Separar providers por contexto
+   - Implementar stores independientes
+   - Manejar sincronización cuando sea necesario
+
+### Fase 4: Actualización de Componentes
+
+1. Panel Administrativo:
+   - Actualizar `sidebar.tsx`:
+     * Usar nuevo contexto admin
+     * Manejar carga de sedes
+     * Implementar fallbacks
+   - Actualizar formularios de autenticación
+
+2. Links de Clientes:
+   - Actualizar `ClassRegistrationForm.tsx`:
+     * Usar nuevo contexto cliente
+     * Simplificar flujo de autenticación
+     * Mejorar manejo de errores
+
+### Fase 5: Testing y Validación
+
+1. Pruebas de Integración:
+   - Flujos de autenticación separados
+   - Manejo de sesiones
+   - Carga de datos específicos
+
+2. Pruebas de Usuario:
+   - Experiencia en panel admin
+   - Experiencia en links de cliente
+   - Manejo de errores
+
+3. Pruebas de Seguridad:
+   - Validación de roles
+   - Protección de rutas
+   - Manejo de tokens
+
+## 3. Consideraciones de Implementación
+
+### Seguridad
+1. Validación multinivel:
+   - Autenticación básica
+   - Verificación de roles
+   - Validación de empresa
+   - Permisos específicos
+
+2. Manejo de Errores:
+   - Logging detallado
+   - Mensajes específicos
+   - Recuperación de estados
+
+### Compatibilidad
+1. Mantener soporte para:
+   - Usuarios existentes
+   - Sesiones activas
+   - Datos almacenados
+
+2. Migración Gradual:
+   - Implementar cambios por fases
+   - Mantener compatibilidad hacia atrás
+   - Documentar cambios
+
+## 4. Próximos Pasos
+
+1. Implementación Inicial:
+   - Separar clientes Supabase
+   - Actualizar middleware
+   - Implementar providers básicos
+
+2. Migración de Datos:
+   - Actualizar estructura de almacenamiento
+   - Migrar sesiones existentes
+   - Validar datos actuales
+
+3. Actualización de UI:
+   - Implementar nuevos formularios
+   - Actualizar manejo de errores
+   - Mejorar feedback al usuario
+
+4. Testing y Documentación:
+   - Ejecutar pruebas completas
+   - Documentar cambios
+   - Actualizar guías de desarrollo
+
+Próximos Pasos Inmediatos:
+1. Comenzar Fase 2: Separación de Autenticación
+   - Implementar AdminAuthProvider
+   - Actualizar useAdminAuth con nuevos tipos
+   - Integrar middleware con providers

@@ -1,0 +1,148 @@
+# Sistema de Conteo de Reservas
+=========================
+
+## Descripción General
+El sistema de conteo de reservas es una implementación híbrida que utiliza Redis para el almacenamiento en caché y PostgreSQL para la persistencia de datos. Este sistema está diseñado específicamente para gestionar y limitar las reservas de empresas con plan FREE, mientras que ignora el conteo para planes PRO.
+
+## Arquitectura del Sistema
+
+### 1. Componentes Principales
+- **Redis**: Almacenamiento en caché para conteos activos
+- **PostgreSQL**: Almacenamiento persistente y verificación
+- **API REST**: Endpoints para gestionar conteos
+- **Servicios**: Lógica de negocio para gestión de conteos
+- **Componentes UI**: Visualización del estado de reservas
+
+### 2. Tablas Relacionadas
+#### subscription_plans
+- `id`: UUID (PK)
+- `name`: VARCHAR(255)
+- `code`: VARCHAR(50)
+- `type`: ENUM
+- `price`: NUMERIC(10,2)
+- `daily_booking_limit`: INTEGER
+- `features`: JSONB
+- `is_active`: BOOLEAN
+
+#### empresas
+- `id`: UUID (PK)
+- `plan_id`: UUID (FK -> subscription_plans)
+- `plan_type`: ENUM
+- `plan_updated_at`: TIMESTAMP
+
+## Funcionamiento del Sistema
+
+### 1. Gestión de Claves Redis
+```typescript
+// Formato de clave
+booking_count:${empresaId}:${periodStart}
+
+// Ejemplo
+booking_count:123e4567-e89b-12d3-a456-426614174000:2024-02-01
+```
+
+### 2. Períodos de Conteo
+- Basado en `plan_updated_at` de cada empresa
+- Reset mensual en el día correspondiente al inicio del plan
+- Ejemplo: Si plan_updated_at = "2024-02-15", el reset será el día 15 de cada mes
+
+### 3. Flujo de Operaciones
+
+#### Incremento de Conteo
+1. Verificar tipo de plan
+2. Si es PRO, retornar sin contar
+3. Si es FREE:
+   - Obtener conteo actual de Redis
+   - Verificar límite
+   - Incrementar contador
+   - Actualizar expiración
+
+#### Obtención de Estado
+1. Verificar tipo de plan
+2. Si es PRO:
+   - Retornar límites infinitos
+3. Si es FREE:
+   - Obtener conteo de Redis
+   - Si no existe, sincronizar con DB
+   - Calcular estadísticas
+   - Retornar estado actual
+
+### 4. Sincronización con Base de Datos
+- Verificación periódica de consistencia
+- Reconciliación automática si hay discrepancias
+- Prioridad a datos de PostgreSQL en caso de conflicto
+
+## Implementación Técnica
+
+### 1. Servicios Principales
+```typescript
+// Gestión de Conteo
+bookingCountService.getBookingCountStatus()
+bookingCountService.incrementCount()
+bookingCountService.decrementCount()
+bookingCountService.resetCount()
+
+// Redis Utilities
+bookingCounters.increment()
+bookingCounters.get()
+bookingCounters.reset()
+bookingCounters.getMultiple()
+```
+
+### 2. Endpoints API
+```typescript
+GET /api/booking-count
+- Query params: empresaId, date
+- Retorna estado actual del conteo
+
+POST /api/booking-count
+- Body: { empresaId, date, action }
+- Acciones: increment, decrement, reset
+```
+
+### 3. Manejo de Errores
+- Reconexión automática a Redis
+- Fallback a PostgreSQL
+- Logging detallado de errores
+- Notificaciones de inconsistencias
+
+## Consideraciones de Rendimiento
+
+### 1. Optimizaciones
+- Uso de Redis para reducir latencia
+- Batch operations para múltiples fechas
+- Expiración automática de contadores
+- Índices optimizados en PostgreSQL
+
+### 2. Limitaciones Actuales
+- Sin restricción real al exceder límites (pendiente)
+- Dependencia en precisión de plan_updated_at
+- Posible inconsistencia temporal durante sincronización
+
+## Monitoreo y Mantenimiento
+
+### 1. Métricas Clave
+- Tasa de hit/miss en Redis
+- Tiempo de respuesta de endpoints
+- Frecuencia de sincronización
+- Tasa de errores
+
+### 2. Tareas de Mantenimiento
+- Limpieza periódica de contadores expirados
+- Verificación de consistencia DB-Redis
+- Monitoreo de uso de memoria Redis
+- Backup de configuraciones
+
+## Planes Futuros
+
+### 1. Mejoras Planificadas
+- Implementar restricción real de límites
+- Mejorar sistema de notificaciones
+- Añadir métricas detalladas
+- Optimizar sincronización DB-Redis
+
+### 2. Consideraciones de Escalabilidad
+- Sharding de Redis para mayor escala
+- Implementación de cache warming
+- Mejora de estrategias de fallback
+- Optimización de queries PostgreSQL

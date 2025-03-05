@@ -1,0 +1,202 @@
+Primer SQL Ejecutado para aplicar el Plan:
+
+-- Create ENUM types
+CREATE TYPE plan_type AS ENUM ('FREE', 'PRO');
+CREATE TYPE reset_period AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY');
+
+-- Create subscription_plans table
+CREATE TABLE subscription_plans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    type plan_type NOT NULL,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0,
+    daily_booking_limit INTEGER NOT NULL,
+    reset_period reset_period NOT NULL,
+    features JSONB NOT NULL DEFAULT '[]',
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add trigger for updated_at
+CREATE TRIGGER set_updated_at
+    BEFORE UPDATE ON subscription_plans
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_set_timestamp();
+
+-- Add plan_id to empresas table
+ALTER TABLE empresas
+ADD COLUMN plan_id UUID REFERENCES subscription_plans(id);
+
+-- Insert initial plans
+INSERT INTO subscription_plans (name, code, type, price, daily_booking_limit, reset_period, features, is_active)
+VALUES 
+    ('Plan Gratuito', 'FREE', 'FREE', 0, 90, 'DAILY', '["Reservas básicas", "Gestión de usuarios", "Panel de administración"]', true),
+    ('Plan Pro', 'PRO', 'PRO', 49.99, 500, 'DAILY', '["Reservas ilimitadas", "Soporte prioritario", "Análisis avanzados", "Gestión de torneos", "Marketing y promociones"]', true);
+
+-- Update existing empresas to FREE plan
+UPDATE empresas
+SET plan_id = (SELECT id FROM subscription_plans WHERE code = 'FREE')
+WHERE plan_id IS NULL;
+
+Vista Materializada:
+
+CREATE MATERIALIZED VIEW booking_company_view AS
+SELECT 
+    b.id as booking_id,
+    b.date as booking_date,
+    b.court_id,
+    c.branch_id,
+    s.empresa_id,
+    e.plan_id
+FROM bookings b
+JOIN courts c ON b.court_id = c.id
+JOIN sedes s ON c.branch_id = s.id
+JOIN empresas e ON s.empresa_id = e.id;
+
+-- Crear índices para optimizar el rendimiento
+CREATE UNIQUE INDEX idx_booking_company_view_id ON booking_company_view(booking_id);
+CREATE INDEX idx_booking_company_view_date ON booking_company_view(booking_date);
+CREATE INDEX idx_booking_company_view_empresa ON booking_company_view(empresa_id);
+
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "name",
+    "ordinal_position": 2,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "code",
+    "ordinal_position": 3,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 50,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "type",
+    "ordinal_position": 4,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "price",
+    "ordinal_position": 5,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "daily_booking_limit",
+    "ordinal_position": 6,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "reset_period",
+    "ordinal_position": 7,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "features",
+    "ordinal_position": 8,
+    "data_type": "jsonb",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'[]'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "is_active",
+    "ordinal_position": 9,
+    "data_type": "boolean",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "created_at",
+    "ordinal_position": 10,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "CURRENT_TIMESTAMP"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscription_plans",
+    "column_name": "updated_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "CURRENT_TIMESTAMP"
+  }
+]
+
+booking_company_view
+
+INSERT INTO "public"."booking_company_view" ("booking_id", "booking_date", "court_id", "branch_id", "empresa_id", "plan_id") VALUES ('0365ccb1-85e3-4d9e-8493-984454917e35', '2025-02-14', '562b18bd-612d-4c20-b9ad-c31a1aea44a2', 'eb8139e9-261f-4912-bc32-9aa1d455ab15', '99f78081-24fa-4892-aae2-823816e7d132', '56f94a6a-138c-434f-b034-dab6b9f846c6');

@@ -1,0 +1,66 @@
+-- Consulta para obtener información sobre las políticas RLS de la tabla 'items'
+[
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are insertable by authenticated users",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.role() = 'authenticated'::text",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are updatable by authenticated users",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.role() = 'authenticated'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are viewable by authenticated users",
+    "policy_command": "SELECT",
+    "policy_condition": "auth.role() = 'authenticated'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden actualizar items de sus sedes",
+    "policy_command": "UPDATE",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden crear items en sus sedes",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden eliminar items de sus sedes",
+    "policy_command": "DELETE",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden ver items de sus sedes",
+    "policy_command": "SELECT",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  }
+]

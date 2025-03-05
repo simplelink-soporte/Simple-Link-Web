@@ -1,0 +1,30 @@
+-- Consulta para obtener información sobre las políticas RLS de la tabla 'stripe_connections'
+[
+  {
+    "schema_name": "public",
+    "table_name": "company_links",
+    "policy_name": "Allow authenticated insert",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.role() = 'authenticated'::text",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "company_links",
+    "policy_name": "Allow authenticated update",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.role() = 'authenticated'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "company_links",
+    "policy_name": "Allow public read access",
+    "policy_command": "SELECT",
+    "policy_condition": "true",
+    "with_check_condition": "None",
+    "roles": "{}"
+  }
+]

@@ -1,0 +1,271 @@
+import { PublishedForm } from "@/types/forms/publish";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { FormStepField } from "@/types/form-steps";
+import { BOOKING_FORM_TEMPLATE } from "@/lib/templates/booking-form-template";
+
+export class FormPublishService {
+  private supabase = createClientComponentClient();
+
+  private static debug = {
+    log: (message: string, data?: any) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[FormPublishService] ${message}`, data || '');
+      }
+    },
+    error: (message: string, error?: any) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[FormPublishService Error] ${message}`, error || '');
+      }
+    }
+  };
+
+  async getBySlug(slug: string): Promise<PublishedForm> {
+    try {
+      FormPublishService.debug.log('🔍 Buscando formulario:', { slug });
+      
+      // Consulta optimizada usando el índice único del slug
+      const { data: link, error: linkError } = await this.supabase
+        .from('company_links')
+        .select(`
+          id,
+          slug,
+          settings,
+          type,
+          is_active,
+          created_at,
+          updated_at,
+          empresa_id
+        `)
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .single();
+
+      if (linkError) {
+        FormPublishService.debug.error('Error en consulta:', linkError);
+        throw new Error('Error al obtener el formulario');
+      }
+
+      if (!link) {
+        FormPublishService.debug.error('Link no encontrado:', { slug });
+        throw new Error('Formulario no encontrado');
+      }
+
+      if (!link.empresa_id) {
+        FormPublishService.debug.error('empresa_id no encontrado:', { slug, link });
+        throw new Error('Formulario inválido: falta empresa_id');
+      }
+
+      FormPublishService.debug.log('✅ Link encontrado:', {
+        id: link.id,
+        type: link.type,
+        empresa_id: link.empresa_id,
+        created_at: link.created_at
+      });
+
+      // Usar plantilla por defecto si no hay campos definidos
+      const fields = link.settings?.fields || BOOKING_FORM_TEMPLATE;
+      FormPublishService.debug.log('📋 Campos del formulario:', { count: fields.length });
+
+      // Validar estructura de campos
+      this.validateFields(fields);
+
+      // Construir respuesta con valores por defecto
+      const publishedForm: PublishedForm = {
+        id: link.id,
+        empresa_id: link.empresa_id,
+        slug: link.slug,
+        title: link.settings?.title || 'Formulario sin título',
+        description: link.settings?.description || '',
+        fields: fields,
+        settings: {
+          theme: link.settings?.theme?.mode || 'light',
+          isCustomizable: link.settings?.isCustomizable ?? true
+        },
+        customization: {
+          colors: {
+            primary: link.settings?.theme?.primary_color || '#000000'
+          },
+          logo: {
+            url: link.settings?.theme?.logo_url || undefined
+          }
+        },
+        status: 'published',
+        analytics: {
+          views: link.settings?.analytics?.views || 0,
+          submissions: link.settings?.analytics?.submissions || 0
+        },
+        metadata: {
+          createdBy: link.settings?.created_by,
+          updatedBy: link.settings?.updated_by
+        },
+        createdAt: link.created_at ? new Date(link.created_at) : undefined,
+        updatedAt: link.updated_at ? new Date(link.updated_at) : undefined
+      };
+
+      FormPublishService.debug.log('✅ Formulario procesado:', {
+        id: publishedForm.id,
+        slug: publishedForm.slug,
+        fieldsCount: publishedForm.fields.length
+      });
+
+      return publishedForm;
+
+    } catch (error) {
+      FormPublishService.debug.error('❌ Error en getBySlug:', error);
+      throw error;
+    }
+  }
+
+  private validateFields(fields: any[]): asserts fields is FormStepField[] {
+    if (!Array.isArray(fields)) {
+      throw new Error('Los campos deben ser un array');
+    }
+
+    fields.forEach((field, index) => {
+      if (!field || typeof field !== 'object') {
+        throw new Error(`Campo ${index} debe ser un objeto válido`);
+      }
+
+      if (!field.type || typeof field.type !== 'string') {
+        throw new Error(`Campo ${index} debe tener un tipo válido`);
+      }
+
+      // Asegurar propiedades mínimas
+      field.id = field.id || `field_${index}`;
+      field.label = field.label || field.type;
+      field.required = field.required ?? true;
+      field.order = field.order || index + 1;
+    });
+
+    // Ordenar campos por orden
+    fields.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    FormPublishService.debug.log('✅ Validación de campos exitosa:', { count: fields.length });
+  }
+
+  async incrementViews(slug: string): Promise<void> {
+    try {
+      const { error } = await this.supabase
+        .from('company_links')
+        .update({
+          settings: {
+            analytics: {
+              views: this.supabase.rpc('increment', { x: 1 })
+            }
+          }
+        })
+        .eq('slug', slug);
+
+      if (error) {
+        FormPublishService.debug.error('Error al incrementar vistas:', error);
+      } else {
+        FormPublishService.debug.log('📊 Vistas incrementadas para:', { slug });
+      }
+    } catch (error) {
+      FormPublishService.debug.error('Error al incrementar vistas:', error);
+    }
+  }
+
+  async publish(form: any): Promise<string> {
+    try {
+      FormPublishService.debug.log('📝 Iniciando publicación:', form);
+
+      if (!form.empresa_id) {
+        throw new Error('Se requiere el ID de la empresa');
+      }
+
+      if (!Array.isArray(form.fields)) {
+        throw new Error('Se requieren los campos del formulario');
+      }
+
+      this.validateFields(form.fields);
+
+      // Generar slug base
+      let baseSlug = this.generateSlug(form.title || 'formulario');
+      let slug = baseSlug;
+      let counter = 1;
+
+      // Verificar si el slug existe y generar uno único
+      while (true) {
+        const { data, error } = await this.supabase
+          .from('company_links')
+          .select('slug')
+          .eq('slug', slug)
+          .single();
+
+        if (error?.code === 'PGRST116') {
+          // No se encontró el slug, podemos usarlo
+          break;
+        }
+
+        if (error) {
+          FormPublishService.debug.error('Error al verificar slug:', error);
+          throw new Error('Error al verificar disponibilidad del slug');
+        }
+
+        if (data) {
+          // El slug existe, intentar con un nuevo número
+          slug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+      }
+
+      const linkData = {
+        empresa_id: form.empresa_id,
+        type: 'bookings',
+        slug,
+        settings: {
+          title: form.title || 'Formulario sin título',
+          description: form.description || '',
+          fields: form.fields,
+          theme: form.theme || 'light',
+          customization: form.customization || {}
+        },
+        is_active: true
+      };
+
+      FormPublishService.debug.log('📝 Datos a insertar:', linkData);
+
+      const { data: link, error: linkError } = await this.supabase
+        .from('company_links')
+        .insert(linkData)
+        .select('slug')
+        .single();
+
+      if (linkError) {
+        FormPublishService.debug.error('Error al crear link:', linkError);
+        throw new Error(`Error al publicar el formulario: ${linkError.message}`);
+      }
+
+      if (!link?.slug) {
+        throw new Error('Error: No se pudo generar el slug del formulario');
+      }
+
+      // Usar ruta absoluta para el formulario público
+      const url = `/f/${link.slug}`;
+      FormPublishService.debug.log('✅ Formulario publicado:', { url, linkData });
+
+      return url;
+    } catch (error) {
+      FormPublishService.debug.error('❌ Error en publish:', error);
+      throw error;
+    }
+  }
+
+  private generateSlug(text: string): string {
+    const timestamp = Date.now().toString(36);
+    const slug = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    
+    return slug || `formulario-${timestamp}`;
+  }
+}
+
+// Crear una instancia única del servicio
+export const formPublishService = new FormPublishService(); 

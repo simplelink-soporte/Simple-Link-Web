@@ -1,0 +1,517 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "court_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "date",
+    "ordinal_position": 3,
+    "data_type": "date",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "start_time",
+    "ordinal_position": 4,
+    "data_type": "time without time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "end_time",
+    "ordinal_position": 5,
+    "data_type": "time without time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "title",
+    "ordinal_position": 6,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "description",
+    "ordinal_position": 7,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "total_price",
+    "ordinal_position": 8,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "deposit_amount",
+    "ordinal_position": 11,
+    "data_type": "numeric",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "created_at",
+    "ordinal_position": 12,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "updated_at",
+    "ordinal_position": 13,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "payment_status",
+    "ordinal_position": 28,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'pending'::booking_payment_status"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "payment_method",
+    "ordinal_position": 29,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'cash'::payment_method_enum"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "cancelled_at",
+    "ordinal_position": 30,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "cancellation_reason",
+    "ordinal_position": 31,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "court_price",
+    "ordinal_position": 32,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "rental_items_price",
+    "ordinal_position": 33,
+    "data_type": "numeric",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "payment_type",
+    "ordinal_position": 34,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'booking'::payment_type"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "empresa_id",
+    "ordinal_position": 35,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "idx_bookings_payment_status",
+    "indexdef": "CREATE INDEX idx_bookings_payment_status ON public.bookings USING btree (payment_status)"
+  },
+  {
+    "indexname": "idx_bookings_cancelled_at",
+    "indexdef": "CREATE INDEX idx_bookings_cancelled_at ON public.bookings USING btree (cancelled_at) WHERE (cancelled_at IS NOT NULL)"
+  },
+  {
+    "indexname": "bookings_pkey",
+    "indexdef": "CREATE UNIQUE INDEX bookings_pkey ON public.bookings USING btree (id)"
+  },
+  {
+    "indexname": "bookings_court_id_date_idx",
+    "indexdef": "CREATE INDEX bookings_court_id_date_idx ON public.bookings USING btree (court_id, date)"
+  },
+  {
+    "indexname": "bookings_date_idx",
+    "indexdef": "CREATE INDEX bookings_date_idx ON public.bookings USING btree (date)"
+  },
+  {
+    "indexname": "idx_bookings_date_times",
+    "indexdef": "CREATE INDEX idx_bookings_date_times ON public.bookings USING btree (date, start_time, end_time)"
+  },
+  {
+    "indexname": "idx_bookings_date_time",
+    "indexdef": "CREATE INDEX idx_bookings_date_time ON public.bookings USING btree (date, start_time, end_time)"
+  },
+  {
+    "indexname": "idx_bookings_payment_type",
+    "indexdef": "CREATE INDEX idx_bookings_payment_type ON public.bookings USING btree (payment_type)"
+  },
+  {
+    "indexname": "idx_bookings_empresa_date",
+    "indexdef": "CREATE INDEX idx_bookings_empresa_date ON public.bookings USING btree (empresa_id, date)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "bookings_court_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "bookings_court_price_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "bookings_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "bookings_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "bookings_rental_items_price_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_8_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_12_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_13_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_32_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_33_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_77926_34_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "court_id",
+    "referenced_table": "courts",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'bookings'
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_106263",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_106264",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "calculate_total_price_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "calculate_total_price",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.calculate_total_price()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n  -- Usar los precios proporcionados directamente\r\n  NEW.total_price = COALESCE(NEW.court_price, 0) + COALESCE(NEW.rental_items_price, 0);\r\n  \r\n  -- Log para debugging\r\n  RAISE NOTICE 'Calculando precio total: court_price=%, rental_items_price=%, total=%', \r\n    NEW.court_price, NEW.rental_items_price, NEW.total_price;\r\n    \r\n  RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_77940",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_77941",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_bookings_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "update_updated_at_column",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = TIMEZONE('utc', NOW());\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_87215",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_87216",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "create_payment_on_booking_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "create_payment_on_booking",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.create_payment_on_booking()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    -- Insertar el registro en la tabla payments\r\n    INSERT INTO public.payments (\r\n        booking_id,\r\n        deposit_amount,        -- Cambiado de amount a deposit_amount\r\n        total_price,\r\n        payment_method,\r\n        payment_status,\r\n        notes,\r\n        created_at,\r\n        updated_at\r\n    ) VALUES (\r\n        NEW.id,\r\n        COALESCE(NEW.deposit_amount, 0),\r\n        NEW.total_price,\r\n        NEW.payment_method,\r\n        NEW.payment_status,\r\n        'Pago inicial generado automáticamente',\r\n        NOW(),\r\n        NOW()\r\n    );\r\n\r\n    -- Log de la operación exitosa\r\n    INSERT INTO trigger_logs (\r\n        trigger_name, \r\n        booking_data, \r\n        error_message\r\n    ) VALUES (\r\n        'create_payment_on_booking',\r\n        jsonb_build_object(\r\n            'booking_id', NEW.id,\r\n            'payment_method', NEW.payment_method,\r\n            'payment_status', NEW.payment_status,\r\n            'total_price', NEW.total_price,\r\n            'deposit_amount', NEW.deposit_amount\r\n        ),\r\n        'Pago creado exitosamente'\r\n    );\r\n\r\n    RETURN NEW;\r\n\r\nEXCEPTION WHEN OTHERS THEN\r\n    -- Log del error\r\n    INSERT INTO trigger_logs (\r\n        trigger_name, \r\n        booking_data, \r\n        error_message\r\n    ) VALUES (\r\n        'create_payment_on_booking',\r\n        jsonb_build_object(\r\n            'booking_id', NEW.id,\r\n            'error_detail', SQLERRM,\r\n            'error_hint', SQLSTATE\r\n        ),\r\n        'Error al crear pago: ' || SQLERRM\r\n    );\r\n    \r\n    RAISE EXCEPTION 'Error al crear el pago: %', SQLERRM;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_147893",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_cascade_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_147894",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "validate_booking_creation_trigger",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "validate_booking_creation",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.validate_booking_creation()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    -- Validar que la hora de inicio sea menor que la hora de fin\r\n    IF NEW.start_time >= NEW.end_time THEN\r\n        RAISE EXCEPTION 'La hora de inicio debe ser menor a la hora de fin';\r\n    END IF;\r\n\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "update_total_price",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "calculate_total_price",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.calculate_total_price()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n  -- Usar los precios proporcionados directamente\r\n  NEW.total_price = COALESCE(NEW.court_price, 0) + COALESCE(NEW.rental_items_price, 0);\r\n  \r\n  -- Log para debugging\r\n  RAISE NOTICE 'Calculando precio total: court_price=%, rental_items_price=%, total=%', \r\n    NEW.court_price, NEW.rental_items_price, NEW.total_price;\r\n    \r\n  RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_298482",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_298483",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]
+

@@ -1,0 +1,259 @@
+# Plan de Corrección de Flujo - Simple-link
+
+## 1. Cambios en Supabase (Pendientes de Aplicar)
+
+### 1.1 Estructura de Roles y Metadatos
+```sql
+-- Actualizar app_metadata para todos los usuarios admin
+UPDATE auth.users
+SET raw_app_meta_data = jsonb_set(
+  raw_app_meta_data,
+  '{role}',
+  '"admin"'
+)
+WHERE id IN (SELECT auth_user_id FROM public.empresas);
+
+-- Actualizar app_metadata para todos los usuarios cliente
+UPDATE auth.users
+SET raw_app_meta_data = jsonb_set(
+  raw_app_meta_data,
+  '{role}',
+  '"client"'
+)
+WHERE id NOT IN (SELECT auth_user_id FROM public.empresas);
+```
+
+### 1.2 Políticas de Seguridad
+```sql
+-- Política para empresas (solo admins)
+CREATE POLICY "Solo admins pueden acceder a empresas"
+ON public.empresas
+FOR ALL
+USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Política para vinculaciones (clientes y admins de su empresa)
+CREATE POLICY "Acceso a vinculaciones"
+ON public.vinculaciones
+FOR ALL
+USING (
+  (auth.jwt() ->> 'role' = 'admin' AND empresa_id IN (
+    SELECT id FROM public.empresas WHERE auth_user_id = auth.uid()
+  ))
+  OR
+  (auth.jwt() ->> 'role' = 'client' AND user_id = auth.uid())
+);
+```
+
+## 2. Cambios en el Proyecto (A Implementar)
+
+### 2.1 Estructura de Directorios
+```
+src/
+├── auth/
+│   ├── admin/
+│   │   ├── AdminAuthProvider.tsx
+│   │   ├── useAdminAuth.ts
+│   │   └── types.ts
+│   └── client/
+│       ├── ClientAuthProvider.tsx
+│       ├── useClientAuth.ts
+│       └── types.ts
+├── supabase/
+│   ├── admin.ts
+│   ├── client.ts
+│   └── types.ts
+└── middleware/
+    ├── adminAuth.ts
+    └── clientAuth.ts
+```
+
+### 2.2 Orden de Implementación
+
+1. **Fase 1: Clientes Supabase**
+   - Actualizar `src/supabase/admin.ts`
+   - Actualizar `src/supabase/client.ts`
+   - Implementar tipos en `src/supabase/types.ts`
+
+2. **Fase 2: Contextos de Autenticación**
+   - Implementar `AdminAuthProvider.tsx`
+   - Implementar `ClientAuthProvider.tsx`
+   - Separar hooks de autenticación
+
+3. **Fase 3: Middleware y Rutas**
+   - Implementar middleware específico para admin
+   - Implementar middleware específico para cliente
+   - Actualizar rutas protegidas
+
+4. **Fase 4: Componentes y Páginas**
+   - Actualizar componentes del panel admin
+   - Actualizar componentes del link de clases
+   - Implementar manejo de errores específico
+
+### 2.3 Detalles de Implementación
+
+#### 2.3.1 Clientes Supabase
+```typescript
+// src/supabase/admin.ts
+const adminConfig = {
+  auth: {
+    storageKey: 'admin-supabase-auth',
+    cookieOptions: {
+      name: 'admin-session',
+      path: '/admin',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    }
+  },
+  headers: {
+    'x-client-type': 'admin'
+  }
+}
+
+// src/supabase/client.ts
+const clientConfig = {
+  auth: {
+    storageKey: 'client-supabase-auth',
+    cookieOptions: {
+      name: 'client-session',
+      path: '/clases',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    }
+  },
+  headers: {
+    'x-client-type': 'client'
+  }
+}
+```
+
+#### 2.3.2 Providers
+```typescript
+// src/auth/admin/AdminAuthProvider.tsx
+interface AdminAuthState {
+  user: AdminUser | null;
+  empresa: Empresa | null;
+  isLoading: boolean;
+  error: AuthError | null;
+}
+
+// src/auth/client/ClientAuthProvider.tsx
+interface ClientAuthState {
+  user: ClientUser | null;
+  vinculacion: Vinculacion | null;
+  isLoading: boolean;
+  error: AuthError | null;
+}
+```
+
+#### 2.3.3 Middleware
+```typescript
+// src/middleware/adminAuth.ts
+export const adminAuthMiddleware = async (req: NextRequest) => {
+  const supabase = createServerSupabaseClient(req);
+  const session = await supabase.auth.getSession();
+  
+  if (!session || session.user?.app_metadata?.role !== 'admin') {
+    return NextResponse.redirect('/admin/login');
+  }
+}
+
+// src/middleware/clientAuth.ts
+export const clientAuthMiddleware = async (req: NextRequest) => {
+  const supabase = createServerSupabaseClient(req);
+  const session = await supabase.auth.getSession();
+  
+  if (!session || session.user?.app_metadata?.role !== 'client') {
+    return NextResponse.redirect('/clases/login');
+  }
+}
+```
+
+### 2.4 Manejo de Estado
+
+#### 2.4.1 Estado Admin
+```typescript
+interface AdminState {
+  user: AdminUser | null;
+  empresa: Empresa | null;
+  permisos: string[];
+  configuracion: AdminConfig;
+}
+```
+
+#### 2.4.2 Estado Cliente
+```typescript
+interface ClientState {
+  user: ClientUser | null;
+  vinculacion: Vinculacion | null;
+  paquetesActivos: Package[];
+  preferencias: ClientPreferences;
+}
+```
+
+### 2.5 Flujo de Autenticación
+
+1. **Panel Admin**:
+   - Login específico para admin
+   - Verificación de rol admin
+   - Carga de datos de empresa
+   - Almacenamiento en contexto admin
+
+2. **Link de Clases**:
+   - Login/registro de cliente
+   - Verificación de vinculación
+   - Carga de paquetes activos
+   - Almacenamiento en contexto cliente
+
+## 3. Pruebas y Validación
+
+### 3.1 Pruebas Unitarias
+- Providers
+- Hooks de autenticación
+- Middleware
+- Componentes de autenticación
+
+### 3.2 Pruebas de Integración
+- Flujo completo de admin
+- Flujo completo de cliente
+- Interacción entre contextos
+
+### 3.3 Pruebas de Seguridad
+- Validación de tokens
+- Separación de sesiones
+- Políticas de acceso
+
+## 4. Seguimiento de Implementación
+
+- [ ] Fase 1: Clientes Supabase
+- [ ] Fase 2: Contextos de Autenticación
+- [ ] Fase 3: Middleware y Rutas
+- [ ] Fase 4: Componentes y Páginas
+- [ ] Pruebas y Validación
+- [ ] Documentación
+
+## 5. Consideraciones de Seguridad
+
+1. **Tokens y Sesiones**:
+   - Tokens separados por contexto
+   - Expiración adecuada
+   - Refresh tokens seguros
+
+2. **Almacenamiento**:
+   - Datos sensibles en httpOnly cookies
+   - Estado no sensible en localStorage
+   - Limpieza adecuada al cerrar sesión
+
+3. **Headers y CORS**:
+   - Headers específicos por contexto
+   - Configuración CORS adecuada
+   - CSP headers
+
+## 6. Próximos Pasos
+
+1. Aplicar cambios en Supabase
+2. Implementar nueva estructura de directorios
+3. Migrar código existente
+4. Implementar pruebas
+5. Validar funcionamiento
+6. Documentar cambios
+

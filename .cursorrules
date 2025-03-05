@@ -1,0 +1,100 @@
+*Administrative Panel Context*
+This panel is designed to manage a padel court rental system, integrating functionalities such as user management, booking, pricing, classes, tournaments, promotions, and key business statistics. The frontend will be built with *Next.js, **React, and styled using **TailwindCSS, **Shadcn UI, and **Radix UI* to ensure a modern, professional, and aesthetic design. This project will only serve as a demo of the frontend, so it won't be connected to any database or backend.
+
+*Panel Sections*:
+1. *Users*: Form to create new users.
+2. *Bookings*: Form to register bookings, along with an interactive table to edit or delete bookings.
+3. *Pricing*: A table or form to manage court and accessory pricing.
+4. *Classes*: Form to create and assign schedules to classes.
+5. *Tournaments*: Form to create new tournaments with details such as dates, participants, and prizes.
+6. *Company Info*: Editable general information about the company.
+7. *Promotions*: Manage promotions with options to add, modify, or delete them.
+8. *Analytics*: Interactive graphs showing key system data (number of bookings, revenue, etc.).
+
+ React Best Practices:
+
+Use functional components and hooks instead of class components
+Implement proper React memo and useMemo for performance optimization
+Follow the React hooks rules strictly
+Utilize context API for state management across components
+Implement error boundaries to catch and handle errors gracefully
+
+Next.js Standards:
+
+Utilize Next.js App Router for better performance and improved routing
+Implement proper error boundaries and error handling
+Use proper data fetching patterns with suspense and concurrent rendering
+Leverage Next.js built-in optimizations like code splitting and image optimization
+Implement server-side rendering and static site generation where appropriate
+
+TypeScript Practices:
+
+Use TypeScript strict mode for better type safety and catching potential errors
+Follow proper type definitions and use interfaces and types effectively
+Implement comprehensive error handling with proper type guards
+Utilize generics for reusable components and functions
+Leverage TypeScript's advanced features like conditional types and mapped types
+
+Zod Best Practices:
+
+Use Zod for runtime type checking and validation
+Define schemas for all data structures and API responses
+Implement custom validation rules where necessary
+Utilize Zod's integration with React Hook Form for form validation
+Leverage Zod's type inference for TypeScript integration
+
+React Hook Form Best Practices:
+
+Use React Hook Form for efficient form handling and validation
+Implement proper form validation using Zod or Yup
+Utilize the useForm hook for managing form state and validation
+Leverage the Controller component for integrating with custom inputs
+Implement proper error handling and display for form validation
+
+TanStack Query Best Practices:
+
+Use TanStack Query for efficient data fetching and caching
+Implement proper query keys for cache invalidation and refetching
+Utilize mutations for handling side effects and optimistic updates
+Leverage the useQuery hook for fetching data and managing loading states
+Implement proper error handling and retries for failed queries
+
+Supabase Best Practices:
+
+Use Supabase for real-time database and authentication
+Implement proper error handling for database operations
+Utilize Supabase's real-time capabilities for live updates
+Leverage Supabase's authentication helpers for secure user management
+Implement proper data validation and sanitization before database operations
+
+Stripe Best Practices:
+
+Use Stripe for secure payment processing
+Implement proper error handling for payment operations
+Utilize Stripe's client-side elements for secure card input
+Leverage Stripe's server-side SDK for handling webhooks and payment intents
+Implement proper PCI compliance measures for handling sensitive payment data
+
+Axios Best Practices:
+
+Use Axios for making HTTP requests
+Implement proper error handling for network requests
+Utilize Axios interceptors for adding global request/response handling
+Leverage Axios' cancel token feature for cancelling ongoing requests
+Implement proper timeout settings for network requests
+
+Zustand Best Practices:
+
+Use Zustand for simple and efficient state management
+Implement proper state slicing for better performance
+Utilize middleware like devtools and persist for enhanced functionality
+Leverage Zustand's shallow comparison for optimized re-renders
+Implement proper state normalization for complex data structures
+
+Tailwind CSS Best Practices:
+
+Use Tailwind CSS for utility-first styling
+Implement proper responsive design using Tailwind's breakpoints
+Utilize Tailwind's custom theme configuration for consistent styling
+Leverage Tailwind's JIT mode for faster build times and smaller bundle sizes
+Implement proper accessibility practices with Tailwind's utility classes

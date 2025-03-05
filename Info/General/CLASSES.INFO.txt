@@ -1,0 +1,444 @@
+-- Detalles de los triggers relacionados con la tabla 
+
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170828",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170829",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170833",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_170834",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_classes_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "update_updated_at_column",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin\r\n    new.updated_at = now();\r\n    return new;\r\nend;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_228973",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_228974",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "classes",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]
+
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "empresa_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "created_at",
+    "ordinal_position": 3,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "updated_at",
+    "ordinal_position": 4,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "name",
+    "ordinal_position": 5,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "description",
+    "ordinal_position": 6,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "visibility",
+    "ordinal_position": 7,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 50,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "start_date",
+    "ordinal_position": 9,
+    "data_type": "date",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "end_date",
+    "ordinal_position": 10,
+    "data_type": "date",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "is_recurring",
+    "ordinal_position": 11,
+    "data_type": "boolean",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "false"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "schedule_config",
+    "ordinal_position": 12,
+    "data_type": "jsonb",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "available_payment_methods",
+    "ordinal_position": 15,
+    "data_type": "ARRAY",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "payment_config",
+    "ordinal_position": 16,
+    "data_type": "jsonb",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "status",
+    "ordinal_position": 17,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 50,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'active'::character varying"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "created_by",
+    "ordinal_position": 18,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "min_students",
+    "ordinal_position": 20,
+    "data_type": "integer",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": "1"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "classes",
+    "column_name": "branch_id",
+    "ordinal_position": 22,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Restricciones
+
+[
+  {
+    "constraint_name": "classes_branch_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "classes_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "classes_status_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "classes_visibility_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "fk_created_by",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "fk_empresa_id",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "2200_170808_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_7_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_9_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_12_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_15_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_16_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_17_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_170808_18_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Listar las políticas asociadas con la tabla
+
+
+[
+  {
+    "policy_name": "Actualizar clases",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 824} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 837}) :location 835}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Crear clases",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 684} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 697}) :location 695}"
+  },
+  {
+    "policy_name": "Eliminar clases",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 958} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 971}) :location 969}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Ver clases",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{BOOLEXPR :boolop or :args ({OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({RELABELTYPE :arg {VAR :varno 1 :varattno 7 :vartype 1043 :vartypmod 54 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location 520} :resulttype 25 :resulttypmod -1 :resultcollid 100 :relabelformat 2 :location -1} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 533 :constvalue 10 [ 40 0 0 0 112 117 98 108 105 99 ]}) :location 531} {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 551} {FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 564}) :location 562}) :location 548}",
+    "with_check_expression": null
+  }
+]
+
+-- Índices de la tabla
+
+
+[
+  {
+    "indexname": "classes_pkey",
+    "indexdef": "CREATE UNIQUE INDEX classes_pkey ON public.classes USING btree (id)"
+  },
+  {
+    "indexname": "idx_classes_visibility",
+    "indexdef": "CREATE INDEX idx_classes_visibility ON public.classes USING btree (visibility)"
+  },
+  {
+    "indexname": "idx_classes_status",
+    "indexdef": "CREATE INDEX idx_classes_status ON public.classes USING btree (status)"
+  },
+  {
+    "indexname": "idx_classes_start_date",
+    "indexdef": "CREATE INDEX idx_classes_start_date ON public.classes USING btree (start_date)"
+  },
+  {
+    "indexname": "idx_classes_empresa_id",
+    "indexdef": "CREATE INDEX idx_classes_empresa_id ON public.classes USING btree (empresa_id)"
+  }
+]
+
+
+-- Relaciones (Llaves foráneas)
+
+
+[
+  {
+    "foreign_key": "created_by",
+    "referenced_table": "users",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "branch_id",
+    "referenced_table": "sedes",
+    "referenced_column": "id"
+  }
+]
+

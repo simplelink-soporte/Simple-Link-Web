@@ -1,0 +1,82 @@
+# Optimización de Estados de Carga y Autenticación en el Panel Administrativo
+
+## 1. Componentes Reutilizables de Estado
+Se han creado componentes reutilizables para manejar los diferentes estados de las páginas:
+- `PageLoadingState`: Para estados de carga
+- `PageErrorState`: Para estados de error
+- `PageEmptyState`: Para estados vacíos o sin datos
+
+## 2. Configuración de React Query
+En el archivo `providers.tsx`:
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutos
+      cacheTime: 1000 * 60 * 30, // 30 minutos
+      refetchOnWindowFocus: false,
+      retry: 1
+    }
+  }
+})
+```
+
+## 3. Claves de Consulta Estandarizadas
+En `query-keys.ts`:
+```typescript
+export const queryKeys = {
+  auth: {
+    session: ['auth', 'session'],
+    user: ['auth', 'user']
+  },
+  forms: {
+    all: ['forms'],
+    byId: (id: string) => ['forms', id],
+    published: ['forms', 'published']
+  },
+  items: {
+    all: ['items'],
+    byBranch: (branchId: string) => ['items', 'branch', branchId]
+  }
+}
+```
+
+## 4. Optimización de Contextos
+Se han optimizado los contextos principales:
+
+### AuthContext
+- Implementación de cache local para sesión
+- Reducción de verificaciones innecesarias
+- Mejor manejo de estados de carga
+
+### BranchContext
+- Cache de datos de sede
+- Verificaciones optimizadas
+- Estados de carga unificados
+
+## 5. Mejoras en las Páginas
+Se han estandarizado los estados de carga en todas las páginas del panel:
+
+### Páginas Optimizadas:
+- `/admin/dashboard/forms-a`
+- `/admin/dashboard/pricing`
+- `/admin/dashboard/users`
+
+### Características:
+- Estados de carga unificados
+- Manejo consistente de errores
+- Verificación de autenticación optimizada
+- Reducción de parpadeos y recargas innecesarias
+
+## 6. Resultados
+- Reducción del mensaje "Verificando autenticación..."
+- Mejor experiencia de usuario
+- Menor cantidad de recargas
+- Estados de carga más consistentes
+- Mejor manejo de errores
+
+## 7. Próximos Pasos
+1. Implementar Suspense boundaries
+2. Agregar prefetching de datos comunes
+3. Optimizar más las consultas paralelas
+4. Implementar skeleton loaders personalizados 

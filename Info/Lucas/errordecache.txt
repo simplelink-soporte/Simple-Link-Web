@@ -1,0 +1,198 @@
+AuthContext.tsx:261 Verificando sesión inicial
+BranchContext.tsx:45 🔍 Buscando empresa para usuario: cbe8d90a-1b44-4e22-a904-740cb4b632db
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+AppInitializer.tsx:88 Iniciando proceso de inicialización
+AppInitializer.tsx:31 Estado actual: Object
+AppInitializer.tsx:61 Iniciando inicialización con userId: cbe8d90a-1b44-4e22-a904-740cb4b632db
+appStore.ts:76 Iniciando inicialización del store: Object
+appStore.ts:83 Usando datos del caché
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+AppInitializer.tsx:63 Inicialización completada exitosamente
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+AuthContext.tsx:270 Cambio en estado de autenticación: INITIAL_SESSION
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+AuthContext.tsx:270 Cambio en estado de autenticación: INITIAL_SESSION
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:55 ✅ Empresa encontrada: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:28 💾 Empresa ID guardado en caché: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:75 🔍 Buscando sedes para empresa: 0e32990e-3675-436b-802c-632dd51acd94
+BranchContext.tsx:107 ⏳ Esperando carga de dependencias...
+BranchContext.tsx:94 ✅ Sedes encontradas: 2
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+bookingService.ts:1071 BookingService - Consultando reservas para fecha: 2025-02-10
+bookingService.ts:1071 BookingService - Consultando reservas para fecha: 2025-02-11
+bookingService.ts:1071 BookingService - Consultando reservas para fecha: 2025-02-09
+useBusinessHours.ts:66 🔍 Consultando horarios para: Object
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+page.tsx:31 Invalidando queries en montaje inicial
+BranchContext.tsx:132 ✅ Usando sede guardada: ffff
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+courtService.ts:80 Datos procesados de la cancha: Object
+courtService.ts:80 Datos procesados de la cancha: Object
+courtService.ts:80 Datos procesados de la cancha: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+bookingService.ts:1159 BookingService - Reservas transformadas: Array(0)
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+useItems.ts:15 🔍 Iniciando carga de artículos para sede: 37744948-3a84-4f2e-b354-4f4452d3f42d
+useItems.ts:24 👉 Verificando existencia de la sede: 37744948-3a84-4f2e-b354-4f4452d3f42d
+useBusinessHours.ts:90 📅 Horarios de la sede: Object
+useBusinessHours.ts:110 ⏰ Procesando rango: Object
+useBusinessHours.ts:126 ✅ Resultado final: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:145 📊 Horario calculado: Object
+useBusinessHours.ts:145 📊 Horario calculado: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+useTimeSlots.ts:28 📍 Generando slots para horario: Object
+useTimeSlots.ts:63 🔄 Actualizando slots por cambio significativo
+useBusinessHours.ts:41 📅 Día actual: Object
+useBusinessHours.ts:41 📅 Día actual: Object
+useTimeSlots.ts:28 📍 Generando slots para horario: Object
+useItems.ts:41 ✅ Sede verificada: ffff
+useItems.ts:44 👉 Obteniendo artículos de la sede
+courtService.ts:80 Datos procesados de la cancha: Object
+courtService.ts:80 Datos procesados de la cancha: Object
+courtService.ts:80 Datos procesados de la cancha: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useCourts.ts:58 Procesando cancha en hook: Object
+useItems.ts:62 ✅ 0 artículos encontrados
+useItems.ts:122 ✅ Datos transformados correctamente
+OrganizationContext.tsx:102 ✅ Empresa cargada desde caché: Object
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useClasses.ts:56 🔍 Iniciando carga de clases... {empresaId: '0e32990e-3675-436b-802c-632dd51acd94', branchId: '37744948-3a84-4f2e-b354-4f4452d3f42d'}
+useClasses.ts:121 ✅ Clases cargadas: {empresaId: '0e32990e-3675-436b-802c-632dd51acd94', branchId: '37744948-3a84-4f2e-b354-4f4452d3f42d', count: 3}
+usePackages.ts:35 🔍 Iniciando carga de paquetes... {empresaId: '0e32990e-3675-436b-802c-632dd51acd94'}
+usePackages.ts:77 ✅ Paquetes procesados: {empresaId: '0e32990e-3675-436b-802c-632dd51acd94', count: 4, packages: Array(4)}
+2AuthContext.tsx:270 Cambio en estado de autenticación: SIGNED_IN
+BranchContext.tsx:132 ✅ Usando sede guardada: ffff
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:102 ✅ Empresa cargada desde caché: {id: '0e32990e-3675-436b-802c-632dd51acd94', name: 'Jennifer ', business_name: 'aaa', email: '55@55.com', phone: '+34555555', …}
+2AuthContext.tsx:270 Cambio en estado de autenticación: SIGNED_IN
+BranchContext.tsx:132 ✅ Usando sede guardada: ffff
+OrganizationContext.tsx:72 🔍 Buscando empresa_id en caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:83 🔍 Buscando empresa desde caché: 0e32990e-3675-436b-802c-632dd51acd94
+OrganizationContext.tsx:102 ✅ Empresa cargada desde caché: {id: '0e32990e-3675-436b-802c-632dd51acd94', name: 'Jennifer ', business_name: 'aaa', email: '55@55.com', phone: '+34555555', …}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useBusinessHours.ts:66 🔍 Consultando horarios para: {sede: '37744948-3a84-4f2e-b354-4f4452d3f42d', dia: 'monday', fecha: '10/02/2025'}
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:90 📅 Horarios de la sede: {friday: {…}, monday: {…}, sunday: {…}, tuesday: {…}, saturday: {…}, …}
+useBusinessHours.ts:110 ⏰ Procesando rango: {range: {…}, startMinutes: 480, endMinutes: 1320}
+useBusinessHours.ts:126 ✅ Resultado final: {isOpen: true, timeRanges: Array(1), fullRange: {…}}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:145 📊 Horario calculado: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:145 📊 Horario calculado: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useTimeSlots.ts:28 📍 Generando slots para horario: {start: '08:00', end: '22:00'}
+useTimeSlots.ts:63 🔄 Actualizando slots por cambio significativo
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useTimeSlots.ts:28 📍 Generando slots para horario: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 1', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista 2', available_durations: Array(1), duration_pricing: {…}, custom_pricing: {…}}
+useCourts.ts:58 Procesando cancha en hook: {name: 'Pista de jennifer', available_durations: Array(3), duration_pricing: {…}, custom_pricing: {…}}
+useBusinessHours.ts:66 🔍 Consultando horarios para: {sede: '37744948-3a84-4f2e-b354-4f4452d3f42d', dia: 'monday', fecha: '10/02/2025'}
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+useTimeSlots.ts:24 ⚠️ No hay horarios definidos
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:90 📅 Horarios de la sede: {friday: {…}, monday: {…}, sunday: {…}, tuesday: {…}, saturday: {…}, …}
+useBusinessHours.ts:110 ⏰ Procesando rango: {range: {…}, startMinutes: 480, endMinutes: 1320}
+useBusinessHours.ts:126 ✅ Resultado final: {isOpen: true, timeRanges: Array(1), fullRange: {…}}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:145 📊 Horario calculado: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:145 📊 Horario calculado: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useTimeSlots.ts:28 📍 Generando slots para horario: {start: '08:00', end: '22:00'}
+useTimeSlots.ts:63 🔄 Actualizando slots por cambio significativo
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useTimeSlots.ts:28 📍 Generando slots para horario: {start: '08:00', end: '22:00'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}
+useBusinessHours.ts:41 📅 Día actual: {spanishDay: 'lunes', dayOfWeek: 'monday', date: '10/02/2025'}

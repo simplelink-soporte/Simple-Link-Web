@@ -1,0 +1,81 @@
+# Guía del Sistema de Inscripción a Clases
+
+## Descripción General
+Sistema de inscripción a clases que permite a las empresas compartir un link único donde sus clientes pueden reservar clases y comprar paquetes. El sistema está construido con Next.js, React, y estilizado con TailwindCSS, Shadcn UI y Radix UI.
+
+## Estructura de URLs
+- `/clases`: Página principal que lista todas las empresas disponibles
+- `/clases/[empresaSlug]`: Formulario principal de inscripción
+- `/clases/[empresaSlug]/[classId]`: Vista específica de una clase
+- `/clases/login`: Página de autenticación
+
+## Identificación de Empresa
+- Cada empresa tiene un slug único en la URL
+- El sistema usa el servicio `linkService.ts` para buscar en la tabla "Company_links" de Supabase
+- La tabla relaciona el slug con el ID de la empresa, permitiendo cargar el contenido específico
+
+## Flujo de Inscripción
+1. **Selección de Paquetes** (`PackageSelectionStep.tsx`)
+   - Opcional: Los usuarios pueden comprar paquetes de clases
+   - Pueden continuar sin comprar un paquete
+   - Los paquetes otorgan un número específico de sesiones
+
+2. **Selección de Clases** (`ClassSelectionStep.tsx`)
+   - Muestra todas las clases disponibles de la empresa
+   - El usuario puede seleccionar una clase
+   - Las clases pueden ser recurrentes o únicas
+
+3. **Selección de Sesión** (`SessionStep.tsx`)
+   - Muestra horarios disponibles para la clase seleccionada
+   - Indica cupos disponibles
+   - Si el usuario tiene un paquete activo, no se muestra el precio
+
+4. **Resumen** (`SummaryStep.tsx`)
+   - Muestra los detalles de la inscripción
+   - Incluye fecha, horario y precio (si aplica)
+   - Verifica si se usará un paquete activo
+
+5. **Pago** (`PaymentStep.tsx`)
+   - Solo si no se usa un paquete
+   - Muestra métodos de pago permitidos por la empresa
+   - Opciones: efectivo, tarjeta, transferencia
+
+## Características Importantes
+- **Paquetes**:
+  - Se descuentan automáticamente al confirmar la inscripción
+  - El estado del paquete se muestra en `PackageStatusModal.tsx`
+  - Se almacenan en la tabla "user_packages" de Supabase
+
+- **Autenticación**:
+  - Requerida para acceder al formulario
+  - Registro disponible en la página de login
+  - No requiere verificación de email (MVP)
+
+- **Restricciones**:
+  - Un usuario solo puede inscribirse a una sesión a la vez
+  - Los cupos por sesión son limitados
+  - No se permite acceder directamente a pasos específicos
+
+## Aspectos Técnicos
+- **Middleware** (`middleware.ts`):
+  - Protege las rutas que requieren autenticación
+  - Redirige a login si no hay sesión activa
+
+- **Base de Datos** (Supabase):
+  - Company_links: Relación slug-empresa
+  - Classes: Información de clases y precios
+  - user_packages: Gestión de paquetes de usuarios
+
+## Limitaciones Actuales (MVP)
+- No hay personalización de apariencia por empresa
+- No hay sistema de cancelaciones/reembolsos automatizado
+- No hay verificación de email
+- No hay sistema de caché implementado
+- Visualización de inscripciones para empresas pendiente
+
+## Próximas Mejoras Sugeridas
+1. Implementar sistema de caché para optimizar cargas
+2. Añadir verificación de email
+3. Desarrollar sistema de cancelaciones
+4. Implementar personalización por empresa
+5. Crear panel de visualización de inscripciones para empresas

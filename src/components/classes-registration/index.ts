@@ -1,0 +1,7 @@
+export { ClassRegistrationForm } from './ClassRegistrationForm'
+export { ClassRegistrationProvider, useClassRegistration } from './context/ClassRegistrationContext'
+export { validatePackageData, validateAuthForm } from './validation/utils'
+export { packageSchema, authSchema } from './validation/schemas'
+export * from './types'
+export * from './hooks'
+export * from './shared'

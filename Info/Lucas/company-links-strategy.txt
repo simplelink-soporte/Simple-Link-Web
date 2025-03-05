@@ -1,0 +1,301 @@
+# Estrategia de Implementación: Sistema de Links Públicos para Reservas
+
+## 1. Visión General
+
+Este documento detalla la estrategia para implementar un sistema de links públicos para reservas, donde cada formulario publicado generará un registro en la tabla `company_links`, permitiendo acceder a la configuración del club (incluyendo Stripe) a través del slug único.
+
+## 2. Estructura de Datos
+
+### 2.1 Tabla company_links
+```sql
+-- Campos relevantes
+id: uuid (PK)
+empresa_id: uuid (FK -> empresas.id)
+slug: text (UNIQUE)
+type: text ('reservations')
+is_active: boolean
+settings: jsonb
+```
+
+### 2.2 Tipos TypeScript
+```typescript
+interface CompanyLink {
+  id: string;
+  empresa_id: string;
+  slug: string;
+  type: 'reservations';
+  is_active: boolean;
+  settings: {
+    title?: string;
+    description?: string;
+    theme?: 'light' | 'dark';
+    customization?: {
+      primaryColor?: string;
+      logo?: string;
+    };
+  };
+}
+```
+
+## 3. Flujo de Publicación
+
+### 3.1 Proceso de Publicación
+1. Club configura formulario en el panel
+2. Al publicar:
+   - Se genera slug único
+   - Se crea registro en company_links
+   - Se retorna URL pública
+
+### 3.2 Implementación
+```typescript
+// Servicio de publicación
+async function publishForm(empresaId: string, config: FormConfig) {
+  // 1. Generar slug único
+  const slug = await generateUniqueSlug(config.title);
+
+  // 2. Crear registro en company_links
+  const { data, error } = await supabase
+    .from('company_links')
+    .insert({
+      empresa_id: empresaId,
+      slug,
+      type: 'reservations',
+      is_active: true,
+      settings: {
+        title: config.title,
+        description: config.description,
+        theme: config.theme
+      }
+    })
+    .select()
+    .single();
+
+  // 3. Retornar URL pública
+  return {
+    url: `/forms/${slug}`,
+    slug,
+    id: data.id
+  };
+}
+```
+
+## 4. Acceso Público
+
+### 4.1 Ruta Pública
+```typescript
+// /app/forms/[slug]/page.tsx
+export async function generateMetadata({ params }: Props) {
+  const { slug } = params;
+  const link = await getCompanyLink(slug);
+  
+  return {
+    title: link.settings.title,
+    description: link.settings.description
+  };
+}
+
+export default async function PublicFormPage({ params }: Props) {
+  const { slug } = params;
+  const link = await getCompanyLink(slug);
+  
+  return (
+    <PublicFormProvider link={link}>
+      <FormSteps />
+    </PublicFormProvider>
+  );
+}
+```
+
+### 4.2 Contexto del Formulario Público
+```typescript
+interface PublicFormContext {
+  empresaId: string;
+  settings: CompanyLink['settings'];
+  slug: string;
+}
+
+// Hook para acceder al contexto
+function usePublicForm() {
+  const context = useContext(PublicFormContext);
+  if (!context) throw new Error('usePublicForm must be used within PublicFormProvider');
+  return context;
+}
+```
+
+## 5. Integración con Stripe
+
+### 5.1 Modificación del StripeProvider
+```typescript
+function StripeProvider({ children }: { children: ReactNode }) {
+  // Obtener empresaId del contexto del formulario público
+  const { empresaId } = usePublicForm();
+  const config = useStripeConfig(empresaId);
+
+  return (
+    <Elements stripe={stripePromise}>
+      <CustomStripeProvider {...config}>
+        {children}
+      </CustomStripeProvider>
+    </Elements>
+  );
+}
+```
+
+## 6. Implementación por Fases
+
+### Fase 1: Publicación [PRIORIDAD ALTA]
+- [ ] Implementar generación de slugs únicos
+- [ ] Crear endpoint de publicación
+- [ ] Agregar UI para publicación en el panel
+- [ ] Validaciones y manejo de errores
+
+### Fase 2: Acceso Público [PRIORIDAD ALTA]
+- [ ] Implementar ruta pública con parámetro slug
+- [ ] Crear PublicFormProvider y contexto
+- [ ] Integrar con StripeProvider
+- [ ] Manejar casos de error (link no encontrado, inactivo)
+
+### Fase 3: Personalización [PRIORIDAD MEDIA]
+- [ ] Implementar temas y personalización
+- [ ] Preview en tiempo real
+- [ ] Guardar configuración en settings
+
+### Fase 4: Analytics [PRIORIDAD BAJA]
+- [ ] Tracking de visitas
+- [ ] Conversiones
+- [ ] Dashboard de analytics
+
+## 7. Consideraciones de Seguridad
+
+1. **Validaciones**:
+   - Slugs únicos y seguros
+   - Verificación de empresa_id
+   - Estado is_active
+
+2. **Rate Limiting**:
+   - Limitar intentos de acceso
+   - Proteger endpoints de publicación
+
+3. **Auditoría**:
+   - Logging de publicaciones
+   - Tracking de cambios en settings
+
+## 8. Mejores Prácticas
+
+1. **URLs**:
+   - Usar slugs amigables
+   - Mantener consistencia en rutas
+   - Manejar redirects
+
+2. **SEO**:
+   - Metadata dinámica
+   - Sitemap para links públicos
+   - OpenGraph tags
+
+3. **Performance**:
+   - Caché de configuración
+   - Lazy loading de componentes
+   - Optimización de assets
+
+## 9. Próximos Pasos
+
+1. Implementar generador de slugs
+2. Crear endpoint de publicación
+3. Desarrollar UI de publicación
+4. Implementar ruta pública
+5. Integrar con Stripe
+
+## 10. Queries SQL Útiles
+
+```sql
+-- Crear índices necesarios
+CREATE INDEX idx_company_links_slug ON company_links(slug);
+CREATE INDEX idx_company_links_empresa_type ON company_links(empresa_id, type);
+
+-- Buscar link por slug
+SELECT cl.*, e.name as empresa_name
+FROM company_links cl
+JOIN empresas e ON e.id = cl.empresa_id
+WHERE cl.slug = $slug AND cl.is_active = true;
+
+-- Stats básicos
+SELECT 
+  type,
+  COUNT(*) as total,
+  COUNT(CASE WHEN is_active THEN 1 END) as active
+FROM company_links
+GROUP BY type;
+```
+
+## 11. Endpoints Necesarios
+
+1. **Publicación**:
+```typescript
+POST /api/forms/publish
+Body: {
+  title: string;
+  description?: string;
+  theme?: 'light' | 'dark';
+  settings?: Record<string, any>;
+}
+```
+
+2. **Actualización**:
+```typescript
+PATCH /api/forms/[slug]
+Body: {
+  title?: string;
+  description?: string;
+  is_active?: boolean;
+  settings?: Record<string, any>;
+}
+```
+
+3. **Obtener Configuración**:
+```typescript
+GET /api/forms/[slug]/config
+Response: {
+  empresaId: string;
+  settings: CompanyLink['settings'];
+  stripeConfig?: {
+    accountId: string;
+    isConnected: boolean;
+  };
+}
+```
+
+## 12. Manejo de Errores
+
+1. **Errores de Publicación**:
+   - Slug duplicado
+   - Empresa no encontrada
+   - Configuración inválida
+
+2. **Errores de Acceso**:
+   - Link no encontrado
+   - Link inactivo
+   - Empresa sin Stripe
+
+3. **Mensajes al Usuario**:
+   - Claros y descriptivos
+   - Acciones sugeridas
+   - Soporte de idiomas
+
+## 13. Testing
+
+1. **Unit Tests**:
+   - Generación de slugs
+   - Validaciones
+   - Transformaciones
+
+2. **Integration Tests**:
+   - Flujo de publicación
+   - Acceso público
+   - Integración Stripe
+
+3. **E2E Tests**:
+   - Customer journey
+   - Edge cases
+   - Performance
+
+Esta estrategia garantiza una implementación robusta y escalable del sistema de links públicos, manteniendo la seguridad y usabilidad como prioridades. 

@@ -1,0 +1,168 @@
+# Diagnóstico y Solución del Sistema de Conteo de Reservas
+
+## 1. Estado Actual del Sistema
+
+### 1.1 Flujo de Planes
+1. **Onboarding**
+   - Usuario selecciona plan (FREE o PRO)
+   - Se crea registro en `empresas` con plan_type correspondiente
+   - Al completar onboarding, se cierra sesión para asegurar sincronización
+
+2. **Verificación de Plan**
+   - Fuente principal: Tabla `empresas`
+   - Configuración: Tabla `subscription_plans`
+   - Metadatos: Cache para UI
+
+### 1.2 Estructura de Datos
+```typescript
+// Tabla empresas
+{
+  id: string
+  plan_type: 'FREE' | 'PRO'
+  plan_id: string (FK -> subscription_plans)
+  plan_updated_at: timestamp
+}
+
+// Tabla subscription_plans
+{
+  id: string
+  code: 'FREE' | 'PRO'
+  daily_booking_limit: number
+  reset_period: 'DAILY' | 'WEEKLY' | 'MONTHLY'
+}
+```
+
+## 2. Funcionamiento del Sistema
+
+### 2.1 Gestión de Planes
+1. **Plan FREE**
+   - Asignado durante onboarding
+   - Límites definidos en `subscription_plans`
+   - No requiere suscripción activa
+
+2. **Plan PRO**
+   - Requiere pago y suscripción activa
+   - Límites ilimitados
+   - Registro en tabla `subscriptions`
+
+### 2.2 Verificación de Límites
+```typescript
+async function getCompanyPlanInfo(empresaId: string) {
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select(`
+      plan_type,
+      plan_id,
+      plan_updated_at,
+      subscription_plans (
+        daily_booking_limit,
+        code
+      )
+    `)
+    .eq('id', empresaId)
+    .single()
+
+  const isPro = empresa.plan_type === 'PRO'
+  return {
+    isPro,
+    limit: isPro ? Number.MAX_SAFE_INTEGER : empresa.subscription_plans.daily_booking_limit,
+    planUpdatedAt: empresa.plan_updated_at
+  }
+}
+```
+
+### 2.3 Interfaz de Usuario
+- `PromoCard`: Solo visible para planes FREE
+- `BookingLimitStatus`: Muestra límites para planes FREE
+- `PlanInfo`: Muestra detalles del plan actual
+
+## 3. Mejoras Implementadas
+
+1. **Simplificación de Verificación**
+   - Eliminación de dependencia de metadatos
+   - Uso de tabla `empresas` como fuente única de verdad
+   - Cierre de sesión al completar onboarding
+
+2. **Gestión de Datos**
+   - Actualización directa en `empresas`
+   - Sincronización automática al reiniciar sesión
+   - Mejor manejo de estados de carga
+
+3. **Experiencia de Usuario**
+   - Feedback claro sobre tipo de plan
+   - Visualización de límites para FREE
+   - Proceso de upgrade simplificado
+
+## 4. Consideraciones Importantes
+
+### 4.1 Cambios de Plan
+1. **FREE a PRO**
+   - Actualización de `plan_type` en `empresas`
+   - Creación de registro en `subscriptions`
+   - Actualización de `plan_updated_at`
+
+2. **Cancelación PRO**
+   - Actualización a FREE en `empresas`
+   - Marcado de suscripción como inactiva
+   - Reset de límites
+
+### 4.2 Seguridad
+- Verificación en backend para cada operación
+- Validación de límites en tiempo real
+- Protección contra manipulación de metadatos
+
+## 5. Recomendaciones
+
+### 5.1 Desarrollo
+1. **Validaciones**
+   - Verificar plan_type antes de operaciones críticas
+   - Validar límites en backend
+   - Mantener sincronización de datos
+
+2. **Monitoreo**
+   - Logs de cambios de plan
+   - Alertas de límites alcanzados
+   - Tracking de uso
+
+### 5.2 Mantenimiento
+1. **Base de Datos**
+   - Índices en campos críticos
+   - Limpieza periódica de datos
+   - Backups regulares
+
+2. **Cache**
+   - Invalidación apropiada
+   - TTL adecuado
+   - Manejo de errores
+
+## 6. Datos Útiles
+
+### 6.1 Endpoints Críticos
+```typescript
+GET /api/booking-count
+- Parámetros: empresaId, date
+- Retorna: límites y estado actual
+
+POST /api/booking-count
+- Parámetros: empresaId, date, action
+- Acciones: increment, decrement, reset
+```
+
+### 6.2 Consultas Frecuentes
+```sql
+-- Verificar plan actual
+SELECT plan_type, plan_updated_at 
+FROM empresas 
+WHERE id = :empresa_id;
+
+-- Obtener límites
+SELECT sp.daily_booking_limit 
+FROM empresas e 
+JOIN subscription_plans sp ON e.plan_id = sp.id 
+WHERE e.id = :empresa_id;
+```
+
+### 6.3 Valores por Defecto
+- FREE plan: 90 reservas/día
+- Período de reset: Mensual
+- Cache TTL: 5 minutos

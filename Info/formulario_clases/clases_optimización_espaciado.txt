@@ -1,0 +1,201 @@
+# Diagnóstico de Layout y Espaciado - Formulario de Clases
+
+## 1. Estructura Actual
+
+### Jerarquía de Contenedores
+1. Layout Principal (app/clases/layout.tsx)
+   - Maneja el contenedor más externo
+   - Define el fondo y el contenedor máximo
+   - Usa flexbox para centrado vertical y horizontal
+
+2. ClassRegistrationForm
+   - Implementa un BaseContainer con:
+     - min-height: 600px
+     - max-width: 1400px
+     - Centrado con flexbox
+     - Posicionamiento relativo para elementos absolutos
+
+3. StepContainer (shared/StepContainer.tsx)
+   - Contenedor común para todos los pasos
+   - Implementa animaciones con Framer Motion
+   - Sistema de padding responsivo
+   - max-width: 90rem
+
+4. StepSection Components
+   - Header: Maneja títulos y subtítulos
+   - Section: Contenedor con bordes y padding
+   - Grid: Sistema de grid responsivo
+   - Actions: Espaciado para botones
+
+## 2. Problemas Identificados
+
+1. Inconsistencia en Tamaños Máximos
+   - BaseContainer usa max-width: 1400px
+   - StepContainer usa max-width: 90rem
+   - Esto puede causar saltos visuales entre pasos
+
+2. Anidamiento Excesivo
+   - Múltiples niveles de contenedores flex
+   - Posible impacto en rendimiento
+   - Complejidad innecesaria en algunos casos
+
+3. Espaciado Inconsistente
+   - Diferentes valores de padding/margin entre componentes
+   - No hay un sistema unificado de espaciado
+
+4. Responsividad Fragmentada
+   - Breakpoints no consistentes entre componentes
+   - Valores hardcodeados en lugar de variables
+
+## 3. Buenas Prácticas Actuales
+
+✅ Uso de componentes reutilizables
+✅ Implementación de animaciones suaves
+✅ Sistema de grid responsivo
+✅ Uso de utilidad cn() para composición de clases
+✅ Tipado correcto con TypeScript
+
+## 4. Recomendaciones de Mejora
+
+1. Estandarización de Contenedores
+   - Unificar max-width en una constante/variable
+   - Establecer un sistema consistente de breakpoints
+   - Crear variables CSS para espaciado común
+
+2. Simplificación de Jerarquía
+   - Reducir niveles de anidamiento donde sea posible
+   - Consolidar lógica de layout en menos componentes
+   - Mantener separación de responsabilidades
+
+3. Sistema de Espaciado
+   - Implementar un sistema de espaciado basado en tokens
+   - Crear variables CSS para valores comunes
+   - Documentar y mantener consistencia
+
+4. Mejoras de Rendimiento
+   - Reducir re-renders innecesarios
+   - Optimizar animaciones
+   - Implementar lazy loading donde sea apropiado
+
+5. Responsividad
+   - Crear un sistema unificado de breakpoints
+   - Implementar mixins/utilidades para media queries
+   - Asegurar consistencia en todos los componentes
+
+## 5. Plan de Implementación
+
+1. Fase 1: Estandarización
+   - Crear archivo de configuración para tokens de diseño
+   - Definir sistema de espaciado
+   - Establecer breakpoints estándar
+
+2. Fase 2: Refactorización
+   - Actualizar contenedores principales
+   - Implementar nuevo sistema de espaciado
+   - Optimizar jerarquía de componentes
+
+3. Fase 3: Optimización
+   - Implementar mejoras de rendimiento
+   - Añadir pruebas de layout
+   - Documentar sistema actualizado
+
+## 6. Consideraciones Adicionales
+
+- Mantener compatibilidad con componentes existentes
+- Asegurar accesibilidad en todos los cambios
+- Documentar cambios para el equipo
+- Implementar sistema de pruebas para layouts
+
+## 7. Progreso de Implementación
+
+### Fase 1: Estandarización ✅ (Completada)
+
+1. Sistema de Tokens (Completado) ✅
+   - Creado archivo `src/config/theme.ts`
+   - Definidos tokens para:
+     - Breakpoints
+     - Contenedores
+     - Espaciado
+     - Layout
+     - Bordes
+
+2. Utilidades de Tema (Completado) ✅
+   - Creado archivo `src/lib/theme-utils.ts`
+   - Implementadas funciones para:
+     - Breakpoints responsivos
+     - Contenedores
+     - Espaciado
+     - Media queries
+     - Utilidades de Tailwind
+
+3. Variables CSS Globales (Completado) ✅
+   - Implementado en `src/styles/theme.css`
+   - Variables definidas para:
+     - Breakpoints
+     - Contenedores
+     - Espaciado
+     - Layout (padding, gap)
+     - Bordes
+     - Z-Index
+     - Transiciones
+
+4. Actualización de Componentes Base (Completado) ✅
+   - Completado:
+     - StepContainer actualizado con nuevas variables CSS
+     - Sistema de padding responsivo implementado
+     - Mejoras en la estructura de animaciones
+     - StepSection y componentes relacionados actualizados
+     - ClassRegistrationForm refactorizado
+     - Layout principal de clases actualizado
+
+### Fase 2: Refactorización 🔄 (En Progreso)
+
+1. Optimización de Jerarquía (En Progreso)
+   - Reducido anidamiento innecesario
+   - Mejorada la estructura de componentes
+   - Implementado sistema consistente de espaciado
+
+2. Mejoras Visuales Implementadas
+   - Consistencia en anchos máximos
+   - Sistema de grid responsivo mejorado
+   - Espaciado uniforme entre componentes
+   - Transiciones y animaciones optimizadas
+
+### Archivos Afectados
+- ✨ Nuevos:
+  - `src/config/theme.ts`
+  - `src/lib/theme-utils.ts`
+  - `src/styles/theme.css`
+- ✅ Actualizados:
+  - `src/components/classes-registration/shared/StepContainer.tsx`
+  - `src/components/classes-registration/shared/StepSection.tsx`
+  - `src/components/classes-registration/ClassRegistrationForm.tsx`
+  - `src/app/clases/layout.tsx`
+
+### Mejoras Implementadas
+1. Consistencia Visual
+   - Ancho máximo estandarizado usando variables CSS
+   - Sistema de padding responsivo unificado
+   - Espaciado consistente entre componentes
+
+2. Optimización de Estructura
+   - Reducción de anidamiento innecesario
+   - Mejor organización de componentes
+   - Código más mantenible y escalable
+
+3. Mejoras de Rendimiento
+   - Optimización de animaciones
+   - Reducción de re-renders
+   - Mejor gestión de estados
+
+### Próximos Pasos
+1. Implementar pruebas de layout
+2. Documentar el sistema para el equipo
+3. Revisar rendimiento en dispositivos móviles
+4. Validar accesibilidad de los cambios
+
+### Consideraciones de Seguridad
+- Los cambios mantienen retrocompatibilidad
+- No se han eliminado funcionalidades existentes
+- Se preserva la estructura de navegación
+- Las animaciones son opcionales y no bloquean la interacción

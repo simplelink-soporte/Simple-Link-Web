@@ -1,0 +1,65 @@
+[
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Empresas pueden actualizar sus propias conexiones",
+    "policy_command": "UPDATE",
+    "policy_condition": "(auth.uid() IN ( SELECT empresas.auth_user_id\n   FROM empresas\n  WHERE empresas.id = stripe_connections.empresa_id))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Empresas pueden crear sus propias conexiones",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "(auth.uid() IN ( SELECT empresas.auth_user_id\n   FROM empresas\n  WHERE empresas.id = stripe_connections.empresa_id))",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Empresas pueden eliminar sus propias conexiones",
+    "policy_command": "DELETE",
+    "policy_condition": "(auth.uid() IN ( SELECT empresas.auth_user_id\n   FROM empresas\n  WHERE empresas.id = stripe_connections.empresa_id))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Empresas pueden ver sus propias conexiones",
+    "policy_command": "SELECT",
+    "policy_condition": "(auth.uid() IN ( SELECT empresas.auth_user_id\n   FROM empresas\n  WHERE empresas.id = stripe_connections.empresa_id))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Permitir inserción anónima",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "true",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Usuarios pueden eliminar sus propias conexiones",
+    "policy_command": "DELETE",
+    "policy_condition": "empresa_id = auth.uid() OR empresa_id = '36b56f21-f3f8-4af0-88d0-98b32975a9da'::uuid",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "stripe_connections",
+    "policy_name": "Usuarios pueden ver sus propias conexiones",
+    "policy_command": "SELECT",
+    "policy_condition": "empresa_id = auth.uid() OR empresa_id = '36b56f21-f3f8-4af0-88d0-98b32975a9da'::uuid",
+    "with_check_condition": "None",
+    "roles": "{}"
+  }
+]

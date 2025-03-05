@@ -1,0 +1,287 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "name",
+    "ordinal_position": 2,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "branch_id",
+    "ordinal_position": 3,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "sport",
+    "ordinal_position": 4,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "court_type",
+    "ordinal_position": 5,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "surface",
+    "ordinal_position": 6,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "features",
+    "ordinal_position": 7,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'[]'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "is_active",
+    "ordinal_position": 8,
+    "data_type": "boolean",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "available_durations",
+    "ordinal_position": 9,
+    "data_type": "ARRAY",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{60}'::integer[]"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "duration_pricing",
+    "ordinal_position": 10,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "custom_pricing",
+    "ordinal_position": 11,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "created_at",
+    "ordinal_position": 12,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "courts",
+    "column_name": "updated_at",
+    "ordinal_position": 13,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "courts_pkey",
+    "indexdef": "CREATE UNIQUE INDEX courts_pkey ON public.courts USING btree (id)"
+  },
+  {
+    "indexname": "courts_branch_id_idx",
+    "indexdef": "CREATE INDEX courts_branch_id_idx ON public.courts USING btree (branch_id)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "courts_branch_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "courts_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "valid_court_type",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "valid_sport",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "valid_surface",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_6_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_8_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_12_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32472_13_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "branch_id",
+    "referenced_table": "sedes",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'courts'
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_77938",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "courts",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_77939",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "courts",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32493",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "courts",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32494",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "courts",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  }
+]
+

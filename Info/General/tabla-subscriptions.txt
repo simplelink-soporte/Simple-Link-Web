@@ -1,0 +1,194 @@
+-- Información básica de la tabla
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "empresa_id",
+    "ordinal_position": 2,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "subscription_id",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "plan_status",
+    "ordinal_position": 4,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'active'::subscription_status"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "subscription_expires_at",
+    "ordinal_position": 5,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "last_payment_date",
+    "ordinal_position": 6,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "next_payment_date",
+    "ordinal_position": 7,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "payment_status",
+    "ordinal_position": 8,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "payment_amount",
+    "ordinal_position": 9,
+    "data_type": "numeric",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "currency",
+    "ordinal_position": 10,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'EUR'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "created_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "subscriptions",
+    "column_name": "updated_at",
+    "ordinal_position": 12,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'booking_participants'
+
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_128439",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "subscriptions",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_128440",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "subscriptions",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "handle_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "subscriptions",
+    "table_schema": "public",
+    "function_name": "moddatetime",
+    "function_definition": "CREATE OR REPLACE FUNCTION extensions.moddatetime()\n RETURNS trigger\n LANGUAGE c\nAS '$libdir/moddatetime', $function$moddatetime$function$\n"
+  }
+]

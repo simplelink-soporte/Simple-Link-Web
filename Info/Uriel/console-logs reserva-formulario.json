@@ -1,0 +1,3744 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "court",
+        "systemType": "shifts",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "court",
+        "systemType": "shifts",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 1,
+        "fieldType": "court",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 1,
+        "fieldType": "court",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "shifts",
+        "systemType": "shifts",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "shifts",
+        "systemType": "shifts",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "shifts",
+        "systemType": "shifts",
+        "component": "ShiftsPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "shifts",
+        "systemType": "shifts",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "shifts",
+        "systemType": "shifts",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "shifts",
+        "systemType": "shifts",
+        "component": "ShiftsPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "shifts",
+        "currentType": "shifts",
+        "currentStep": 1,
+        "nextStep": 2,
+        "hasNextField": true,
+        "totalFields": 5
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "shifts",
+        "systemType": "shifts",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "items",
+        "systemType": "items",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Validando orden:",
+      {
+        "currentType": "shifts",
+        "nextType": "items",
+        "STEP_ORDER": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ],
+        "totalSteps": 6
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Resultado de validación:",
+      {
+        "currentOrder": 2,
+        "nextOrder": 3,
+        "isValid": true,
+        "isSummaryToFarewell": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "court",
+        "currentType": "shifts",
+        "currentStep": 1,
+        "nextStep": 2,
+        "hasNextField": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Navegación completada al paso:",
+      2
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "players",
+        "systemType": "items",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "players",
+        "systemType": "items",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 2,
+        "fieldType": "players",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 2,
+        "fieldType": "players",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "items",
+        "systemType": "items",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "items",
+        "systemType": "items",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "items",
+        "systemType": "items",
+        "component": "ItemsPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "items",
+        "systemType": "items",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "items",
+        "systemType": "items",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "items",
+        "systemType": "items",
+        "component": "ItemsPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormContent] Estado actual:",
+      {
+        "currentStep": 2,
+        "totalSteps": 4,
+        "currentField": "players",
+        "currentType": "items",
+        "nextField": "summary",
+        "showNextButton": false,
+        "isNextDisabled": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Iniciando carga de artículos para sede:",
+      "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "👉 Verificando existencia de la sede:",
+      "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sede verificada:",
+      "Sede 2"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "👉 Obteniendo artículos de la sede"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ 5 artículos encontrados"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 1",
+        "duration": 60,
+        "price": 10
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 1",
+        "duration": 90,
+        "price": 16
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando duration_pricing para item:",
+      {
+        "itemName": "Artículo 1",
+        "originalPricing": {
+          "60": 10,
+          "90": 16
+        },
+        "processedPricing": {
+          "60": 10,
+          "90": 16
+        },
+        "availableDurations": [
+          "60",
+          "90"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 2",
+        "duration": 60,
+        "price": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 2",
+        "duration": 90,
+        "price": 17
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando duration_pricing para item:",
+      {
+        "itemName": "Artículo 2",
+        "originalPricing": {
+          "60": 12,
+          "90": 17
+        },
+        "processedPricing": {
+          "60": 12,
+          "90": 17
+        },
+        "availableDurations": [
+          "60",
+          "90"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 3",
+        "duration": 30,
+        "price": 10
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 3",
+        "duration": 60,
+        "price": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 3",
+        "duration": 90,
+        "price": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando duration_pricing para item:",
+      {
+        "itemName": "Artículo 3",
+        "originalPricing": {
+          "30": 10,
+          "60": 12,
+          "90": 15
+        },
+        "processedPricing": {
+          "30": 10,
+          "60": 12,
+          "90": 15
+        },
+        "availableDurations": [
+          "30",
+          "60",
+          "90"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 4",
+        "duration": 30,
+        "price": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 4",
+        "duration": 60,
+        "price": 10
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 4",
+        "duration": 90,
+        "price": 14.5
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando duration_pricing para item:",
+      {
+        "itemName": "Artículo 4",
+        "originalPricing": {
+          "30": 12,
+          "60": 10,
+          "90": 14.5
+        },
+        "processedPricing": {
+          "30": 12,
+          "60": 10,
+          "90": 14.5
+        },
+        "availableDurations": [
+          "30",
+          "60",
+          "90"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 5",
+        "duration": 60,
+        "price": 10
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando precio por duración:",
+      {
+        "itemName": "Artículo 5",
+        "duration": 90,
+        "price": 14
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando duration_pricing para item:",
+      {
+        "itemName": "Artículo 5",
+        "originalPricing": {
+          "60": 10,
+          "90": 14
+        },
+        "processedPricing": {
+          "60": 10,
+          "90": 14
+        },
+        "availableDurations": [
+          "60",
+          "90"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos transformados correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Actualizando selectedItems:",
+      {
+        "61c7b47d-a093-4a9b-bacc-6f04b104d3ca": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Actualizando selectedItems:",
+      {
+        "61c7b47d-a093-4a9b-bacc-6f04b104d3ca": 1,
+        "19380ce9-78cc-473c-a9e0-b6c422415158": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormItemsContext - Actualizando selectedItems:",
+      {
+        "61c7b47d-a093-4a9b-bacc-6f04b104d3ca": 1,
+        "19380ce9-78cc-473c-a9e0-b6c422415158": 2
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "items",
+        "currentType": "items",
+        "currentStep": 2,
+        "nextStep": 3,
+        "hasNextField": true,
+        "totalFields": 5
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "items",
+        "systemType": "items",
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Validando orden:",
+      {
+        "currentType": "items",
+        "nextType": "summary",
+        "STEP_ORDER": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ],
+        "totalSteps": 6
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Resultado de validación:",
+      {
+        "currentOrder": 3,
+        "nextOrder": 4,
+        "isValid": true,
+        "isSummaryToFarewell": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "players",
+        "currentType": "items",
+        "currentStep": 2,
+        "nextStep": 3,
+        "hasNextField": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Navegación completada al paso:",
+      3
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Current Selected Slot:",
+      {
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormContent] Estado actual:",
+      {
+        "currentStep": 3,
+        "totalSteps": 4,
+        "currentField": "summary",
+        "currentType": "summary",
+        "showNextButton": false,
+        "isNextDisabled": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": null,
+          "type": null
+        },
+        "type": null,
+        "hasMethod": false,
+        "hasSelectedMethod": false,
+        "hasType": false
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Método de pago inválido o faltante:",
+      {
+        "method": null
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Tipo de pago faltante"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": null,
+          "type": null
+        },
+        "type": null,
+        "hasMethod": false,
+        "hasSelectedMethod": false,
+        "hasType": false
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Método de pago inválido o faltante:",
+      {
+        "method": null
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Tipo de pago faltante"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] ID de empresa encontrado:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] No se puede cargar tarjetas:",
+      {
+        "stripeAccountId": null,
+        "isConnected": false,
+        "hasUser": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] No se puede cargar tarjetas:",
+      {
+        "stripeAccountId": null,
+        "isConnected": false,
+        "hasUser": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Iniciando búsqueda de configuración:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Iniciando búsqueda de configuración:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Configuración encontrada:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "status": "active",
+        "charges_enabled": true,
+        "is_active": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Configuración encontrada:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "status": "active",
+        "charges_enabled": true,
+        "is_active": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": null,
+        "stripeCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 1087ms"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Usando customerId desde useStoredCards:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 589ms"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 2,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-04T22:43:39.213Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 2,
+        "lastUpdate": "2025-03-04T22:43:40.066Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 2,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-04T22:43:39.043Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 2,
+        "lastUpdate": "2025-03-04T22:43:40.109Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Seleccionando tipo de pago: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      {
+        "id": "guarantee",
+        "name": "Garantía",
+        "description": "Dejar tarjeta como garantía",
+        "requiresCard": true
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] handlePaymentTypeSelect: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Actualizando tipo de pago global: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Flujo directo para tipo especial: guarantee, evitando modal"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] No hay método seleccionado, forzando actualización de tipo = guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Enviando evento especial de tipo de pago: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "special_type_update_1741128224885",
+        "type": "special",
+        "brand": "none",
+        "last4": "0000",
+        "expMonth": 1,
+        "expYear": 2030,
+        "name": "Actualización de tipo",
+        "description": "Evento especial para actualizar tipo de pago",
+        "__paymentContext": {
+          "selectedPaymentType": "guarantee",
+          "isTypeOnlyUpdate": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "guarantee",
+        "isTypeOnlyUpdate": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando tipo de pago:",
+      {
+        "prevType": null,
+        "newType": "guarantee",
+        "source": "handleSelectPaymentType"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Evento especial de actualización solo de tipo de pago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Tipo de pago actualizado en estado global"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Procesando selección de garantía sin modal"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "hasSelectedMethod": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": null,
+          "type": null
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": null,
+          "type": null
+        },
+        "type": null,
+        "hasMethod": false,
+        "hasSelectedMethod": false,
+        "hasType": false
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Método de pago inválido o faltante:",
+      {
+        "method": null
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[useSummaryBooking] Tipo de pago faltante"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 2,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-04T22:43:45.533Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 2,
+        "lastUpdate": "2025-03-04T22:43:45.716Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Seleccionando tarjeta:",
+      "pm_1Qy2jKC4oQv4vCtFbLHgXCs5"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando selección directa de tarjeta:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Actualizando método de pago global con:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] onSelectPaymentMethod de MobilePaymentContainer llamado:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryState] Actualizando método de pago:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global con:",
+      {
+        "method": "stripe",
+        "type": "guarantee",
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado de pago actualizado desde MobilePaymentContainer"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "guarantee"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "guarantee"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": null,
+          "type": null
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "brand": "mastercard",
+        "last4": "4444",
+        "expMonth": 5,
+        "expYear": 2032,
+        "type": "card",
+        "name": "mastercard terminada en 4444",
+        "description": "Expira: 05/2032"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Actualizando estado global de pago:",
+      {
+        "method": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "currentState": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Objeto de pago a actualizar:",
+      {
+        "method": "stripe",
+        "type": "guarantee",
+        "config": {
+          "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032
+        },
+        "selectedPaymentMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryPreview] Estado global actualizado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "guarantee"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado antes de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "incoming": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasSelectedMethod": true,
+        "incomingMethod": "stripe",
+        "incomingType": "guarantee"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "FormContext: Estado después de actualización:",
+      {
+        "current": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "updated": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "hasPaymentIntentId": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 3,
+        "fieldType": "summary",
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "summary",
+        "systemType": "summary",
+        "component": "SummaryPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Gestión de siguiente paso:",
+      {
+        "currentView": "payment",
+        "selectedType": "guarantee",
+        "selectedMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "hasStripeCustomerId": true,
+        "timestamp": "2025-03-04T22:43:50.945Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Avanzando al siguiente paso sin procesar pagos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Formulario válido, procediendo a farewell"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "summary",
+        "currentType": "summary",
+        "currentStep": 3,
+        "nextStep": 4,
+        "hasNextField": true,
+        "totalFields": 5
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "summary",
+        "systemType": "summary",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Validando orden:",
+      {
+        "currentType": "summary",
+        "nextType": "farewell",
+        "STEP_ORDER": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ],
+        "totalSteps": 6
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepOrder] Resultado de validación:",
+      {
+        "currentOrder": 4,
+        "nextOrder": 5,
+        "isValid": true,
+        "isSummaryToFarewell": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Iniciando navegación:",
+      {
+        "from": "summary",
+        "currentType": "summary",
+        "currentStep": 3,
+        "nextStep": 4,
+        "hasNextField": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Navigation] Navegación completada al paso:",
+      4
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MobilePaymentContainer] Estado de customerInfo:",
+      {
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormContent] Estado actual:",
+      {
+        "currentStep": 4,
+        "totalSteps": 4,
+        "showNextButton": false,
+        "isNextDisabled": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[FarewellPreview] Iniciando creación de reserva",
+      {
+        "isValid": true,
+        "validationErrors": [],
+        "currentPayment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "isCreating": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Iniciando creación de reserva con estado:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "calculations": {
+          "selectedItems": [
+            {
+              "id": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+              "name": "Artículo 2",
+              "price": 12,
+              "quantity": 1,
+              "total": 12
+            },
+            {
+              "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+              "name": "Artículo 1",
+              "price": 10,
+              "quantity": 2,
+              "total": 20
+            }
+          ],
+          "courtPrice": 30,
+          "itemsTotal": 32,
+          "subtotal": 62,
+          "discount": 0,
+          "total": 62
+        },
+        "validationErrors": [],
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "rentals": [],
+        "selectedItems": {
+          "61c7b47d-a093-4a9b-bacc-6f04b104d3ca": 1,
+          "19380ce9-78cc-473c-a9e0-b6c422415158": 2
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Datos de reserva preparados:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "courtPrice": 30,
+        "rentalItemsPrice": 32,
+        "paymentMethod": "stripe",
+        "paymentType": "guarantee",
+        "paymentStatus": "pending",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripe_payment_method_id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+        "rentals": [],
+        "paymentConfig": {
+          "type": "guarantee",
+          "defaultMethod": "stripe",
+          "defaultStatus": "pending"
+        },
+        "originalPaymentType": "guarantee"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Verificando disponibilidad para:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Validando configuración de pago:",
+      {
+        "payment": {
+          "method": "stripe",
+          "type": "guarantee",
+          "config": {
+            "paymentMethodId": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          "selectedPaymentMethod": {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032,
+            "type": "card",
+            "name": "mastercard terminada en 4444",
+            "description": "Expira: 05/2032"
+          }
+        },
+        "selectedMethod": {
+          "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+          "brand": "mastercard",
+          "last4": "4444",
+          "expMonth": 5,
+          "expYear": 2032,
+          "type": "card",
+          "name": "mastercard terminada en 4444",
+          "description": "Expira: 05/2032"
+        },
+        "type": "guarantee",
+        "hasMethod": true,
+        "hasSelectedMethod": true,
+        "hasType": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Método de pago válido encontrado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[useSummaryBooking] Tipo de pago válido:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Reservas encontradas:",
+      [
+        {
+          "id": "15e4b3d2-4a71-4f68-900b-16069fb7133b",
+          "start": "07:00:00",
+          "end": "08:30:00",
+          "status": "completed"
+        },
+        {
+          "id": "42ff690d-942e-471c-832d-ed5a18ee313b",
+          "start": "08:30:00",
+          "end": "10:00:00",
+          "status": "pending"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Cancha disponible:",
+      {
+        "court": "Pista 5",
+        "date": "2025-03-04",
+        "time": "11:00 - 12:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📝 Creando reserva con datos:",
+      {
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-04",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "courtPrice": 30,
+        "rentalItemsPrice": 32,
+        "paymentMethod": "stripe",
+        "paymentType": "guarantee",
+        "paymentStatus": "pending",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripe_payment_method_id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-03-04",
+          "start": "11:00",
+          "end": "12:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-04T11:00:00.000+01:00",
+          "localEnd": "2025-03-04T12:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-04",
+          "start": "10:00:00",
+          "end": "11:00:00",
+          "fullStartUTC": "2025-03-04T10:00:00.000Z",
+          "fullEndUTC": "2025-03-04T11:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Participantes transformados:",
+      {
+        "original": [
+          {
+            "id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "transformed": [
+          {
+            "user_id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Parámetros de la reserva:",
+      {
+        "p_court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "p_date": "2025-03-04",
+        "p_start_time": "10:00:00",
+        "p_end_time": "11:00:00",
+        "p_court_price": 30,
+        "p_rental_items_price": 32,
+        "p_payment_method": "stripe",
+        "p_payment_status": "pending",
+        "p_payment_type": "guarantee",
+        "p_deposit_amount": 0,
+        "p_title": null,
+        "p_description": null,
+        "p_participants": [
+          {
+            "user_id": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+            "role": "player"
+          }
+        ],
+        "p_rental_items": [],
+        "p_empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "p_stripe_payment_method_id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cambio en estado de autenticación:",
+      {
+        "event": "SIGNED_IN",
+        "timestamp": "2025-03-04T22:43:53.303Z",
+        "storageKey": "sb-padel-auth-token"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "hasMapping": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PublicFormLayout] Renderizando con:",
+      {
+        "currentStep": 4,
+        "slug": "formulario-03",
+        "isNextDisabled": false,
+        "showNextButton": false,
+        "nextLabel": "Siguiente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StepType] Normalizando tipo:",
+      {
+        "original": "farewell",
+        "systemType": "farewell",
+        "hasMapping": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Mapeando componente:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "availableTypes": [
+          "greeting",
+          "location",
+          "shifts",
+          "items",
+          "summary",
+          "farewell"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ComponentMapper] Componente encontrado:",
+      {
+        "originalType": "farewell",
+        "systemType": "farewell",
+        "component": "FarewellPreview"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Usando organización en caché"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Usando organización en caché"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 2056ms"
+    ]
+  }
+]

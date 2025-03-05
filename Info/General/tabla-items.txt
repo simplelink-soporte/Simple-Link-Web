@@ -1,0 +1,527 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "name",
+    "ordinal_position": 2,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "type",
+    "ordinal_position": 3,
+    "data_type": "text",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "duration_pricing",
+    "ordinal_position": 4,
+    "data_type": "jsonb",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "default_duration",
+    "ordinal_position": 5,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": "60"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "stock",
+    "ordinal_position": 6,
+    "data_type": "integer",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "requires_deposit",
+    "ordinal_position": 7,
+    "data_type": "boolean",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "false"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "deposit_amount",
+    "ordinal_position": 8,
+    "data_type": "numeric",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "is_active",
+    "ordinal_position": 9,
+    "data_type": "boolean",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "true"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "created_at",
+    "ordinal_position": 10,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "updated_at",
+    "ordinal_position": 11,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "timezone('utc'::text, now())"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "empresa_id",
+    "ordinal_position": 12,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "items",
+    "column_name": "sede_id",
+    "ordinal_position": 13,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "idx_items_empresa_id",
+    "indexdef": "CREATE INDEX idx_items_empresa_id ON public.items USING btree (empresa_id)"
+  },
+  {
+    "indexname": "idx_items_sede_id",
+    "indexdef": "CREATE INDEX idx_items_sede_id ON public.items USING btree (sede_id)"
+  },
+  {
+    "indexname": "idx_items_is_active",
+    "indexdef": "CREATE INDEX idx_items_is_active ON public.items USING btree (is_active)"
+  },
+  {
+    "indexname": "items_pkey",
+    "indexdef": "CREATE UNIQUE INDEX items_pkey ON public.items USING btree (id)"
+  },
+  {
+    "indexname": "items_empresa_id_idx",
+    "indexdef": "CREATE INDEX items_empresa_id_idx ON public.items USING btree (empresa_id)"
+  },
+  {
+    "indexname": "items_sede_id_idx",
+    "indexdef": "CREATE INDEX items_sede_id_idx ON public.items USING btree (sede_id)"
+  },
+  {
+    "indexname": "items_is_active_idx",
+    "indexdef": "CREATE INDEX items_is_active_idx ON public.items USING btree (is_active)"
+  },
+  {
+    "indexname": "items_created_at_idx",
+    "indexdef": "CREATE INDEX items_created_at_idx ON public.items USING btree (created_at)"
+  },
+  {
+    "indexname": "items_name_empresa_unique",
+    "indexdef": "CREATE UNIQUE INDEX items_name_empresa_unique ON public.items USING btree (name, empresa_id)"
+  },
+  {
+    "indexname": "items_name_idx",
+    "indexdef": "CREATE INDEX items_name_idx ON public.items USING btree (name)"
+  },
+  {
+    "indexname": "items_name_empresa_active_idx",
+    "indexdef": "CREATE INDEX items_name_empresa_active_idx ON public.items USING btree (name, empresa_id) WHERE (is_active = true)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "items_default_duration_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "items_deposit_amount_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "items_empresa_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "items_name_empresa_unique",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "items_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "items_sede_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "items_stock_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "items_type_check",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "valid_deposit_amount",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_3_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_4_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_5_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_6_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_7_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_9_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_10_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_11_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_32611_12_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "empresa_id",
+    "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "sede_id",
+    "referenced_table": "sedes",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'payments'
+[
+  {
+    "trigger_name": "items_handle_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "handle_updated_at",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.handle_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin\r\n  new.updated_at = now();\r\n  return new;\r\nend;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32631",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32632",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32636",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_32637",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "update_items_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "update_updated_at_column",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = TIMEZONE('utc', NOW());\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_42587",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_42588",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "items",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  }
+]
+
+-- políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Items are insertable by authenticated users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 1663} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1677 :constvalue 17 [ 68 0 0 0 97 117 116 104 101 110 116 105 99 97 116 101 100 ]}) :location 1675}"
+  },
+  {
+    "policy_name": "Items are updatable by authenticated users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 1862} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1876 :constvalue 17 [ 68 0 0 0 97 117 116 104 101 110 116 105 99 97 116 101 100 ]}) :location 1874}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Items are viewable by authenticated users",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 98 :opfuncid 67 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 100 :args ({FUNCEXPR :funcid 16533 :funcresulttype 25 :funcretset false :funcvariadic false :funcformat 0 :funccollid 100 :inputcollid 0 :args <> :location 1460} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 1474 :constvalue 17 [ 68 0 0 0 97 117 116 104 101 110 116 105 99 97 116 101 100 ]}) :location 1472}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden actualizar items de sus sedes",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 0 :subLinkId 0 :testexpr <> :operName <> :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias {ALIAS :aliasname s :colnames <>} :eref {ALIAS :aliasname s :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\")} :rtekind 0 :relid 31234 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 15 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias {ALIAS :aliasname e :colnames <>} :eref {ALIAS :aliasname e :colnames (\"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias <> :eref {ALIAS :aliasname unnamed_join :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\" \"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 2 :jointype 0 :joinmergedcols 0 :joinaliasvars ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location -1} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location -1} {VAR :varno 1 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 3 :location -1} {VAR :varno 1 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 4 :location -1} {VAR :varno 1 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 5 :location -1} {VAR :varno 1 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 6 :location -1} {VAR :varno 1 :varattno 7 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location -1} {VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location -1} {VAR :varno 1 :varattno 9 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 9 :location -1} {VAR :varno 1 :varattno 10 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 10 :location -1} {VAR :varno 1 :varattno 11 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 11 :location -1} {VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location -1} {VAR :varno 2 :varattno 2 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 2 :location -1} {VAR :varno 2 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 3 :location -1} {VAR :varno 2 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 4 :location -1} {VAR :varno 2 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 5 :location -1} {VAR :varno 2 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 6 :location -1} {VAR :varno 2 :varattno 7 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 7 :location -1} {VAR :varno 2 :varattno 8 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 8 :location -1} {VAR :varno 2 :varattno 9 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 9 :location -1} {VAR :varno 2 :varattno 10 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 10 :location -1} {VAR :varno 2 :varattno 11 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 11 :location -1} {VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 13 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 13 :location -1} {VAR :varno 2 :varattno 14 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 14 :location -1} {VAR :varno 2 :varattno 15 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 15 :location -1}) :joinleftcols (i 1 2 3 4 5 6 7 8 9 10 11 12) :joinrightcols (i 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) :join_using_alias <> :lateral false :inh false :inFromCl true :requiredPerms 0 :checkAsUser 0 :selectedCols (b) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({JOINEXPR :jointype 0 :isNatural false :larg {RANGETBLREF :rtindex 1} :rarg {RANGETBLREF :rtindex 2} :usingClause <> :join_using_alias <> :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location 903} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location 918}) :location 916} :alias <> :rtindex 3}) :quals {BOOLEXPR :boolop and :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 13 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 13 :location 934} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 950}) :location 948} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location 964} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 978 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 976} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location 992} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 1006 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 1004}) :location 960}} :targetList ({TARGETENTRY :expr {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 862 :constvalue 4 [ 1 0 0 0 0 0 0 0 ]} :resno 1 :resname ?column? :ressortgroupref 0 :resorigtbl 0 :resorigcol 0 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 841}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden crear items en sus sedes",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{SUBLINK :subLinkType 0 :subLinkId 0 :testexpr <> :operName <> :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias {ALIAS :aliasname s :colnames <>} :eref {ALIAS :aliasname s :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\")} :rtekind 0 :relid 31234 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 15 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias {ALIAS :aliasname e :colnames <>} :eref {ALIAS :aliasname e :colnames (\"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias <> :eref {ALIAS :aliasname unnamed_join :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\" \"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 2 :jointype 0 :joinmergedcols 0 :joinaliasvars ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location -1} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location -1} {VAR :varno 1 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 3 :location -1} {VAR :varno 1 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 4 :location -1} {VAR :varno 1 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 5 :location -1} {VAR :varno 1 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 6 :location -1} {VAR :varno 1 :varattno 7 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location -1} {VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location -1} {VAR :varno 1 :varattno 9 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 9 :location -1} {VAR :varno 1 :varattno 10 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 10 :location -1} {VAR :varno 1 :varattno 11 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 11 :location -1} {VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location -1} {VAR :varno 2 :varattno 2 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 2 :location -1} {VAR :varno 2 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 3 :location -1} {VAR :varno 2 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 4 :location -1} {VAR :varno 2 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 5 :location -1} {VAR :varno 2 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 6 :location -1} {VAR :varno 2 :varattno 7 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 7 :location -1} {VAR :varno 2 :varattno 8 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 8 :location -1} {VAR :varno 2 :varattno 9 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 9 :location -1} {VAR :varno 2 :varattno 10 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 10 :location -1} {VAR :varno 2 :varattno 11 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 11 :location -1} {VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 13 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 13 :location -1} {VAR :varno 2 :varattno 14 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 14 :location -1} {VAR :varno 2 :varattno 15 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 15 :location -1}) :joinleftcols (i 1 2 3 4 5 6 7 8 9 10 11 12) :joinrightcols (i 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) :join_using_alias <> :lateral false :inh false :inFromCl true :requiredPerms 0 :checkAsUser 0 :selectedCols (b) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({JOINEXPR :jointype 0 :isNatural false :larg {RANGETBLREF :rtindex 1} :rarg {RANGETBLREF :rtindex 2} :usingClause <> :join_using_alias <> :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location 601} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location 616}) :location 614} :alias <> :rtindex 3}) :quals {BOOLEXPR :boolop and :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 13 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 13 :location 632} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 648}) :location 646} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location 662} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 676 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 674} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location 690} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 704 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 702}) :location 658}} :targetList ({TARGETENTRY :expr {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 560 :constvalue 4 [ 1 0 0 0 0 0 0 0 ]} :resno 1 :resname ?column? :ressortgroupref 0 :resorigtbl 0 :resorigcol 0 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 539}"
+  },
+  {
+    "policy_name": "Usuarios pueden eliminar items de sus sedes",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 0 :subLinkId 0 :testexpr <> :operName <> :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias {ALIAS :aliasname s :colnames <>} :eref {ALIAS :aliasname s :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\")} :rtekind 0 :relid 31234 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 15 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias {ALIAS :aliasname e :colnames <>} :eref {ALIAS :aliasname e :colnames (\"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias <> :eref {ALIAS :aliasname unnamed_join :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\" \"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 2 :jointype 0 :joinmergedcols 0 :joinaliasvars ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location -1} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location -1} {VAR :varno 1 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 3 :location -1} {VAR :varno 1 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 4 :location -1} {VAR :varno 1 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 5 :location -1} {VAR :varno 1 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 6 :location -1} {VAR :varno 1 :varattno 7 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location -1} {VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location -1} {VAR :varno 1 :varattno 9 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 9 :location -1} {VAR :varno 1 :varattno 10 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 10 :location -1} {VAR :varno 1 :varattno 11 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 11 :location -1} {VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location -1} {VAR :varno 2 :varattno 2 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 2 :location -1} {VAR :varno 2 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 3 :location -1} {VAR :varno 2 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 4 :location -1} {VAR :varno 2 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 5 :location -1} {VAR :varno 2 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 6 :location -1} {VAR :varno 2 :varattno 7 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 7 :location -1} {VAR :varno 2 :varattno 8 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 8 :location -1} {VAR :varno 2 :varattno 9 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 9 :location -1} {VAR :varno 2 :varattno 10 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 10 :location -1} {VAR :varno 2 :varattno 11 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 11 :location -1} {VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 13 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 13 :location -1} {VAR :varno 2 :varattno 14 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 14 :location -1} {VAR :varno 2 :varattno 15 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 15 :location -1}) :joinleftcols (i 1 2 3 4 5 6 7 8 9 10 11 12) :joinrightcols (i 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) :join_using_alias <> :lateral false :inh false :inFromCl true :requiredPerms 0 :checkAsUser 0 :selectedCols (b) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({JOINEXPR :jointype 0 :isNatural false :larg {RANGETBLREF :rtindex 1} :rarg {RANGETBLREF :rtindex 2} :usingClause <> :join_using_alias <> :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location 1203} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location 1218}) :location 1216} :alias <> :rtindex 3}) :quals {BOOLEXPR :boolop and :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 13 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 13 :location 1234} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 1250}) :location 1248} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location 1264} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 1278 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 1276} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location 1292} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 1306 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 1304}) :location 1260}} :targetList ({TARGETENTRY :expr {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 1162 :constvalue 4 [ 1 0 0 0 0 0 0 0 ]} :resno 1 :resname ?column? :ressortgroupref 0 :resorigtbl 0 :resorigcol 0 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 1141}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Usuarios pueden ver items de sus sedes",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 0 :subLinkId 0 :testexpr <> :operName <> :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias {ALIAS :aliasname s :colnames <>} :eref {ALIAS :aliasname s :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\")} :rtekind 0 :relid 31234 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 15 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias {ALIAS :aliasname e :colnames <>} :eref {ALIAS :aliasname e :colnames (\"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 19) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>} {RANGETBLENTRY :alias <> :eref {ALIAS :aliasname unnamed_join :colnames (\"id\" \"organization_id\" \"name\" \"address\" \"phone\" \"manager_id\" \"opening_hours\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"empresa_id\" \"id\" \"name\" \"business_name\" \"tax_id\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"country\" \"logo_url\" \"is_active\" \"settings\" \"created_at\" \"updated_at\")} :rtekind 2 :jointype 0 :joinmergedcols 0 :joinaliasvars ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location -1} {VAR :varno 1 :varattno 2 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location -1} {VAR :varno 1 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 3 :location -1} {VAR :varno 1 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 4 :location -1} {VAR :varno 1 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 5 :location -1} {VAR :varno 1 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 1 :varattnosyn 6 :location -1} {VAR :varno 1 :varattno 7 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location -1} {VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location -1} {VAR :varno 1 :varattno 9 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 9 :location -1} {VAR :varno 1 :varattno 10 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 10 :location -1} {VAR :varno 1 :varattno 11 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 11 :location -1} {VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location -1} {VAR :varno 2 :varattno 2 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 2 :location -1} {VAR :varno 2 :varattno 3 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 3 :location -1} {VAR :varno 2 :varattno 4 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 4 :location -1} {VAR :varno 2 :varattno 5 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 5 :location -1} {VAR :varno 2 :varattno 6 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 6 :location -1} {VAR :varno 2 :varattno 7 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 7 :location -1} {VAR :varno 2 :varattno 8 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 8 :location -1} {VAR :varno 2 :varattno 9 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 9 :location -1} {VAR :varno 2 :varattno 10 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 10 :location -1} {VAR :varno 2 :varattno 11 :vartype 25 :vartypmod -1 :varcollid 100 :varlevelsup 0 :varnosyn 2 :varattnosyn 11 :location -1} {VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location -1} {VAR :varno 2 :varattno 13 :vartype 3802 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 13 :location -1} {VAR :varno 2 :varattno 14 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 14 :location -1} {VAR :varno 2 :varattno 15 :vartype 1184 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 15 :location -1}) :joinleftcols (i 1 2 3 4 5 6 7 8 9 10 11 12) :joinrightcols (i 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) :join_using_alias <> :lateral false :inh false :inFromCl true :requiredPerms 0 :checkAsUser 0 :selectedCols (b) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({JOINEXPR :jointype 0 :isNatural false :larg {RANGETBLREF :rtindex 1} :rarg {RANGETBLREF :rtindex 2} :usingClause <> :join_using_alias <> :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 12 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 12 :location 299} {VAR :varno 2 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 1 :location 314}) :location 312} :alias <> :rtindex 3}) :quals {BOOLEXPR :boolop and :args ({OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 13 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 13 :location 330} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 346}) :location 344} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 8 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location 360} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 374 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 372} {OPEXPR :opno 91 :opfuncid 60 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 2 :varattno 12 :vartype 16 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 2 :varattnosyn 12 :location 388} {CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 402 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}) :location 400}) :location 356}} :targetList ({TARGETENTRY :expr {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 258 :constvalue 4 [ 1 0 0 0 0 0 0 0 ]} :resno 1 :resname ?column? :ressortgroupref 0 :resorigtbl 0 :resorigcol 0 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 237}",
+    "with_check_expression": null
+  }
+]
+
+-- Consulta para obtener información sobre las políticas RLS de la tabla 'items'
+[
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are insertable by authenticated users",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.role() = 'authenticated'::text",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are updatable by authenticated users",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.role() = 'authenticated'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Items are viewable by authenticated users",
+    "policy_command": "SELECT",
+    "policy_condition": "auth.role() = 'authenticated'::text",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden actualizar items de sus sedes",
+    "policy_command": "UPDATE",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden crear items en sus sedes",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden eliminar items de sus sedes",
+    "policy_command": "DELETE",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "items",
+    "policy_name": "Usuarios pueden ver items de sus sedes",
+    "policy_command": "SELECT",
+    "policy_condition": "(EXISTS ( SELECT 1\n   FROM sedes s\n     JOIN empresas e ON s.empresa_id = e.id\n  WHERE items.sede_id = s.id AND s.is_active = true AND e.is_active = true))",
+    "with_check_condition": "None",
+    "roles": "{}"
+  }
+]

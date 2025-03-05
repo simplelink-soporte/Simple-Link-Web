@@ -1,0 +1,94 @@
+# Plan de Separación de Autenticación - Simple-link
+
+## 1. Estructura Actual y Problemas ✅
+
+### Problemas Identificados e Implementados:
+1. ✅ Cliente Supabase compartido entre panel y link de clases
+2. ✅ Contextos de autenticación mezclados
+3. ✅ Ciclo de vida de sesiones no aislado
+4. ✅ Limpieza de cliente afecta a ambos sistemas
+5. ✅ Estado en localStorage no separado
+
+### Archivos Existentes:
+- src/lib/supabase/client.ts
+- src/hooks/useAdminAuth.ts
+- src/hooks/useClientAuth.ts
+- src/contexts/AdminAuthContext.tsx
+- src/contexts/ClientAuthContext.tsx
+- src/app/clases/[empresaId]/page.tsx
+- src/components/auth/AdminLoginForm.tsx
+
+## 2. Plan de Implementación
+
+### Fase 1: Separación de Clientes Supabase ✅
+- ✅ Creado archivo admin.ts con configuración específica
+- ✅ Modificado client.ts con manejo de instancias
+- ✅ Implementada limpieza segura de clientes
+
+### Fase 2: Separación de Contextos de Autenticación ✅
+- ✅ Actualizado AdminAuthContext con estado específico
+- ✅ Actualizado ClientAuthContext con manejo simplificado
+- ✅ Implementada gestión de datos de empresa
+- ✅ Implementada limpieza segura de sesión
+
+### Fase 3: Gestión de Ciclo de Vida ✅
+- ✅ Modificados hooks de autenticación
+- ✅ Implementado sistema de conteo de instancias
+- ✅ Actualizada página de clases con limpieza controlada
+
+### Fase 4: Almacenamiento Local ✅
+- ✅ Separadas keys de localStorage
+- ✅ Implementadas utilidades de almacenamiento admin
+- ✅ Implementadas utilidades de almacenamiento cliente
+- ✅ Sistema de tipos mejorado
+
+### Fase 5: Middleware y Protección de Rutas ✅
+- ✅ Implementado middleware con separación de rutas
+- ✅ Creadas páginas de error y unauthorized
+- ✅ Configurada protección por roles
+- ✅ Implementado manejo de headers específicos
+
+## 3. Plan de Pruebas (En Progreso)
+1. Pruebas de Autenticación:
+   - [ ] Inicio de sesión admin
+   - [ ] Inicio de sesión cliente
+   - [ ] Persistencia de sesiones
+   - [ ] Cierre de sesión aislado
+
+2. Pruebas de Integración:
+   - [ ] Carga de sedes en panel
+   - [ ] Carga de clases en link
+   - [ ] Manejo de errores
+   - [ ] Estado concurrente
+
+3. Pruebas de Usuario:
+   - [ ] Flujo completo de panel
+   - [ ] Flujo completo de link de clases
+   - [ ] Escenarios de error
+
+## 4. Seguimiento de Implementación
+- [x] Fase 1: Separación de Clientes Supabase
+- [x] Fase 2: Separación de Contextos
+- [x] Fase 3: Gestión de Ciclo de Vida
+- [x] Fase 4: Almacenamiento Local
+- [x] Fase 5: Middleware y Protección
+- [ ] Pruebas Completas
+- [ ] Documentación Final
+
+## 5. Próximos Pasos
+1. Corregir error de ClientAuthProvider en página de clases
+2. Iniciar plan de pruebas sistemático
+3. Documentar cambios realizados
+4. Validar funcionamiento en todos los escenarios
+
+## 6. Consideraciones de Seguridad
+
+1. Validación de Tokens:
+   - Implementar validación por tipo de cliente
+   - Verificar roles y permisos
+   - Manejar expiración de sesiones
+
+2. Protección de Datos:
+   - Sanitizar datos de entrada
+   - Encriptar datos sensibles
+   - Implementar rate limiting

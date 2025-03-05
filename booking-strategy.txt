@@ -1,0 +1,363 @@
+# Estrategia de Implementación: Reserva en Formulario Público
+
+## 1. Estado Actual del Sistema
+
+### 1.1 Componentes Implementados
+- ✅ **UsersPreview**: Autenticación obligatoria funcional
+  - Login/Registro implementado
+  - Validaciones de campos configurables
+  - Persistencia de sesión
+
+- ✅ **LocationPreview**: Selección de sucursal funcional
+  - Integración con `useLocationBranches`
+  - Validación de empresa_id
+  - Filtrado de sucursales activas
+
+- ✅ **ShiftsPreview**: Selección de turnos funcional
+  - Calendario interactivo
+  - Filtros de horario y tipo de cancha
+  - Validación de disponibilidad en tiempo real
+
+- ✅ **ItemsPreview**: Selección de artículos funcional
+  - Verificación de stock en tiempo real
+  - Cálculo de precios dinámico
+  - Gestión de cantidades
+
+### 1.2 Servicios Implementados
+- ✅ **bookingService**:
+  - RPC `create_booking_v2` configurado
+  - Validaciones de datos
+  - Manejo de errores
+  - Transformación de datos
+
+### 1.3 Gestión de Estado
+- ✅ **FormContext**:
+  ```typescript
+  interface FormState {
+    location: {
+      branchId: string | null;
+      branchName?: string;
+    };
+    shift: {
+      date: string | null;
+      startTime: string | null;
+      endTime: string | null;
+      duration: number;
+      courtId: string | null;
+      courtName?: string;
+      price?: number;
+    };
+    items: {
+      selectedItems: Record<string, number>;
+    };
+    currentStep: number;
+    empresa_id: string | null;
+  }
+  ```
+
+## 2. Implementación Pendiente
+
+### 2.1 Preparación de Datos para RPC
+```typescript
+interface FormToRPCTransformer {
+  transformLocationData: () => Pick<BookingRPCData, 'p_court_id'>;
+  transformShiftData: () => Pick<BookingRPCData, 'p_date' | 'p_start_time' | 'p_end_time' | 'p_court_price'>;
+  transformItemsData: () => Pick<BookingRPCData, 'p_rental_items' | 'p_rental_items_price'>;
+  transformUserData: () => Pick<BookingRPCData, 'p_participants'>;
+}
+
+// Implementación requerida
+const formToRPCTransformer: FormToRPCTransformer = {
+  transformLocationData: () => {
+    const { location } = formContext.state;
+    return {
+      p_court_id: location.courtId
+    };
+  },
+  // ... implementar demás transformadores
+};
+```
+
+### 2.2 Validaciones Adicionales Requeridas
+```typescript
+interface FormValidation {
+  validateLocationData: () => boolean;
+  validateShiftData: () => boolean;
+  validateItemsData: () => boolean;
+  validateUserData: () => boolean;
+}
+
+// Implementación requerida
+const formValidation: FormValidation = {
+  validateLocationData: () => {
+    const { location } = formContext.state;
+    return !!location.branchId && !!location.courtId;
+  },
+  // ... implementar demás validaciones
+};
+```
+
+### 2.3 Integración con RPC
+```typescript
+async function prepareBookingData(): Promise<BookingRPCData> {
+  // Implementar transformación completa de FormState a BookingRPCData
+  const { location, shift, items } = formContext.state;
+  
+  return {
+    ...formToRPCTransformer.transformLocationData(),
+    ...formToRPCTransformer.transformShiftData(),
+    ...formToRPCTransformer.transformItemsData(),
+    ...formToRPCTransformer.transformUserData(),
+    p_payment_method: 'cash', // Definir método por defecto
+    p_payment_status: 'pending', // Estado inicial
+    p_deposit_amount: 0 // Manejar según política
+  };
+}
+```
+
+## 3. Plan de Implementación
+
+### 3.1 Fase 1: Transformación de Datos
+1. Implementar `FormToRPCTransformer`
+2. Agregar validaciones específicas
+3. Crear pruebas unitarias
+
+### 3.2 Fase 2: Integración
+1. Conectar con `bookingService`
+2. Implementar manejo de respuesta
+3. Agregar manejo de errores específicos
+
+### 3.3 Fase 3: Optimización
+1. Agregar caché de validaciones
+2. Implementar reintentos automáticos
+3. Optimizar transformaciones
+
+## 4. Consideraciones Técnicas
+
+### 4.1 Reutilización de Código
+- Aprovechar validaciones existentes en `bookingService`
+- Reutilizar lógica de transformación
+- Mantener consistencia con implementación actual
+
+### 4.2 Manejo de Estado
+- Mantener consistencia con `FormContext`
+- Evitar duplicación de lógica
+- Usar selectores memoizados
+
+### 4.3 Performance
+- Minimizar transformaciones innecesarias
+- Cachear resultados intermedios
+- Optimizar validaciones
+
+## 5. Próximos Pasos
+
+1. Implementar `FormToRPCTransformer`
+   ```typescript
+   export const createFormToRPCTransformer = (formState: FormState) => ({
+     transformLocationData: () => ({
+       p_court_id: formState.location.courtId,
+       // ... más transformaciones
+     }),
+     // ... implementar resto de transformadores
+   });
+   ```
+
+2. Agregar Validaciones
+   ```typescript
+   export const createFormValidation = (formState: FormState) => ({
+     validateLocationData: () => {
+       // Implementar validaciones específicas
+     },
+     // ... implementar resto de validaciones
+   });
+   ```
+
+3. Integrar con RPC
+   ```typescript
+   export const createBooking = async (formState: FormState) => {
+     const transformer = createFormToRPCTransformer(formState);
+     const validation = createFormValidation(formState);
+     
+     // Implementar lógica de creación
+   };
+   ```
+
+## 6. Flujo de Autenticación
+
+### 6.1 Requisitos de Autenticación
+- Autenticación obligatoria antes de iniciar la reserva
+- Soporte para login y registro de usuarios
+- Validación de campos según configuración del formulario
+
+### 6.2 Gestión de Estado de Usuario
+```typescript
+interface UserState {
+  id: string;
+  isAuthenticated: boolean;
+  profile: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  };
+}
+```
+
+## 7. Arquitectura del Estado
+
+### 7.1 FormContext Extendido
+```typescript
+interface FormState {
+  // Estados existentes
+  location: LocationState;
+  shift: ShiftState;
+  items: ItemsState;
+  currentStep: number;
+  empresa_id: string | null;
+  
+  // Estado de validación
+  validation: {
+    locationComplete: boolean;
+    shiftComplete: boolean;
+    itemsComplete: boolean;
+  };
+}
+```
+
+### 7.2 Gestión de Validaciones
+- Validación por paso con dependencias
+- Persistencia de selecciones válidas
+- Limpieza de estados dependientes al cambiar selección
+
+## 8. Flujo de Reserva
+
+### 8.1 Secuencia de Pasos
+1. **Autenticación (UsersPreview)**
+   - Login/Registro obligatorio
+   - Validación de campos requeridos
+   - Persistencia de sesión
+
+2. **Ubicación (LocationPreview)**
+   - Selección de sucursal
+   - Validación de empresa_id
+   - Filtrado de sucursales activas
+
+3. **Turno (ShiftsPreview)**
+   - Selección de fecha y hora
+   - Validación de disponibilidad
+   - Cálculo de precios
+
+4. **Artículos (ItemsPreview)**
+   - Selección de artículos adicionales
+   - Validación de stock
+   - Cálculo de precios adicionales
+
+5. **Resumen (SummaryPreview)**
+   - Confirmación final
+   - Preparación de datos para RPC
+   - Manejo de respuesta
+
+### 8.2 Validaciones por Paso
+```typescript
+interface StepValidation {
+  location: () => boolean;
+  shift: () => boolean;
+  items: () => boolean;
+  summary: () => boolean;
+}
+
+const stepValidations: StepValidation = {
+  location: () => !!state.location.branchId,
+  shift: () => !!(state.shift.date && state.shift.startTime && state.shift.endTime),
+  items: () => true, // Opcional
+  summary: () => true // Validación final
+};
+```
+
+## 9. Integración con Supabase
+
+### 9.1 Preparación de Datos
+```typescript
+interface BookingRPCData {
+  p_court_id: string;
+  p_date: string;
+  p_start_time: string;
+  p_end_time: string;
+  p_court_price: number;
+  p_rental_items_price: number;
+  p_payment_method: PaymentMethodEnum;
+  p_payment_status: PaymentStatusEnum;
+  p_deposit_amount: number;
+  p_participants: Array<{
+    member_id: string;
+    role: string;
+  }>;
+  p_rental_items: Array<{
+    item_id: string;
+    quantity: number;
+    price_per_unit: number;
+  }>;
+}
+```
+
+### 9.2 Proceso de Creación
+1. Validar datos completos
+2. Verificar disponibilidad
+3. Transformar datos para RPC
+4. Ejecutar create_booking_v2
+5. Manejar respuesta
+
+## 10. Manejo de Errores
+
+### 10.1 Tipos de Error
+```typescript
+enum BookingErrorType {
+  AUTH_REQUIRED = 'auth_required',
+  INVALID_LOCATION = 'invalid_location',
+  AVAILABILITY_ERROR = 'availability_error',
+  STOCK_ERROR = 'stock_error',
+  VALIDATION_ERROR = 'validation_error',
+  RPC_ERROR = 'rpc_error'
+}
+```
+
+### 10.2 Estrategia de Recuperación
+- Reintentos automáticos para errores temporales
+- Mensajes de error contextuales por paso
+- Rollback de estado en caso de error
+
+## 11. Optimizaciones
+
+### 11.1 Rendimiento
+- Memoización de cálculos costosos
+- Lazy loading de componentes
+- Caché de datos de configuración
+
+### 11.2 UX/UI
+- Feedback inmediato en validaciones
+- Indicadores de carga por paso
+- Transiciones suaves entre pasos
+
+## 12. Seguridad
+
+### 12.1 Validaciones
+- Sanitización de inputs
+- Validación de permisos por paso
+- Protección contra manipulación de estado
+
+### 12.2 Datos Sensibles
+- No persistir datos de pago
+- Limpieza de estado al finalizar
+- Validación de tokens de sesión
+
+## 13. Pruebas
+
+### 13.1 Cobertura
+- Tests unitarios por componente
+- Tests de integración del flujo
+- Tests de validación de datos
+
+### 13.2 Escenarios
+- Flujo completo exitoso
+- Manejo de errores por paso
+- Casos límite de validación 

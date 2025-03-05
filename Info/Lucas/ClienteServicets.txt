@@ -1,0 +1,89 @@
+import { supabase } from '@/lib/supabase'
+import { ClienteRegistro } from '@/types'
+import { AuthError, AuthApiError } from '@supabase/supabase-js'
+
+export class ClienteServiceError extends Error {
+  constructor(message: string, public originalError?: Error) {
+    super(message)
+    this.name = 'ClienteServiceError'
+  }
+}
+
+export const clienteService = {
+  async registrarCliente({
+    email,
+    password,
+    name,
+    phone,
+    role = 'empresa'
+  }: ClienteRegistro) {
+    try {
+      console.log('Iniciando registro de usuario:', { email, role })
+
+      // Creamos el usuario con el rol en los metadatos
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify`,
+          data: {
+            name,
+            phone,
+            business_name: name,
+            role  // Usamos el valor del parámetro
+          }
+        }
+      })
+
+      if (authError) {
+        console.error('Error en auth.signUp:', authError)
+        throw authError
+      }
+
+      if (authData?.user) {
+        // Establecer el rol usando la función nativa de Supabase
+        const { error: roleError } = await supabase.rpc('set_initial_role', {
+          user_id: authData.user.id,
+          initial_role: role
+        })
+
+        if (roleError) {
+          console.error('Error al establecer rol inicial:', roleError)
+          // No lanzamos el error ya que el usuario se creó correctamente
+        }
+      }
+
+      return { data: authData, error: null }
+
+    } catch (error) {
+      console.error('Error en registro:', error)
+      return {
+        data: null,
+        error: new ClienteServiceError(
+          error instanceof Error ? error.message : 'Error en el registro'
+        )
+      }
+    }
+  },
+
+  async verificarEmail(token: string) {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'email'
+      })
+
+      if (error) {
+        throw new ClienteServiceError('Error al verificar el email', error)
+      }
+
+      return { error: null }
+    } catch (error) {
+      return {
+        error: error instanceof ClienteServiceError
+          ? error
+          : new ClienteServiceError('Error al verificar el email')
+      }
+    }
+  }
+}

@@ -1,0 +1,430 @@
+-- Información básica de la tabla
+[
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "id",
+    "ordinal_position": 1,
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "nombre",
+    "ordinal_position": 2,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "email",
+    "ordinal_position": 3,
+    "data_type": "character varying",
+    "is_nullable": "NO",
+    "character_maximum_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "dni",
+    "ordinal_position": 4,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 20,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "telefono",
+    "ordinal_position": 5,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 20,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "genero",
+    "ordinal_position": 6,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 20,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "fecha_nacimiento",
+    "ordinal_position": 7,
+    "data_type": "date",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "direccion",
+    "ordinal_position": 8,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "ciudad",
+    "ordinal_position": 9,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 100,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "pais",
+    "ordinal_position": 10,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 100,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "metadata",
+    "ordinal_position": 11,
+    "data_type": "jsonb",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "estado",
+    "ordinal_position": 12,
+    "data_type": "character varying",
+    "is_nullable": "YES",
+    "character_maximum_length": 20,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'activo'::character varying"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "created_at",
+    "ordinal_position": 13,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "updated_at",
+    "ordinal_position": 14,
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "usuarios",
+    "column_name": "client_id_stripe",
+    "ordinal_position": 15,
+    "data_type": "text",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  }
+]
+
+-- Índices de la tabla
+[
+  {
+    "indexname": "usuarios_finales_pkey",
+    "indexdef": "CREATE UNIQUE INDEX usuarios_finales_pkey ON public.usuarios USING btree (id)"
+  },
+  {
+    "indexname": "usuarios_finales_email_key",
+    "indexdef": "CREATE UNIQUE INDEX usuarios_finales_email_key ON public.usuarios USING btree (email)"
+  }
+]
+
+-- Restricciones
+[
+  {
+    "constraint_name": "usuarios_finales_email_key",
+    "constraint_type": "UNIQUE"
+  },
+  {
+    "constraint_name": "usuarios_finales_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
+  {
+    "constraint_name": "usuarios_finales_pkey",
+    "constraint_type": "PRIMARY KEY"
+  },
+  {
+    "constraint_name": "2200_183257_1_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_183257_2_not_null",
+    "constraint_type": "CHECK"
+  },
+  {
+    "constraint_name": "2200_183257_3_not_null",
+    "constraint_type": "CHECK"
+  }
+]
+
+-- Relaciones (Llaves foráneas)
+[
+  {
+    "foreign_key": "id",
+    "referenced_table": "users",
+    "referenced_column": "id"
+  }
+]
+
+-- Detalles de los triggers relacionados con la tabla 'usuarios'
+[
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_222618",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_222619",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_183273",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_183274",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "set_updated_at",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "set_updated_at",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.set_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = NOW();\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_183353",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_183354",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_283619",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "INSERT"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_del",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_a_283620",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "RI_FKey_noaction_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+  },
+  {
+    "trigger_name": "on_usuario_admin_role",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "usuarios",
+    "table_schema": "public",
+    "function_name": "sync_admin_role",
+    "function_definition": "CREATE OR REPLACE FUNCTION public.sync_admin_role()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    -- Verificamos si el usuario tiene rol admin en sus metadatos\r\n    IF (NEW.metadata->>'role' = 'admin') THEN\r\n        -- Actualizamos raw_app_meta_data en auth.users\r\n        UPDATE auth.users\r\n        SET raw_app_meta_data = jsonb_build_object(\r\n            'role', 'admin',\r\n            'provider', COALESCE(raw_app_meta_data->>'provider', 'email'),\r\n            'providers', COALESCE(\r\n                raw_app_meta_data->'providers',\r\n                jsonb_build_array('email')\r\n            )\r\n        )\r\n        WHERE id = NEW.id;\r\n    END IF;\r\n\r\n    RETURN NEW;\r\nEXCEPTION \r\n    WHEN OTHERS THEN\r\n        -- Log del error pero permitimos que la transacción continúe\r\n        RAISE NOTICE 'Error en sync_admin_role: %', SQLERRM;\r\n        RETURN NEW;\r\nEND;\r\n$function$\n"
+  }
+]
+
+-- Listar las políticas asociadas con la tabla
+[
+  {
+    "policy_name": "Permitir actualización de usuarios propios",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 742} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 755}) :location 753}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Permitir inserción de usuarios propios",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": null,
+    "with_check_expression": "{OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 294} {VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 307}) :location 305}"
+  },
+  {
+    "policy_name": "Permitir lectura de usuarios",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 518 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  },
+  {
+    "policy_name": "Permitir lectura de usuarios a todos los usuarios autenticados",
+    "is_permissive": true,
+    "roles": [
+      16479
+    ],
+    "using_expression": "{CONST :consttype 16 :consttypmod -1 :constcollid 0 :constlen 1 :constbyval true :constisnull false :location 311 :constvalue 1 [ 1 0 0 0 0 0 0 0 ]}",
+    "with_check_expression": null
+  }
+]
+
+-- Información sobre las políticas RLS de la tabla 'usuarios'
+SELECT
+  n.nspname AS esquema,
+  t.relname AS tabla,
+  pol.polname AS nombre_politica,
+  pol.is_permissive AS es_permisiva,
+  pol.roles AS roles_permitidos,
+[
+  {
+    "schema_name": "public",
+    "table_name": "usuarios",
+    "policy_name": "Permitir actualización de usuarios propios",
+    "policy_command": "UPDATE",
+    "policy_condition": "auth.uid() = id",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "usuarios",
+    "policy_name": "Permitir inserción de usuarios propios",
+    "policy_command": "INSERT",
+    "policy_condition": "None",
+    "with_check_condition": "auth.uid() = id",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "usuarios",
+    "policy_name": "Permitir lectura de usuarios",
+    "policy_command": "SELECT",
+    "policy_condition": "true",
+    "with_check_condition": "None",
+    "roles": "{}"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "usuarios",
+    "policy_name": "Permitir lectura de usuarios a todos los usuarios autenticados",
+    "policy_command": "SELECT",
+    "policy_condition": "true",
+    "with_check_condition": "None",
+    "roles": "{authenticated}"
+  }
+]
