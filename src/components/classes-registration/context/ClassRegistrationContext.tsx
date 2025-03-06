@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useClasses } from '../hooks/useClasses'
 import { ClientOrganizationProvider, useClientOrganizationContext } from '@/contexts/ClientOrganizationContext'
-import type { Organization as OrganizationFromDB, PublicClass, ClassPackage, UserPackageFromDB, ClassSession } from '../types/models'
+import type { Organization as OrganizationFromDB, PublicClass, ClassPackage, UserPackageFromDB, ClassSession, PaymentMethod } from '../types/models'
 import type { ClassRegistrationError } from '../types/error'
 import type { AuthView } from '../types/registration'
 import type { ReactNode } from 'react'
@@ -40,6 +40,10 @@ interface RegistrationState {
   error: ClassRegistrationError | null
   selectedSessions: string[]
   skipPackageSelection: boolean
+  bookingIds: string[]
+  bookingStatus: 'idle' | 'submitting' | 'success' | 'error'
+  bookingError: string | null
+  selectedPayment: PaymentMethod | null
 }
 
 type RegistrationAction =
@@ -55,6 +59,10 @@ type RegistrationAction =
   | { type: 'SELECT_SESSION'; payload: string }
   | { type: 'DESELECT_SESSION'; payload: string }
   | { type: 'SET_SKIP_PACKAGE'; payload: boolean }
+  | { type: 'SET_BOOKING_IDS'; payload: string[] }
+  | { type: 'SET_BOOKING_STATUS'; payload: 'idle' | 'submitting' | 'success' | 'error' }
+  | { type: 'SET_BOOKING_ERROR'; payload: string | null }
+  | { type: 'SELECT_PAYMENT'; payload: PaymentMethod | null }
 
 interface ClassRegistrationContextType {
   state: RegistrationState
@@ -66,8 +74,10 @@ interface ClassRegistrationContextType {
   selectClass: (classData: PublicClass) => void
   selectSession: (sessionId: string) => void
   deselectSession: (sessionId: string) => void
+  selectPayment: (method: PaymentMethod | null) => void
   empresaId: string
   user: AuthUser | null
+  updateState: (action: RegistrationAction) => void
 }
 
 const initialState: RegistrationState = {
@@ -81,7 +91,11 @@ const initialState: RegistrationState = {
   authError: null,
   error: null,
   selectedSessions: [],
-  skipPackageSelection: false
+  skipPackageSelection: false,
+  bookingIds: [],
+  bookingStatus: 'idle',
+  bookingError: null,
+  selectedPayment: null
 }
 
 function registrationReducer(state: RegistrationState, action: RegistrationAction): RegistrationState {
@@ -121,6 +135,14 @@ function registrationReducer(state: RegistrationState, action: RegistrationActio
       }
     case 'SET_SKIP_PACKAGE':
       return { ...state, skipPackageSelection: action.payload }
+    case 'SET_BOOKING_IDS':
+      return { ...state, bookingIds: action.payload }
+    case 'SET_BOOKING_STATUS':
+      return { ...state, bookingStatus: action.payload }
+    case 'SET_BOOKING_ERROR':
+      return { ...state, bookingError: action.payload }
+    case 'SELECT_PAYMENT':
+      return { ...state, selectedPayment: action.payload }
     default:
       return state
   }
@@ -298,8 +320,16 @@ function ClientSideProvider({ children, empresaId }: ClassRegistrationProviderPr
     dispatch({ type: 'DESELECT_SESSION', payload: sessionId })
   }, [])
 
-  // Memoizamos el valor del contexto para evitar recreaciones innecesarias
-  const contextValue = useMemo(() => ({
+  const selectPayment = useCallback((method: PaymentMethod | null) => {
+    dispatch({ type: 'SELECT_PAYMENT', payload: method })
+  }, [dispatch])
+
+  // Envoltorio conveniente para actualizar el estado
+  const updateState = useCallback((action: RegistrationAction) => {
+    dispatch(action);
+  }, []);
+
+  const value = {
     state,
     dispatch,
     organization,
@@ -309,9 +339,14 @@ function ClientSideProvider({ children, empresaId }: ClassRegistrationProviderPr
     selectClass,
     selectSession,
     deselectSession,
+    selectPayment,
     empresaId,
-    user
-  }), [state, organization, isLoadingValue, setAuthView, goToStep, selectClass, selectSession, deselectSession, empresaId, user])
+    user,
+    updateState
+  }
+
+  // Memoizamos el valor del contexto para evitar recreaciones innecesarias
+  const contextValue = useMemo(() => value, [value])
 
   // Solo renderizamos el contenido cuando la inicialización está completa
   if (!hasInitialized || isLoadingAuth) {

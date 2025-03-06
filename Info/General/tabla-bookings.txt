@@ -227,6 +227,42 @@
     "numeric_precision": null,
     "numeric_scale": null,
     "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "reservation_type",
+    "ordinal_position": 36,
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": "'booking'::reservation_type_enum"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "class_id",
+    "ordinal_position": 37,
+    "data_type": "uuid",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "bookings",
+    "column_name": "class_session_price",
+    "ordinal_position": 38,
+    "data_type": "numeric",
+    "is_nullable": "YES",
+    "character_maximum_length": null,
+    "numeric_precision": 10,
+    "numeric_scale": 2,
+    "column_default": "0"
   }
 ]
 
@@ -267,11 +303,27 @@
   {
     "indexname": "idx_bookings_empresa_date",
     "indexdef": "CREATE INDEX idx_bookings_empresa_date ON public.bookings USING btree (empresa_id, date)"
+  },
+  {
+    "indexname": "idx_bookings_class_id",
+    "indexdef": "CREATE INDEX idx_bookings_class_id ON public.bookings USING btree (class_id)"
+  },
+  {
+    "indexname": "idx_bookings_reservation_type_empresa",
+    "indexdef": "CREATE INDEX idx_bookings_reservation_type_empresa ON public.bookings USING btree (reservation_type, empresa_id)"
+  },
+  {
+    "indexname": "idx_bookings_class_price",
+    "indexdef": "CREATE INDEX idx_bookings_class_price ON public.bookings USING btree (class_id, class_session_price) WHERE (reservation_type = 'class'::reservation_type_enum)"
   }
 ]
 
 -- Restricciones
 [
+  {
+    "constraint_name": "bookings_class_id_fkey",
+    "constraint_type": "FOREIGN KEY"
+  },
   {
     "constraint_name": "bookings_court_id_fkey",
     "constraint_type": "FOREIGN KEY"
@@ -343,6 +395,11 @@
   {
     "foreign_key": "empresa_id",
     "referenced_table": "empresas",
+    "referenced_column": "id"
+  },
+  {
+    "foreign_key": "class_id",
+    "referenced_table": "classes",
     "referenced_column": "id"
   },
   {
@@ -441,15 +498,6 @@
     "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
   },
   {
-    "trigger_name": "create_payment_on_booking_trigger",
-    "trigger_timing": "AFTER",
-    "trigger_events": [],
-    "table_name": "bookings",
-    "table_schema": "public",
-    "function_name": "create_payment_on_booking",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.create_payment_on_booking()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    -- Insertar el registro en la tabla payments\r\n    INSERT INTO public.payments (\r\n        booking_id,\r\n        deposit_amount,        -- Cambiado de amount a deposit_amount\r\n        total_price,\r\n        payment_method,\r\n        payment_status,\r\n        notes,\r\n        created_at,\r\n        updated_at\r\n    ) VALUES (\r\n        NEW.id,\r\n        COALESCE(NEW.deposit_amount, 0),\r\n        NEW.total_price,\r\n        NEW.payment_method,\r\n        NEW.payment_status,\r\n        'Pago inicial generado automáticamente',\r\n        NOW(),\r\n        NOW()\r\n    );\r\n\r\n    -- Log de la operación exitosa\r\n    INSERT INTO trigger_logs (\r\n        trigger_name, \r\n        booking_data, \r\n        error_message\r\n    ) VALUES (\r\n        'create_payment_on_booking',\r\n        jsonb_build_object(\r\n            'booking_id', NEW.id,\r\n            'payment_method', NEW.payment_method,\r\n            'payment_status', NEW.payment_status,\r\n            'total_price', NEW.total_price,\r\n            'deposit_amount', NEW.deposit_amount\r\n        ),\r\n        'Pago creado exitosamente'\r\n    );\r\n\r\n    RETURN NEW;\r\n\r\nEXCEPTION WHEN OTHERS THEN\r\n    -- Log del error\r\n    INSERT INTO trigger_logs (\r\n        trigger_name, \r\n        booking_data, \r\n        error_message\r\n    ) VALUES (\r\n        'create_payment_on_booking',\r\n        jsonb_build_object(\r\n            'booking_id', NEW.id,\r\n            'error_detail', SQLERRM,\r\n            'error_hint', SQLSTATE\r\n        ),\r\n        'Error al crear pago: ' || SQLERRM\r\n    );\r\n    \r\n    RAISE EXCEPTION 'Error al crear el pago: %', SQLERRM;\r\nEND;\r\n$function$\n"
-  },
-  {
     "trigger_name": "RI_ConstraintTrigger_a_147893",
     "trigger_timing": "AFTER",
     "trigger_events": [
@@ -512,6 +560,38 @@
     "table_schema": "public",
     "function_name": "RI_FKey_check_upd",
     "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_368119",
+    "trigger_timing": "AFTER",
+    "trigger_events": [],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_ins",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+  },
+  {
+    "trigger_name": "RI_ConstraintTrigger_c_368120",
+    "trigger_timing": "AFTER",
+    "trigger_events": [
+      "DELETE"
+    ],
+    "table_name": "bookings",
+    "table_schema": "public",
+    "function_name": "RI_FKey_check_upd",
+    "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
   }
 ]
 
+-- Listar las políticas asociadas con la tabla
+[
+  {
+    "policy_name": "usuarios_pueden_cancelar_sus_reservas",
+    "is_permissive": true,
+    "roles": [
+      0
+    ],
+    "using_expression": "{SUBLINK :subLinkType 2 :subLinkId 0 :testexpr {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({FUNCEXPR :funcid 16532 :funcresulttype 2950 :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location 3860} {PARAM :paramkind 2 :paramid 1 :paramtype 2950 :paramtypmod -1 :paramcollid 0 :location -1}) :location 3871} :operName (\"=\") :subselect {QUERY :commandType 1 :querySource 0 :canSetTag true :utilityStmt <> :resultRelation 0 :hasAggs false :hasWindowFuncs false :hasTargetSRFs false :hasSubLinks false :hasDistinctOn false :hasRecursive false :hasModifyingCTE false :hasForUpdate false :hasRowSecurity false :isReturn false :cteList <> :rtable ({RANGETBLENTRY :alias <> :eref {ALIAS :aliasname empresas :colnames (\"id\" \"name\" \"business_name\" \"\" \"email\" \"phone\" \"address\" \"city\" \"state\" \"\" \"\" \"is_active\" \"settings\" \"created_at\" \"updated_at\" \"\" \"\" \"auth_user_id\" \"\" \"\" \"\" \"onboarding\" \"country\" \"\" \"plan_id\" \"plan_updated_at\" \"plan_type\")} :rtekind 0 :relid 29374 :relkind r :rellockmode 1 :tablesample <> :lateral false :inh true :inFromCl true :requiredPerms 2 :checkAsUser 0 :selectedCols (b 8 25) :insertedCols (b) :updatedCols (b) :extraUpdatedCols (b) :securityQuals <>}) :jointree {FROMEXPR :fromlist ({RANGETBLREF :rtindex 1}) :quals {OPEXPR :opno 2972 :opfuncid 2956 :opresulttype 16 :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 1 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 1 :location 3945} {VAR :varno 1 :varattno 35 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 1 :varnosyn 1 :varattnosyn 35 :location 3950}) :location 3948}} :targetList ({TARGETENTRY :expr {VAR :varno 1 :varattno 18 :vartype 2950 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnosyn 1 :varattnosyn 18 :location 3892} :resno 1 :resname auth_user_id :ressortgroupref 0 :resorigtbl 29374 :resorigcol 18 :resjunk false}) :override 0 :onConflict <> :returningList <> :groupClause <> :groupDistinct false :groupingSets <> :havingQual <> :windowClause <> :distinctClause <> :sortClause <> :limitOffset <> :limitCount <> :limitOption 0 :rowMarks <> :setOperations <> :constraintDeps <> :withCheckOptions <> :mergeActionList <> :mergeUseOuterJoin false :stmt_location 0 :stmt_len 0} :location 3871}",
+    "with_check_expression": null
+  }
+]

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, useEffect, useState, useRef } from 'react'
 import { IconChevronRight, IconChevronDown } from '@tabler/icons-react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { format } from 'date-fns'
@@ -17,24 +17,270 @@ import type { UserPackageFromDB, ClassSession } from '../types/models'
 import Image from 'next/image'
 import { MobileDrawer } from '../shared/MobileDrawer'
 import { LoadingState } from '../shared/LoadingState'
+import { toast } from '@/components/ui/use-toast'
+import { ClassService } from '../services/classService'
+import { useRouter } from 'next/navigation'
+import throttle from 'lodash.throttle'
 
 const SESSIONS_PER_PAGE = 4
 
+const classService = new ClassService()
+
+// Estado para controlar la disponibilidad de sesiones
+interface SessionAvailability {
+  [sessionId: string]: {
+    isLoading: boolean;
+    spotsLeft: number | null;
+  }
+}
+
+// Función para comprobar si dos arreglos de sesiones tienen la misma disponibilidad
+const haveSameAvailability = (oldSessions: ClassSession[] = [], newSessions: ClassSession[] = []) => {
+  if (oldSessions.length !== newSessions.length) return false;
+  
+  for (let i = 0; i < oldSessions.length; i++) {
+    const oldSession = oldSessions[i];
+    const newSession = newSessions[i];
+    
+    if (
+      oldSession.id !== newSession.id ||
+      oldSession.spotsLeft !== newSession.spotsLeft ||
+      oldSession.totalSpots !== newSession.totalSpots
+    ) {
+      return false;
+    }
+  }
+  
+  return true;
+};
+
 export function SessionStep() {
-  // 1. Estados locales
-  const [showFullDescription, setShowFullDescription] = useState(false)
-  const [validBranchNames, setValidBranchNames] = useState<string[]>([])
-  const [isPackageValidForClass, setIsPackageValidForClass] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
+  /**
+   * ESTRATEGIA DE VERIFICACIÓN DE DISPONIBILIDAD OPTIMIZADA
+   * ------------------------------------------------------
+   * Para maximizar el rendimiento y la experiencia de usuario, verificamos
+   * la disponibilidad de sesiones únicamente en dos momentos estratégicos:
+   * 
+   * 1. Al cargar inicialmente el componente (verificación inicial)
+   *    - Muestra la disponibilidad real al usuario desde el inicio
+   *    - Se ejecuta solo una vez por carga de página
+   * 
+   * 2. Justo antes de confirmar la selección (verificación final)
+   *    - Garantiza que las sesiones seleccionadas siguen disponibles
+   *    - Evita problemas de concurrencia en reservas
+   * 
+   * Hemos eliminado las verificaciones periódicas y en cada selección
+   * para optimizar el rendimiento, especialmente en sesiones largas.
+   */
+  
+  // 1. Estados y variables
   const [isInitializing, setIsInitializing] = useState(true)
+  const [filteredSessions, setFilteredSessions] = useState<ClassSession[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [sessionQuery, setSessionQuery] = useState('')
   const [selectedSessionForMobile, setSelectedSessionForMobile] = useState<ClassSession | null>(null)
+  const [packagesAreValid, setPackagesAreValid] = useState<boolean | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showFullDescription, setShowFullDescription] = useState(false)
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(true)
+  const [sessionAvailability, setSessionAvailability] = useState<SessionAvailability>({})
+  const isInitialMount = useRef(true)
 
   // 2. Hooks y contexto
-  const { state, selectSession, deselectSession, goToStep } = useClassRegistration()
+  const { state, selectSession, deselectSession, goToStep, dispatch } = useClassRegistration()
   const { activePackage, isLoading: isLoadingPackage } = useUserPackages()
   const supabase = createClientComponentClient<Database>()
 
-  // 3. Memos para datos derivados
+  // 3. Funciones de utilidad
+  // Verificar validez de paquetes
+  const checkPackageValidity = useCallback(async () => {
+    if (!activePackage || !state.selectedClass?.branchInfo?.id) {
+      setPackagesAreValid(false)
+      return
+    }
+
+    const branchIds = activePackage.package?.branch_ids || []
+    
+    try {
+      const { data: branches } = await supabase
+        .from('sedes')
+        .select('name')
+        .in('id', branchIds)
+
+      if (branches) {
+        setPackagesAreValid(branchIds.includes(state.selectedClass.branchInfo.id))
+      }
+    } catch (error) {
+      console.error('Error al verificar sedes válidas:', error)
+      setPackagesAreValid(false)
+    }
+  }, [activePackage, state.selectedClass?.branchInfo?.id, supabase])
+
+  // Actualizar información de disponibilidad (con optimización)
+  const updateAvailabilityInfo = useCallback(async (forceUpdate = false) => {
+    if (!state.selectedClass) return
+    
+    // Registrar cuándo y por qué se está actualizando la disponibilidad
+    console.log(`📊 Actualizando disponibilidad ${forceUpdate ? '(forzado)' : '(normal)'} - ${new Date().toLocaleTimeString()}`)
+    
+    try {
+      // Usar las opciones de optimización que agregamos al servicio
+      const updatedClassWithAvailability = await classService.updateSessionsAvailability(
+        state.selectedClass,
+        { 
+          forceUpdate, 
+          // Ya no necesitamos throttleThreshold para actualizaciones regulares
+          // ya que solo actualizamos en momentos específicos
+          throttleThreshold: 0
+        }
+      )
+      
+      // El servicio ya se encarga de verificar si hay cambios y si debe actualizar
+      // Solo actualizamos el estado si el servicio devuelve un objeto distinto
+      if (updatedClassWithAvailability !== state.selectedClass) {
+        dispatch({ 
+          type: 'SET_SELECTED_CLASS', 
+          payload: updatedClassWithAvailability 
+        })
+        
+        // Registrar que se actualizó la disponibilidad
+        console.log(`✅ Disponibilidad actualizada con éxito - ${new Date().toLocaleTimeString()}`)
+      } else {
+        console.log(`ℹ️ No hay cambios en disponibilidad - ${new Date().toLocaleTimeString()}`)
+      }
+    } catch (error) {
+      console.error('❌ Error al actualizar información de disponibilidad:', error)
+    }
+  }, [state.selectedClass, dispatch])
+
+  // Función para inicializar el componente
+  const initializeStep = useCallback(async () => {
+    if (state.isGuest || isLoadingPackage) {
+      setIsInitializing(false)
+      return
+    }
+
+    await checkPackageValidity()
+
+    // Solo verificar disponibilidad durante la inicialización inicial
+    if (isInitializing && state.selectedClass) {
+      // Forzar actualización durante la inicialización
+      await updateAvailabilityInfo(true)
+    }
+
+    setIsInitializing(false)
+  }, [
+    state.isGuest, 
+    isLoadingPackage, 
+    checkPackageValidity, 
+    state.selectedClass, 
+    isInitializing,
+    updateAvailabilityInfo
+  ])
+
+  // 4. Efectos
+  // Efecto para inicializar una sola vez (dependencias estables)
+  useEffect(() => {
+    initializeStep()
+  }, [
+    state.selectedClass?.id // Solo reinicializar si cambia la clase seleccionada
+  ])
+
+  // Modificar la función de selección de sesión para eliminar la verificación adicional
+  const handleSessionSelect = useCallback(async (sessionId: string) => {
+    // Buscar la sesión en el estado actual
+    if (state.selectedClass) {
+      const session = state.selectedClass.sessions.find(s => s.id === sessionId)
+      
+      if (session) {
+        // Verificar la disponibilidad utilizando los datos ya cargados
+        if (session.spotsLeft <= 0) {
+          // Mostrar mensaje si no hay disponibilidad según datos ya cargados
+          toast({
+            title: "Sesión no disponible",
+            description: `Esta sesión está completa (0 plazas disponibles)`,
+            variant: "destructive"
+          })
+          return
+        }
+        
+        // Si hay disponibilidad según los datos cargados, continuar con la selección
+        selectSession(sessionId)
+        
+        // Opcional: mostrar mensaje informativo
+        toast({
+          title: "Sesión seleccionada",
+          description: `Plazas disponibles: ${session.spotsLeft}/${session.totalSpots}`,
+        })
+      }
+    }
+  }, [state.selectedClass, selectSession, toast])
+
+  // Actualizar handleNext para incluir un indicador visual más claro durante la verificación
+  const handleNext = useCallback(async () => {
+    if (state.selectedSessions.length === 0) {
+      toast({
+        title: "Selección necesaria",
+        description: "Por favor, selecciona al menos una sesión para continuar.",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    // Verificación final de disponibilidad antes de continuar
+    setIsLoading(true)
+    
+    // Mostrar un toast informativo durante la verificación
+    const loadingToast = toast({
+      title: "Verificando disponibilidad",
+      description: "Comprobando que las sesiones seleccionadas siguen disponibles...",
+      duration: 10000, // Duración larga para asegurar que se vea
+    })
+    
+    try {
+      // Actualizar la disponibilidad una última vez antes de continuar
+      await updateAvailabilityInfo(true)
+      
+      // Verificar que todas las sesiones seleccionadas sigan disponibles
+      if (state.selectedClass) {
+        const selectedSessionsData = state.selectedClass.sessions.filter(
+          session => state.selectedSessions.includes(session.id)
+        )
+        
+        const unavailableSessions = selectedSessionsData.filter(
+          session => session.spotsLeft <= 0
+        )
+        
+        if (unavailableSessions.length > 0) {
+          // Hay sesiones seleccionadas que ya no están disponibles
+          toast({
+            title: "Sesiones no disponibles",
+            description: `Algunas sesiones seleccionadas ya no están disponibles. Por favor, revisa tu selección.`,
+            variant: "destructive",
+          })
+          return
+        }
+      }
+      
+      // Todo está bien, continuar al siguiente paso
+      goToStep('payment')
+    } catch (error) {
+      console.error('❌ Error al verificar disponibilidad final:', error)
+      toast({
+        title: "Error de verificación",
+        description: "No se pudo verificar la disponibilidad final. ¿Deseas continuar de todos modos?",
+        variant: "destructive",
+      })
+    } finally {
+      // Cerrar el toast de carga
+      loadingToast?.dismiss?.()
+      setIsLoading(false)
+    }
+  }, [goToStep, state.selectedSessions.length, state.selectedClass, state.selectedSessions, updateAvailabilityInfo, toast])
+
+  // 5. Calcular variables
   const currentSessions = useMemo(() => {
     console.log('Sessions en state:', state.selectedClass?.sessions)
     if (!state.selectedClass?.sessions) return []
@@ -50,80 +296,28 @@ export function SessionStep() {
     return Math.ceil(state.selectedClass.sessions.length / SESSIONS_PER_PAGE)
   }, [state.selectedClass?.sessions])
 
-  // 4. Funciones memorizadas
-  const checkPackageValidity = useCallback(async () => {
-    if (!activePackage || !state.selectedClass?.branchInfo?.id) {
-      setIsPackageValidForClass(false)
-      return
-    }
-
-    const branchIds = activePackage.package?.branch_ids || []
-    
-    try {
-      const { data: branches } = await supabase
-        .from('sedes')
-        .select('name')
-        .in('id', branchIds)
-
-      if (branches) {
-        setValidBranchNames(branches.map(branch => branch.name))
-      }
-
-      const isValid = branchIds.includes(state.selectedClass.branchInfo.id)
-      setIsPackageValidForClass(isValid)
-    } catch (error) {
-      console.error('Error al verificar sedes válidas:', error)
-      setIsPackageValidForClass(false)
-    }
-  }, [activePackage, state.selectedClass?.branchInfo?.id, supabase])
-
-  // 5. Efecto principal
-  useEffect(() => {
-    const initializeStep = async () => {
-      if (state.isGuest || isLoadingPackage) {
-        setIsInitializing(false)
-        return
-      }
-
-      await checkPackageValidity()
-      setIsInitializing(false)
-    }
-
-    initializeStep()
-  }, [state.isGuest, isLoadingPackage, checkPackageValidity])
-
   // 6. Funciones de manejo de eventos
   const handleSessionClick = useCallback((session: ClassSession) => {
-    // En móvil, mostramos el drawer
-    if (window.innerWidth < 640) {
-      setSelectedSessionForMobile(session)
-      return
-    }
-
-    // En desktop, solo seleccionamos la sesión
     if (state.selectedSessions.includes(session.id)) {
       deselectSession(session.id)
+    } else {
+      handleSessionSelect(session.id)
+    }
+  }, [state.selectedSessions, deselectSession, handleSessionSelect])
+
+  // Función para confirmar selección en móvil
+  const handleMobileConfirm = useCallback(() => {
+    if (!selectedSessionForMobile) {
       return
     }
 
-    if (state.selectedSessions.length > 0) {
-      state.selectedSessions.forEach(id => deselectSession(id))
+    if (state.selectedSessions.includes(selectedSessionForMobile.id)) {
+      deselectSession(selectedSessionForMobile.id)
+    } else {
+      handleSessionSelect(selectedSessionForMobile.id)
     }
-
-    selectSession(session.id)
-  }, [state.selectedSessions, selectSession, deselectSession])
-
-  // Función para confirmar selección en móvil
-  const handleConfirmMobileSelection = useCallback(() => {
-    if (!selectedSessionForMobile) return
-
-    if (state.selectedSessions.length > 0) {
-      state.selectedSessions.forEach(id => deselectSession(id))
-    }
-
-    selectSession(selectedSessionForMobile.id)
     setSelectedSessionForMobile(null)
-  }, [selectedSessionForMobile, state.selectedSessions, selectSession, deselectSession])
+  }, [selectedSessionForMobile, state.selectedSessions, deselectSession, handleSessionSelect])
 
   // 7. Funciones de formato
   const formatSessionDate = useCallback((dateStr: string) => {
@@ -140,6 +334,71 @@ export function SessionStep() {
       month: monthName.charAt(0).toUpperCase() + monthName.slice(1)
     }
   }, [])
+
+  // Cargar disponibilidad de sesiones
+  useEffect(() => {
+    // Verificar que state.selectedClass no sea null
+    if (!state.selectedClass || !state.selectedClass.sessions.length) return
+    
+    setIsLoadingAvailability(true)
+    
+    const fetchAvailability = async () => {
+      try {
+        // Comprobación de seguridad adicional
+        if (!state.selectedClass) return
+        
+        // Usar la función del servicio para actualizar la disponibilidad
+        const forceUpdate = isInitialMount.current ? true : false
+        
+        // Aquí usamos updateAvailabilityInfo en vez de acceder directamente al servicio
+        // Esta función ya la definimos antes y funciona correctamente
+        await updateAvailabilityInfo(forceUpdate)
+        
+      } catch (error) {
+        console.error('Error al cargar disponibilidad de sesiones:', error)
+        toast({
+          title: 'Error',
+          description: 'No se pudo cargar la disponibilidad de las sesiones',
+          variant: 'destructive'
+        })
+      } finally {
+        setIsLoadingAvailability(false)
+        if (isInitialMount.current) {
+          isInitialMount.current = false
+        }
+      }
+    }
+    
+    fetchAvailability()
+  }, [state.selectedClass, updateAvailabilityInfo])
+
+  // Renderización de disponibilidad de cupos - solo la función
+  const renderAvailability = (session: ClassSession) => {
+    // Si estamos cargando (tanto inicial como actualizaciones)
+    if (isLoadingAvailability) {
+      return (
+        <div className="inline-flex items-center">
+          <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-1" />
+          <span className="ml-1 text-xs text-gray-500">Verificando...</span>
+        </div>
+      )
+    }
+    
+    // Mostrar la disponibilidad real
+    const spotsLeft = session.spotsLeft;
+    const isFewSpots = spotsLeft <= 3 && spotsLeft > 0;
+    const isNoSpots = spotsLeft === 0;
+    
+    return (
+      <p className={cn(
+        "text-xs",
+        isFewSpots ? "text-amber-600" : (isNoSpots ? "text-red-600" : "text-gray-600"),
+        "font-medium"
+      )}>
+        ({spotsLeft} {spotsLeft === 1 ? 'cupo' : 'cupos'})
+      </p>
+    )
+  }
 
   // 8. Early returns
   if (isInitializing || isLoadingPackage) {
@@ -222,51 +481,42 @@ export function SessionStep() {
           </div>
 
           {/* Descripción de la clase */}
-          {state.selectedClass.description && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600">
-                {displayDescription}
-              </p>
-              {isLongDescription && (
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="text-sm text-gray-600 hover:text-gray-700 transition-colors duration-200 flex items-center gap-1"
-                >
-                  {showFullDescription ? 'Ver menos' : 'Ver más'}
-                  <IconChevronDown
-                    size={16}
-                    className={cn(
-                      "transition-transform duration-200",
-                      showFullDescription && "transform rotate-180"
-                    )}
-                  />
-                </button>
-              )}
-            </div>
-          )}
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              {displayDescription}
+            </p>
+            {isLongDescription && (
+              <button
+                onClick={() => setShowFullDescription(!showFullDescription)}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                {showFullDescription ? 'Ver menos' : 'Ver más'}
+              </button>
+            )}
+          </div>
 
           {/* Información del paquete activo */}
           {activePackage && (
             <div className={cn(
               "rounded-xl p-4",
-              isPackageValidForClass ? "bg-blue-50/80" : "bg-yellow-50/80",
+              packagesAreValid ? "bg-blue-50/80" : "bg-yellow-50/80",
               "space-y-2"
             )}>
               <div className="flex items-center justify-between">
                 <h3 className={cn(
                   "text-sm font-medium",
-                  isPackageValidForClass ? "text-blue-800" : "text-yellow-800"
+                  packagesAreValid ? "text-blue-800" : "text-yellow-800"
                 )}>
                   Paquete activo: {activePackage.package?.name}
                 </h3>
-                {isPackageValidForClass && (
+                {packagesAreValid && (
                   <span className="text-sm text-blue-600">
-                    {activePackage.sessions_left} {activePackage.sessions_left === 1 ? 'sesión' : 'sesiones'} disponibles
+                    Válido hasta {format(new Date(activePackage.expires_at), 'd MMMM yyyy', { locale: es })}
                   </span>
                 )}
               </div>
               
-              {isPackageValidForClass ? (
+              {packagesAreValid ? (
                 <p className="text-xs text-blue-500">
                   Válido hasta {format(new Date(activePackage.expires_at), 'd MMMM yyyy', { locale: es })}
                 </p>
@@ -276,7 +526,7 @@ export function SessionStep() {
                     Este paquete no es válido para esta clase ya que pertenece a otra sede.
                   </p>
                   <p className="text-xs text-yellow-600">
-                    Sedes válidas: {validBranchNames.join(', ')}
+                    Sedes válidas: {state.selectedClass?.branchInfo?.name}
                   </p>
                 </div>
               )}
@@ -370,9 +620,7 @@ export function SessionStep() {
                             : 'Precio no disponible'
                           }
                         </p>
-                        <p className="text-xs text-gray-600">
-                          ({session.spotsLeft} {session.spotsLeft === 1 ? 'cupo' : 'cupos'})
-                        </p>
+                        {renderAvailability(session)}
                       </div>
                     </div>
                   </div>
@@ -461,9 +709,22 @@ export function SessionStep() {
                     <h4 className="text-sm font-medium text-gray-900 mb-1">
                       Cupos disponibles
                     </h4>
-                    <p className="text-sm text-gray-600">
-                      {selectedSessionForMobile.spotsLeft} {selectedSessionForMobile.spotsLeft === 1 ? 'cupo' : 'cupos'}
-                    </p>
+                    {isLoadingAvailability ? (
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-2" />
+                        <span className="text-sm text-gray-500">Verificando disponibilidad...</span>
+                      </div>
+                    ) : (
+                      <p className={cn(
+                        "text-sm",
+                        selectedSessionForMobile.spotsLeft <= 3 && selectedSessionForMobile.spotsLeft > 0 
+                          ? "text-amber-600" 
+                          : (selectedSessionForMobile.spotsLeft === 0 ? "text-red-600" : "text-gray-600"),
+                        selectedSessionForMobile.spotsLeft <= 3 ? "font-medium" : ""
+                      )}>
+                        {selectedSessionForMobile.spotsLeft} {selectedSessionForMobile.spotsLeft === 1 ? 'cupo' : 'cupos'}
+                      </p>
+                    )}
                   </div>
 
                   {/* Precio */}
@@ -486,7 +747,7 @@ export function SessionStep() {
 
               {/* Botón de confirmación */}
               <button
-                onClick={handleConfirmMobileSelection}
+                onClick={handleMobileConfirm}
                 className={cn(
                   "w-full px-4 py-3 rounded-xl",
                   "bg-gray-900 text-white",

@@ -31,7 +31,13 @@ DROP FUNCTION IF EXISTS public.create_booking_v2(
     payment_type, numeric, text, text, jsonb, jsonb, uuid
 ) CASCADE;
 
--- 4. Crear la nueva versión de la función
+DROP FUNCTION IF EXISTS public.create_booking_v2(
+    uuid, date, time without time zone, time without time zone,
+    numeric, numeric, payment_method_enum, booking_payment_status,
+    payment_type, numeric, text, text, jsonb, jsonb, uuid, text
+) CASCADE;
+
+-- 4. Crear la nueva versión de la función con soporte para reservas de clase
 CREATE OR REPLACE FUNCTION public.create_booking_v2(
     p_court_id uuid,
     p_date date,
@@ -48,7 +54,10 @@ CREATE OR REPLACE FUNCTION public.create_booking_v2(
     p_participants jsonb DEFAULT '[]',
     p_rental_items jsonb DEFAULT '[]',
     p_empresa_id uuid DEFAULT NULL,
-    p_stripe_payment_method_id text DEFAULT NULL
+    p_stripe_payment_method_id text DEFAULT NULL,
+    p_reservation_type reservation_type_enum DEFAULT 'booking'::reservation_type_enum,
+    p_class_id uuid DEFAULT NULL,
+    p_class_session_price numeric DEFAULT 0
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -58,6 +67,7 @@ DECLARE
     v_booking_id uuid;
     v_participant jsonb;
     v_rental jsonb;
+    v_total_price numeric;
 BEGIN
     -- Log inicio de operación
     INSERT INTO trigger_logs (trigger_name, booking_data, error_message)
@@ -69,10 +79,20 @@ BEGIN
             'rental_items_price', p_rental_items_price,
             'payment_type', p_payment_type,
             'empresa_id', p_empresa_id,
-            'stripe_payment_method_id', p_stripe_payment_method_id
+            'stripe_payment_method_id', p_stripe_payment_method_id,
+            'reservation_type', p_reservation_type,
+            'class_id', p_class_id,
+            'class_session_price', p_class_session_price
         ),
         'Iniciando creación de reserva'
     );
+
+    -- Calcular el precio total, incluyendo el precio de la sesión de clase si aplica
+    IF p_reservation_type = 'class' THEN
+        v_total_price := p_court_price + p_rental_items_price + p_class_session_price;
+    ELSE
+        v_total_price := p_court_price + p_rental_items_price;
+    END IF;
 
     -- Insertar la reserva
     INSERT INTO public.bookings (
@@ -88,7 +108,11 @@ BEGIN
         deposit_amount,
         title,
         description,
-        empresa_id
+        empresa_id,
+        total_price,
+        reservation_type,
+        class_id,
+        class_session_price
     ) VALUES (
         p_court_id,
         p_date,
@@ -102,11 +126,15 @@ BEGIN
         COALESCE(p_deposit_amount, 0),
         p_title,
         p_description,
-        p_empresa_id
+        p_empresa_id,
+        v_total_price,
+        p_reservation_type,
+        p_class_id,
+        CASE WHEN p_reservation_type = 'class' THEN p_class_session_price ELSE 0 END
     )
     RETURNING id INTO v_booking_id;
 
-    -- Insertar el pago inicial con el stripe_payment_method_id
+    -- Insertar el pago inicial con el stripe_payment_method_id y class_session_price
     INSERT INTO public.payments (
         booking_id,
         deposit_amount,
@@ -114,18 +142,20 @@ BEGIN
         payment_method,
         payment_status,
         notes,
-        stripe_payment_method_id
+        stripe_payment_method_id,
+        class_session_price
     ) VALUES (
         v_booking_id,
         COALESCE(p_deposit_amount, 0),
-        p_court_price + p_rental_items_price,
+        v_total_price,
         p_payment_method,
         p_payment_status,
         'Pago inicial generado automáticamente',
         CASE 
             WHEN p_payment_type = 'guarantee' THEN p_stripe_payment_method_id
             ELSE NULL
-        END
+        END,
+        CASE WHEN p_reservation_type = 'class' THEN p_class_session_price ELSE 0 END
     );
 
     -- Insertar participantes con la nueva columna user_id
@@ -169,7 +199,9 @@ EXCEPTION WHEN OTHERS THEN
             'error_hint', SQLSTATE,
             'court_id', p_court_id,
             'payment_type', p_payment_type,
-            'stripe_payment_method_id', p_stripe_payment_method_id
+            'stripe_payment_method_id', p_stripe_payment_method_id,
+            'reservation_type', p_reservation_type,
+            'class_id', p_class_id
         ),
         'Error en create_booking_v2: ' || SQLERRM
     );
@@ -182,7 +214,8 @@ $function$;
 GRANT EXECUTE ON FUNCTION public.create_booking_v2(
     uuid, date, time without time zone, time without time zone,
     numeric, numeric, payment_method_enum, booking_payment_status,
-    payment_type, numeric, text, text, jsonb, jsonb, uuid, text
+    payment_type, numeric, text, text, jsonb, jsonb, uuid, text,
+    reservation_type_enum, uuid, numeric
 ) TO authenticated;
 
 -- 6. Verificar la instalación
@@ -205,8 +238,10 @@ BEGIN
         JOIN pg_namespace n ON p.pronamespace = n.oid
         WHERE p.proname = 'create_booking_v2'
         AND n.nspname = 'public'
-        AND pg_get_function_identity_arguments(p.oid) LIKE '%stripe_payment_method_id text%'
+        AND pg_get_function_identity_arguments(p.oid) LIKE '%p_reservation_type reservation_type_enum%'
+        AND pg_get_function_identity_arguments(p.oid) LIKE '%p_class_id uuid%'
+        AND pg_get_function_identity_arguments(p.oid) LIKE '%p_class_session_price numeric%'
     ) THEN
-        RAISE EXCEPTION 'La función create_booking_v2 no tiene el parámetro stripe_payment_method_id';
+        RAISE EXCEPTION 'La función create_booking_v2 no tiene los parámetros para la reserva de clases';
     END IF;
 END $$;

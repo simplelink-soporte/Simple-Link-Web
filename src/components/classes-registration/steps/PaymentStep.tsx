@@ -1,12 +1,15 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { IconChevronRight, IconCash, IconCreditCard, IconBuildingBank } from "@tabler/icons-react"
+import { IconChevronRight, IconCash, IconCreditCard, IconBuildingBank, IconLoader2 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { useClassRegistration } from "../context/ClassRegistrationContext"
 import { StepContainer } from '../shared/StepContainer'
 import { StepHeader } from '../shared/StepSection'
 import type { PaymentMethod } from "../types/models"
+import { useClassBooking } from "@/hooks/useClassBooking"
+import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react"
 
 const PAYMENT_METHODS: Record<PaymentMethod, {
   icon: typeof IconCash
@@ -21,56 +24,82 @@ const PAYMENT_METHODS: Record<PaymentMethod, {
   card: {
     icon: IconCreditCard,
     label: 'Tarjeta',
-    description: 'Paga con tarjeta de crédito o débito'
+    description: 'Pago con tarjeta en la recepción'
   },
   transfer: {
     icon: IconBuildingBank,
     label: 'Transferencia',
-    description: 'Realiza una transferencia bancaria'
+    description: 'Transferencia bancaria'
   }
 }
 
 export function PaymentStep() {
-  const { state, selectPayment, goToStep } = useClassRegistration()
+  const { state, updateState, goToStep } = useClassRegistration()
+  const [isProcessing, setIsProcessing] = useState(false)
+  const { submitClassBooking } = useClassBooking()
+  const { toast } = useToast()
 
-  if (!state.selectedClass) {
-    goToStep('class')
-    return null
-  }
+  // Seleccionar solo los métodos de pago disponibles para la clase
+  const availableMethods = Object.entries(PAYMENT_METHODS)
+    .filter(([key]) => 
+      state.selectedClass?.availablePaymentMethods?.includes(key as PaymentMethod)
+    )
 
   const handlePaymentClick = (method: PaymentMethod) => {
     // Si el método ya está seleccionado, lo deseleccionamos
     if (state.selectedPayment === method) {
-      selectPayment(null)
+      updateState({ type: 'SELECT_PAYMENT', payload: null })
     } else {
-      selectPayment(method)
+      updateState({ type: 'SELECT_PAYMENT', payload: method })
     }
   }
 
-  const handleNext = () => {
-    // Aquí iría la lógica para procesar el pago
-    console.log('Procesando pago...')
-    goToStep('confirmation')
+  const handleNext = async () => {
+    if (isProcessing || !state.selectedPayment) return
+    
+    setIsProcessing(true)
+    
+    try {
+      // Procesar la creación de reservas con el método de pago seleccionado
+      const result = await submitClassBooking({
+        paymentMethod: state.selectedPayment
+      })
+      
+      if (result.error) {
+        toast({
+          title: 'Error',
+          description: result.error.message,
+          variant: 'destructive'
+        })
+        return
+      }
+      
+      // Solo avanzar al paso de confirmación si la reserva fue exitosa
+      goToStep('confirmation')
+    } catch (error: any) {
+      toast({
+        title: 'Error', 
+        description: error?.message || 'Error al procesar el pago',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsProcessing(false)
+    }
   }
-
+  
   const handleBack = () => {
-    goToStep('summary')
+    goToStep('session')
   }
-
-  // Filtrar los métodos de pago disponibles
-  const availableMethods = Object.entries(PAYMENT_METHODS)
-    .filter(([method]) => state.selectedClass?.availablePaymentMethods.includes(method as PaymentMethod))
 
   return (
-    <StepContainer stepId="payment">
-      <div className="w-full max-w-[var(--container-default)] mx-auto px-[var(--padding-container-mobile)] sm:px-[var(--padding-container-tablet)] lg:px-[var(--padding-container-desktop)]">
-        <StepHeader 
-          title="Elige tu método de pago"
-          subtitle="Selecciona cómo deseas pagar tu clase"
-        />
+    <StepContainer>
+      <StepHeader
+        title="Método de pago"
+        subtitle="Selecciona cómo quieres pagar tus clases"
+      />
 
-        <div className="mt-6 flex flex-col gap-4 max-w-2xl mx-auto">
-          {/* Grid de métodos de pago */}
+      <div className="w-full mt-5 flex flex-col items-center gap-8">
+        {state.selectedClass ? (
           <div className="grid gap-3">
             {availableMethods.map(([method, info]) => {
               const isSelected = state.selectedPayment === method
@@ -80,69 +109,79 @@ export function PaymentStep() {
                 <motion.button
                   key={method}
                   onClick={() => handlePaymentClick(method as PaymentMethod)}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.98 }}
                   className={cn(
-                    "relative w-full p-4 rounded-lg border text-left",
-                    "transition-all duration-200",
-                    isSelected
-                      ? "bg-gray-50 border-gray-900/10 shadow-sm"
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                    "bg-card hover:bg-accent/50 rounded-lg p-4 w-full min-w-[300px]",
+                    "border border-border hover:border-accent transition-colors",
+                    "flex items-start gap-4 text-left",
+                    isSelected && "border-primary bg-primary/5"
                   )}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0">
-                      <Icon className="w-6 h-6 text-gray-400" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">
-                        {info.label}
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {info.description}
-                      </p>
-                    </div>
+                  <div className={cn(
+                    "p-2 rounded-full",
+                    isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+                  )}>
+                    <Icon size={20} stroke={1.5} />
+                  </div>
+                  
+                  <div>
+                    <p className="font-medium text-foreground">{info.label}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{info.description}</p>
                   </div>
                 </motion.button>
               )
             })}
           </div>
-
-          {/* Botones */}
-          <div className="flex flex-col items-center gap-3">
-            <motion.button
-              onClick={handleNext}
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={!state.selectedPayment}
-              className={cn(
-                "w-full max-w-sm",
-                "px-5 py-2.5 rounded-lg",
-                "bg-white border border-gray-200",
-                "text-gray-800 hover:text-gray-900",
-                "hover:border-gray-300 hover:bg-gray-50",
-                "transition-all duration-200",
-                "flex items-center justify-center gap-2",
-                "text-sm font-medium",
-                !state.selectedPayment && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <span>Confirmar pago</span>
-              <IconChevronRight className="w-4 h-4" strokeWidth={2} />
-            </motion.button>
-
-            <motion.button
-              onClick={handleBack}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className={cn(
-                "text-sm text-gray-600 hover:text-gray-900",
-                "transition-colors duration-200"
-              )}
-            >
-              <span>Volver</span>
-            </motion.button>
+        ) : (
+          <div className="text-center">
+            <p className="text-muted-foreground">No hay métodos de pago disponibles</p>
           </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 w-full max-w-sm">
+          <motion.button
+            onClick={handleBack}
+            whileHover={{ x: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+              "px-5 py-2.5 rounded-lg",
+              "bg-accent/50 hover:bg-accent",
+              "text-accent-foreground font-medium",
+              "flex justify-center items-center gap-2"
+            )}
+          >
+            Anterior
+          </motion.button>
+          
+          <motion.button
+            onClick={handleNext}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            disabled={!state.selectedPayment || isProcessing}
+            className={cn(
+              "w-full max-w-sm",
+              "px-5 py-2.5 rounded-lg",
+              "bg-primary hover:bg-primary/90",
+              "text-primary-foreground",
+              "transition-colors",
+              "flex items-center justify-center gap-2",
+              "text-sm font-medium",
+              (!state.selectedPayment || isProcessing) && "opacity-50 cursor-not-allowed"
+            )}
+          >
+            {isProcessing ? (
+              <>
+                <IconLoader2 size={16} className="animate-spin" />
+                Procesando...
+              </>
+            ) : (
+              <>
+                Confirmar pago
+                <IconChevronRight size={16} />
+              </>
+            )}
+          </motion.button>
         </div>
       </div>
     </StepContainer>

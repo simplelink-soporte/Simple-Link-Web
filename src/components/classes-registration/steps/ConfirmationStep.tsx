@@ -1,15 +1,24 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { IconCheck } from '@tabler/icons-react'
+import { IconCheck, IconTicket } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import { useClassRegistration } from '../context/ClassRegistrationContext'
 import type { ClassSession } from '../types/models'
+import { useEffect } from 'react'
 
 export function ConfirmationStep() {
-  const { state } = useClassRegistration()
+  const { state, goToStep } = useClassRegistration()
+
+  // Verificar que hemos llegado aquí después de crear reservas
+  useEffect(() => {
+    // Si no hay IDs de reserva o el estado no es success, redirigir al paso de pago
+    if (state.bookingIds.length === 0 || state.bookingStatus !== 'success') {
+      goToStep('payment')
+    }
+  }, [state.bookingIds, state.bookingStatus, goToStep])
 
   // Formatear fecha
   const formatSessionDate = (dateStr: string) => {
@@ -23,122 +32,102 @@ export function ConfirmationStep() {
     return {
       dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
       dayNumber,
-      month: monthName.charAt(0).toUpperCase() + monthName.slice(1)
+      monthName: monthName.charAt(0).toUpperCase() + monthName.slice(1)
     }
   }
+  
+  // Mensaje según si se usó paquete o no
+  const message = state.selectedPackage
+    ? `Has reservado tus sesiones usando tu paquete ${state.selectedPackage.title}`
+    : 'Has reservado tus sesiones correctamente'
 
-  // Encontrar la sesión seleccionada
-  const selectedSession = state.selectedClass?.sessions.find(
-    (session: ClassSession) => session.id === state.selectedSessions[0]
-  )
-
-  if (!selectedSession || !state.selectedClass) {
-    return null
-  }
-
-  const { dayName, dayNumber, month } = formatSessionDate(selectedSession.date)
-  const timeSlot = state.selectedClass.schedule.timeSlots[0]
-  const usedPackage = state.step === 'confirmation' && !state.selectedPayment
+  // Método de pago utilizado
+  const paymentMethod = state.selectedPayment ? {
+    cash: 'Efectivo',
+    card: 'Tarjeta',
+    transfer: 'Transferencia'
+  }[state.selectedPayment] : 'No especificado'
 
   return (
-    <motion.div
-      key="confirmation"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.75 }}
-      className="w-full max-w-[680px] mx-auto px-6 md:px-8"
-    >
-      <div className="space-y-6">
-        {/* Ícono y título */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-              <IconCheck className="w-6 h-6 text-green-600" strokeWidth={2.5} />
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800">
-              {usedPackage ? '¡Reserva confirmada!' : '¡Pago confirmado!'}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {usedPackage 
-                ? 'Tu sesión ha sido reservada exitosamente usando tu paquete activo'
-                : 'Tu pago ha sido procesado y tu sesión ha sido reservada exitosamente'
-              }
-            </p>
+    <div className="w-full py-8 px-4">
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
+            <IconCheck className="w-10 h-10 text-emerald-600" strokeWidth={2} />
           </div>
         </div>
-
+        
+        <h1 className="text-2xl font-bold mb-2">¡Reserva completada!</h1>
+        
+        <p className="text-muted-foreground mb-8">
+          {message}
+        </p>
+        
         {/* Detalles de la clase */}
-        <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {state.selectedClass.title}
-          </h3>
-          
-          {/* Instructor */}
-          {state.selectedClass.instructor && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="font-medium">Profesor:</span>
-              <span>{state.selectedClass.instructor}</span>
+        {state.selectedClass && (
+          <div className="bg-card border border-border rounded-lg p-6 mb-6 text-left">
+            <h2 className="text-lg font-semibold mb-4">{state.selectedClass.title}</h2>
+            
+            {/* Sesiones reservadas */}
+            <div className="space-y-4 mb-6">
+              {state.selectedClass.sessions
+                .filter(session => state.selectedSessions.includes(session.id))
+                .map(session => {
+                  const { dayName, dayNumber, monthName } = formatSessionDate(session.date)
+                  
+                  return (
+                    <div key={session.id} className="flex justify-between border-b border-border pb-3">
+                      <div>
+                        <p className="font-medium">{`${dayName} ${dayNumber} de ${monthName}`}</p>
+                        <p className="text-sm text-muted-foreground">{`${session.startTime} - ${session.endTime}`}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{`$${session.price.toFixed(2)}`}</p>
+                      </div>
+                    </div>
+                  )
+                })}
             </div>
-          )}
-
-          {/* Fecha y hora */}
-          <div className="space-y-2">
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Fecha:</span>{' '}
-              <span>{dayName} {dayNumber} de {month}</span>
+            
+            {/* Info del método de pago */}
+            <div className="bg-accent/30 p-4 rounded-md mb-4">
+              <p className="font-medium">Método de pago: {paymentMethod}</p>
             </div>
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Horario:</span>{' '}
-              <span>{selectedSession.startTime} - {selectedSession.endTime}</span>
+            
+            {/* IDs de reserva */}
+            <div className="bg-accent/10 p-4 rounded-md mt-4">
+              <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                <IconTicket size={16} />
+                <span className="text-sm font-medium">IDs de reserva:</span>
+              </div>
+              <div className="space-y-1">
+                {state.bookingIds.map((id, index) => (
+                  <div key={id} className="text-xs font-mono bg-accent/20 p-2 rounded">
+                    Reserva {index + 1}: {id}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Método de pago o paquete usado */}
-          <div className="pt-4 border-t border-gray-200">
-            {usedPackage ? (
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  Se ha descontado 1 sesión de tu paquete activo
-                </p>
-              </div>
-            ) : (
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-900">Método de pago</p>
-                  <p className="text-sm text-gray-600">
-                    {state.selectedPayment === 'cash' && 'Efectivo'}
-                    {state.selectedPayment === 'card' && 'Tarjeta'}
-                    {state.selectedPayment === 'transfer' && 'Transferencia'}
-                  </p>
-                </div>
-                <span className="text-lg font-semibold text-gray-900">
-                  ${timeSlot.price.toLocaleString('es-AR')}
-                </span>
-              </div>
+        )}
+        
+        {/* Botones */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <motion.button
+            onClick={() => goToStep('class')}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className={cn(
+              "px-6 py-2.5 rounded-lg",
+              "bg-accent/50 hover:bg-accent",
+              "text-accent-foreground font-medium",
+              "transition-colors"
             )}
-          </div>
-        </div>
-
-        {/* Instrucciones adicionales */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">
-            Próximos pasos
-          </h4>
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li>• Recibirás un correo electrónico con los detalles de tu reserva</li>
-            <li>• Llega 10 minutos antes de la clase</li>
-            {state.selectedPayment === 'cash' && (
-              <li>• Recuerda traer el pago en efectivo</li>
-            )}
-            {state.selectedPayment === 'transfer' && (
-              <li>• Recibirás los datos bancarios por correo electrónico</li>
-            )}
-          </ul>
+          >
+            Reservar más clases
+          </motion.button>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 } 

@@ -908,7 +908,11 @@ export const bookingService = {
         p_participants: transformedParticipants,
         p_rental_items: transformedRentals,
         p_empresa_id: data.empresa_id,
-        p_stripe_payment_method_id: data.stripe_payment_method_id
+        p_stripe_payment_method_id: data.stripe_payment_method_id,
+        // Nuevos parámetros para reservas de clase
+        p_reservation_type: data.reservationType || 'booking',
+        p_class_id: data.classId || null,
+        p_class_session_price: data.classSessionPrice || 0
       };
 
       console.log('📦 Parámetros de la reserva:', {

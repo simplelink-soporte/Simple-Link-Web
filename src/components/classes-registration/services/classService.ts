@@ -24,7 +24,7 @@ interface PaymentConfig {
   currency: string
 }
 
-// Tipo que coincide exactamente con la estructura de la tabla
+// Tipo para la clase desde la base de datos
 interface ClassFromDB {
   id: string
   empresa_id: string
@@ -51,8 +51,41 @@ interface ClassFromDB {
   } | null
 }
 
+// Respuesta de disponibilidad de sesión
+interface SessionAvailabilityResponse {
+  available: boolean;
+  totalCapacity: number;
+  bookedSpots: number;
+  availableSpots: number;
+  error?: {
+    message: string;
+    code: string;
+    details?: string;
+  };
+}
+
+// Caché de disponibilidad para reducir consultas duplicadas
+interface SessionAvailabilityCache {
+  timestamp: number;
+  data: SessionAvailabilityResponse;
+}
+
+interface SessionAvailabilityOptions {
+  forceUpdate?: boolean; // Forzar actualización incluso si hay datos en caché
+  throttleThreshold?: number; // Tiempo mínimo entre actualizaciones (ms)
+}
+
 export class ClassService {
   private supabase = createSupabaseClient()
+  
+  // Caché para almacenar información de disponibilidad y reducir consultas
+  private availabilityCache: Record<string, SessionAvailabilityCache> = {};
+  
+  // Tiempo de expiración de la caché (1 minuto por defecto)
+  private readonly CACHE_EXPIRATION_MS = 60 * 1000;
+  
+  // Último timestamp de actualización por clase
+  private lastClassUpdateTimestamp: Record<string, number> = {};
 
   private async generateSessions(dbClass: ClassFromDB, courts: Array<{ id: string; name: string; description: string | null }> = []): Promise<ClassSession[]> {
     const sessions: ClassSession[] = []
@@ -222,6 +255,447 @@ export class ClassService {
         phone: dbClass.branch.phone
       } : null,
       courts
+    }
+  }
+
+  /**
+   * Crea una clave única para el caché de disponibilidad
+   */
+  private createCacheKey(classId: string, sessionDate: string, startTime: string, endTime: string): string {
+    return `${classId}:${sessionDate}:${startTime}:${endTime}`;
+  }
+
+  /**
+   * Verifica si es necesario actualizar la información de disponibilidad
+   * @param classId - ID de la clase para verificar
+   * @param options - Opciones de la verificación
+   * @returns true si es necesario actualizar, false si no
+   */
+  public shouldUpdateAvailability(classId: string, options: SessionAvailabilityOptions = {}): boolean {
+    const now = Date.now();
+    const lastUpdate = this.lastClassUpdateTimestamp[classId] || 0;
+    const timeSinceLastUpdate = now - lastUpdate;
+    
+    // Si se fuerza la actualización, siempre retornar true
+    if (options.forceUpdate) {
+      console.log('🔄 Forzando actualización de disponibilidad para clase:', classId);
+      return true;
+    }
+    
+    // Si no ha pasado suficiente tiempo desde la última actualización, evitar la actualización
+    const threshold = options.throttleThreshold || 5000; // 5 segundos por defecto
+    if (timeSinceLastUpdate < threshold) {
+      console.log(`🛑 Evitando actualización de disponibilidad (muy reciente: ${timeSinceLastUpdate}ms < ${threshold}ms)`);
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
+   * Verifica la disponibilidad de plazas para una sesión específica de clase
+   */
+  async checkSessionAvailability(
+    classId: string,
+    sessionDate: string,
+    startTime: string,
+    endTime: string,
+    options: SessionAvailabilityOptions = {}
+  ): Promise<SessionAvailabilityResponse> {
+    try {
+      // Verificar si tenemos la información en caché y no ha expirado
+      const cacheKey = this.createCacheKey(classId, sessionDate, startTime, endTime);
+      const cachedData = this.availabilityCache[cacheKey];
+      const now = Date.now();
+
+      if (!options.forceUpdate && cachedData && (now - cachedData.timestamp) < this.CACHE_EXPIRATION_MS) {
+        console.log('🔄 Usando datos de disponibilidad en caché para:', cacheKey);
+        return cachedData.data;
+      }
+
+      console.log('🔍 Verificando disponibilidad para sesión:', {
+        classId,
+        sessionDate,
+        startTime,
+        endTime
+      });
+
+      // 1. Obtener la información de la clase y contar reservas en paralelo
+      const [classResult, bookingsResult] = await Promise.all([
+        this.supabase
+          .from('classes')
+          .select('schedule_config')
+          .eq('id', classId)
+          .single(),
+        
+        this.supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: false })
+          .eq('class_id', classId)
+          .eq('date', sessionDate)
+          .eq('start_time', startTime)
+          .eq('end_time', endTime)
+          .eq('reservation_type', 'class')
+          .is('cancelled_at', null)
+      ]);
+
+      const { data: classData, error: classError } = classResult;
+      const { count: bookedSpots, error: countError } = bookingsResult;
+
+      // Actualizar timestamp de última actualización para esta clase
+      this.lastClassUpdateTimestamp[classId] = now;
+
+      if (classError) {
+        console.error('❌ Error al obtener información de la clase:', classError);
+        return {
+          available: false,
+          totalCapacity: 0,
+          bookedSpots: 0,
+          availableSpots: 0,
+          error: {
+            message: 'Error al obtener información de la clase',
+            code: 'class_fetch_error',
+            details: classError.message
+          }
+        };
+      }
+
+      if (countError) {
+        console.error('❌ Error al contar reservas existentes:', countError);
+        return {
+          available: false,
+          totalCapacity: 0,
+          bookedSpots: 0,
+          availableSpots: 0,
+          error: {
+            message: 'Error al contar reservas existentes',
+            code: 'bookings_count_error',
+            details: countError.message
+          }
+        };
+      }
+
+      if (!classData || !classData.schedule_config) {
+        console.error('❌ La clase no tiene configuración de horario:', classId);
+        return {
+          available: false,
+          totalCapacity: 0,
+          bookedSpots: 0,
+          availableSpots: 0,
+          error: {
+            message: 'La clase no tiene configuración de horario',
+            code: 'no_schedule_config'
+          }
+        };
+      }
+
+      // 2. Encontrar la capacidad para este horario específico
+      const scheduleConfig: ScheduleConfig = classData.schedule_config;
+      const timeSlot = scheduleConfig.timeSlots.find(slot => 
+        slot.startTime === startTime && slot.endTime === endTime
+      );
+
+      if (!timeSlot) {
+        console.error('❌ No se encontró el horario especificado en la configuración de la clase');
+        return {
+          available: false,
+          totalCapacity: 0,
+          bookedSpots: 0,
+          availableSpots: 0,
+          error: {
+            message: 'Horario no encontrado en la configuración de la clase',
+            code: 'time_slot_not_found'
+          }
+        };
+      }
+
+      const totalCapacity = timeSlot.capacity;
+
+      // 3. Calcular plazas disponibles
+      const availableSpots = Math.max(0, totalCapacity - (bookedSpots || 0));
+      const isAvailable = availableSpots > 0;
+
+      // 4. Guardar resultado en caché
+      const result = {
+        available: isAvailable,
+        totalCapacity,
+        bookedSpots: bookedSpots || 0,
+        availableSpots
+      };
+      
+      this.availabilityCache[cacheKey] = {
+        timestamp: now,
+        data: result
+      };
+
+      console.log('✅ Disponibilidad de sesión:', {
+        classId,
+        sessionDate,
+        startTime,
+        endTime,
+        totalCapacity,
+        bookedSpots,
+        availableSpots,
+        isAvailable
+      });
+
+      return result;
+    } catch (error: any) {
+      console.error('❌ Error inesperado al verificar disponibilidad de sesión:', error);
+      return {
+        available: false,
+        totalCapacity: 0,
+        bookedSpots: 0,
+        availableSpots: 0,
+        error: {
+          message: 'Error inesperado al verificar disponibilidad',
+          code: 'unexpected_error',
+          details: error.message
+        }
+      };
+    }
+  }
+
+  /**
+   * Verifica la disponibilidad de plazas para múltiples sesiones en una sola operación
+   * @param classId - ID de la clase
+   * @param sessions - Array de sesiones a verificar
+   * @returns Mapa de ID de sesión a información de disponibilidad
+   */
+  async checkMultipleSessionsAvailability(
+    classId: string,
+    sessions: ClassSession[]
+  ): Promise<Map<string, SessionAvailabilityResponse>> {
+    try {
+      if (!sessions.length) {
+        return new Map();
+      }
+
+      const result = new Map<string, SessionAvailabilityResponse>();
+      const now = Date.now();
+
+      // 1. Filtrar solo las sesiones que necesitan actualización (no en caché o caché expirado)
+      const sessionsToCheck = sessions.filter(session => {
+        const cacheKey = this.createCacheKey(classId, session.date, session.startTime, session.endTime);
+        const cachedData = this.availabilityCache[cacheKey];
+        
+        if (cachedData && (now - cachedData.timestamp) < this.CACHE_EXPIRATION_MS) {
+          // Usar caché para esta sesión
+          result.set(session.id, cachedData.data);
+          return false;
+        }
+        
+        return true;
+      });
+
+      if (!sessionsToCheck.length) {
+        console.log('🔄 Todas las sesiones tienen disponibilidad en caché');
+        
+        // Llenar el resultado con los datos en caché
+        sessions.forEach(session => {
+          const cacheKey = this.createCacheKey(classId, session.date, session.startTime, session.endTime);
+          result.set(session.id, this.availabilityCache[cacheKey].data);
+        });
+        
+        return result;
+      }
+
+      // 2. Obtener información de la clase
+      const { data: classData, error: classError } = await this.supabase
+        .from('classes')
+        .select('schedule_config')
+        .eq('id', classId)
+        .single();
+
+      if (classError || !classData || !classData.schedule_config) {
+        console.error('❌ Error al obtener configuración de la clase:', classError);
+        
+        // Llenar con error para todas las sesiones
+        sessionsToCheck.forEach(session => {
+          result.set(session.id, {
+            available: false,
+            totalCapacity: 0,
+            bookedSpots: 0,
+            availableSpots: 0,
+            error: {
+              message: 'Error al obtener configuración de la clase',
+              code: 'class_config_error',
+              details: classError?.message
+            }
+          });
+        });
+        
+        return result;
+      }
+
+      const scheduleConfig: ScheduleConfig = classData.schedule_config;
+
+      // 3. Preparar consulta para obtener todas las reservas de una vez
+      // Crear filtros para fechas y horas específicas
+      const dateTimeConditions = sessionsToCheck.map(session => {
+        return `(date = '${session.date}' AND start_time = '${session.startTime}' AND end_time = '${session.endTime}')`;
+      }).join(' OR ');
+
+      // 4. Obtener todas las reservas para estas sesiones en una sola consulta
+      const { data: bookings, error: bookingsError } = await this.supabase
+        .from('bookings')
+        .select('date, start_time, end_time, id')
+        .eq('class_id', classId)
+        .eq('reservation_type', 'class')
+        .is('cancelled_at', null)
+        .or(dateTimeConditions);
+
+      if (bookingsError) {
+        console.error('❌ Error al consultar reservas:', bookingsError);
+        
+        // Llenar con error para todas las sesiones
+        sessionsToCheck.forEach(session => {
+          result.set(session.id, {
+            available: false,
+            totalCapacity: 0,
+            bookedSpots: 0,
+            availableSpots: 0,
+            error: {
+              message: 'Error al consultar reservas',
+              code: 'bookings_query_error',
+              details: bookingsError.message
+            }
+          });
+        });
+        
+        return result;
+      }
+
+      // 5. Contar reservas por fecha/hora
+      const bookingCounts = new Map<string, number>();
+      
+      bookings?.forEach(booking => {
+        const key = `${booking.date}:${booking.start_time}:${booking.end_time}`;
+        bookingCounts.set(key, (bookingCounts.get(key) || 0) + 1);
+      });
+
+      // 6. Procesar cada sesión
+      sessionsToCheck.forEach(session => {
+        const { date, startTime, endTime } = session;
+        
+        // Buscar el time slot correspondiente
+        const timeSlot = scheduleConfig.timeSlots.find(slot => 
+          slot.startTime === startTime && slot.endTime === endTime
+        );
+        
+        if (!timeSlot) {
+          result.set(session.id, {
+            available: false,
+            totalCapacity: 0,
+            bookedSpots: 0,
+            availableSpots: 0,
+            error: {
+              message: 'Horario no encontrado en la configuración',
+              code: 'time_slot_not_found'
+            }
+          });
+          return;
+        }
+        
+        const totalCapacity = timeSlot.capacity;
+        const bookingKey = `${date}:${startTime}:${endTime}`;
+        const bookedSpots = bookingCounts.get(bookingKey) || 0;
+        const availableSpots = Math.max(0, totalCapacity - bookedSpots);
+        
+        const availability = {
+          available: availableSpots > 0,
+          totalCapacity,
+          bookedSpots,
+          availableSpots
+        };
+        
+        // Guardar en caché
+        const cacheKey = this.createCacheKey(classId, date, startTime, endTime);
+        this.availabilityCache[cacheKey] = {
+          timestamp: now,
+          data: availability
+        };
+        
+        // Guardar en resultado
+        result.set(session.id, availability);
+      });
+      
+      return result;
+    } catch (error: any) {
+      console.error('❌ Error al verificar disponibilidad múltiple:', error);
+      
+      // Devolver un map vacío en caso de error
+      return new Map();
+    }
+  }
+
+  /**
+   * Actualiza la información de plazas disponibles para una clase
+   */
+  async updateSessionsAvailability(
+    classData: PublicClass, 
+    options: SessionAvailabilityOptions = {}
+  ): Promise<PublicClass> {
+    try {
+      if (!classData.sessions || classData.sessions.length === 0) {
+        return classData;
+      }
+
+      // Verificar si se debe actualizar
+      if (!this.shouldUpdateAvailability(classData.id, options)) {
+        return classData; // No actualizar si no es necesario
+      }
+
+      console.log(`🔄 Actualizando disponibilidad para clase: ${classData.id}`);
+
+      // Filtrar solo sesiones futuras
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const futureSessions = classData.sessions.filter(session => {
+        const sessionDate = new Date(session.date);
+        return sessionDate >= today;
+      });
+      
+      if (futureSessions.length === 0) {
+        return classData;
+      }
+
+      // Crear una copia de la clase para no modificar el objeto original
+      const updatedClass = { ...classData };
+      const updatedSessions = [...updatedClass.sessions];
+
+      // Verificar cada sesión
+      for (let i = 0; i < updatedSessions.length; i++) {
+        const session = updatedSessions[i];
+        
+        // Solo verificar sesiones futuras (fecha >= hoy)
+        const sessionDate = new Date(session.date);
+        
+        if (sessionDate >= today) {
+          const availability = await this.checkSessionAvailability(
+            classData.id,
+            session.date,
+            session.startTime,
+            session.endTime,
+            options
+          );
+          
+          // Actualizar la sesión con la información de disponibilidad
+          updatedSessions[i] = {
+            ...session,
+            spotsLeft: availability.availableSpots,
+            totalSpots: availability.totalCapacity,
+            selected: session.selected
+          };
+        }
+      }
+
+      updatedClass.sessions = updatedSessions;
+      return updatedClass;
+    } catch (error) {
+      console.error('❌ Error al actualizar disponibilidad de sesiones:', error);
+      return classData; // Devolver datos originales en caso de error
     }
   }
 

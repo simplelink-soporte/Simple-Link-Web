@@ -1,0 +1,533 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Booking count response:",
+      {
+        "currentCount": 0,
+        "limit": 9007199254740991,
+        "remainingBookings": 9007199254740991,
+        "resetTime": "2025-03-06T06:02:01.057Z",
+        "isPro": true,
+        "nextResetDate": "2025-03-06T06:02:01.057Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 1,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-1-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-10",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 2,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-2-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-11",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 3,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-3-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-12",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 4,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-4-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-06",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 5,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-5-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-07",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión:",
+      {
+        "dayNumber": 6,
+        "slot": {
+          "price": 10,
+          "endTime": "11:00",
+          "capacity": 8,
+          "courtIds": [
+            "8f69eb96-fde1-4085-8577-61da097e4f99"
+          ],
+          "startTime": "09:00",
+          "instructors": [
+            "El profe"
+          ]
+        },
+        "court": "Pista 1",
+        "session": {
+          "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-6-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-08",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "spotsLeft": 8,
+          "totalSpots": 8,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "El profe",
+          "price": 10
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Se cargaron 1 clases correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Iniciando búsqueda de paquetes una sola vez"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando paquetes para empresa:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Datos de la clase recibidos:",
+      {
+        "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "title": "Clases | Chupee",
+        "description": "",
+        "is_active": true,
+        "created_at": "2025-03-05T06:10:34.999558+00:00",
+        "updated_at": "2025-03-05T06:10:34.999558+00:00",
+        "schedule": {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "timeSlots": [
+            {
+              "startTime": "09:00",
+              "endTime": "11:00",
+              "capacity": 8,
+              "spotsLeft": 8,
+              "instructors": [
+                "El profe"
+              ],
+              "courtIds": [
+                "8f69eb96-fde1-4085-8577-61da097e4f99"
+              ],
+              "price": 10
+            }
+          ],
+          "daysOfWeek": [
+            "lunes",
+            "martes",
+            "miércoles",
+            "jueves",
+            "viernes",
+            "sábado"
+          ],
+          "startDate": "2025-03-03",
+          "endDate": "2025-03-31"
+        },
+        "availablePaymentMethods": [
+          "cash",
+          "card"
+        ],
+        "visibility": "public",
+        "is_recurring": true,
+        "instructor": "El profe",
+        "sessions": [
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-1-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-10",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-2-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-11",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-3-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-12",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-4-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-06",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-5-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-07",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-6-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-08",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          }
+        ],
+        "branchInfo": {
+          "id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "name": "Sede 2",
+          "address": "Dirección de la sede 2",
+          "phone": "xc"
+        },
+        "courts": [
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "description": "crystal - covered"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Verificando disponibilidad para sesiones visibles (página 1)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando disponibilidad para clase: 19ce6f10-2cbb-45c3-9526-b4a71433413e"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Verificando disponibilidad para sesiones visibles (página 1)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 Hay una consulta de disponibilidad en progreso, esperando..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Consultando reservas con parámetros:",
+      {
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "dates": [
+          "2025-03-10",
+          "2025-03-11",
+          "2025-03-12",
+          "2025-03-06",
+          "2025-03-07",
+          "2025-03-08"
+        ],
+        "startTimes": [
+          "09:00"
+        ],
+        "endTimes": [
+          "11:00"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Image with src \"/images/Miroodles - Sticker 5.png\" has \"fill\" but is missing \"sizes\" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ Sin cambios en la disponibilidad, evitando actualización"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✨ Proceso completado en 277.90ms"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Total paquetes: 3"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando link de empresa con slug:",
+      "default"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando link de empresa con slug:",
+      "default"
+    ]
+  }
+]

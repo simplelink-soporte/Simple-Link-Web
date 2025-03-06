@@ -69,8 +69,9 @@ export interface Court {
 
 export type PaymentStatusEnum = 'pending' | 'partial' | 'completed' | 'cancelled'
 export type PaymentMethodEnum = 'cash' | 'stripe' | 'transfer' | 'card'
-export type PaymentTypeEnum = 'booking' | 'deposit' | 'remaining' | 'guarantee' | 'no_show_charge' | 'full'
+export type PaymentTypeEnum = 'booking' | 'deposit' | 'remaining' | 'guarantee' | 'no_show_charge'
 export type ParticipantRoleEnum = 'player' | 'guest'
+export type ReservationTypeEnum = 'booking' | 'class'
 
 export interface BookingCreationData {
   courtId: string;
@@ -88,7 +89,7 @@ export interface BookingCreationData {
   empresa_id?: string;
   participants?: Array<{
     id: string;
-    userId: string;
+    user_id: string;
     role: ParticipantRoleEnum;
   }>;
   rentalItems?: Array<{
@@ -98,6 +99,9 @@ export interface BookingCreationData {
     totalPrice: number;
   }>;
   stripe_payment_method_id?: string;
+  reservationType?: ReservationTypeEnum;
+  classId?: string;
+  classSessionPrice?: number;
 }
 
 export interface BookingParticipant {
@@ -299,11 +303,6 @@ export const PAYMENT_TYPE_MAPPINGS: Record<PaymentTypeEnum, PaymentMapping> = {
     type: 'no_show_charge',
     defaultMethod: 'stripe',
     defaultStatus: 'pending'
-  },
-  full: {
-    type: 'booking', // Mapear 'full' a 'booking' para compatibilidad con backend
-    defaultMethod: 'card',
-    defaultStatus: 'completed'
   }
 };
 
