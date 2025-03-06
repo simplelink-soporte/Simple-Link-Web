@@ -84,7 +84,7 @@ const plans: Plan[] = [
 ]
 
 export function Planes() {
-  const { completeAndAdvance, formData } = useOnboarding()
+  const { completeAndAdvance, formData, updateFormData } = useOnboarding()
   const { user, updateUserMetadata } = useAuth()
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'quarterly' | 'annually'>('quarterly')
   const [showSuccessPayment, setShowSuccessPayment] = useState(false)
@@ -209,7 +209,31 @@ export function Planes() {
   }
 
   const handleSuccessComplete = () => {
+    // Actualizar el formData con la información del plan seleccionado
+    updateFormData({
+      plan: selectedPlan,
+      planPrice: {
+        interval: billingPeriod,
+        amount: (() => {
+          switch (billingPeriod) {
+            case 'monthly':
+              return PAYPAL_CONFIG.SUBSCRIPTION_PLANS.PRO_MONTHLY.price
+            case 'quarterly':
+              return PAYPAL_CONFIG.SUBSCRIPTION_PLANS.PRO_QUARTERLY.price
+            case 'annually':
+              return PAYPAL_CONFIG.SUBSCRIPTION_PLANS.PRO_ANNUALLY.price
+            default:
+              return PAYPAL_CONFIG.SUBSCRIPTION_PLANS.PRO_MONTHLY.price
+          }
+        })()
+      }
+    })
+    
+    // Completar este paso y avanzar al siguiente (FinalStep)
     completeAndAdvance(3)
+    
+    // No necesitamos redirigir aquí, ya que completeAndAdvance manejará 
+    // la navegación automáticamente después de generar el enlace
   }
 
   if (showSuccessPayment) {

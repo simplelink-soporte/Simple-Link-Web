@@ -22,8 +22,17 @@ export const initializationService = {
         .eq('auth_user_id', userId)
         .single()
 
-      if (empresaError) throw empresaError
-      if (!empresa) throw new Error('No se encontró la empresa')
+      // Si no hay empresa o hay error, verificamos si estamos en proceso de onboarding
+      if (empresaError || !empresa) {
+        console.log('⚠️ No se encontró empresa para el usuario, posiblemente en proceso de onboarding')
+        
+        // Devolvemos un resultado válido sin empresa ni sedes
+        return {
+          empresa: null,
+          branches: [],
+          currentBranch: null
+        }
+      }
 
       console.log('✅ Empresa cargada:', empresa.id)
 
@@ -35,8 +44,24 @@ export const initializationService = {
         .eq('is_active', true)
         .order('name')
 
-      if (branchesError) throw branchesError
-      if (!branches?.length) throw new Error('No hay sedes disponibles')
+      if (branchesError) {
+        console.warn('⚠️ Error al cargar sedes:', branchesError.message)
+        // Continuamos pero con un arreglo vacío de sedes
+        return {
+          empresa,
+          branches: [],
+          currentBranch: null
+        }
+      }
+
+      if (!branches?.length) {
+        console.log('⚠️ No hay sedes disponibles para la empresa')
+        return {
+          empresa,
+          branches: [],
+          currentBranch: null
+        }
+      }
 
       console.log('✅ Sedes cargadas:', branches.length)
 
@@ -61,12 +86,34 @@ export const initializationService = {
         currentBranch
       }
     } catch (error: any) {
-      console.error('❌ Error en inicialización:', error)
+      // Extraer información útil del error para el logging
+      let errorMessage = 'Error desconocido'
+      
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      } else if (error && typeof error === 'object') {
+        // Si es un objeto, intentar extraer información útil
+        errorMessage = error.message || error.code || 'Error en la inicialización'
+      }
+      
+      console.error('❌ Error en inicialización:', errorMessage)
+      
+      // Mensaje de error más descriptivo según el tipo de error para el usuario
+      let userErrorMessage = 'Error en la inicialización';
+      
+      if (error.code === 'PGRST116') {
+        userErrorMessage = 'No se encontró información de tu cuenta. Por favor, completa el proceso de registro.';
+      } else if (error.message) {
+        userErrorMessage = error.message;
+      }
+      
       return {
         empresa: null,
         branches: [],
         currentBranch: null,
-        error: new Error(error.message || 'Error en la inicialización')
+        error: new Error(userErrorMessage)
       }
     }
   }

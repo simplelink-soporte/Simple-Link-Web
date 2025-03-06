@@ -41,6 +41,7 @@ import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { BookingLimitStatus } from '@/components/booking/BookingLimitStatus'
 import { PromoCard } from "@/components/sidebar/PromoCard"
+import { FeedbackCard } from "@/components/sidebar/FeedbackCard"
 
 // Función auxiliar para obtener las iniciales
 function getInitials(name: string | null | undefined): string {
@@ -592,6 +593,7 @@ function SidebarContent() {
         </nav>
       </ScrollArea>
       <PromoCard />
+      <FeedbackCard className="mt-1" />
       <SidebarFooter />
     </>
   )

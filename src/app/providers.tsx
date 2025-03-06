@@ -7,6 +7,8 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { OrganizationProvider } from '@/contexts/OrganizationContext'
 import { BranchProvider } from '@/contexts/BranchContext'
 import { FormItemsProvider } from '@/contexts/FormItemsContext'
+import { useEffect } from 'react'
+import { initEmailJS, checkEmailJSConfig } from '@/lib/emailjs'
 
 function makeQueryClient() {
   return new QueryClient({
@@ -50,6 +52,18 @@ function getQueryClient() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
+  
+  // Inicializar EmailJS
+  useEffect(() => {
+    // Verificar la configuración de EmailJS
+    const isConfigValid = checkEmailJSConfig();
+    
+    if (isConfigValid) {
+      initEmailJS();
+    } else {
+      console.warn('EmailJS no se inicializó debido a configuración incompleta');
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

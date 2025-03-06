@@ -87,7 +87,7 @@ class OnboardingCompanyService {
     }
   }
 
-  async updateCompany(userId: string, data: CompanyData) {
+  async updateCompany(userId: string, data: CompanyData, empresaId?: string) {
     try {
       console.log('📍 Actualizando empresa para usuario:', userId)
 
@@ -103,8 +103,8 @@ class OnboardingCompanyService {
         throw new Error('El formato del email no es válido')
       }
 
-      // Actualizar empresa preservando campos del plan
-      const { data: updatedCompany, error: updateError } = await supabase
+      // Construir la consulta base
+      let query = supabase
         .from('empresas')
         .update({
           name: data.name.trim(),
@@ -116,7 +116,17 @@ class OnboardingCompanyService {
           // No actualizamos plan_type, plan_id, ni plan_updated_at aquí
           // ya que esos campos se manejan en otro flujo
         })
-        .eq('auth_user_id', userId)
+      
+      // Si tenemos el ID de empresa, filtrar por ID que es más eficiente
+      if (empresaId) {
+        query = query.eq('id', empresaId)
+      } else {
+        // De lo contrario, usar auth_user_id
+        query = query.eq('auth_user_id', userId)
+      }
+
+      // Ejecutar la actualización
+      const { data: updatedCompany, error: updateError } = await query
         .select()
         .single()
 

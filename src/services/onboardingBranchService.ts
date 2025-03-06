@@ -1,517 +1,373 @@
-import { supabase } from '@/lib/supabase'
-import type { Branch } from '@/types/branch'
+import { createSupabaseClient } from '@/lib/supabase'
+import { onboardingCompanyService } from './onboardingCompanyService'
+import { useAuth } from '@/contexts/AuthContext'
+import { Branch } from '@/types/branch'
 
-interface ScheduleRange {
-  openTime: string
-  closeTime: string
-}
+const supabase = createSupabaseClient()
 
-interface ScheduleDay {
-  isOpen: boolean
-  timeRanges: ScheduleRange[]
-}
+// Cache para almacenar los datos de las sedes por empresa ID
+const branchesCache = new Map<string, {
+  data: Branch[],
+  timestamp: number
+}>()
 
-interface ScheduleData {
-  [key: string]: ScheduleDay
-}
+// Tiempo de expiración de la caché (10 segundos)
+const CACHE_EXPIRATION = 10000
 
-interface OnboardingBranch {
-  id: string
-  name: string
-  organization_id?: string
-  address?: string
-  phone?: string
-  manager_id?: string
-  is_active?: boolean
-  timezone?: string
-  opening_hours?: {
-    timezone: string
-    schedule: ScheduleData
-  }
-  settings?: Record<string, any>
-  data?: {
-    id?: string
-    name: string
-    address: string
-    phone: string
-    manager: string
-    isActive: boolean
-    timezone: string
-    opening_hours: {
-      timezone: string
-      schedule: ScheduleData
-    }
-    courts: Array<{
-      id: string
-      name: string
-      sports: string[]
-      type: string
-      characteristics: string[]
-      durations: string[]
-      prices: Array<{
-        duration: string
-        price: string
-        timeRanges: Array<{
-          day: string
-          start: string
-          end: string
-          percentage: string
-        }>
-      }>
-    }>
-  }
-}
+// Evitar consultas simultáneas
+let pendingRequests = new Map<string, Promise<any>>()
 
-interface Court {
-  id: string
-  name: string
-  branch_id: string
-  sport: string
-  court_type: string
-  surface: string
-  features: string[]
-  available_durations: number[]
-  duration_pricing: Record<string, number>
-  custom_pricing?: Record<string, any>
-}
-
-type Sport = 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash'
-type CourtType = 'indoor' | 'outdoor' | 'covered'
-type Surface = 'crystal' | 'panoramic' | 'concrete' | 'synthetic' | 'clay' | 'rubber' | 'premium'
-
-interface CreateCourtData {
-  name: string
-  sport: Sport
-  court_type: CourtType
-  surface: Surface
-  features: string[]
-  available_durations: number[]
-  duration_pricing: Record<string, number>
-  custom_pricing?: Record<string, any>
-  is_active: boolean
-}
-
-export const onboardingBranchService = {
+class OnboardingBranchService {
+  // Método para obtener el ID de empresa por ID de usuario con caché
   async getEmpresaIdByUserId(userId: string): Promise<string> {
-    if (!userId) {
-      throw new Error('ID de usuario requerido')
+    const cacheKey = `empresa_${userId}`
+    
+    // Si ya hay una consulta en curso, esperar a que termine
+    if (pendingRequests.has(cacheKey)) {
+      console.log('⏳ Usando consulta pendiente para empresa ID')
+      return await pendingRequests.get(cacheKey) as string
     }
-
+    
+    // Iniciar nueva consulta
+    const request = (async () => {
+      try {
     console.log('📍 Buscando empresa para usuario:', userId)
+        
+        // Verificar caché en localStorage
+        try {
+          const cached = localStorage.getItem(cacheKey)
+          if (cached) {
+            const { id, timestamp } = JSON.parse(cached)
+            // Si la caché es reciente (menos de 5 minutos), usarla
+            if (Date.now() - timestamp < 5 * 60 * 1000) {
+              console.log('✅ Empresa encontrada en caché:', id)
+              return id
+            }
+          }
+        } catch (e) {
+          console.warn('Error al verificar caché de empresa:', e)
+        }
     
     const { data, error } = await supabase
       .from('empresas')
       .select('id')
       .eq('auth_user_id', userId)
-      .single()
-
-    if (error) {
-      console.error('Error al obtener empresa:', error)
-      throw new Error('No se encontró la empresa asociada al usuario')
-    }
-
-    if (!data) {
-      throw new Error('No se encontró la empresa asociada al usuario')
-    }
+          .maybeSingle()
+        
+        if (error) throw error
+        if (!data) throw new Error('No se encontró la empresa')
 
     console.log('✅ Empresa encontrada:', data.id)
-    return data.id
-  },
-
-  async getBranchesByEmpresaId(empresaId: string): Promise<{ data: OnboardingBranch[], error: any }> {
-    try {
-      console.log('📍 Obteniendo sedes para empresa:', empresaId)
-      
-      // 1. Obtener todas las sedes de la empresa
-      const { data: branchesData, error: branchesError } = await supabase
-        .from('sedes')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .eq('is_active', true)
-        .order('created_at', { ascending: true })
-
-      if (branchesError) throw branchesError
-
-      if (!branchesData || branchesData.length === 0) {
-        console.log('ℹ️ No se encontraron sedes activas')
-        return { data: [], error: null }
-      }
-
-      // 2. Obtener todas las canchas de estas sedes
-      const branchIds = branchesData.map(branch => branch.id)
-      const { data: courtsData, error: courtsError } = await supabase
-        .from('courts')
-        .select('*')
-        .in('branch_id', branchIds)
-
-      if (courtsError) throw courtsError
-
-      // 3. Organizar las canchas por sede
-      const courtsByBranch = (courtsData || []).reduce((acc, court) => {
-        if (!acc[court.branch_id]) {
-          acc[court.branch_id] = []
-        }
-        acc[court.branch_id].push(court)
-        return acc
-      }, {} as Record<string, Court[]>)
-
-      // 4. Formatear los datos
-      const formattedBranches: OnboardingBranch[] = branchesData.map(branch => ({
-        id: branch.id,
-        name: branch.name,
-        organization_id: branch.organization_id || empresaId,
-        address: branch.address || undefined,
-        phone: branch.phone || undefined,
-        manager_id: branch.manager_id || undefined,
-        is_active: branch.is_active ?? undefined,
-        timezone: branch.timezone || undefined,
-        opening_hours: branch.opening_hours || undefined,
-        settings: branch.settings || undefined,
-        data: {
-          id: branch.id,
-          name: branch.name,
-          address: branch.address || '',
-          phone: branch.phone || '',
-          manager: branch.manager_id || '',
-          isActive: branch.is_active ?? true,
-          timezone: branch.timezone || 'Europe/Madrid',
-          opening_hours: branch.opening_hours || {
-            timezone: branch.timezone || 'Europe/Madrid',
-            schedule: {} as ScheduleData
-          },
-          courts: (courtsByBranch[branch.id] || []).map(court => ({
-            id: court.id,
-            name: court.name,
-            sports: [court.sport],
-            type: this.mapCourtType(court.court_type),
-            characteristics: this.mapCharacteristics(court),
-            durations: court.available_durations.map(d => d.toString()),
-            prices: this.mapPrices(court)
+        
+        // Guardar en localStorage para futuras consultas
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+            id: data.id, 
+            timestamp: Date.now()
           }))
+        } catch (e) {
+          console.warn('Error al guardar caché de empresa:', e)
         }
-      }))
+        
+        return data.id
+      } catch (error) {
+        console.error('Error al buscar empresa:', error)
+        throw error
+      } finally {
+        // Eliminar de consultas pendientes
+        pendingRequests.delete(cacheKey)
+      }
+    })()
+    
+    // Guardar la promesa para poder reutilizarla
+    pendingRequests.set(cacheKey, request)
+    return await request
+  }
 
-      console.log('✅ Sedes formateadas:', formattedBranches.length)
-      return { data: formattedBranches, error: null }
+  // Método para obtener sedes por userId
+  async getBranchesByUserId(): Promise<{
+    data: Branch[] | null,
+    error: Error | null
+  }> {
+    try {
+      // Obtener el ID del usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('No hay usuario autenticado')
+      
+      // Obtener el ID de la empresa
+      const empresaId = await this.getEmpresaIdByUserId(user.id)
+      
+      // Delegar a getBranchesByEmpresaId
+      return this.getBranchesByEmpresaId(empresaId)
     } catch (error: any) {
-      console.error('❌ Error al obtener sedes:', error)
-      return {
-        data: [],
-        error: {
-          message: error.message || 'Error al obtener las sedes',
-          details: error.details
+      console.error('Error al obtener sedes por userId:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Método para obtener sedes por empresa ID con caché
+  async getBranchesByEmpresaId(empresaId: string): Promise<{
+    data: Branch[] | null,
+    error: Error | null
+  }> {
+    try {
+      // Verificar si ya hay una consulta en curso para esta empresa
+      const cacheKey = `branches_${empresaId}`
+      if (pendingRequests.has(cacheKey)) {
+        console.log('⏳ Usando consulta pendiente para sedes')
+        return await pendingRequests.get(cacheKey) as { data: Branch[] | null, error: Error | null }
+      }
+      
+      // Iniciar nueva consulta
+      const request = (async () => {
+        try {
+          // Verificar caché
+          const cached = branchesCache.get(empresaId)
+          if (cached && (Date.now() - cached.timestamp < CACHE_EXPIRATION)) {
+            console.log('🔄 Usando caché para sedes de empresa:', empresaId)
+            return { data: cached.data, error: null }
+          }
+          
+          console.log('📍 Obteniendo sedes para empresa:', empresaId)
+          
+          const { data, error } = await supabase
+            .from('sedes')
+            .select('*')
+            .eq('empresa_id', empresaId)
+            .order('created_at', { ascending: false })
+          
+          if (error) throw error
+          
+          // Transformar datos al formato Branch
+          const branches: Branch[] = data.map(sede => ({
+            id: sede.id,
+            name: sede.name,
+            courts: sede.courts_count || 0,
+            schedule: sede.business_hours ? {
+              open: sede.business_hours.open || '08:00',
+              close: sede.business_hours.close || '22:00'
+            } : undefined,
+            // Asegurarnos de que el objeto data esté correctamente formateado
+            data: {
+              id: sede.id,
+              name: sede.name || '',
+              address: sede.address || '',
+              phone: sede.phone || '',
+              manager: sede.manager_id || '',
+              isActive: sede.is_active ?? true,
+              opening_hours: sede.opening_hours || {},
+              courts: sede.courts || []
+            }
+          }))
+          
+          // Guardar en caché
+          branchesCache.set(empresaId, {
+            data: branches,
+            timestamp: Date.now()
+          })
+          
+          return { data: branches, error: null }
+        } catch (error: any) {
+          console.error('Error al obtener sedes:', error)
+          return { data: null, error }
+        } finally {
+          // Eliminar de consultas pendientes
+          setTimeout(() => pendingRequests.delete(cacheKey), 100)
+        }
+      })()
+      
+      // Guardar la promesa para poder reutilizarla
+      pendingRequests.set(cacheKey, request)
+      return await request
+    } catch (error: any) {
+      console.error('Error inesperado al obtener sedes:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Método para crear una sede
+  async createBranch(
+    name: string,
+    userId: string
+  ): Promise<{
+    data: Branch | null,
+    error: Error | null
+  }> {
+    try {
+      // Obtener el ID de la empresa
+      const empresaId = await this.getEmpresaIdByUserId(userId)
+
+      const { data, error } = await supabase
+        .from('sedes')
+        .insert({
+          name,
+          empresa_id: empresaId,
+          is_active: true
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      // Invalidar caché
+      branchesCache.delete(empresaId)
+      
+      // Crear objeto Branch
+      const branch: Branch = {
+          id: data.id,
+          name: data.name,
+        courts: 0,
+        schedule: {
+          open: '08:00',
+          close: '22:00'
         }
       }
+      
+      return { data: branch, error: null }
+    } catch (error: any) {
+      console.error('Error al crear sede:', error)
+      return { data: null, error }
     }
-  },
+  }
 
-  async getBranchById(branchId: string): Promise<{ data: OnboardingBranch | null, error: any }> {
+  // Método para eliminar una sede
+  async deleteBranch(
+    branchId: string,
+    userId: string
+  ): Promise<{
+    success: boolean,
+    error: Error | null
+  }> {
+    try {
+      // Obtener el ID de la empresa
+      const empresaId = await this.getEmpresaIdByUserId(userId)
+      
+      const { error } = await supabase
+        .from('sedes')
+        .delete()
+        .eq('id', branchId)
+        .eq('empresa_id', empresaId)
+
+      if (error) throw error
+
+      // Invalidar caché
+      branchesCache.delete(empresaId)
+
+      return { success: true, error: null }
+    } catch (error: any) {
+      console.error('Error al eliminar sede:', error)
+      return { success: false, error }
+    }
+  }
+
+  // Método para actualizar los datos de una sede
+  async updateBranchData(
+    branchId: string,
+    data: any,
+    userId: string
+  ): Promise<{
+    success: boolean,
+    error: Error | null
+  }> {
+    try {
+      // Obtener el ID de la empresa
+      const empresaId = await this.getEmpresaIdByUserId(userId)
+      
+      const { error } = await supabase
+        .from('sedes')
+        .update({
+          data,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', branchId)
+        .eq('empresa_id', empresaId)
+      
+      if (error) throw error
+      
+      // Invalidar caché
+      branchesCache.delete(empresaId)
+      
+      return { success: true, error: null }
+    } catch (error: any) {
+      console.error('Error al actualizar sede:', error)
+      return { success: false, error }
+    }
+  }
+
+  // Método para obtener una sede por ID
+  async getBranchById(branchId: string): Promise<{
+    data: any,
+    error: Error | null
+  }> {
     try {
       console.log('📍 Obteniendo sede por ID:', branchId)
       
-      const { data: branchData, error: branchError } = await supabase
-        .from('sedes')
-        .select('*')
-        .eq('id', branchId)
-        .single()
-
-      if (branchError) throw branchError
-
-      // 2. Obtener las canchas asociadas
-      const { data: courtsData, error: courtsError } = await supabase
-        .from('courts')
-        .select('*')
-        .eq('branch_id', branchId)
-        .eq('is_active', true)
-
-      if (courtsError) throw courtsError
-
-      if (branchData) {
-        // Procesar los horarios
-        let processedOpeningHours = {
-          timezone: branchData.timezone || 'Europe/Madrid',
-          schedule: {} as ScheduleData
-        }
-        
+      // Verificar caché
+      const cacheKey = `branch_${branchId}`
+      
+      // Si ya hay una consulta en curso, esperar a que termine
+      if (pendingRequests.has(cacheKey)) {
+        console.log('⏳ Ya hay una consulta en progreso, esperando...')
         try {
-          if (typeof branchData.opening_hours === 'string') {
-            const parsed = JSON.parse(branchData.opening_hours)
-            processedOpeningHours.schedule = parsed.schedule || parsed
-            processedOpeningHours.timezone = parsed.timezone || branchData.timezone || 'Europe/Madrid'
-          } else if (branchData.opening_hours && typeof branchData.opening_hours === 'object') {
-            processedOpeningHours.schedule = branchData.opening_hours.schedule || branchData.opening_hours
-            processedOpeningHours.timezone = branchData.opening_hours.timezone || branchData.timezone || 'Europe/Madrid'
-          }
-
-          // Validar la estructura de los horarios
-          const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-          days.forEach(day => {
-            if (!processedOpeningHours.schedule[day]) {
-              processedOpeningHours.schedule[day] = {
-                isOpen: true,
-                timeRanges: [{ openTime: '08:00', closeTime: '22:00' }]
-              }
-            }
-          })
-        } catch (e) {
-          console.error('Error al procesar horarios:', e)
-          processedOpeningHours.schedule = {
-            monday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            tuesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            wednesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            thursday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            friday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            saturday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-            sunday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] }
-          }
+          return await pendingRequests.get(cacheKey) as { data: any, error: Error | null }
+        } catch (error) {
+          console.error('Error en consulta pendiente:', error)
+          // Si falla, continuamos con una nueva consulta
         }
-
-        const formattedBranch: OnboardingBranch = {
-          id: branchData.id,
-          name: branchData.name,
-          organization_id: branchData.organization_id || undefined,
-          address: branchData.address || undefined,
-          phone: branchData.phone || undefined,
-          manager_id: branchData.manager_id || undefined,
-          is_active: branchData.is_active ?? undefined,
-          timezone: branchData.timezone || 'Europe/Madrid',
-          opening_hours: processedOpeningHours,
-          settings: branchData.settings || undefined,
-          data: {
-            id: branchData.id,
-            name: branchData.name,
-            address: branchData.address || '',
-            phone: branchData.phone || '',
-            manager: branchData.manager_id || '',
-            isActive: branchData.is_active ?? true,
-            timezone: branchData.timezone || 'Europe/Madrid',
-            opening_hours: processedOpeningHours,
-            courts: (courtsData || []).map(court => ({
-              id: court.id,
-              name: court.name,
-              sports: [court.sport],
-              type: this.mapCourtType(court.court_type),
-              characteristics: this.mapCharacteristics(court),
-              durations: (court.available_durations || [60]).map(d => d.toString()),
-              prices: this.mapPrices(court)
-            }))
-          }
-        }
-
-        console.log('✅ Sede formateada para onboarding:', formattedBranch)
-        return { data: formattedBranch, error: null }
       }
-
-      return { data: null, error: null }
+      
+      // Iniciar nueva consulta
+      const getPromise = (async () => {
+        try {
+          const { data, error } = await supabase
+            .from('sedes')
+            .select('*')
+            .eq('id', branchId)
+            .single()
+          
+          if (error) throw error
+          if (!data) throw new Error('No se encontró la sede')
+          
+          // Formatear los datos para asegurar que todos los campos necesarios estén presentes
+          const formattedData = {
+            ...data,
+            // Asegurarnos de que todos los campos necesarios estén presentes
+            name: data.name || '',
+            address: data.address || '',
+            phone: data.phone || '',
+            manager_id: data.manager_id || '',
+            is_active: data.is_active ?? true,
+            opening_hours: data.opening_hours || {},
+            courts: data.courts || []
+          }
+          
+          return { data: formattedData, error: null }
+        } catch (error: any) {
+          console.error('Error al obtener sede por ID:', error)
+          return { data: null, error }
+        } finally {
+          // Eliminar de pendientes después de un pequeño retraso
+          setTimeout(() => {
+            pendingRequests.delete(cacheKey)
+          }, 100)
+        }
+      })()
+      
+      // Guardar la promesa para poder reutilizarla
+      pendingRequests.set(cacheKey, getPromise)
+      
+      return await getPromise
     } catch (error: any) {
-      console.error('❌ Error al obtener sede:', error)
-      return {
-        data: null,
-        error: {
-          message: error.message || 'Error al obtener la sede',
-          details: error.details
-        }
-      }
+      console.error('Error inesperado al obtener sede por ID:', error)
+      return { data: null, error: error }
     }
-  },
-
-  async createBranch(empresaId: string, branchData: Partial<OnboardingBranch>): Promise<{ data: OnboardingBranch | null, error: any }> {
-    try {
-      console.log('📍 Creando nueva sede:', { empresaId, branchData })
-
-      if (!branchData.name) {
-        throw new Error('El nombre de la sede es requerido')
-      }
-
-      const newBranch = {
-        empresa_id: empresaId,
-        organization_id: empresaId,
-        name: branchData.name,
-        address: branchData.address || null,
-        phone: branchData.phone || null,
-        manager_id: branchData.manager_id || null,
-        is_active: branchData.is_active === undefined ? true : branchData.is_active,
-        timezone: branchData.timezone || undefined,
-        opening_hours: branchData.opening_hours || {},
-        settings: branchData.settings || {}
-      }
-
-      const { data, error } = await supabase
-        .from('sedes')
-        .insert(newBranch)
-        .select()
-        .single()
-
-      if (error) throw error
-
-      console.log('✅ Sede creada exitosamente:', data)
-      return {
-        data: {
-          id: data.id,
-          name: data.name,
-          organization_id: data.organization_id || empresaId,
-          address: data.address || undefined,
-          phone: data.phone || undefined,
-          manager_id: data.manager_id || undefined,
-          is_active: data.is_active ?? true,
-          timezone: data.timezone || undefined,
-          opening_hours: data.opening_hours || {},
-          settings: data.settings || {}
-        },
-        error: null
-      }
-    } catch (error: any) {
-      console.error('❌ Error al crear sede:', error)
-      return {
-        data: null,
-        error: {
-          message: error.message || 'Error al crear la sede',
-          details: error.details
-        }
-      }
-    }
-  },
-
-  async createCourt(branchId: string, courtData: CreateCourtData): Promise<{ data: any, error: any }> {
-    try {
-      console.log('📍 Creando nueva cancha para la sede:', branchId)
-
-      if (!branchId) {
-        throw new Error('El ID de la sede es requerido')
-      }
-
-      // Validar que la sede existe
-      const { data: branch, error: branchError } = await supabase
-        .from('sedes')
-        .select('id')
-        .eq('id', branchId)
-        .single()
-
-      if (branchError || !branch) {
-        throw new Error('No se encontró la sede especificada')
-      }
-
-      // Crear la cancha
-      const newCourt = {
-        branch_id: branchId,
-        name: courtData.name,
-        sport: courtData.sport,
-        court_type: courtData.court_type,
-        surface: courtData.surface,
-        features: courtData.features,
-        available_durations: courtData.available_durations,
-        duration_pricing: courtData.duration_pricing,
-        custom_pricing: courtData.custom_pricing || {},
-        is_active: courtData.is_active
-      }
-
-      const { data, error } = await supabase
-        .from('courts')
-        .insert(newCourt)
-        .select()
-        .single()
-
-      if (error) throw error
-
-      console.log('✅ Cancha creada exitosamente:', data)
-      return { data, error: null }
-
-    } catch (error: any) {
-      console.error('❌ Error al crear cancha:', error)
-      return {
-        data: null,
-        error: {
-          message: error.message || 'Error al crear la cancha',
-          details: error.details
-        }
-      }
-    }
-  },
-
-  mapCourtType(type: string): string {
-    const typeMap: Record<string, string> = {
-      'indoor': 'interior',
-      'outdoor': 'exterior',
-      'covered': 'cubierta'
-    }
-    return typeMap[type] || 'interior'
-  },
-
-  mapCharacteristics(court: Court): string[] {
-    const characteristics: string[] = []
-    const surfaceMap: Record<string, string> = {
-      'crystal': 'cristal-estandar',
-      'panoramic': 'cristal-panoramico',
-      'concrete': 'muro-hormigon',
-      'synthetic': 'cesped-sintetico',
-      'clay': 'tierra-batida',
-      'rubber': 'goma-profesional'
-    }
-
-    if (surfaceMap[court.surface]) {
-      characteristics.push(surfaceMap[court.surface])
-    }
-
-    if (Array.isArray(court.features)) {
-      const featureMap: Record<string, string> = {
-        'wall-glass': 'cristal-estandar',
-        'wall-panoramic': 'cristal-panoramico',
-        'wall-concrete': 'muro-hormigon',
-        'floor-synthetic': 'cesped-sintetico',
-        'floor-clay': 'tierra-batida',
-        'floor-concrete': 'hormigon-pulido',
-        'floor-rubber': 'goma-profesional'
-      }
-      court.features.forEach(feature => {
-        if (featureMap[feature] && !characteristics.includes(featureMap[feature])) {
-          characteristics.push(featureMap[feature])
-        }
-      })
-    }
-
-    return characteristics
-  },
-
-  mapPrices(court: Court): Array<{
-    duration: string
-    price: string
-    timeRanges: Array<{
-      day: string
-      start: string
-      end: string
-      percentage: string
-    }>
-  }> {
-    const timeRanges: Array<{
-      day: string
-      start: string
-      end: string
-      percentage: string
-    }> = []
-
-    return court.available_durations.map(duration => {
-      const price = {
-        duration: duration.toString(),
-        price: (court.duration_pricing?.[duration] || 0).toString(),
-        timeRanges: timeRanges
-      }
-
-      if (court.custom_pricing) {
-        Object.entries(court.custom_pricing).forEach(([day, data]: [string, any]) => {
-          if (data.isSelected && Array.isArray(data.timeRanges)) {
-            data.timeRanges.forEach((range: { startTime: string, endTime: string, percentage: number }) => {
-              timeRanges.push({
-                day,
-                start: range.startTime,
-                end: range.endTime,
-                percentage: range.percentage.toString()
-              })
-            })
-          }
-        })
-      }
-
-      return price
-    })
   }
-} 
+
+  // Limpiar caché
+  clearCache() {
+    branchesCache.clear()
+    pendingRequests.clear()
+  }
+}
+
+export const onboardingBranchService = new OnboardingBranchService() 

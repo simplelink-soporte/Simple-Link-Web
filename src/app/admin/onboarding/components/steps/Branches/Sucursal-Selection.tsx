@@ -1,9 +1,20 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Plus, PenLine, HelpCircle, Trash2, Check } from 'lucide-react'
+import { 
+  Plus, 
+  PenLine, 
+  HelpCircle, 
+  Trash2, 
+  Check, 
+  MapPin, 
+  Phone, 
+  User, 
+  Info,
+  ChevronRight 
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOnboarding } from '@/app/admin/onboarding/context/OnboardingContext'
 import {
@@ -27,6 +38,7 @@ import { onboardingBranchService } from '@/services/onboardingBranchService'
 import { toast } from "@/components/ui/use-toast"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from '@/contexts/AuthContext'
+import { Badge } from "@/components/ui/badge"
 
 interface Branch {
   id: string
@@ -53,51 +65,118 @@ interface SucursalSelectionProps {
   onConfigureBranch: () => void
 }
 
+// Variable para evitar múltiples cargas simultáneas
+let isLoadingBranches = false;
+// Timestamp de la última carga para evitar recargas frecuentes
+let lastBranchesLoadTime = 0;
+// Tiempo mínimo entre cargas (5 segundos)
+const MIN_RELOAD_INTERVAL = 5000;
+
+// Funciones de utilidad para verificación de tipos seguros
+const hasBranchData = (branch: any): boolean => {
+  // Una sede está configurada si tiene la propiedad data y dentro de data tiene dirección, teléfono o encargado
+  return branch && 
+         branch.data && 
+         (branch.data.address || branch.data.phone || branch.data.manager);
+};
+
 export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelectionProps) {
-  const { completeAndAdvance, branches, setBranches, setCurrentBranchId } = useOnboarding()
+  const { completeAndAdvance, branches, setBranches, setCurrentBranchId, formData } = useOnboarding()
   const { user } = useAuth()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isAddingBranch, setIsAddingBranch] = useState(false)
   const [branchToDelete, setBranchToDelete] = useState<Branch | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
 
-  // Cargar sedes al montar el componente
-  useEffect(() => {
-    const loadBranches = async () => {
-      try {
-        if (!user) {
-          throw new Error('No hay usuario autenticado')
-        }
-
-        // 1. Obtener el ID de la empresa
-        const empresaId = await onboardingBranchService.getEmpresaIdByUserId(user.id)
-        
-        // 2. Cargar las sedes
-        const { data: branchesData, error } = await onboardingBranchService.getBranchesByEmpresaId(empresaId)
-        
-        if (error) {
-          throw error
-        }
-
-        // 3. Actualizar el estado
-        setBranches(branchesData)
-      } catch (error: any) {
-        console.error('Error al cargar sedes:', error)
-        toast({
-          title: "Error",
-          description: error.message || "No se pudieron cargar las sedes",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
-      }
+  // Memoizar la función loadBranches para evitar recreaciones
+  const loadBranches = useCallback(async () => {
+    // Evitar cargas múltiples simultáneas
+    if (isLoadingBranches) {
+      console.log('⏳ Ya hay una carga de sedes en progreso, omitiendo')
+      return
     }
 
-    loadBranches()
-  }, [user, setBranches])
+    // Verificar si ha pasado suficiente tiempo desde la última carga
+    const now = Date.now()
+    if (now - lastBranchesLoadTime < MIN_RELOAD_INTERVAL) {
+      console.log('⏭️ Recarga muy frecuente, omitiendo consulta de sedes')
+      return
+    }
 
-  // Solo mostrar sedes que han sido configuradas
-  const configuredBranches = branches.filter(branch => branch.data !== undefined)
-  const hasConfiguredBranch = configuredBranches.length > 0
+    try {
+      isLoadingBranches = true
+      console.log('🔄 Cargando sedes desde el servicio...')
+
+      // Usar el ID de empresa del formData si está disponible para evitar consultas innecesarias
+      const empresaId = formData.empresaId
+      let result
+
+      if (empresaId) {
+        // Si tenemos el ID, hacemos la consulta directamente
+        result = await onboardingBranchService.getBranchesByEmpresaId(empresaId)
+      } else {
+        // Fallback al método tradicional
+        result = await onboardingBranchService.getBranchesByUserId()
+      }
+
+      if (result.error) {
+        console.error('❌ Error al cargar sedes:', result.error)
+        return
+      }
+
+      if (result.data) {
+        // Evitar actualizar el estado si no hay cambios reales
+        const currentBranchesJson = JSON.stringify(branches)
+        const newBranchesJson = JSON.stringify(result.data)
+        
+        if (currentBranchesJson !== newBranchesJson) {
+          console.log('✅ Sedes actualizadas:', result.data.length)
+          setBranches(result.data)
+        } else {
+          console.log('⏭️ No hay cambios en las sedes, omitiendo actualización')
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error inesperado al cargar sedes:', error)
+    } finally {
+      isLoadingBranches = false
+      lastBranchesLoadTime = Date.now()
+    }
+  }, [branches, setBranches, formData.empresaId])
+
+  // Cargar sedes una sola vez al montar el componente
+  useEffect(() => {
+    // Solo cargar si no tenemos sedes o si tienen más de 30 segundos
+    if (!branches.length || Date.now() - lastBranchesLoadTime > 30000) {
+      loadBranches()
+    }
+  }, [loadBranches, branches.length])
+
+  // Filtrar sedes de manera memoizada para evitar recálculos innecesarios
+  const filteredBranches = useMemo(() => {
+    return branches.filter(branch => 
+      branch.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [branches, searchTerm])
+
+  // Mejorar la memoización de hasConfiguredBranch con verificación de tipos
+  const hasConfiguredBranch = useMemo(() => {
+    // Verificar que al menos una sede esté configurada
+    const hasConfigured = branches.some(branch => hasBranchData(branch));
+    
+    console.log('🔍 Verificando sedes configuradas:', 
+      branches.map(b => ({
+        id: b.id, 
+        name: b.name, 
+        hasData: hasBranchData(b),
+        dataExists: !!b.data,
+        address: b.data?.address
+      }))
+    );
+    console.log('✅ ¿Hay sedes configuradas?', hasConfigured);
+    
+    return hasConfigured;
+  }, [branches]);
 
   const handleAddBranch = () => {
     // Ir directamente a configurar una nueva sede
@@ -178,155 +257,49 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
 
   const handleConfigureBranch = async (branchId: string) => {
     try {
-      const branch = branches.find(b => b.id === branchId)
-      if (!branch) {
-        throw new Error('No se encontró la sucursal')
-      }
-
+      // Configurar la sede seleccionada y navegar a la vista de configuración
+      console.log('📍 Configurando sede:', branchId)
+      
       // Cargar datos de la sede desde Supabase
       console.log('📍 Cargando datos de la sede:', branchId)
       const { data: branchData, error: branchError } = await onboardingBranchService.getBranchById(branchId)
       
       if (branchError) {
         console.error('❌ Error al cargar la sede:', branchError)
-        throw new Error(branchError.message || 'Error al cargar los datos de la sede')
+        throw new Error(branchError.message || 'Error al cargar la sede')
       }
-
-      if (!branchData) {
-        throw new Error('No se encontraron los datos de la sede')
-      }
-
-      // Cargar las canchas de la sede
-      console.log('📍 Cargando canchas de la sede:', branchId)
-      const { data: courtsData, error: courtsError } = await supabase
-        .from('courts')
-        .select('*')
-        .eq('branch_id', branchId)
-
-      if (courtsError) {
-        console.error('❌ Error al cargar las canchas:', courtsError)
-        throw new Error(courtsError.message || 'Error al cargar las canchas')
-      }
-
-      // Transformar los datos de las canchas al formato del formulario
-      const formattedCourts = (courtsData || []).map(court => {
-        // Convertir el deporte a array
-        const sports = [court.sport]
-
-        // Mapear el tipo de pista al formato del formulario
-        const typeMap: Record<string, string> = {
-          'indoor': 'interior',
-          'outdoor': 'exterior',
-          'covered': 'cubierta'
-        }
-
-        // Mapear las características basadas en surface y features
-        const characteristics = []
-        const surfaceMap: Record<string, string> = {
-          'crystal': 'cristal-estandar',
-          'panoramic': 'cristal-panoramico',
-          'concrete': 'muro-hormigon',
-          'synthetic': 'cesped-sintetico',
-          'clay': 'tierra-batida',
-          'rubber': 'goma-profesional'
-        }
-        if (surfaceMap[court.surface]) {
-          characteristics.push(surfaceMap[court.surface])
-        }
-        if (Array.isArray(court.features)) {
-          const featureMap: Record<string, string> = {
-            'wall-glass': 'cristal-estandar',
-            'wall-panoramic': 'cristal-panoramico',
-            'wall-concrete': 'muro-hormigon',
-            'floor-synthetic': 'cesped-sintetico',
-            'floor-clay': 'tierra-batida',
-            'floor-concrete': 'hormigon-pulido',
-            'floor-rubber': 'goma-profesional'
-          }
-          court.features.forEach(feature => {
-            if (featureMap[feature] && !characteristics.includes(featureMap[feature])) {
-              characteristics.push(featureMap[feature])
-            }
-          })
-        }
-
-        // Preparar los precios y rangos de tiempo
-        const prices = court.available_durations.map(duration => {
-          const price = {
-            duration: duration.toString(),
-            price: (court.duration_pricing?.[duration] || 0).toString(),
-            timeRanges: []
-          }
-
-          // Agregar rangos de tiempo si existen
-          Object.entries(court.custom_pricing || {}).forEach(([day, data]) => {
-            if (data.isSelected && Array.isArray(data.timeRanges)) {
-              data.timeRanges.forEach(range => {
-                price.timeRanges.push({
-                  day,
-                  start: range.startTime,
-                  end: range.endTime,
-                  percentage: range.percentage.toString()
-                })
-              })
-            }
-          })
-
-          return price
-        })
-
-        return {
-          id: court.id,
-          name: court.name,
-          sports,
-          type: typeMap[court.court_type] || 'interior',
-          characteristics,
-          durations: court.available_durations.map(d => d.toString()),
-          prices
-        }
-      })
-
-      console.log('✅ Datos de la sede y canchas cargados:', { sede: branchData, canchas: formattedCourts })
-      setCurrentBranchId(branchId)
       
-      // Transformar los datos al formato esperado por el formulario
-      const formattedData = {
-        id: branchData.id,
-        name: branchData.name || '',
-        address: branchData.address || '',
-        phone: branchData.phone || '',
-        manager: branchData.manager_id || '',
-        isActive: branchData.is_active ?? true,
-        opening_hours: branchData.opening_hours || {},
-        courts: formattedCourts
-      }
+      // Si tiene datos, actualizar la sede en el estado
+      if (branchData) {
+        console.log('✅ Datos de sede cargados:', branchData)
         
-        // Actualizar los datos en el contexto
-      console.log('📍 Actualizando datos en el contexto:', formattedData)
-      
-      setBranches(prev => {
-        const updatedBranches = prev.map(b => 
-          b.id === branchId 
-            ? { 
-                ...b, 
-                data: {
-                  ...formattedData,
-                  courts: formattedCourts
+        // Actualizar la sede en el estado con los datos de Supabase
+        setBranches(prev => 
+          prev.map(branch => 
+            branch.id === branchId 
+              ? {
+                  ...branch,
+                  data: {
+                    id: branchData.id,
+                    name: branchData.name || '',
+                    address: branchData.address || '',
+                    phone: branchData.phone || '',
+                    manager: branchData.manager_id || '',
+                    isActive: branchData.is_active ?? true,
+                    opening_hours: branchData.opening_hours || {},
+                    courts: branchData.courts || []
+                  }
                 }
-              }
-            : b
+              : branch
+          )
         )
-        console.log('📍 Estado actualizado de las sedes:', updatedBranches)
-        return updatedBranches
-      })
+      } else {
+        console.log('ℹ️ La sede no tiene datos, configurando...')
+      }
       
-      // También actualizamos el currentBranchId
+      // Navegar a la vista de configuración
       setCurrentBranchId(branchId)
-      
-      // Llamar a onConfigureBranch después de actualizar el estado
-      setTimeout(() => {
       onConfigureBranch()
-      }, 0)
     } catch (error: any) {
       console.error('❌ Error al configurar la sede:', error)
       toast({
@@ -337,11 +310,91 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
     }
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    // Si el componente detecta que hay sedes configuradas
     if (hasConfiguredBranch) {
-      completeAndAdvance(1)
+      try {
+        // Verificar una última vez antes de avanzar
+        console.log('✅ Avanzando al siguiente paso con sedes configuradas')
+        
+        // Forzar una última validación por seguridad
+        const result = await onboardingBranchService.getBranchesByUserId()
+        
+        // Verificación usando la función actualizada
+        const hasSedes = result.data?.some(branch => branch.data && 
+          (branch.data.address || branch.data.phone || branch.data.manager));
+        
+        if (!hasSedes) {
+          console.warn('⚠️ Verificación final falló, intentando una última vez en 1 segundo...')
+          // Esperar un segundo y volver a intentar
+          setTimeout(async () => {
+            // Última verificación
+            const finalCheck = await onboardingBranchService.getBranchesByUserId()
+            
+            // Verificación usando la función actualizada
+            const finalHasSedes = finalCheck.data?.some(branch => branch.data && 
+              (branch.data.address || branch.data.phone || branch.data.manager));
+            
+            if (finalHasSedes) {
+              // Ahora sí avanzar
+              await completeAndAdvance(1)
+            } else {
+              toast({
+                title: "Error",
+                description: "No se encontraron sedes configuradas. Por favor configura al menos una sede.",
+                variant: "destructive",
+              })
+            }
+          }, 1000)
+          return
+        }
+        
+        // Si pasó la verificación, avanzar
+        await completeAndAdvance(1)
+      } catch (error) {
+        console.error('❌ Error al avanzar al siguiente paso:', error)
+        toast({
+          title: "Error",
+          description: "Error al avanzar al siguiente paso. Intenta nuevamente.",
+          variant: "destructive",
+        })
+      }
+    } else {
+      toast({
+        title: "Acción requerida",
+        description: "Configura al menos una sede para continuar",
+      })
     }
   }
+
+  // Añadir un useEffect para forzar la recarga cuando volvemos de configurar una sede
+  useEffect(() => {
+    // Esta función se ejecutará cuando el componente se monte o actualice
+    const refreshData = async () => {
+      // Forzar una recarga de datos para asegurar que tenemos los más recientes
+      console.log('🔄 Forzando recarga de datos al montar/actualizar el componente')
+      // Limpiar la caché de tiempo para permitir la recarga inmediata
+      lastBranchesLoadTime = 0
+      await loadBranches()
+    }
+    
+    refreshData()
+    
+    // Configurar un intervalo para recargar periódicamente (cada 5 segundos)
+    const intervalId = setInterval(() => {
+      if (branches.length > 0 && !branches.some(b => hasBranchData(b))) {
+        console.log('🔄 Recargando datos periódicamente para verificar actualizaciones')
+        lastBranchesLoadTime = 0
+        loadBranches()
+      } else {
+        // Si ya tenemos datos completos, podemos detener el intervalo
+        clearInterval(intervalId)
+      }
+    }, 5000)
+    
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId)
+  }, [loadBranches, branches]) // Añadir las dependencias correctas
 
   return (
     <div className="p-6 space-y-8">
@@ -377,7 +430,7 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
       {/* Contenedor de sucursales */}
       <div className="space-y-4">
         <AnimatePresence>
-          {configuredBranches.map((branch, index) => (
+          {filteredBranches.map((branch, index) => (
             <motion.div
               key={branch.id}
               initial={{ opacity: 0, y: 20 }}
@@ -385,39 +438,58 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2, delay: index * 0.1 }}
             >
-              <Card className="relative overflow-hidden hover:border-black hover:border transition-all duration-200">
+              <Card className="relative overflow-hidden hover:border-primary hover:shadow-md transition-all duration-200">
                 <div className="p-6 flex justify-between items-center">
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium">
-                      {branch.data?.name || branch.name}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-medium">
+                        {branch.name}
+                      </h3>
+                      {hasBranchData(branch) ? (
+                        <Badge variant="outline" className="bg-green-500 text-white text-xs px-2 py-0.5">
+                          Configurada
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs px-2 py-0.5">
+                          Sin configurar
+                        </Badge>
+                      )}
+                    </div>
                     <div className="space-y-1">
-                      {branch.data && (
+                      {hasBranchData(branch) ? (
                         <>
                           <p className="text-xs text-muted-foreground">
-                            {branch.data.courts.length} {branch.data.courts.length === 1 ? 'pista' : 'pistas'} configuradas
+                            <MapPin className="h-3 w-3 inline mr-1" />
+                            {branch.data?.address || "Sin dirección"}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {branch.data.address}
+                            <Phone className="h-3 w-3 inline mr-1" />
+                            {branch.data?.phone || "Sin teléfono"}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {branch.data.phone}
+                            <User className="h-3 w-3 inline mr-1" />
+                            {branch.data?.manager || "Sin encargado"}
                           </p>
                         </>
+                      ) : (
+                        <p className="text-xs text-amber-600">
+                          <Info className="h-3 w-3 inline mr-1" />
+                          Esta sede requiere configuración
+                        </p>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="outline"
+                      variant={hasBranchData(branch) ? "outline" : "default"}
                       size="sm"
                       className="flex items-center gap-2"
                       onClick={() => handleConfigureBranch(branch.id)}
                     >
                       <PenLine className="h-4 w-4" />
-                      Editar
+                      {hasBranchData(branch) ? "Editar" : "Configurar"}
                     </Button>
-                    {configuredBranches.length > 1 && (
+                    {filteredBranches.length > 1 && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -435,7 +507,7 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
         </AnimatePresence>
 
         {/* Botón de agregar sede */}
-        {configuredBranches.length < 5 && (
+        {filteredBranches.length < 5 && (
           <motion.div
             initial={false}
             animate={{ opacity: 1 }}
@@ -455,13 +527,20 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
 
       {/* Botón de continuar y mensaje de validación */}
       <div className="pt-4">
-        <div className="flex justify-end">
+        <div className="flex flex-col items-end gap-2">
+          {!hasConfiguredBranch && (
+            <p className="text-sm text-amber-600 italic flex items-center">
+              <Info className="h-4 w-4 mr-1" />
+              Configura al menos una sede para continuar
+            </p>
+          )}
           <Button 
             onClick={handleContinue} 
-            className="px-8"
+            className="px-8 flex items-center gap-2"
             disabled={!hasConfiguredBranch}
           >
             Continuar
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

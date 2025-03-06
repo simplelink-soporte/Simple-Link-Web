@@ -140,45 +140,40 @@ const ensureValidCourt = (court: CourtData): CourtData => {
 
 export function CourtsList({ courts, onCourtsChange }: CourtsListProps) {
   const [openCourtId, setOpenCourtId] = useState<string | null>(null)
-  const [showAddCourtDialog, setShowAddCourtDialog] = useState(false)
   const [showCustomDuration, setShowCustomDuration] = useState(false)
   const [customDuration, setCustomDuration] = useState('')
   const [currentCourtId, setCurrentCourtId] = useState<string | null>(null)
 
-  // Manejadores de eventos
+  // Función unificada para añadir pista
   const handleAddCourt = () => {
-    const newCourt: CourtData = {
-      id: `court-${courts.length + 1}`,
-      name: `Pista ${courts.length + 1}`,
-      sports: [],
-      type: '',
-      characteristics: [],
-      available_durations: [60],
-      duration_pricing: { '60': 10 },
-      custom_pricing: {},
-      is_active: true
-    }
-    onCourtsChange([...courts, newCourt])
-    setShowAddCourtDialog(false)
-  }
-
-  const handleCopyPreviousCourt = () => {
+    // Si hay pistas existentes, copiamos la última
     if (courts.length > 0) {
       const lastCourt = courts[courts.length - 1]
       const newCourt = {
         ...JSON.parse(JSON.stringify(lastCourt)),
         id: `court-${courts.length + 1}`,
+        name: `Pista ${courts.length + 1}`
+      }
+      onCourtsChange([...courts, newCourt])
+    } else {
+      // Si no hay pistas, creamos una con valores predeterminados
+      const newCourt: CourtData = {
+        id: `court-${courts.length + 1}`,
         name: `Pista ${courts.length + 1}`,
+        sports: ['padel'],
+        type: 'indoor',
+        characteristics: ['cristal-estandar'],
+        available_durations: [60],
+        duration_pricing: { '60': 10 },
+        custom_pricing: {},
         is_active: true
       }
       onCourtsChange([...courts, newCourt])
     }
-    setShowAddCourtDialog(false)
   }
 
   const handleRemoveCourt = (courtId: string) => {
-    if (courts.length <= 1) return
-    onCourtsChange(courts.filter(court => court.id !== courtId))
+    onCourtsChange(courts.filter(c => c.id !== courtId))
   }
 
   const handleCourtChange = (courtId: string, field: keyof CourtData, value: any) => {
@@ -605,40 +600,12 @@ export function CourtsList({ courts, onCourtsChange }: CourtsListProps) {
 
         <Button
           variant="outline"
-          onClick={() => setShowAddCourtDialog(true)}
+          onClick={handleAddCourt}
           className="w-full"
         >
           Añadir pista
         </Button>
       </div>
-
-      {/* Diálogo para añadir pista */}
-      <AlertDialog open={showAddCourtDialog} onOpenChange={setShowAddCourtDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Añadir nueva pista</AlertDialogTitle>
-            <AlertDialogDescription>
-              Selecciona cómo quieres añadir la nueva pista
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-            <Button
-              variant="outline"
-              onClick={handleAddCourt}
-              className="w-full sm:w-auto"
-            >
-              Nueva pista
-            </Button>
-            <Button
-              onClick={handleCopyPreviousCourt}
-              className="w-full sm:w-auto bg-black hover:bg-black/90 text-white"
-              disabled={courts.length === 0}
-            >
-              Copiar última pista
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 } 

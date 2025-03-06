@@ -1,9 +1,11 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createSupabaseClient } from '@/lib/supabase'
 import type { Database } from '@/types/supabase'
+import useOrganizationHook from '@/hooks/useOrganization'
+import { toast } from 'sonner'
 
 type PlanType = 'FREE' | 'PRO';
 
@@ -100,71 +102,28 @@ function updateLastOrganizationCheck() {
 export const OrganizationContext = createContext<OrganizationContextType | undefined>(undefined)
 
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
+  const { organization: orgData, isLoading: orgLoading, error: orgError } = useOrganizationHook()
+  
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [stripeConnection, setStripeConnection] = useState<StripeConnectionInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const { user, isLoading: authLoading } = useAuth()
+  const { user } = useAuth()
   const supabase = createSupabaseClient()
 
-  // Cargar solo la organización inicialmente
-  const loadOrganization = async () => {
-    try {
-      if (authLoading || !user) {
-        setIsLoading(false);
-        setError(new Error('No hay usuario autenticado'));
-        return;
-      }
-
-      if (!shouldCheckOrganization()) {
-        const cachedOrg = organization
-        if (cachedOrg) {
-          console.log('⏭️ Usando organización en caché')
-          return
+  useEffect(() => {
+    if (orgData) {
+      setOrganization(prevOrg => {
+        if (JSON.stringify(prevOrg) !== JSON.stringify(orgData)) {
+          return orgData as Organization
         }
-      }
-
-      const empresaId = getEmpresaIdFromCache();
-      
-      if (!empresaId) {
-        setError(new Error('No se encontró la empresa'));
-        setIsLoading(false);
-        return;
-      }
-
-      const { data: org, error: orgError } = await supabase
-        .from('empresas')
-        .select('id, name, business_name, auth_user_id, email, phone, country, plan_type')
-        .eq('id', empresaId)
-        .single();
-
-      if (orgError) throw orgError;
-      if (!org) throw new Error('No se encontró la empresa');
-
-      // Asegurarnos de que todos los campos requeridos estén presentes
-      const organizationData: Organization = {
-        id: org.id,
-        name: org.name,
-        business_name: org.business_name,
-        auth_user_id: org.auth_user_id || '',
-        email: org.email,
-        phone: org.phone,
-        country: org.country,
-        plan_type: (org.plan_type || 'FREE') as PlanType
-      };
-
-      setOrganization(organizationData);
-      setError(null);
-      setIsLoading(false);
-      updateLastOrganizationCheck();
-    } catch (error) {
-      console.error('❌ Error al cargar organización:', error);
-      setError(error as Error);
-      setOrganization(null);
-      setStripeConnection(null);
-      setIsLoading(false);
+        return prevOrg
+      })
     }
-  }
+    
+    setIsLoading(orgLoading)
+    setError(orgError as Error | null)
+  }, [orgData, orgLoading, orgError])
 
   // Función para cargar conexión Stripe bajo demanda
   const loadStripeConnection = async () => {
@@ -212,21 +171,17 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
   }
 
-  useEffect(() => {
-    void loadOrganization();
-  }, [user, authLoading]);
-
-  const value = {
+  const contextValue = {
     organization,
     stripeConnection,
     isLoading,
     error,
     setOrganization,
     loadStripeConnection
-  };
+  }
 
   return (
-    <OrganizationContext.Provider value={value}>
+    <OrganizationContext.Provider value={contextValue}>
       {children}
     </OrganizationContext.Provider>
   )

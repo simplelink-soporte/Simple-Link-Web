@@ -113,17 +113,29 @@ export function CompanyStep() {
         throw new Error('No hay usuario autenticado')
       }
 
-      // 1. Asegurarnos de que existe una empresa
-      const { error: getError } = await onboardingCompanyService.getOrCreateCompany(user.id)
-      if (getError) throw getError
+      // 1. Verificar si ya tenemos el ID de la empresa
+      if (!formData.empresaId) {
+        // Si no existe, crear la empresa
+        const { data, error: getError } = await onboardingCompanyService.getOrCreateCompany(user.id)
+        if (getError) throw getError
+        
+        // Guardar el ID para futuras operaciones
+        if (data?.id) {
+          updateFormData({ ...formData, empresaId: data.id })
+        }
+      }
 
-      // 2. Actualizar los datos de la empresa
-      const { error: updateError } = await onboardingCompanyService.updateCompany(user.id, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        country: formData.country,
-      })
+      // 2. Actualizar los datos de la empresa usando el ID si está disponible
+      const { error: updateError } = await onboardingCompanyService.updateCompany(
+        user.id, 
+        {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          country: formData.country,
+        },
+        formData.empresaId // Pasar el ID si está disponible
+      )
       
       if (updateError) throw updateError
 

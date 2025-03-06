@@ -330,7 +330,6 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
   const { user } = useAuth()
   const { completeAndAdvance, currentBranchId, updateBranchData, branches, setBranches, setCurrentBranchId } = useOnboarding()
   const [isSuccess, setIsSuccess] = useState(false)
-  const [showExitDialog, setShowExitDialog] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isBranchSaved, setIsBranchSaved] = useState(false)
   const [formData, setFormData] = useState<BranchFormData>(() => {
@@ -604,7 +603,7 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
             updated_at: new Date().toISOString()
           }
 
-          console.log('�� Datos de la cancha a guardar:', courtData)
+          console.log('📍 Datos de la cancha a guardar:', courtData)
 
           if (court.id && !court.id.startsWith('court-')) {
             const { error: updateError } = await supabase
@@ -645,29 +644,10 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
     }
   }
 
-  const hasUnsavedChanges = () => {
-    if (!currentBranchId) {
-      // Si es una nueva sede, verificar si hay datos ingresados
-      return formData.name !== '' || 
-             formData.address !== '' || 
-             formData.phone !== '' || 
-             formData.manager !== '' ||
-             formData.courts.length > 0
-    }
-    
-    // Si es una sede existente, comparar con los datos originales
-    const currentBranch = branches.find(b => b.id === currentBranchId)
-    if (!currentBranch?.data) return false
-    
-    return JSON.stringify(currentBranch.data) !== JSON.stringify(formData)
-  }
-
   const handleReturn = () => {
-    if (hasUnsavedChanges()) {
-      setShowExitDialog(true)
-    } else {
-      onReturnToSelection()
-    }
+    // Eliminamos la lógica de verificar cambios sin guardar
+    // y simplemente retornamos a la vista de selección
+    onReturnToSelection()
   }
 
   return (
@@ -682,11 +662,15 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         <div className="max-w-5xl mx-auto w-full px-8 py-4">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={handleReturn}
-            className="text-gray-600 hover:text-gray-900 -ml-2 h-8 text-sm"
+            className="text-black hover:text-black hover:bg-gray-100 h-8 w-8"
+            aria-label="Volver"
           >
-            Volver
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
           </Button>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/80 to-transparent" />
@@ -841,42 +825,29 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         </div>
       </div>
 
-          {/* Diálogo de confirmación de salida */}
-          <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>¿Estás seguro de salir?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tienes cambios sin guardar. Si sales ahora, perderás todos los cambios realizados.
+          {/* Mensaje de éxito */}
+          <AlertDialog open={isSuccess} onOpenChange={setIsSuccess}>
+            <AlertDialogContent className="max-w-md bg-white">
+              <div className="flex flex-col items-center justify-center p-4">
+                <div className="rounded-full bg-green-100 p-3 mb-4">
+                  <Check className="h-6 w-6 text-green-600" />
+                </div>
+                <AlertDialogTitle className="text-center">Sede guardada correctamente</AlertDialogTitle>
+                <AlertDialogDescription className="text-center mb-4">
+                  Todos los cambios han sido guardados correctamente.
                 </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-                  Cancelar
-                </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    setShowExitDialog(false)
+                    setIsSuccess(false)
                     onReturnToSelection()
                   }}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="w-full"
                 >
-                  Salir sin guardar
+                  Continuar
                 </AlertDialogAction>
-              </AlertDialogFooter>
+              </div>
             </AlertDialogContent>
           </AlertDialog>
-
-          {/* Mensaje de éxito */}
-          {isSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-md shadow-lg"
-            >
-              ¡Sede guardada con éxito!
-            </motion.div>
-          )}
     </motion.div>
   )
 } 

@@ -7,7 +7,10 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, value, ...props }, ref) => {
+    // Asegurarse de que value nunca sea undefined para evitar el warning de controlled/uncontrolled
+    const inputValue = value === undefined ? '' : value
+    
     return (
       <input
         type={type}
@@ -20,6 +23,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
+        value={inputValue}
         {...props}
       />
     )
