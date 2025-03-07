@@ -77,7 +77,7 @@ export function OnboardingSteps() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto md:pl-8">
       <AnimatePresence mode="wait">
         <motion.div
           key={isOnboardingComplete ? 'final' : currentStep}

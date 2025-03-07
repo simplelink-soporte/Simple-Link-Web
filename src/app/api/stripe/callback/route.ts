@@ -7,7 +7,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 
 // Inicializar Stripe con la clave secreta
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia',
+  apiVersion: '2025-02-24.acacia',
   typescript: true,
 })
 
@@ -22,17 +22,27 @@ const supabase = createClient<Database>(
 )
 
 export async function GET(request: Request) {
+  // Declarar la variable redirectUrl fuera del bloque try principal para que esté disponible en el catch exterior
+  let redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding`;
+  
   try {
     console.log('📍 Iniciando proceso de callback de Stripe')
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
     const error = searchParams.get('error')
     const errorDescription = searchParams.get('error_description')
-    const state = searchParams.get('state')
-    const origin = searchParams.get('state')?.split(':')[1] || 'onboarding'
+    const state = searchParams.get('state') || ''
+    
+    // Extraer el origen del parámetro state si tiene el formato "origin:valor"
+    let origin = 'onboarding'; // Valor por defecto
+    if (state.includes('origin:')) {
+      origin = state.split(':')[1];
+    }
+
+    console.log('📍 Parámetros de origen:', { state, origin });
 
     // Determinar la URL de redirección basada en el origen
-    const redirectUrl = origin === 'settings' 
+    redirectUrl = origin === 'settings' 
       ? `${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations` 
       : `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding`
 
@@ -45,7 +55,7 @@ export async function GET(request: Request) {
     if (sessionError || !session) {
       console.error('❌ No se encontró sesión activa:', sessionError)
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding?error=no_auth`
+        `${redirectUrl}?error=no_auth`
       )
     }
 
@@ -56,6 +66,8 @@ export async function GET(request: Request) {
       error,
       errorDescription,
       state,
+      origin,
+      redirectUrl,
       userId: userId ? '***' : null
     })
 
@@ -108,7 +120,7 @@ export async function GET(request: Request) {
 
       if (empresaError || !empresa) {
         console.error('❌ Error al obtener la empresa:', empresaError)
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding?error=empresa_not_found`)
+        return NextResponse.redirect(`${redirectUrl}?error=empresa_not_found`)
       }
 
       console.log('✅ Empresa encontrada:', empresa.id)
@@ -140,7 +152,7 @@ export async function GET(request: Request) {
 
       if (dbError) {
         console.error('❌ Error al guardar en Supabase:', dbError)
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding?error=database_error`)
+        return NextResponse.redirect(`${redirectUrl}?error=database_error`)
       }
 
       console.log('✅ Conexión guardada exitosamente')
@@ -155,13 +167,13 @@ export async function GET(request: Request) {
       
       const errorMessage = encodeURIComponent(stripeError.message || 'Error en la autenticación')
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding?error=${errorMessage}`
+        `${redirectUrl}?error=${errorMessage}`
       )
     }
   } catch (error: any) {
     console.error('❌ Error general en el callback:', error)
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding?error=unexpected_error`
+      `${redirectUrl}?error=unexpected_error`
     )
   }
 }

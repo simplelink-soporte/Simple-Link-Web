@@ -83,8 +83,8 @@ export default function OnboardingPage() {
       {/* Contenido principal */}
       <div className="flex flex-col min-h-screen md:pl-96">
         <MobileHeader />
-        <main className="flex-1 flex items-center justify-center bg-white">
-          <div className="w-full">
+        <main className="flex-1 flex bg-white items-center justify-center">
+          <div className="w-full px-2 md:px-0">
             <OnboardingSteps />
           </div>
         </main>

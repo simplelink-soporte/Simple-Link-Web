@@ -439,21 +439,12 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
               transition={{ duration: 0.2, delay: index * 0.1 }}
             >
               <Card className="relative overflow-hidden hover:border-primary hover:shadow-md transition-all duration-200">
-                <div className="p-6 flex justify-between items-center">
-                  <div className="space-y-2">
+                <div className="p-4 flex justify-between items-center">
+                  <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-medium">
                         {branch.name}
                       </h3>
-                      {hasBranchData(branch) ? (
-                        <Badge variant="outline" className="bg-green-500 text-white text-xs px-2 py-0.5">
-                          Configurada
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-xs px-2 py-0.5">
-                          Sin configurar
-                        </Badge>
-                      )}
                     </div>
                     <div className="space-y-1">
                       {hasBranchData(branch) ? (
@@ -481,19 +472,19 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
-                      variant={hasBranchData(branch) ? "outline" : "default"}
+                      variant="ghost"
                       size="sm"
-                      className="flex items-center gap-2"
+                      className="text-gray-600 hover:text-gray-900"
                       onClick={() => handleConfigureBranch(branch.id)}
                     >
                       <PenLine className="h-4 w-4" />
-                      {hasBranchData(branch) ? "Editar" : "Configurar"}
+                      <span className="ml-2">{hasBranchData(branch) ? "Editar" : "Configurar"}</span>
                     </Button>
                     {filteredBranches.length > 1 && (
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700"
                         onClick={() => handleDeleteBranch(branch)}
                       >
                         <Trash2 className="h-4 w-4" />

@@ -1,10 +1,8 @@
 import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
-import { Trash2, Plus, Clock } from "lucide-react"
+import { Trash2, Plus, Clock, Lock, Unlock } from "lucide-react"
 
 export interface ScheduleRange {
   openTime: string
@@ -154,104 +152,93 @@ export function ScheduleList({ schedule, onScheduleChange }: ScheduleListProps) 
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h3 className="text-sm font-medium">Horarios de apertura</h3>
-        <p className="text-sm text-muted-foreground">
-          Configura los horarios de apertura para cada día de la semana
-        </p>
-      </div>
-      
       {/* Navegación horizontal de días */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex items-center gap-4 border-b pb-3 overflow-x-auto hide-scrollbar">
         {Object.entries(currentSchedule).map(([day, daySchedule]) => (
-          <Button
+          <button
             key={day}
-            variant="outline"
-            size="sm"
+            type="button"
             onClick={() => setSelectedDay(day)}
             className={cn(
-              "rounded-full h-8 px-3",
+              "text-xs font-medium transition-colors",
               selectedDay === day 
-                ? "bg-black text-white hover:bg-black/90 hover:text-white"
-                : "bg-white hover:bg-gray-50",
-              !daySchedule.isOpen && "opacity-60"
+                ? "text-gray-900" 
+                : "text-gray-500/70 hover:text-gray-700",
+              !daySchedule.isOpen && "text-gray-400/60"
             )}
           >
-            <div className="flex items-center gap-1.5">
-              {daySchedule.isOpen ? (
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-              ) : (
-                <div className="w-2 h-2 rounded-full bg-gray-300" />
-              )}
-              <span className="text-xs">{daysTranslations[day]}</span>
-            </div>
-          </Button>
+            {daysTranslations[day]}
+          </button>
         ))}
       </div>
       
       {/* Configuración del día seleccionado */}
       {selectedDay && (
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+        <div className="bg-white rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-medium">{daysTranslations[selectedDay]}</h4>
-              <div className="flex items-center gap-1.5 ml-2">
-                <Checkbox
-                  id={`checkbox-${selectedDay}`}
-                  checked={currentSchedule[selectedDay].isOpen}
-                  onCheckedChange={(checked) => handleDayToggle(selectedDay, checked as boolean)}
-                  className="h-3.5 w-3.5 rounded-[4px] border-gray-300 data-[state=checked]:bg-black data-[state=checked]:border-black"
-                />
-                <Label htmlFor={`checkbox-${selectedDay}`} className="text-xs text-gray-600">
-                  {currentSchedule[selectedDay].isOpen ? 'Abierto' : 'Cerrado'}
-                </Label>
-              </div>
+            <div className="flex items-center gap-3">
+              <h4 className="text-sm font-medium text-gray-700">{daysTranslations[selectedDay]}</h4>
+              <button 
+                type="button"
+                onClick={() => handleDayToggle(selectedDay, !currentSchedule[selectedDay].isOpen)}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                {currentSchedule[selectedDay].isOpen ? (
+                  <>
+                    <Unlock className="h-3.5 w-3.5 text-gray-400" />
+                    <span>Abierto</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-3.5 w-3.5 text-gray-400" />
+                    <span>Cerrado</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
           
           {currentSchedule[selectedDay].isOpen && currentSchedule[selectedDay].timeRanges && (
             <div className="space-y-3">
               {currentSchedule[selectedDay].timeRanges.map((range, index) => (
-                <div key={index} className="flex items-center gap-3 p-2 border border-gray-100 bg-white rounded-md">
+                <div key={index} className="flex items-center gap-3 py-2 border-b border-gray-100">
                   <div className="flex-1 flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                    <Clock className="h-3.5 w-3.5 text-gray-300" />
                     <div className="flex items-center gap-2">
                       <input
                         type="time"
                         value={range.openTime}
                         onChange={(e) => handleTimeChange(selectedDay, index, 'openTime', e.target.value)}
-                        className="px-2 py-1 text-sm border rounded w-28"
+                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-20"
                       />
-                      <span className="text-xs text-gray-500">a</span>
+                      <span className="text-xs text-gray-400">a</span>
                       <input
                         type="time"
                         value={range.closeTime}
                         onChange={(e) => handleTimeChange(selectedDay, index, 'closeTime', e.target.value)}
-                        className="px-2 py-1 text-sm border rounded w-28"
+                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-20"
                       />
                     </div>
                   </div>
                   {currentSchedule[selectedDay].timeRanges.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => removeRange(selectedDay, index)}
-                      className="h-7 w-7 p-0 rounded-full hover:bg-red-50"
+                      className="text-gray-400 hover:text-red-500 transition-colors"
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                    </Button>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   )}
                 </div>
               ))}
-              <Button
-                variant="outline"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => addRange(selectedDay)}
-                className="text-xs mt-2 border-dashed border-gray-300 flex items-center gap-1"
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 mt-3 transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Agregar horario
-              </Button>
+              </button>
             </div>
           )}
         </div>

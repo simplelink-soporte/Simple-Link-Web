@@ -24,17 +24,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { CourtsList, type CourtData } from "./components/CourtsList"
-import { ScheduleList, type ScheduleData } from "./components/ScheduleList"
-import { SectionTitle } from "@/components/ui/section-title"
-import { courtService } from "@/services/courtService"
 import { supabase } from "@/lib/supabase"
 import { onboardingBranchService } from '@/services/onboardingBranchService'
 import { useAuth } from '@/contexts/AuthContext'
@@ -46,98 +37,42 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SingleSelect } from "@/components/ui/single-select"
-import { DateTime } from 'luxon'
+import { ArrowRight } from "lucide-react"
 
-// Variantes de animación
-const fadeInVariants = {
-  hidden: { 
-    opacity: 0,
-    y: 20
-  },
-  visible: { 
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut"
-    }
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn"
-    }
-  }
-}
+// Componentes
+import { BranchBasicInfo } from './components/BranchBasicInfo'
+import { ScheduleList } from './components/ScheduleList'
+import { CourtsList } from './components/CourtsList'
+import { StepIndicator } from './components/StepIndicator'
+import { StepNavigation } from './components/StepNavigation'
+import { StepHeader } from './components/StepHeader'
 
-const buttonVariants = {
-  hover: {
-    scale: 1.02,
-    transition: {
-      duration: 0.2,
-      ease: "easeInOut"
-    }
-  },
-  tap: {
-    scale: 0.98
-  }
-}
+// Tipos
+import { BranchesStepProps, BranchFormData, ScheduleData, CourtData } from './types'
 
-// Datos iniciales
-const initialSchedule: ScheduleData = {
-  monday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  tuesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  wednesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  thursday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  friday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  saturday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-  sunday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] }
-}
+// Hooks personalizados
+import { useBranchData } from './hooks/useBranchData'
 
-const daysTranslations: { [key: string]: string } = {
-  monday: 'Lunes',
-  tuesday: 'Martes',
-  wednesday: 'Miércoles',
-  thursday: 'Jueves',
-  friday: 'Viernes',
-  saturday: 'Sábado',
-  sunday: 'Domingo'
-}
-
-interface BranchesStepProps {
-  onReturnToSelection: () => void
-}
+// Constantes
+import { initialSchedule, fadeInVariants } from './constants'
 
 // Función auxiliar para validar una pista
 const isCourtValid = (court: CourtData) => {
   return (
-    court.name.trim() !== '' &&
+    court.name?.trim() !== '' &&
     court.sports.length > 0 &&
-    court.type !== '' &&
-    court.characteristics.length > 0 &&
+    court.type?.trim() !== '' &&
     court.available_durations.length > 0 &&
     court.duration_pricing &&
     Object.keys(court.duration_pricing).length > 0 &&
-    Object.values(court.duration_pricing).every(price => price !== '')
+    Object.values(court.duration_pricing).every(price => price > 0)
   )
 }
 
-// Componentes del input de teléfono
-const PhoneInput = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, ...props }, ref) => {
-    return (
-      <Input
-        className={cn("-ms-px rounded-s-none shadow-none focus-visible:z-10", className)}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-
-PhoneInput.displayName = "PhoneInput";
+// Componente PhoneInput personalizado
+const PhoneInput = ({ className, ...rest }: { className?: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
+  <input className={cn("flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className)} {...rest} />
+)
 
 type CountrySelectProps = {
   disabled?: boolean;
@@ -148,288 +83,89 @@ type CountrySelectProps = {
 
 const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProps) => {
   const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(event.target.value as RPNInput.Country);
+    const newValue = event.target.value || undefined;
+    onChange(newValue as RPNInput.Country);
   };
 
   return (
-    <div className="relative inline-flex items-center self-stretch rounded-s-lg border border-input bg-background py-2 pe-2 ps-3 text-muted-foreground transition-shadow focus-within:z-10 focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 hover:bg-accent hover:text-foreground has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50">
-      <div className="inline-flex items-center gap-1" aria-hidden="true">
-        <FlagComponent country={value} countryName={value} aria-hidden="true" />
-      </div>
-      <select
-        disabled={disabled}
-        value={value}
-        onChange={handleSelect}
-        className="absolute inset-0 text-sm opacity-0"
-        aria-label="Select country"
-      >
-        <option key="default" value="">
-          Seleccionar país
+    <select
+      disabled={disabled}
+      value={value}
+      onChange={handleSelect}
+      className="absolute inset-0 opacity-0 cursor-pointer"
+    >
+      {options.map(({ value, label }) => (
+        <option key={label} value={value}>
+          {label}
         </option>
-        {options
-          .filter((x) => x.value)
-          .map((option, i) => (
-            <option key={option.value ?? `empty-${i}`} value={option.value}>
-              {option.label} {option.value && `+${RPNInput.getCountryCallingCode(option.value)}`}
-            </option>
-          ))}
-      </select>
-    </div>
+      ))}
+    </select>
   );
 };
 
 const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
-  const Flag = flags[country];
-
+  const Flag = flags[country as keyof typeof flags];
   return (
-    <span className="w-5 overflow-hidden rounded-sm">
-      {Flag ? <Flag title={countryName} /> : <Phone size={16} aria-hidden="true" />}
+    <span className="inline-flex items-center justify-center w-6 mx-1">
+      {Flag && <Flag title={countryName} />}
     </span>
   );
 };
 
-// Interfaces
-interface TimeRange {
-  openTime: string;
-  closeTime: string;
-}
-
-interface CustomPricing {
-  [key: string]: {
-    isSelected: boolean;
-    timeRanges: Array<{
-      startTime: string;
-      endTime: string;
-      percentage: number;
-    }>;
-  };
-}
-
-interface CourtFormData {
-  id: string;
-  name: string;
-  sports: string[];
-  type: string;
-  characteristics: string[];
-  available_durations: number[];
-  duration_pricing: Record<string, number>;
-  custom_pricing: CustomPricing;
-  is_active: boolean;
-}
-
-interface BranchFormData {
-  name: string
-  address: string
-  phone: string
-  manager: string
-  isActive: boolean
-  timezone: string
-  schedule: ScheduleData
-  courts: CourtData[]
-}
-
-// Mapeo de características de inglés a español
-const featureMapEnToEs: Record<string, string> = {
-  'wall-glass': 'cristal-estandar',
-  'wall-panoramic': 'cristal-panoramico',
-  'wall-concrete': 'muro-hormigon',
-  'floor-synthetic': 'cesped-sintetico',
-  'floor-clay': 'tierra-batida',
-  'floor-concrete': 'hormigon-pulido',
-  'floor-rubber': 'goma-profesional'
-}
-
-// Mapeo de características de español a inglés
-const featureMapEsToEn: Record<string, string> = {
-  'cristal-estandar': 'wall-glass',
-  'cristal-panoramico': 'wall-panoramic',
-  'muro-hormigon': 'wall-concrete',
-  'cesped-sintetico': 'floor-synthetic',
-  'tierra-batida': 'floor-clay',
-  'hormigon-pulido': 'floor-concrete',
-  'goma-profesional': 'floor-rubber'
-}
-
-// Mapeo de deportes
-const sportMapping: Record<string, string> = {
-  'tenis': 'tennis',
-  'tennis': 'tennis',
-  'padel': 'padel',
-  'badminton': 'badminton',
-  'squash': 'squash',
-  'pickleball': 'pickleball'
-}
-
-// Función para validar y transformar el deporte
-const validateSport = (sport: string): string => {
-  const validSports = ['padel', 'tennis', 'badminton', 'squash', 'pickleball'];
-  const mappedSport = sportMapping[sport.toLowerCase()] || sport.toLowerCase();
-  return validSports.includes(mappedSport) ? mappedSport : 'padel';
-}
-
-// Tipos para la respuesta de la API
-interface CourtResponse {
-  id: string;
-  name: string;
-  sport: string;
-  court_type: string;
-  features: string[] | string;
-  available_durations: number[] | string;
-  duration_pricing: Record<string, number> | string;
-  custom_pricing: CustomPricing | string;
-  is_active: boolean;
-}
-
-interface BranchResponse {
-  id: string;
-  name: string;
-  address: string | null;
-  phone: string | null;
-  manager_id: string | null;
-  is_active: boolean;
-  opening_hours: Record<string, any> | string | null;
-}
-
-// Tipos para la tabla courts
-type Sport = 'tennis' | 'padel' | 'badminton' | 'squash' | 'pickleball'
-type CourtType = 'indoor' | 'outdoor' | 'covered'
-type Surface = 'crystal' | 'synthetic' | 'clay' | 'concrete' | 'rubber' | 'premium' | 'grass' | 'panoramic'
-
-interface CourtDataDB {
-  id?: string
-  name: string
-  branch_id: string
-  sport: Sport
-  court_type: CourtType
-  surface: Surface
-  features: string[]
-  is_active: boolean
-  available_durations: number[]
-  duration_pricing: Record<string, number>
-  custom_pricing: Record<string, any>
-  updated_at?: string
-}
-
-// Definir las zonas horarias
-const AVAILABLE_TIMEZONES = [
-  { value: 'Europe/Madrid', label: 'España (Península y Baleares)' },
-  { value: 'Atlantic/Canary', label: 'España (Islas Canarias)' },
-  { value: 'Europe/Zurich', label: 'Suiza' },
-  { value: 'Europe/Stockholm', label: 'Suecia' },
-  { value: 'Europe/Oslo', label: 'Noruega' },
-  { value: 'Europe/Copenhagen', label: 'Dinamarca' },
-  { value: 'Europe/Helsinki', label: 'Finlandia' },
-  { value: 'America/New_York', label: 'Estados Unidos (EST)' },
-  { value: 'America/Chicago', label: 'Estados Unidos (CST)' },
-  { value: 'America/Denver', label: 'Estados Unidos (MST)' },
-  { value: 'America/Los_Angeles', label: 'Estados Unidos (PST)' },
-  { value: 'America/Phoenix', label: 'Estados Unidos (MST sin horario de verano)' },
-] as const;
-
 export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
   const { user } = useAuth()
-  const { completeAndAdvance, currentBranchId, updateBranchData, branches, setBranches, setCurrentBranchId } = useOnboarding()
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isBranchSaved, setIsBranchSaved] = useState(false)
-  const [formData, setFormData] = useState<BranchFormData>(() => {
+  const { 
+    completeAndAdvance, 
+    currentBranchId, 
+    branches, 
+    setBranches, 
+    setCurrentBranchId,
+    formData: contextFormData
+  } = useOnboarding()
+  
+  // Estados
+  const [currentStep, setCurrentStep] = React.useState(1)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  
+  // Usar el hook personalizado para cargar los datos de la sede
+  const { 
+    loading: loadingBranchData, 
+    error: branchError,
+    branchData: loadedBranchData,
+    isBranchSaved,
+    setIsBranchSaved
+  } = useBranchData(currentBranchId || undefined, initialSchedule);
+  
+  // Estado del formulario 
+  const [formData, setFormData] = React.useState<BranchFormData>(() => {
     if (currentBranchId) {
       const branch = branches.find(b => b.id === currentBranchId)
       if (branch?.data) {
-        return branch.data
+        return branch.data as BranchFormData
       }
     }
+    
     return {
       name: '',
       address: '',
       phone: '',
       manager: '',
       isActive: true,
-      timezone: 'Europe/Madrid', // Valor por defecto
-      schedule: {
-        monday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        tuesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        wednesday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        thursday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        friday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        saturday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] },
-        sunday: { isOpen: true, timeRanges: [{ openTime: '08:00', closeTime: '22:00' }] }
-      },
+      timezone: 'Europe/Madrid',
+      schedule: initialSchedule,
       courts: []
     }
-  })
-
-  // Efecto para cargar los datos de la sede si estamos en modo edición
+  });
+  
+  // Actualizar el formulario cuando se cargan los datos de la sede
   useEffect(() => {
-    const loadBranchData = async () => {
-      if (currentBranchId) {
-        try {
-          console.log('📍 Cargando datos de la sede:', currentBranchId)
-          const { data: branchData, error } = await onboardingBranchService.getBranchById(currentBranchId)
-          
-          if (error) throw error
-          if (!branchData) throw new Error('No se encontraron datos de la sede')
-
-          // Actualizar el estado del formulario con los datos de la sede
-          setFormData({
-            name: branchData.name || '',
-            address: branchData.address || '',
-            phone: branchData.phone || '',
-            manager: branchData.manager_id || '',
-            isActive: branchData.is_active ?? true,
-            timezone: branchData.timezone || 'Europe/Madrid',
-            schedule: branchData.opening_hours || initialSchedule,
-            courts: (branchData.data?.courts || []).map(court => ({
-              id: court.id,
-              name: court.name,
-              sports: court.sports,
-              type: court.type,
-              characteristics: court.characteristics,
-              available_durations: court.durations.map(Number),
-              duration_pricing: court.prices.reduce((acc, price) => {
-                acc[price.duration] = Number(price.price)
-                return acc
-              }, {} as Record<string, number>),
-              custom_pricing: court.prices.reduce((acc, price) => {
-                if (price.timeRanges && price.timeRanges.length > 0) {
-                  price.timeRanges.forEach(range => {
-                    if (!acc[range.day]) {
-                      acc[range.day] = {
-                        isSelected: true,
-                        timeRanges: []
-                      }
-                    }
-                    acc[range.day].timeRanges.push({
-                      startTime: range.start,
-                      endTime: range.end,
-                      percentage: Number(range.percentage)
-                    })
-                  })
-                }
-                return acc
-              }, {} as Record<string, any>),
-              is_active: true
-            }))
-          })
-
-          setIsBranchSaved(true)
-          
-        } catch (error: any) {
-          console.error('❌ Error al cargar los datos:', error)
-          toast({
-            title: "Error",
-            description: error.message || "No se pudieron cargar los datos de la sede",
-            variant: "destructive",
-          })
-        }
-      }
+    if (loadedBranchData) {
+      setFormData(loadedBranchData);
     }
-
-    loadBranchData()
-  }, [currentBranchId])
+  }, [loadedBranchData]);
 
   // Manejadores de eventos
-  const handleInputChange = (field: keyof BranchFormData, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -440,18 +176,37 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
     }))
   }
 
-  // Función para validar el formulario básico de la sede
+  // Funciones de validación
   const isBasicFormValid = () => {
     return formData.name?.trim() !== '' &&
       formData.address?.trim() !== '' &&
       formData.phone?.trim() !== ''
   }
 
-  // Función para validar la sección de pistas
+  const isScheduleFormValid = () => {
+    return true // Los horarios ya tienen valores por defecto válidos
+  }
+
   const isCourtsFormValid = () => {
     return formData.courts.length > 0
   }
 
+  // Navegación entre pasos
+  const goToNextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(prev => prev + 1)
+    }
+  }
+
+  const goToPreviousStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1)
+    } else {
+      handleReturn()
+    }
+  }
+
+  // Función para guardar la sede
   const handleSaveBranch = async () => {
     try {
       setIsSubmitting(true)
@@ -460,38 +215,62 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         throw new Error('No hay usuario autenticado')
       }
 
-      const empresaId = await onboardingBranchService.getEmpresaIdByUserId(user.id)
+      // Obtener el ID de la empresa del contextFormData o usar el valor por defecto
+      let empresaId = contextFormData?.empresaId;
+      
+      // Si no hay empresaId en el contexto, intentar usar el ID de empresa por defecto
+      if (!empresaId) {
+        empresaId = process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID;
+      }
+      
+      if (!empresaId) {
+        console.error('No se pudo obtener el ID de empresa del contexto ni de las variables de entorno');
+        throw new Error('No se pudo obtener el ID de la empresa');
+      }
+      
+      console.log('Usando empresa_id:', empresaId);
 
+      // Crear el objeto opening_hours correctamente como un JSON serializado
+      const opening_hours_obj = {
+        schedule: Object.entries(formData.schedule).reduce((acc: Record<string, any>, [day, dayData]) => {
+          // Asegurarnos de que dayData tenga la estructura correcta
+          const typedDayData = dayData as {
+            isOpen: boolean;
+            timeRanges: Array<{ openTime: string; closeTime: string }>;
+          };
+          
+          acc[day] = {
+            isOpen: typedDayData.isOpen,
+            timeRanges: typedDayData.timeRanges.map((range) => ({
+              openTime: range.openTime,
+              closeTime: range.closeTime
+            }))
+          };
+          return acc;
+        }, {}),
+        timezone: formData.timezone
+      };
+
+      // Preparar los datos para guardar con todos los campos requeridos
       const branchData = {
-        name: formData.name.trim(),
+        name: formData.name.trim(), // Campo obligatorio
         address: formData.address?.trim() || '',
         phone: formData.phone?.trim() || '',
         manager_id: formData.manager?.trim() || '',
         is_active: formData.isActive,
-        timezone: formData.timezone,
-        opening_hours: {
-          timezone: formData.timezone,
-          schedule: Object.entries(formData.schedule).reduce((acc, [day, { isOpen, timeRanges }]) => {
-            acc[day] = {
-              isOpen,
-              timeRanges: timeRanges.map(range => ({
-                openTime: range.openTime,
-                closeTime: range.closeTime
-              }))
-            };
-            return acc;
-          }, {} as Record<string, any>),
-        },
-        empresa_id: empresaId,
+        timezone: formData.timezone, // Campo obligatorio
+        opening_hours: opening_hours_obj, // El tipo JSONB acepta objetos directamente en Supabase
+        empresa_id: empresaId, // Campo obligatorio
         organization_id: empresaId
       }
 
-      console.log('📍 Datos a guardar:', branchData)
+      console.log('Datos a guardar:', branchData)
 
       let response: any
 
-      // 3. Actualizar o crear la sede
+      // Actualizar o crear la sede
       if (currentBranchId) {
+        // Actualizar sede existente
         const { data, error } = await supabase
           .from('sedes')
           .update({
@@ -499,12 +278,17 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
             updated_at: new Date().toISOString()
           })
           .eq('id', currentBranchId)
-          .select()
+          .select('*')
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error('Error al actualizar sede:', error)
+          throw error
+        }
+        
         response = { data, error: null }
       } else {
+        // Crear nueva sede - importante no incluir id ya que se genera automáticamente
         const { data, error } = await supabase
           .from('sedes')
           .insert([{
@@ -512,38 +296,47 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }])
-          .select()
+          .select('*')
           .single()
 
-        if (error) throw error
-        response = { data, error: null }
+        if (error) {
+          console.error('Error al crear sede:', error)
+          throw error
+        }
         
+        response = { data, error: null }
+
         // Actualizar el currentBranchId con el ID de la nueva sede
-        setCurrentBranchId(response.data.id)
+        if (response.data && response.data.id) {
+          setCurrentBranchId(response.data.id)
+        } else {
+          throw new Error('No se recibió el ID de la sede creada')
+        }
       }
 
-      // 4. Actualizar el estado local
+      // Actualizar el estado local
       if (response.data) {
         setIsBranchSaved(true)
         
         // Actualizar la lista de sedes en el contexto
-        setBranches(prev => {
+        setBranches((prevBranches) => {
           const updatedBranches = currentBranchId
-            ? prev.map(b => b.id === currentBranchId ? { 
-                ...b, 
+            ? prevBranches.map((branch) => branch.id === currentBranchId ? { 
+                ...branch, 
                 data: { 
                   ...formData,
                   id: currentBranchId
                 } 
-              } : b)
-            : [...prev, { 
+              } : branch)
+            : [...prevBranches, { 
                 id: response.data.id, 
                 name: response.data.name,
-                data: {
+                data: { 
                   ...formData,
                   id: response.data.id
-                }
+                } 
               }]
+
           return updatedBranches
         })
 
@@ -552,8 +345,13 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
           title: "¡Éxito!",
           description: "Sede guardada correctamente. Ahora puedes configurar las pistas."
         })
+        
+        // Avanzar al paso de configuración de pistas
+        setCurrentStep(3)
+      } else {
+        throw new Error('No se recibieron datos de la sede guardada')
       }
-
+      
     } catch (error: any) {
       console.error('Error al guardar la sede:', error)
       toast({
@@ -561,293 +359,168 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         description: error.message || "No se pudo guardar la sede",
         variant: "destructive",
       })
-      setIsBranchSaved(false)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  // Función para finalizar el proceso
   const handleFinish = async () => {
     try {
       setIsSubmitting(true)
 
-      if (!user) {
-        throw new Error('No hay usuario autenticado')
+      // Actualizar los datos de la sede en el contexto
+      setBranches((prevBranches) => {
+        return prevBranches.map((branch) => 
+          branch.id === currentBranchId 
+            ? { ...branch, data: { ...formData } } 
+            : branch
+        )
+      })
+
+      // Marcar como completado
+      if (completeAndAdvance) {
+        completeAndAdvance(2) // Usando número en lugar de string
       }
-
-      // Verificar que la sede esté guardada y tengamos su ID
-      if (!isBranchSaved || !currentBranchId) {
-        throw new Error('No se ha guardado la sede. Por favor, guarda la sede primero.')
-      }
-
-      // Verificar que haya pistas para guardar
-      if (!formData.courts || formData.courts.length === 0) {
-        throw new Error('Debes agregar al menos una pista')
-      }
-
-      // 1. Procesar las canchas con el ID de sede correcto
-      for (const court of formData.courts) {
-        try {
-          const courtData: CourtDataDB = {
-            name: court.name,
-            sport: (court.sports[0] || 'padel') as Sport,
-            court_type: (court.type === 'interior' ? 'indoor' : 
-                        court.type === 'exterior' ? 'outdoor' : 'covered') as CourtType,
-            features: court.characteristics,
-            surface: 'synthetic' as Surface,
-            available_durations: court.available_durations,
-            duration_pricing: court.duration_pricing,
-            custom_pricing: court.custom_pricing,
-            branch_id: currentBranchId,
-            is_active: court.is_active,
-            updated_at: new Date().toISOString()
-          }
-
-          console.log('📍 Datos de la cancha a guardar:', courtData)
-
-          if (court.id && !court.id.startsWith('court-')) {
-            const { error: updateError } = await supabase
-              .from('courts')
-              .update(courtData)
-              .eq('id', court.id)
-
-            if (updateError) throw updateError
-          } else {
-            const { error: insertError } = await supabase
-              .from('courts')
-              .insert([courtData])
-
-            if (insertError) throw insertError
-          }
-        } catch (error: any) {
-          console.error('❌ Error al procesar la cancha:', error)
-          throw new Error(`Error al ${court.id && !court.id.startsWith('court-') ? 'actualizar' : 'crear'} la cancha ${court.name}`)
-        }
-      }
-
+      
       toast({
-        title: "¡Éxito!",
-        description: "Canchas guardadas correctamente"
+        title: "¡Completado!",
+        description: "Has completado la configuración de la sede y sus pistas."
       })
       
-      // Volvemos a la selección de sedes
-      onReturnToSelection()
     } catch (error: any) {
-      console.error('❌ Error al guardar las canchas:', error)
+      console.error('Error al finalizar:', error)
       toast({
         title: "Error",
-        description: error.message || 'Error al guardar los cambios',
-        variant: "destructive"
+        description: error.message || "No se pudo finalizar el proceso",
+        variant: "destructive",
       })
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  // Función para volver a la selección de pasos
   const handleReturn = () => {
-    // Eliminamos la lógica de verificar cambios sin guardar
-    // y simplemente retornamos a la vista de selección
     onReturnToSelection()
+  }
+
+  // Obtener información del paso actual
+  const getStepInfo = () => {
+    switch (currentStep) {
+      case 1:
+        return {
+          title: "Información de la sede",
+          description: "Completa los datos básicos de tu sede"
+        }
+      case 2:
+        return {
+          title: "Horarios de apertura",
+          description: "Configura los horarios de funcionamiento"
+        }
+      case 3:
+        return {
+          title: "Configuración de pistas",
+          description: isBranchSaved || currentBranchId
+            ? "Configura las pistas disponibles en tu sede" 
+            : "Guarda la información básica de la sede para configurar las pistas"
+        }
+      default:
+        return {
+          title: "Información de la sede",
+          description: "Completa los datos básicos de tu sede"
+        }
+    }
+  }
+
+  const { title, description } = getStepInfo()
+
+  // Mostrar indicador de carga mientras se cargan los datos
+  if (currentBranchId && loadingBranchData) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin h-8 w-8 rounded-full border-2 border-blue-500 border-t-transparent"></div>
+          <p className="text-sm text-gray-500">Cargando datos de la sede...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <motion.div
-      className="p-6"
+      className="p-2 md:p-6"
       initial="hidden"
       animate="visible"
       exit="exit"
       variants={fadeInVariants}
     >
-      <div className="relative">
-        <div className="max-w-5xl mx-auto w-full px-8 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleReturn}
-            className="text-black hover:text-black hover:bg-gray-100 h-8 w-8"
-            aria-label="Volver"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left">
-              <path d="m12 19-7-7 7-7"/>
-              <path d="M19 12H5"/>
-            </svg>
-          </Button>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/80 to-transparent" />
-      </div>
+      {/* Encabezado y Navegación */}
+      <StepHeader 
+        title={title}
+        description={description}
+        onBack={goToPreviousStep}
+      />
+
+      {/* Indicador de pasos */}
+      <StepIndicator currentStep={currentStep} />
 
       <div className={cn(
-        "max-w-5xl mx-auto flex-1 overflow-y-auto px-8",
+        "max-w-5xl mx-auto flex-1 overflow-y-auto px-2 md:px-8",
         "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100",
         "scrollbar-thumb-rounded-md hover:scrollbar-thumb-gray-400"
       )}>
-        {/* Sección 1: Información básica y horarios */}
-        <div className="space-y-8 py-8">
-        <div className="space-y-2 mb-0">
-          <h2 className="text-xl font-medium">Información de la sede</h2>
-          <p className="text-sm text-gray-500">
-            Completa los datos básicos de tu sede
-          </p>
-        </div>
+        <div className="space-y-8 py-4 md:py-8">
+          {/* Paso 1: Información básica */}
+          {currentStep === 1 && (
+            <BranchBasicInfo 
+              data={{
+                name: formData.name,
+                address: formData.address,
+                phone: formData.phone,
+                manager: formData.manager,
+                isActive: formData.isActive,
+                timezone: formData.timezone
+              }}
+              onChange={handleInputChange}
+              isSubmitting={isSubmitting}
+            />
+          )}
 
-          {/* Campos del formulario básico */}
-          <div className="grid gap-4">
-            <div className="grid gap-1.5">
-              <Label htmlFor="name" className="text-sm">Nombre de la sede</Label>
-              <Input
-                id="name"
-                placeholder="Ej: Club Deportivo Central"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                className="h-9 text-sm"
+          {/* Paso 2: Horarios */}
+          {currentStep === 2 && (
+            <ScheduleList 
+              schedule={formData.schedule}
+              onScheduleChange={handleScheduleChange}
+            />
+          )}
+
+          {/* Paso 3: Pistas */}
+          {currentStep === 3 && (
+            <div className={cn(
+              !isBranchSaved && !currentBranchId && "opacity-50 pointer-events-none"
+            )}>
+              <CourtsList 
+                courts={formData.courts}
+                onCourtsChange={(courts) => setFormData(prev => ({ ...prev, courts } as BranchFormData))}
               />
             </div>
+          )}
 
-            <div className="grid gap-1.5">
-              <Label htmlFor="address" className="text-sm">Dirección</Label>
-              <Input
-                id="address"
-                placeholder="Ej: Calle Principal 123"
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                className="h-9 text-sm"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-1.5">
-                <Label htmlFor="phone" className="text-sm">Teléfono</Label>
-                <RPNInput.default
-                  className="flex rounded-lg shadow-sm shadow-black/5"
-                  international
-                  flagComponent={FlagComponent}
-                  countrySelectComponent={CountrySelect}
-                  inputComponent={PhoneInput}
-                  id="phone"
-                  placeholder="Ingresa el número de teléfono"
-                  value={formData.phone}
-                  onChange={(value: string | undefined) => handleInputChange('phone', value || '')}
-                  defaultCountry="ES"
-                />
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label htmlFor="manager" className="text-sm">Encargado</Label>
-                <Input
-                  id="manager"
-                  type="text"
-                  placeholder="Ej: Juan Pérez"
-                  value={formData.manager}
-                  onChange={(e) => handleInputChange('manager', e.target.value)}
-                  className="h-9 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-1.5">
-              <Label htmlFor="timezone" className="text-sm">Zona Horaria</Label>
-              <SingleSelect
-                value={formData.timezone}
-                onChange={(value) => handleInputChange('timezone', value)}
-                options={AVAILABLE_TIMEZONES.map(tz => ({ id: tz.value, name: tz.label }))}
-                placeholder="Selecciona la zona horaria"
-              />
-            </div>
-          </div>
-
-          {/* Horarios */}
-          <div className="space-y-6">
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium mb-4">Horarios de apertura</h3>
-          <ScheduleList 
-            schedule={formData.schedule}
-            onScheduleChange={handleScheduleChange}
+          {/* Botones de navegación */}
+          <StepNavigation 
+            currentStep={currentStep}
+            onPrevious={goToPreviousStep}
+            onNext={goToNextStep}
+            onSave={handleSaveBranch}
+            onFinish={handleFinish}
+            isNextDisabled={!isBasicFormValid()}
+            isSaveDisabled={!isBasicFormValid() || !isScheduleFormValid()}
+            isFinishDisabled={!isCourtsFormValid()}
+            isSubmitting={isSubmitting}
           />
-            </div>
-          </div>
-
-          {/* Botón Guardar para la primera sección */}
-          <div className="flex justify-end pt-6">
-            <Button
-              onClick={handleSaveBranch}
-              disabled={!isBasicFormValid() || isSubmitting}
-              className="gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="animate-spin">⏳</span>
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <Check className="h-4 w-4" />
-                  Guardar Sede
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Separador */}
-        <div className="border-t my-8" />
-
-        {/* Sección 2: Pistas */}
-        <div className={cn(
-          "space-y-8 py-8",
-          !isBranchSaved && !currentBranchId && "opacity-50 pointer-events-none"
-        )}>
-          <div className="space-y-2">
-            <h2 className="text-xl font-medium">Configuración de Pistas</h2>
-            <p className="text-sm text-gray-500">
-              {isBranchSaved || currentBranchId
-                ? "Configura las pistas disponibles en tu sede" 
-                : "Guarda la información básica de la sede para configurar las pistas"}
-            </p>
-          </div>
-
-          {/* Lista de pistas */}
-          <CourtsList 
-            courts={formData.courts}
-            onCourtsChange={(courts) => setFormData(prev => ({ ...prev, courts }))}
-          />
-
-          {/* Botón Finalizar */}
-          <div className="flex justify-end pt-6">
-            <Button
-              onClick={handleFinish}
-              disabled={!isBranchSaved || !isCourtsFormValid()}
-              className="gap-2"
-            >
-              <Check className="h-4 w-4" />
-              Finalizar
-            </Button>
-          </div>
         </div>
       </div>
-
-          {/* Mensaje de éxito */}
-          <AlertDialog open={isSuccess} onOpenChange={setIsSuccess}>
-            <AlertDialogContent className="max-w-md bg-white">
-              <div className="flex flex-col items-center justify-center p-4">
-                <div className="rounded-full bg-green-100 p-3 mb-4">
-                  <Check className="h-6 w-6 text-green-600" />
-                </div>
-                <AlertDialogTitle className="text-center">Sede guardada correctamente</AlertDialogTitle>
-                <AlertDialogDescription className="text-center mb-4">
-                  Todos los cambios han sido guardados correctamente.
-                </AlertDialogDescription>
-                <AlertDialogAction
-                  onClick={() => {
-                    setIsSuccess(false)
-                    onReturnToSelection()
-                  }}
-                  className="w-full"
-                >
-                  Continuar
-                </AlertDialogAction>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
     </motion.div>
   )
 } 

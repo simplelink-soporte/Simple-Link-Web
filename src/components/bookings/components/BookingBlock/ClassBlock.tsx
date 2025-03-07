@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { type TransformedClass } from "@/types/classes"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ViewClassModal } from "../ViewClassModal/ViewClassModal"
 
 interface ClassBlockProps {
@@ -30,6 +30,19 @@ export function ClassBlock({
   onClick
 }: ClassBlockProps) {
   const [showModal, setShowModal] = useState(false)
+  
+  // Log para debugging
+  useEffect(() => {
+    if (timeToMinutes(currentTime) === timeToMinutes(startTime)) {
+      console.log('🏛️ Renderizando ClassBlock:', {
+        id: classData.id,
+        title: classData.title,
+        currentParticipants: classData.currentParticipants,
+        capacity: classData.capacity,
+        isFull: classData.currentParticipants >= classData.capacity
+      });
+    }
+  }, [classData, currentTime, startTime]);
 
   // No mostrar el bloque si la clase está cancelada
   if (classData.status === 'cancelled') return null
@@ -46,6 +59,7 @@ export function ClassBlock({
 
   // Calcular el porcentaje de ocupación
   const isFull = classData.currentParticipants >= classData.capacity
+  const isNearlyFull = classData.currentParticipants >= (classData.capacity * 0.8)
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -114,12 +128,16 @@ export function ClassBlock({
               <div 
                 className={cn(
                   "absolute right-0 top-0",
-                  "px-2 py-0.5 rounded-full", // Bordes más redondeados y padding horizontal ajustado
-                  "bg-white/90", // Fondo más sólido
-                  "ring-1 ring-gray-100/50", // Borde más sutil
-                  "text-[10px] font-medium tabular-nums tracking-tight", // Mejor espaciado de texto
-                  "shadow-[0_1px_2px_rgba(0,0,0,0.05)]", // Sombra más refinada
-                  isFull ? "text-red-500" : "text-gray-500" // Colores más suaves
+                  "px-2 py-0.5 rounded-full", 
+                  "bg-white/90", 
+                  "ring-1 ring-gray-100/50", 
+                  "text-[10px] font-medium tabular-nums tracking-tight", 
+                  "shadow-[0_1px_2px_rgba(0,0,0,0.05)]", 
+                  isFull 
+                    ? "text-red-500 font-semibold"
+                    : isNearlyFull 
+                      ? "text-amber-500" 
+                      : "text-gray-500"
                 )}
               >
                 {classData.currentParticipants}/{classData.capacity}
@@ -130,7 +148,7 @@ export function ClassBlock({
                 <div className="text-xs font-medium text-gray-900 truncate leading-none">
                   {classData.title}
                 </div>
-                <div className="mt-1 text-xs text-gray-700 leading-none"> {/* Tamaño y color ajustados */}
+                <div className="mt-1 text-xs text-gray-700 leading-none"> 
                   {formatTime(startTime)} - {formatTime(endTime)}
                 </div>
               </div>

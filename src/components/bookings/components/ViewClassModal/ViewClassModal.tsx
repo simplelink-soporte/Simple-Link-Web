@@ -183,9 +183,9 @@ export function ViewClassModal({
                             className={cn(
                               "h-full rounded-full transition-all duration-300",
                               {
-                                'bg-green-400': (classData.currentParticipants / classData.capacity) < 0.8,
-                                'bg-yellow-400': (classData.currentParticipants / classData.capacity) >= 0.8 && (classData.currentParticipants < classData.capacity),
-                                'bg-red-400': classData.currentParticipants >= classData.capacity
+                                'bg-gray-400': (classData.currentParticipants / classData.capacity) < 0.8,
+                                'bg-gray-600': (classData.currentParticipants / classData.capacity) >= 0.8 && (classData.currentParticipants < classData.capacity),
+                                'bg-gray-800': classData.currentParticipants >= classData.capacity
                               }
                             )}
                             style={{ 

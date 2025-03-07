@@ -70,7 +70,7 @@ const initiateStripeConnect = async () => {
       'stripe_user[country]': 'AR',
       'stripe_user[business_type]': 'company',
       'stripe_user[product_description]': 'Reservas deportivas',
-      state: Math.random().toString(36).substring(7), // Agregar estado para seguridad
+      state: 'origin:onboarding', // Usar el mismo formato que en BillingSettings para consistencia
     })
 
     const connectUrl = `https://connect.stripe.com/oauth/authorize?${params.toString()}`
@@ -182,12 +182,12 @@ function IntegrationsStepContent() {
 
   return (
     <motion.div
-      className="p-6"
+      className="p-2 md:p-6"
       initial="hidden"
       animate="visible"
       variants={fadeInVariants}
     >
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-2xl space-y-8">
         {/* Sección de Stripe */}
         <div className="space-y-4">
           <div className="space-y-2">
@@ -283,7 +283,7 @@ function IntegrationsStepContent() {
             ) : (
               <Button
                 onClick={handleConnect}
-                className="w-full sm:w-auto bg-[#635bff] hover:bg-[#635bff]/90 text-white"
+                className="w-full sm:w-auto bg-[#635bff]/90 hover:bg-[#635bff] text-white transition-colors"
                 disabled={isConnecting}
               >
                 {isConnecting ? (

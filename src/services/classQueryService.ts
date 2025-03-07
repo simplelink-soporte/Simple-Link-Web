@@ -217,7 +217,7 @@ export const classQueryService = {
             type: 'class',
             instructor: timeSlot.instructors[0] || 'Sin instructor',
             capacity: timeSlot.capacity,
-            currentParticipants: 0, // TODO: Implementar conteo de participantes
+            currentParticipants: 0, // Mantener como 0 hasta que se actualice posteriormente
             status: classData.status,
             visibility: classData.visibility
           })
@@ -230,5 +230,104 @@ export const classQueryService = {
     })
 
     return transformedClasses
+  },
+
+  /**
+   * Actualiza la información de participantes para las clases transformadas
+   * @param transformedClasses Clases ya transformadas
+   */
+  async updateClassesParticipants(transformedClasses: TransformedClass[]): Promise<TransformedClass[]> {
+    if (!transformedClasses.length) return transformedClasses;
+    
+    const supabase = getSupabaseInstance();
+    const updatedClasses = [...transformedClasses];
+    
+    console.log('🔍 ClassQueryService - Actualizando participantes para clases:', {
+      totalClases: transformedClasses.length
+    });
+    
+    for (let i = 0; i < updatedClasses.length; i++) {
+      const classData = updatedClasses[i];
+      
+      try {
+        // Extraer el ID original de la clase
+        // El formato en transformClassesToBookingFormat es: `${classId}-${courtId}-${startTime}`
+        // Como los UUIDs tienen guiones, no podemos simplemente dividir por '-'
+        
+        // Analizamos el ID completo para depuración
+        console.log('🔍 Analizando ID completo:', classData.id);
+        
+        // Tratamos de extraer el classId correctamente mediante un enfoque más robusto
+        // Un UUID tiene 36 caracteres (incluyendo guiones), así que podemos usar una expresión regular
+        // para extraer el UUID al comienzo de la cadena
+        const uuidRegex = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i;
+        const match = classData.id.match(uuidRegex);
+        
+        let originalClassId;
+        if (match && match[1]) {
+          originalClassId = match[1];
+        } else {
+          // Si no podemos extraer con regex, intentamos con el formato específico
+          // Asumiendo que después del UUID hay un guion y el courtId (otro UUID)
+          // Intentamos obtener los primeros 36 caracteres que deberían formar el UUID completo
+          originalClassId = classData.id.substring(0, 36);
+          console.warn('⚠️ No se pudo extraer UUID con regex, usando substring:', originalClassId);
+        }
+        
+        console.log('🔍 Verificando disponibilidad para clase:', {
+          idCompleto: classData.id,
+          classId: originalClassId,
+          date: classData.date,
+          startTime: classData.startTime,
+          endTime: classData.endTime
+        });
+
+        // Consultar cuántas reservas existen usando exactamente la misma estructura
+        // que en classService.ts para mantener consistencia
+        const bookingsResult = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: false })
+          .eq('class_id', originalClassId)
+          .eq('date', classData.date)
+          .eq('start_time', classData.startTime)
+          .eq('end_time', classData.endTime)
+          .eq('reservation_type', 'class')
+          .is('cancelled_at', null);
+          
+        const bookedSpots = bookingsResult.count || 0;
+        const availableSpots = Math.max(0, classData.capacity - bookedSpots);
+        
+        if (bookingsResult.error) {
+          console.error('❌ Error al consultar participantes:', bookingsResult.error.message, {
+            classId: originalClassId,
+            date: classData.date,
+            startTime: classData.startTime
+          });
+        } else {
+          // Actualizar la información de participantes en la clase
+          updatedClasses[i] = {
+            ...classData,
+            currentParticipants: bookedSpots
+          };
+          
+          console.log('✅ Disponibilidad de clase:', {
+            classId: originalClassId,
+            title: classData.title,
+            bookedSpots,
+            availableSpots,
+            totalCapacity: classData.capacity,
+            isAvailable: availableSpots > 0
+          });
+        }
+      } catch (error) {
+        console.error('❌ Error inesperado al consultar participantes:', error);
+        if (error instanceof Error) {
+          console.error('Detalles del error:', error.message, error.stack);
+        }
+      }
+    }
+    
+    console.log('✅ ClassQueryService - Actualización de participantes completada.');
+    return updatedClasses;
   }
 } 

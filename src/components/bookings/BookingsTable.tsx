@@ -28,6 +28,7 @@ import { useBusinessHours } from '@/hooks/useBusinessHours'
 import { DateTime } from 'luxon'
 import { useClasses } from '@/hooks/useClasses'
 import type { TransformedClass } from '@/types/classes'
+import { classQueryService } from '@/services/classQueryService'
 
 const ScrollContainer = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -172,25 +173,166 @@ export function BookingsTable() {
 }, [bookings, businessHours?.timezone]);
 
   // Obtener las clases usando el nuevo hook
-  const { data: classes = [], isLoading: isLoadingClasses } = useClasses({
+  const { 
+    data: classesData = [], 
+    isLoading: isLoadingClasses, 
+    refetch: refetchClasses 
+  } = useClasses({
     date: selectedDate,
     branchId: currentBranch?.id,
     status: 'active',
     visibility: 'public'
   })
 
+  // Estado para almacenar las clases con información de participantes actualizada
+  const [classes, setClasses] = useState<TransformedClass[]>([])
+  const [isLoadingParticipants, setIsLoadingParticipants] = useState(false)
+  
+  // Referencia para almacenar el último valor de classesData
+  const lastClassesDataRef = useRef<TransformedClass[]>([])
+
+  // Efecto para actualizar la información de participantes cuando cambian las clases
+  useEffect(() => {
+    // Comparar si realmente han cambiado los datos de clases
+    const classesDataChanged = JSON.stringify(classesData) !== JSON.stringify(lastClassesDataRef.current)
+    
+    // Solo actualizar si realmente han cambiado los datos
+    if (classesDataChanged) {
+      // Actualizar la referencia con el valor actual
+      lastClassesDataRef.current = classesData
+      
+      // Mostrar información detallada sobre las clases recibidas para debug
+      console.log('📊 Clases recibidas de useClasses:', {
+        totalClases: classesData.length,
+        clases: classesData.map(c => ({
+          id: c.id,
+          title: c.title,
+          date: c.date,
+          startTime: c.startTime,
+          endTime: c.endTime,
+          courtId: c.courtId,
+          capacity: c.capacity,
+          currentParticipants: c.currentParticipants
+        }))
+      });
+      
+      const updateParticipants = async () => {
+        if (classesData.length > 0) {
+          setIsLoadingParticipants(true)
+          try {
+            // Actualizar la información de participantes
+            const updatedClasses = await classQueryService.updateClassesParticipants(classesData)
+            
+            // Comparar resultados antes y después para debug
+            console.log('📈 Comparación de participantes:', {
+              antes: classesData.map(c => ({ 
+                id: c.id, 
+                currentParticipants: c.currentParticipants, 
+                capacity: c.capacity 
+              })),
+              después: updatedClasses.map(c => ({ 
+                id: c.id, 
+                currentParticipants: c.currentParticipants, 
+                capacity: c.capacity 
+              }))
+            });
+            
+            setClasses(updatedClasses)
+          } catch (error) {
+            console.error('❌ Error al actualizar participantes:', error)
+            setClasses(classesData) // Usar los datos originales en caso de error
+          } finally {
+            setIsLoadingParticipants(false)
+          }
+        } else {
+          setClasses([])
+        }
+      }
+
+      updateParticipants()
+    }
+  }, [classesData])
+
+  // Refrescar automáticamente los participantes cada 2 minutos
+  useEffect(() => {
+    // Solo configurar el intervalo si hay clases para actualizar
+    if (classesData.length === 0) return;
+    
+    console.log('⏱️ Configurando actualización automática de participantes cada 2 minutos');
+    
+    const intervalId = setInterval(() => {
+      const updateParticipants = async () => {
+        console.log('🔄 Actualizando participantes automáticamente...');
+        try {
+          // Hacer una copia profunda para no modificar directamente
+          const currentClasses = [...classes];
+          const updatedClasses = await classQueryService.updateClassesParticipants(currentClasses);
+          
+          // Solo actualizar si hay cambios reales
+          const hasChanges = JSON.stringify(currentClasses) !== JSON.stringify(updatedClasses);
+          if (hasChanges) {
+            console.log('✅ Cambios en participantes detectados en la actualización automática');
+            setClasses(updatedClasses);
+          } else {
+            console.log('ℹ️ No hay cambios en la disponibilidad');
+          }
+        } catch (error) {
+          console.error('❌ Error en actualización automática:', error);
+        }
+      };
+      
+      updateParticipants();
+    }, 2 * 60 * 1000); // 2 minutos
+    
+    return () => {
+      console.log('🛑 Limpiando intervalo de actualización automática');
+      clearInterval(intervalId);
+    };
+  }, [classesData.length]);
+
   // Función modificada para verificar si una celda tiene una reserva o clase existente
   const getExistingBooking = (courtId: string, time: string) => {
     if (!businessHours?.timezone) return null;
 
-    // Primero buscar en las clases
-    const existingClass = classes.find(classData => 
-      classData.courtId === courtId &&
-      timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
-      timeToMinutes(time) < timeToMinutes(classData.endTime)
-    )
+    // Primero buscar en las clases con información actualizada de participantes
+    // Si las clases no están cargadas o no hay clases para procesar
+    if (!classes || classes.length === 0) {
+      // Si no hay clases actualizadas, usar las originales
+      console.log("⚠️ getExistingBooking: usando classesData original porque classes está vacío");
+      
+      // Intentar buscar en classesData
+      const existingClass = classesData.find(classData => 
+        classData.courtId === courtId &&
+        timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
+        timeToMinutes(time) < timeToMinutes(classData.endTime)
+      );
+      
+      if (existingClass) {
+        return existingClass;
+      }
+    } else {
+      // Buscar en las clases actualizadas
+      const existingClass = classes.find(classData => 
+        classData.courtId === courtId &&
+        timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
+        timeToMinutes(time) < timeToMinutes(classData.endTime)
+      );
 
-    if (existingClass) return existingClass;
+      // Registrar cuando encontramos una clase para debugging
+      if (existingClass) {
+        console.log('📊 Celda con clase encontrada:', {
+          courtId,
+          time,
+          classId: existingClass.id,
+          title: existingClass.title,
+          startTime: existingClass.startTime,
+          endTime: existingClass.endTime,
+          currentParticipants: existingClass.currentParticipants,
+          capacity: existingClass.capacity
+        });
+        return existingClass;
+      }
+    }
 
     // Si no hay clase, buscar en las reservas
     const transformedBookings = bookings.map(booking => {
@@ -210,7 +352,7 @@ export function BookingsTable() {
       timeToMinutes(time) >= timeToMinutes(booking.startTime) &&
       timeToMinutes(time) < timeToMinutes(booking.endTime)
     ) || null;
-  }
+  };
 
   // Actualizar el manejador del botón de configuración
   const handleConfigButtonClick = () => {
@@ -233,24 +375,27 @@ export function BookingsTable() {
     try {
       setIsRefreshing(true)
       
-      // Iniciar la actualización
-      const refreshPromise = refetch()
+      // Iniciar la actualización de reservas y clases
+      const refreshPromises = [
+        refetch(),
+        refetchClasses()
+      ]
       
       // Esperar al menos 1 segundo para la animación
       const animationPromise = new Promise(resolve => setTimeout(resolve, 1000))
       
-      // Esperar a que ambas promesas se completen
-      await Promise.all([refreshPromise, animationPromise])
+      // Esperar a que todas las promesas se completen
+      await Promise.all([...refreshPromises, animationPromise])
 
       toast({
         title: "Datos actualizados",
-        description: "Las reservas se han actualizado correctamente",
+        description: "Las reservas y clases se han actualizado correctamente",
         variant: "default"
       })
     } catch (error) {
       toast({
         title: "Error al actualizar",
-        description: "No se pudieron actualizar las reservas. Por favor, intente nuevamente.",
+        description: "No se pudieron actualizar los datos. Por favor, intente nuevamente.",
         variant: "destructive"
       })
     } finally {
@@ -278,7 +423,7 @@ export function BookingsTable() {
     )
   }
 
-  if (isLoading || isLoadingClasses) {
+  if (isLoading || isLoadingClasses || isLoadingParticipants) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-gray-500">Cargando datos...</p>

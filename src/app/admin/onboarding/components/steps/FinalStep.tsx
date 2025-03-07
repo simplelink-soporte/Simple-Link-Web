@@ -247,7 +247,7 @@ export function FinalStep() {
                 </p>
                 
                 {!isStripeConnected && (
-                  <p className="text-sm text-amber-600 mt-2">
+                  <p className="text-sm text-gray-600 mt-2">
                     Recuerda terminar tu configuración para recibir pagos y obtener el link de reservas.
                   </p>
                 )}
@@ -316,8 +316,8 @@ export function FinalStep() {
                   </Link>
                 </div>
               ) : (
-                <div className="w-full p-4 rounded-lg border border-yellow-200 bg-yellow-50 mb-6">
-                  <p className="text-sm text-yellow-700 text-center">
+                <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50/80 mb-6">
+                  <p className="text-sm text-gray-600 text-center">
                     {!isStripeConnected 
                       ? "El enlace de reservas no está disponible porque no has conectado Stripe. Esto es necesario para procesar los pagos de tus clientes."
                       : "No se pudo generar el enlace de reservas. Por favor, contacta con soporte."}

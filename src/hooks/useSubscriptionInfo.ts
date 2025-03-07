@@ -38,14 +38,14 @@ export function useSubscriptionInfo(empresaId: string) {
           .eq('empresa_id', empresaId)
           .order('created_at', { ascending: false })
           .limit(1)
-          .single()
 
         if (error) {
           console.error('Error fetching subscription:', error?.message || 'Unknown error')
           return null
         }
         
-        return data as SubscriptionInfo
+        // Return the first result or null if no results
+        return (data?.[0] || null) as SubscriptionInfo | null
       } catch (error) {
         console.error('Error in subscription query:', error)
         return null
