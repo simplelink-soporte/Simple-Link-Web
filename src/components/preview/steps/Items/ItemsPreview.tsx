@@ -17,6 +17,7 @@ import { useFormItems } from '@/contexts/FormItemsContext';
 import { MobileNavigation } from "../../layout/MobileNavigation";
 import { MobileNextButton } from "../../layout/MobileNextButton";
 import { MobileItemsPreview } from "./mobile/MobileItemsPreview";
+import { DesktopItemsPreview } from "./desktop/DesktopItemsPreview";
 
 // Interfaces
 interface ItemsPreviewProps {
@@ -161,6 +162,30 @@ export function ItemsPreview({
 
     return (
       <MobileItemsPreview
+        field={field}
+        theme={theme}
+        viewType={viewType}
+        onNext={onNext}
+        onPrev={onPrev}
+        isFirstStep={isFirstStep}
+        isLastStep={isLastStep}
+        isPublicView={isPublicView}
+        branchId={currentBranchId}
+        selectedSlot={currentSelectedSlot}
+      />
+    );
+  }
+
+  // Si es vista desktop y pública, usar el componente desktop
+  if (viewType === "desktop" && isPublicView) {
+    console.log('Current Selected Slot (Desktop):', currentSelectedSlot);
+    if (!currentSelectedSlot) {
+      console.warn('Current Selected Slot no está definido.');
+      return <div className="text-red-500">Error: Selected Slot no está disponible.</div>;
+    }
+
+    return (
+      <DesktopItemsPreview
         field={field}
         theme={theme}
         viewType={viewType}

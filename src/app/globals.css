@@ -312,3 +312,63 @@
   display: none !important;
 }
 
+/* Estilos personalizados para el contenedor de turnos en vista desktop */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  display: block;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+  margin: 4px 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.3);
+  border-radius: 999px;
+  border: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.5);
+}
+
+.custom-scrollbar.dark {
+  scrollbar-color: rgba(71, 85, 105, 0.3) transparent;
+}
+
+.custom-scrollbar.dark::-webkit-scrollbar-thumb {
+  background-color: rgba(71, 85, 105, 0.3);
+}
+
+.custom-scrollbar.dark::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(71, 85, 105, 0.5);
+}
+
+/* Ocultar barra de desplazamiento en toda la página */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+body {
+  overflow-y: scroll; /* Mantener el comportamiento de scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+

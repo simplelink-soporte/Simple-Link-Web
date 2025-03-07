@@ -296,14 +296,45 @@ export function SessionStep() {
     return Math.ceil(state.selectedClass.sessions.length / SESSIONS_PER_PAGE)
   }, [state.selectedClass?.sessions])
 
-  // 6. Funciones de manejo de eventos
+  // Hook personalizado para detectar dispositivo móvil
+  const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+      const checkIsMobile = () => {
+        setIsMobile(window.innerWidth < 640)
+      }
+
+      // Verificar inicialmente
+      checkIsMobile()
+
+      // Agregar listener para cambios de tamaño
+      window.addEventListener('resize', checkIsMobile)
+
+      // Limpiar listener
+      return () => window.removeEventListener('resize', checkIsMobile)
+    }, [])
+
+    return isMobile
+  }
+
+  // Usar el hook en el componente
+  const isMobile = useIsMobile()
+
+  // Modificar la función handleSessionClick para usar el nuevo hook
   const handleSessionClick = useCallback((session: ClassSession) => {
-    if (state.selectedSessions.includes(session.id)) {
-      deselectSession(session.id)
+    if (isMobile) {
+      // En móvil, abrimos el modal
+      setSelectedSessionForMobile(session)
     } else {
-      handleSessionSelect(session.id)
+      // En desktop, manejamos la selección/deselección
+      if (state.selectedSessions.includes(session.id)) {
+        deselectSession(session.id)
+      } else {
+        handleSessionSelect(session.id)
+      }
     }
-  }, [state.selectedSessions, deselectSession, handleSessionSelect])
+  }, [isMobile, state.selectedSessions, deselectSession, handleSessionSelect])
 
   // Función para confirmar selección en móvil
   const handleMobileConfirm = useCallback(() => {

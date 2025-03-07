@@ -42,6 +42,7 @@ import { PrimaryButton } from '@/components/preview/components/Button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { DesktopGridLayout } from '@/components/preview/layout/DesktopGridLayout';
+import { SummaryDesktopView } from "./components/SummaryDesktopView";
 
 interface SummaryPreviewProps {
   field: SummaryStepField;
@@ -78,13 +79,18 @@ export function SummaryPreview({
     showItemsDetails,
     showPaymentMethods,
     showPaymentTypes,
+    showCouponsPanel,
     setShowItemsDetails,
     setShowPaymentMethods,
     setShowPaymentTypes,
+    setShowCouponsPanel,
     handleSelectPaymentMethod,
     handleSelectPaymentType,
     selectedPaymentMethod,
     selectedPaymentType,
+    appliedCoupon,
+    handleApplyCoupon,
+    handleRemoveCoupon
   } = useSummaryState();
 
   const {
@@ -296,10 +302,14 @@ export function SummaryPreview({
 
   // Función para manejar la selección de cupones
   const handleSelectCoupon = useCallback((coupon: string) => {
-    // Implementa la lógica para manejar cupones aquí
-    console.log('Cupón seleccionado:', coupon);
+    // Buscar el cupón en la lista de cupones disponibles
+    const selectedCoupon = AVAILABLE_COUPONS.find(c => c.code === coupon);
+    if (selectedCoupon) {
+      // Si se encuentra el cupón, aplicarlo usando handleApplyCoupon
+      handleApplyCoupon(selectedCoupon);
+    }
     setShowCoupons(false);
-  }, []);
+  }, [handleApplyCoupon]);
 
   const isMobilePublic = viewType === "mobile" && isPublicView;
 
@@ -329,8 +339,8 @@ export function SummaryPreview({
                     ? "px-4 pb-0" 
                     : "space-y-4 px-4 pt-6"
                 )}>
-                  {viewType === 'desktop' && (
-                    <div className="relative">
+                  {viewType === 'desktop' && !isPublicView && (
+                    <div className="relative mb-8">
                       <TotalPrice total={calculations.total} theme={theme} />
                     </div>
                   )}
@@ -426,34 +436,30 @@ export function SummaryPreview({
                       empresaId={empresaId}
                     />
                   ) : (
-                    <>
-                      <PriceBreakdown
-                        theme={theme}
-                        calculations={calculations}
-                        onShowItemsDetails={() => handleModalAction(() => setShowItemsDetails(true))}
-                      />
-
-                      <PaymentTypeSection
-                        theme={theme}
-                        selectedType={selectedPaymentType}
-                        onShowTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
-                        onRemoveType={() => handleSelectPaymentType(null)}
-                      />
-
-                      <PaymentSection
-                        theme={theme}
-                        selectedMethod={selectedPaymentMethod}
-                        onShowMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
-                        onRemoveMethod={() => handleSelectPaymentMethod(null)}
-                        onUpdateMethod={async (method) => {
-                          console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
-                          handleSelectPaymentMethod(method);
-                          return Promise.resolve();
-                        }}
-                        viewType={viewType}
-                        empresaId={empresaId}
-                      />
-                    </>
+                    // Vista de escritorio
+                    <SummaryDesktopView
+                      theme={theme}
+                      field={field}
+                      selectedPaymentMethod={selectedPaymentMethod}
+                      selectedPaymentType={selectedPaymentType as PaymentTypeEnum | null}
+                      calculations={calculations}
+                      appliedCoupon={appliedCoupon}
+                      onShowItemsDetails={() => handleModalAction(() => setShowItemsDetails(true))}
+                      onShowPaymentMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
+                      onShowPaymentTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
+                      onShowCouponsPanel={() => handleModalAction(() => setShowCouponsPanel(true))}
+                      onRemoveCoupon={handleRemoveCoupon}
+                      onSelectPaymentMethod={handleSelectPaymentMethod}
+                      onSelectPaymentType={handleSelectPaymentType}
+                      handleReservar={handleReservar}
+                      isPublicView={isPublicView}
+                      onUpdateMethod={async (method) => {
+                        console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
+                        handleSelectPaymentMethod(method);
+                        return Promise.resolve();
+                      }}
+                      empresaId={empresaId}
+                    />
                   )}
                 </div>
 

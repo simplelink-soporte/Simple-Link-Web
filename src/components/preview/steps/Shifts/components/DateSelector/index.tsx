@@ -16,6 +16,13 @@ export function DateSelector({ selectedDate, onDateSelect, theme, viewType }: Da
   const containerRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const isChangingMonth = useRef(false);
+  
+  // Referencias para el deslizamiento con mouse
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+  const momentum = useRef(0);
+  const animationFrameId = useRef<number | null>(null);
 
   // Generar días del mes actual y días adyacentes
   const allDays = useMemo(() => {
@@ -102,15 +109,141 @@ export function DateSelector({ selectedDate, onDateSelect, theme, viewType }: Da
       scrollToDate(selectedDate);
     }
   }, [currentMonth, selectedDate, scrollToDate]);
+  
+  // Para desaceleración suave
+  useEffect(() => {
+    return () => {
+      // Limpiar cualquier animación pendiente al desmontar
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
+  }, []);
+
+  // Handlers para el deslizamiento con mouse (solo en desktop)
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (viewType !== 'desktop' || !containerRef.current) return;
+    
+    // Detener cualquier animación de momentum previa
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+    
+    isDragging.current = true;
+    startX.current = e.pageX - containerRef.current.offsetLeft;
+    scrollLeft.current = containerRef.current.scrollLeft;
+    momentum.current = 0;
+    
+    // Cambiar estilo del cursor
+    if (containerRef.current) {
+      containerRef.current.style.cursor = 'grabbing';
+      containerRef.current.style.userSelect = 'none';
+    }
+  }, [viewType]);
+  
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+    
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - startX.current); // Factor más bajo para movimiento más suave
+    
+    // Calcular la velocidad del movimiento para el momentum
+    momentum.current = walk * 0.1;
+    
+    // Aplicar el scroll
+    containerRef.current.scrollLeft = scrollLeft.current - walk;
+    
+    // Actualizar posición para el próximo movimiento
+    scrollLeft.current = containerRef.current.scrollLeft;
+    startX.current = e.pageX - containerRef.current.offsetLeft;
+    
+    // Prevenir selección de texto durante el arrastre
+    e.preventDefault();
+  }, []);
+  
+  // Función para aplicar desaceleración suave
+  const applyMomentum = useCallback(() => {
+    if (!containerRef.current) return;
+    
+    // Reducir gradualmente el momentum
+    momentum.current *= 0.95;
+    
+    // Aplicar el scroll basado en el momentum actual
+    containerRef.current.scrollLeft -= momentum.current;
+    
+    // Continuar la animación mientras el momentum sea significativo
+    if (Math.abs(momentum.current) > 0.1) {
+      animationFrameId.current = requestAnimationFrame(applyMomentum);
+    } else {
+      animationFrameId.current = null;
+    }
+  }, []);
+  
+  const handleMouseUp = useCallback(() => {
+    if (!isDragging.current) return;
+    
+    isDragging.current = false;
+    
+    // Iniciar animación de momentum si es suficientemente significativo
+    if (Math.abs(momentum.current) > 0.5 && containerRef.current) {
+      animationFrameId.current = requestAnimationFrame(applyMomentum);
+    }
+    
+    // Restaurar estilo del cursor
+    if (containerRef.current) {
+      containerRef.current.style.cursor = 'grab';
+      containerRef.current.style.userSelect = '';
+    }
+  }, [applyMomentum]);
+  
+  const handleMouseLeave = useCallback(() => {
+    if (isDragging.current) {
+      handleMouseUp();
+    }
+  }, [handleMouseUp]);
 
   return (
     <div className="w-full space-y-3">
       <div className="relative">
         <div className="flex justify-center overflow-hidden">
+          {/* Degradado lateral izquierdo */}
+          <div className={cn(
+            "absolute left-0 top-0 bottom-0 pointer-events-none z-10",
+            // Ancho adaptado al tipo de vista
+            viewType === 'desktop' ? "w-8" : "w-6", 
+            "bg-gradient-to-r opacity-70",
+            theme === 'dark' 
+              ? "from-[#121212] to-transparent" 
+              : "from-white to-transparent"
+          )} />
+          
+          {/* Degradado lateral derecho */}
+          <div className={cn(
+            "absolute right-0 top-0 bottom-0 pointer-events-none z-10",
+            // Ancho adaptado al tipo de vista
+            viewType === 'desktop' ? "w-8" : "w-6",
+            "bg-gradient-to-l opacity-70",
+            theme === 'dark' 
+              ? "from-[#121212] to-transparent" 
+              : "from-white to-transparent"
+          )} />
+          
           <div 
             ref={containerRef}
-            className="flex gap-6 overflow-x-auto scrollbar-hide"
-            style={{ scrollBehavior: 'auto' }}
+            className={cn(
+              "flex gap-6 overflow-x-auto scrollbar-hide",
+              viewType === 'desktop' && "cursor-grab select-none"
+            )}
+            style={{ 
+              scrollBehavior: isDragging.current ? 'auto' : 'smooth',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
           >
             {allDays.map((date) => {
               const isSelected = isSameDay(date, selectedDate);

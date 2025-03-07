@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useRef, forwardRef, useImperativeHandle, RefObject } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Clock, Sun, Loader2 } from 'lucide-react';
@@ -13,6 +13,7 @@ interface ShiftsListProps {
   viewType: 'mobile' | 'desktop';
   loading?: boolean;
   error?: string;
+  containerRef?: RefObject<HTMLDivElement>;
 }
 
 const ShiftCard = memo(({ 
@@ -103,8 +104,14 @@ export function ShiftsList({
   theme,
   viewType,
   loading,
-  error 
+  error,
+  containerRef
 }: ShiftsListProps) {
+  const innerRef = useRef<HTMLDivElement>(null);
+  
+  // Usar la referencia proporcionada o la interna
+  const actualRef = containerRef || innerRef;
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -148,74 +155,112 @@ export function ShiftsList({
   return (
     <div className="px-6">
       <div className={cn(
-        "space-y-3 h-[calc(100vh-460px)] overflow-y-auto",
-        "scrollbar-none"
+        "relative",
+        viewType === 'desktop' && "overflow-hidden"
       )}>
-        {slots.map((slot) => {
-          const isSelected = selectedShift === slot.id;
-          
-          return (
-            <button
-              key={`${slot.id}-${slot.startTime}-${slot.courtId}`}
-              onClick={() => onShiftSelect(slot)}
-              className={cn(
-                "relative w-full px-4 py-3 text-left rounded-lg",
-                "transition-colors duration-200",
-                isSelected
-                  ? theme === 'dark'
-                      ? "bg-[#000000E6]"
-                      : "bg-[#000000E6]"
-                  : theme === 'dark'
-                      ? "border border-zinc-700/25 hover:border-zinc-600/40"
-                      : "border border-gray-200/60 hover:border-gray-300/70",
-                !isSelected && "border-[0.5px]"
-              )}
-            >
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-1">
-                  <p
-                    className={cn(
-                      "font-medium text-sm",
-                      isSelected
-                        ? "text-white"
-                        : theme === 'dark'
-                          ? "text-gray-200"
-                          : "text-gray-900"
-                    )}
-                  >
-                    {`${slot.startTime} - ${slot.endTime}`}
-                  </p>
-                  <span
-                    className={cn(
-                      "text-xs font-medium",
-                      isSelected
-                        ? "text-gray-300"
-                        : theme === 'dark'
-                          ? "text-gray-400"
-                          : "text-gray-700"
-                    )}
-                  >
-                    ${slot.price?.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                  </span>
+        {/* Efectos de desvanecimiento en los bordes (solo desktop) con opacidad reducida */}
+        {viewType === 'desktop' && (
+          <>
+            <div className={cn(
+              "absolute top-0 left-0 right-0 h-8 z-[5] pointer-events-none",
+              "bg-gradient-to-b opacity-75",
+              theme === 'dark' 
+                ? "from-[#121212] to-transparent" 
+                : "from-white to-transparent"
+            )} />
+            <div className={cn(
+              "absolute bottom-0 left-0 right-0 h-8 z-[5] pointer-events-none",
+              "bg-gradient-to-t opacity-75",
+              theme === 'dark' 
+                ? "from-[#121212] to-transparent" 
+                : "from-white to-transparent"
+            )} />
+          </>
+        )}
+        
+        <div 
+          ref={actualRef}
+          className={cn(
+            "space-y-3 overflow-y-auto",
+            viewType === 'desktop' 
+              // Ajustar el padding para que sea más equilibrado
+              ? "h-[calc(100vh-440px)] relative py-4" 
+              : "h-[calc(100vh-460px)]",
+            "scrollbar-none"
+          )}
+          style={{
+            msOverflowStyle: 'none',  /* IE and Edge */
+            scrollbarWidth: 'none',   /* Firefox */
+          }}
+        >
+          {slots.map((slot) => {
+            const isSelected = selectedShift === slot.id;
+            
+            return (
+              <button
+                key={`${slot.id}-${slot.startTime}-${slot.courtId}`}
+                onClick={() => onShiftSelect(slot)}
+                className={cn(
+                  "relative w-full px-4 py-3 text-left rounded-lg",
+                  "transition-all duration-200",
+                  // Mantener el z-index pero quitar efectos de escala y sombra
+                  isSelected && "z-10 relative", 
+                  isSelected
+                    ? theme === 'dark'
+                        ? "bg-[#000000E6]"
+                        : "bg-[#000000E6]"
+                    : theme === 'dark'
+                        ? "border border-zinc-700/25 hover:border-zinc-600/40"
+                        : "border border-gray-200/60 hover:border-gray-300/70",
+                  !isSelected && "border-[0.5px]"
+                )}
+              >
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-1">
+                    <p
+                      className={cn(
+                        "font-medium text-sm",
+                        isSelected
+                          ? "text-white"
+                          : theme === 'dark'
+                            ? "text-gray-200"
+                            : "text-gray-900"
+                      )}
+                    >
+                      {`${slot.startTime} - ${slot.endTime}`}
+                    </p>
+                    <span
+                      className={cn(
+                        "text-xs font-medium",
+                        isSelected
+                          ? "text-gray-300"
+                          : theme === 'dark'
+                            ? "text-gray-400"
+                            : "text-gray-700"
+                      )}
+                    >
+                      ${slot.price?.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p
+                      className={cn(
+                        "text-[11px]",
+                        isSelected
+                          ? "text-gray-300"
+                          : theme === 'dark'
+                            ? "text-gray-400"
+                            : "text-gray-600"
+                      )}
+                    >
+                      {slot.courtName} • {getCourtTypeLabel(slot.courtType)}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-0.5">
-                  <p
-                    className={cn(
-                      "text-[11px]",
-                      isSelected
-                        ? "text-gray-300"
-                        : theme === 'dark'
-                          ? "text-gray-400"
-                          : "text-gray-600"
-                    )}
-                  >
-                    {slot.courtName} • {getCourtTypeLabel(slot.courtType)}
-                  </p>
-                </div>
-              </div>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
