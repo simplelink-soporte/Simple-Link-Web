@@ -121,7 +121,10 @@ export function MembersTable() {
     return (
       <div className="p-4">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-medium">Lista de Miembros</h3>
+          <div className="flex-1">
+            <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
+            <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+          </div>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-gray-500">Cargando usuarios...</div>
@@ -134,7 +137,10 @@ export function MembersTable() {
     return (
       <div className="p-4">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-medium">Lista de Miembros</h3>
+          <div className="flex-1">
+            <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
+            <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+          </div>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-red-500">{error.message}</div>
@@ -146,7 +152,10 @@ export function MembersTable() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-medium">Lista de Miembros</h3>
+        <div className="flex-1">
+          <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
+          <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+        </div>
         <div className="flex items-center gap-2">
           {/* Botón de Filtros con Popover */}
           <Popover>

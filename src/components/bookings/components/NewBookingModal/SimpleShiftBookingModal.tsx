@@ -57,6 +57,7 @@ interface SimpleShiftBookingProps {
   startTime?: string
   endTime?: string
   selectedDate: Date
+  isVisible: boolean
 }
 
 interface PaymentDetails {
@@ -103,7 +104,9 @@ export function SimpleShiftBookingModal({
   const { currentBranch } = useBranchContext()
   const { rentals, totalPrice: rentalItemsPrice, updateRentals } = useRentalContext()
   const { data: courts = [] } = useCourts({ branchId: currentBranch?.id })
-  const { data: items = [] } = useItems(currentBranch?.id)
+  const { data: items = [] } = useItems(currentBranch?.id, {
+    enabled: isOpen && !!currentBranch?.id
+  })
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>(() => {
     const durationInMinutes = selection 
       ? timeToMinutes(selection.endTime) - timeToMinutes(selection.startTime)
@@ -435,6 +438,7 @@ export function SimpleShiftBookingModal({
               onParticipantChange={setParticipants}
               participants={participants}
               selectedDate={selectedDate}
+              isVisible={isOpen}
             />
           )}
         </div>

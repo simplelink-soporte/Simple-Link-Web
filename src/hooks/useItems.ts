@@ -4,6 +4,7 @@ import type { Item } from '@/types/items'
 
 interface UseItemsOptions {
   onError?: (error: Error) => void
+  enabled?: boolean
 }
 
 export function useItems(branchId?: string, options: UseItemsOptions = {}) {
@@ -130,7 +131,7 @@ export function useItems(branchId?: string, options: UseItemsOptions = {}) {
         throw error
       }
     },
-    enabled: !!branchId,
+    enabled: options.enabled !== undefined ? options.enabled && !!branchId : !!branchId,
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000),
     staleTime: 1000 * 60 * 5, // 5 minutos

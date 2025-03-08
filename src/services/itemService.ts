@@ -13,7 +13,7 @@ export const itemService = {
         .eq('is_active', true)
 
       if (branchId) {
-        query = query.eq('branch_id', branchId)
+        query = query.eq('sede_id', branchId)
       }
 
       const { data, error } = await query.order('created_at', { ascending: false })
@@ -35,7 +35,7 @@ export const itemService = {
         .eq('is_active', true)
 
       if (branchId) {
-        query = query.eq('branch_id', branchId)
+        query = query.eq('sede_id', branchId)
       }
 
       const { data, error } = await query.order('created_at', { ascending: false })

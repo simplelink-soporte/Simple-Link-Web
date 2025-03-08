@@ -1,6 +1,5 @@
 "use client"
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { MembersTable } from "@/components/usersSection/MembersTable"
 import { useAuth } from "@/contexts/AuthContext"
 import { useBranchContext } from "@/contexts/BranchContext"
@@ -42,24 +41,9 @@ export default function UsersPage() {
                   </div>
                 </div>
               ) : (
-                <Tabs defaultValue="members" className="flex flex-col h-full">
-                  <div className="flex-none mb-4">
-                    <TabsList>
-                      <TabsTrigger 
-                        value="members"
-                        className="data-[state=inactive]:text-gray-500"
-                      >
-                        Miembros
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-
-                  <TabsContent value="members" className="flex-1">
-                    <div className="h-full overflow-auto scrollbar-none">
-                      <MembersTable />
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                <div className="h-full overflow-auto scrollbar-none">
+                  <MembersTable />
+                </div>
               )}
             </div>
           </div>

@@ -22,6 +22,7 @@ interface PaymentStepProps {
   onPaymentChange: (details: PaymentDetails) => void
   onNext: () => void
   onBack: () => void
+  isVisible?: boolean
 }
 
 export function PaymentStep({ 
@@ -30,12 +31,15 @@ export function PaymentStep({
   endTime,
   onPaymentChange,
   onNext,
-  onBack
+  onBack,
+  isVisible = true
 }: PaymentStepProps) {
   const { currentBranch } = useBranchContext()
   const { rentals, totalPrice: rentalsPriceTotal } = useRentalContext()
   const { data: courts = [] } = useCourts({ branchId: currentBranch?.id })
-  const { data: items = [] } = useItems(currentBranch?.id)
+  const { data: items = [] } = useItems(currentBranch?.id, {
+    enabled: isVisible && !!currentBranch?.id
+  })
   const [manualPrice, setManualPrice] = useState<number | null>(null)
   const [showCustomPriceInput, setShowCustomPriceInput] = useState(false)
   const [paymentState, setPaymentState] = useState<PaymentDetails>(() => ({

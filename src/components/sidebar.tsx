@@ -25,7 +25,8 @@ import {
   ChevronLeft,
   Building,
   Network,
-  UserCircle2
+  UserCircle2,
+  Lock
 } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { useBranches } from '@/hooks/useBranches'
@@ -42,6 +43,18 @@ import { motion } from 'framer-motion'
 import { BookingLimitStatus } from '@/components/booking/BookingLimitStatus'
 import { PromoCard } from "@/components/sidebar/PromoCard"
 import { FeedbackCard } from "@/components/sidebar/FeedbackCard"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+  CustomTooltip,
+  CustomTooltipContent,
+  CustomTooltipProvider,
+  CustomTooltipTrigger,
+} from "@/components/ui/custom-tooltip"
 
 // Función auxiliar para obtener las iniciales
 function getInitials(name: string | null | undefined): string {
@@ -105,10 +118,6 @@ const menuItems = [
       {
         title: "Clases",
         href: "/admin/dashboard/bookings/classes",
-      },
-      {
-        title: "Pistas",
-        href: "/admin/dashboard/bookings/courts",
       }
     ]
   },
@@ -119,10 +128,40 @@ const menuItems = [
     exact: true
   },
   {
-    title: "Artículos",
+    title: "Gestión",
     href: "/admin/dashboard/pricing",
     icon: FileText,
-    exact: true
+    exact: true,
+    hasSubMenu: true,
+    subItems: [
+      {
+        title: "Artículos",
+        href: "/admin/dashboard/pricing/articles",
+      },
+      {
+        title: "Pistas",
+        href: "/admin/dashboard/pricing/courts",
+      },
+      {
+        title: "Cupones",
+        href: "/admin/dashboard/pricing/coupons",
+        soon: true // Marcador para indicar que esta funcionalidad es "Proximamente"
+      }
+    ]
+  },
+  {
+    title: "Socios",
+    href: "/admin/dashboard/partners",
+    icon: UserCircle2,
+    exact: true,
+    hasSubMenu: true,
+    subItems: [
+      {
+        title: "Membresias",
+        href: "/admin/dashboard/partners/memberships",
+        soon: true // Marcador para indicar que esta funcionalidad es "Proximamente"
+      }
+    ]
   },
   {
     title: "Links",
@@ -213,16 +252,23 @@ function SidebarHeader() {
     <>
       <Popover>
         <PopoverTrigger asChild>
-          <div className="relative p-4">
-            <div className="flex items-center justify-between gap-2 cursor-pointer hover:bg-accent rounded-lg transition-colors px-4 py-2">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-[15px] font-medium truncate">
-                  {isLoading ? 'Cargando...' : isError ? 'Error al cargar sucursales' : truncateText(currentBranch?.name || 'Sin sucursal')}
+          <div className="relative p-3 pl-4">
+            <div className="inline-flex items-center cursor-pointer hover:bg-gray-200/50 rounded-lg transition-colors px-3 py-2 group">
+              {/* Cuadrado con iniciales */}
+              <div className="flex-shrink-0 w-6 h-6 bg-gray-50 rounded flex items-center justify-center mr-2 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
+                <span className="text-xs font-semibold text-gray-600">
+                  {isLoading ? '--' : isError ? 'ER' : getInitials(currentBranch?.name || 'SN')}
+                </span>
+              </div>
+              
+              {/* Nombre de la sede */}
+              <div className="min-w-0">
+                <h3 className="text-[13px] font-medium truncate text-gray-700">
+                  {isLoading ? 'Cargando...' : isError ? 'Error al cargar sucursales' : truncateText(currentBranch?.name || 'Sin sucursal', 18)}
                 </h3>
               </div>
-              <ChevronDown className="h-3.5 w-3.5 shrink-0 text-gray-500 transition-transform duration-200 group-hover:scale-110" />
             </div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-px bg-gray-200/75" />
+            <div className="absolute bottom-0 left-7 w-20 h-px bg-gray-200/75" />
           </div>
         </PopoverTrigger>
         <PopoverContent className="w-[240px] p-2" align="start" side="right">
@@ -249,6 +295,12 @@ function SidebarHeader() {
                     currentBranch?.id === branch.id && "bg-accent"
                   )}
                 >
+                  {/* Cuadrado con iniciales para cada sede en el menú desplegable */}
+                  <div className="flex-shrink-0 w-5 h-5 bg-gray-50 rounded flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
+                    <span className="text-[10px] font-semibold text-gray-600">
+                      {getInitials(branch.name)}
+                    </span>
+                  </div>
                   <span className="font-medium truncate">{branch.name}</span>
                 </button>
               ))
@@ -544,22 +596,54 @@ function MenuItem({
           )}
         >
           <div className="pl-8 pr-3 py-1 space-y-1">
-            {item.subItems?.map((subItem) => (
-              <Link
-                key={subItem.href}
-                href={subItem.href}
-                className={cn(
-                  "flex items-center px-3 py-1.5",
-                  "text-xs font-medium rounded-lg",
-                  "text-gray-500 transition-all duration-200",
-                  "hover:text-gray-900 hover:bg-white/40",
-                  isRouteActive(pathname, subItem.href) && 
-                  "bg-white/60 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-                )}
-              >
-                {subItem.title}
-              </Link>
-            ))}
+            {item.subItems?.map((subItem) => {
+              if ('soon' in subItem && subItem.soon) {
+                return (
+                  <CustomTooltipProvider key={subItem.href}>
+                    <CustomTooltip>
+                      <CustomTooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "flex items-center px-3 py-1.5 cursor-default",
+                            "text-xs font-medium rounded-lg",
+                            "text-gray-400 bg-white/20",
+                            "border border-transparent",
+                            "pointer-events-auto"
+                          )}
+                        >
+                          <span className="flex-1 text-left">{subItem.title}</span>
+                          <Lock className="h-3 w-3 text-gray-400 ml-1" />
+                        </div>
+                      </CustomTooltipTrigger>
+                      <CustomTooltipContent 
+                        side="right" 
+                        align="start"
+                        sideOffset={5}
+                      >
+                        <p>¡Proximamente!</p>
+                      </CustomTooltipContent>
+                    </CustomTooltip>
+                  </CustomTooltipProvider>
+                );
+              }
+              
+              return (
+                <Link
+                  key={subItem.href}
+                  href={subItem.href}
+                  className={cn(
+                    "flex items-center px-3 py-1.5",
+                    "text-xs font-medium rounded-lg",
+                    "text-gray-500 transition-all duration-200",
+                    "hover:text-gray-900 hover:bg-white/40",
+                    isRouteActive(pathname, subItem.href) && 
+                    "bg-white/60 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                  )}
+                >
+                  {subItem.title}
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
@@ -646,47 +730,49 @@ export function Sidebar({ className }: SidebarProps) {
   }
 
   return (
-    <Sheet>
-      <SheetTrigger asChild className="lg:hidden">
-        <Button variant="outline" size="icon" className="w-10 h-10">
-          <Menu className="h-4 w-4" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[240px] p-0">
-        <MobileNav />
-      </SheetContent>
-      <aside
-        className={cn(
-          "fixed hidden h-screen bg-[#F5F5F5] lg:block w-[240px] z-30 overflow-hidden",
-          "transition-all duration-300 ease-in-out",
-          isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full",
-          className || ""
-        )}
-      >
-        <div className="relative h-full">
-          <div 
-            className={cn(
-              "absolute inset-0 flex flex-col transition-transform duration-300 ease-in-out",
-              showSettings ? "-translate-x-full" : "translate-x-0"
-            )}
-          >
-            <SidebarContent />
-          </div>
+    <CustomTooltipProvider>
+      <Sheet>
+        <SheetTrigger asChild className="lg:hidden">
+          <Button variant="outline" size="icon" className="w-10 h-10">
+            <Menu className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[240px] p-0">
+          <MobileNav />
+        </SheetContent>
+        <aside
+          className={cn(
+            "fixed hidden h-screen bg-[#F5F5F5] lg:block w-[240px] z-30 overflow-hidden",
+            "transition-all duration-300 ease-in-out",
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full",
+            className || ""
+          )}
+        >
+          <div className="relative h-full">
+            <div 
+              className={cn(
+                "absolute inset-0 flex flex-col transition-transform duration-300 ease-in-out",
+                showSettings ? "-translate-x-full" : "translate-x-0"
+              )}
+            >
+              <SidebarContent />
+            </div>
 
-          <div 
-            className={cn(
-              "absolute inset-0 transition-transform duration-300 ease-in-out",
-              showSettings ? "translate-x-0" : "translate-x-full"
-            )}
-          >
-            <SettingsView 
-              onBack={toggleSettings}
-              activeTab={activeSettingsTab}
-              onTabChange={handleSettingsTabChange}
-            />
+            <div 
+              className={cn(
+                "absolute inset-0 transition-transform duration-300 ease-in-out",
+                showSettings ? "translate-x-0" : "translate-x-full"
+              )}
+            >
+              <SettingsView 
+                onBack={toggleSettings}
+                activeTab={activeSettingsTab}
+                onTabChange={handleSettingsTabChange}
+              />
+            </div>
           </div>
-        </div>
-      </aside>
-    </Sheet>
+        </aside>
+      </Sheet>
+    </CustomTooltipProvider>
   )
 }

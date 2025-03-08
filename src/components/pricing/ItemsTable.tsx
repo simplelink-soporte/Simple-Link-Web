@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import type { Item } from "@/types/items"
 import { cn } from "@/lib/utils"
 import { useBranchContext } from '@/contexts/BranchContext'
+import { useItems } from '@/hooks/useItems'
 import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
@@ -29,21 +30,17 @@ export function ItemsTable() {
   const { currentBranch } = useBranchContext()
   const queryClient = useQueryClient()
   const [isNewItemModalOpen, setIsNewItemModalOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<Item | null>(null)
+  const [editingItem, setEditingItem] = useState<Item | undefined>(undefined)
   const [filters, setFilters] = useState({
     search: "",
     type: "all",
   })
 
   // 2. Query para obtener items
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ['items', currentBranch?.id],
-    queryFn: () => {
-      if (!currentBranch?.id) throw new Error('No hay una sede seleccionada')
-      return itemService.getItemsByBranch(currentBranch.id)
-    },
-    enabled: !!currentBranch?.id,
-    staleTime: 1000 * 60 * 5 // 5 minutos
+  const { data: items = [], isLoading } = useItems(currentBranch?.id, {
+    onError: (error) => {
+      toast.error(error.message || 'Error al cargar los artículos')
+    }
   })
 
   // 3. Mutations
@@ -62,7 +59,7 @@ export function ItemsTable() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items', currentBranch?.id] })
       setIsNewItemModalOpen(false)
-      setEditingItem(null)
+      setEditingItem(undefined)
       toast.success(
         editingItem ? 'Artículo actualizado correctamente' : 'Artículo creado correctamente'
       )
@@ -119,22 +116,38 @@ export function ItemsTable() {
   // 6. Renderizado condicional
   if (!currentBranch) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 space-y-4">
-        <p className="text-gray-500">Selecciona una sede para ver sus artículos</p>
-        <Button 
-          variant="outline"
-          onClick={() => document.getElementById('branch-selector')?.click()}
-        >
-          Seleccionar Sede
-        </Button>
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex-1">
+            <h3 className="text-md font-medium text-gray-800">Lista de Artículos</h3>
+            <p className="text-sm text-gray-600">Administra los artículos disponibles para tus clientes.</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center py-10 space-y-4">
+          <p className="text-gray-500">Selecciona una sede para ver sus artículos</p>
+          <Button 
+            variant="outline"
+            onClick={() => document.getElementById('branch-selector')?.click()}
+          >
+            Seleccionar Sede
+          </Button>
+        </div>
       </div>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-10">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex-1">
+            <h3 className="text-md font-medium text-gray-800">Lista de Artículos</h3>
+            <p className="text-sm text-gray-600">Administra los artículos disponibles para tus clientes.</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
       </div>
     )
   }
@@ -143,8 +156,9 @@ export function ItemsTable() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-xl font-medium">Lista de Artículos</h3>
+        <div className="flex-1">
+          <h3 className="text-md font-medium text-gray-800">Lista de Artículos</h3>
+          <p className="text-sm text-gray-600">Administra los artículos disponibles para tus clientes.</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -255,7 +269,7 @@ export function ItemsTable() {
                 </td>
                 <td className="px-6 py-4 border-b border-gray-200 text-center">
                   <span className="text-sm text-gray-500">
-                    {item.requiresDeposit ? `${item.depositAmount}€` : 'No'}
+                    {item.requires_deposit ? `${item.deposit_amount}€` : 'No'}
                   </span>
                 </td>
                 <td className="px-4 py-4 border-b border-gray-200">
@@ -296,7 +310,7 @@ export function ItemsTable() {
         isOpen={isNewItemModalOpen}
         onClose={() => {
           setIsNewItemModalOpen(false)
-          setEditingItem(null)
+          setEditingItem(undefined)
         }}
         onSave={handleNewItem}
         onDelete={handleDeleteItem}

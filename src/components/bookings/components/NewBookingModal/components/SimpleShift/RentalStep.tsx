@@ -25,6 +25,7 @@ interface RentalStepProps {
   endTime: string
   durationInMinutes: number
   selectedDate: Date
+  isVisible?: boolean
 }
 
 // Definir la interfaz para el item con stock
@@ -48,7 +49,8 @@ export function RentalStep({
   startTime,
   endTime,
   durationInMinutes: propDurationInMinutes,
-  selectedDate
+  selectedDate,
+  isVisible = true
 }: RentalStepProps) {
   const { currentBranch } = useBranchContext()
   const { rentals, updateRentals } = useRentalContext()

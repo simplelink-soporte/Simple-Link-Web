@@ -1,0 +1,47 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sede verificada:",
+      "Sede 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "👉 Obteniendo artículos de la sede"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Booking count response:",
+      {
+        "currentCount": 0,
+        "limit": 9007199254740991,
+        "remainingBookings": 9007199254740991,
+        "resetTime": "2025-03-07T23:34:54.619Z",
+        "isPro": true,
+        "nextResetDate": "2025-03-07T23:34:54.619Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ 0 artículos encontrados"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos transformados correctamente"
+    ]
+  }
+]

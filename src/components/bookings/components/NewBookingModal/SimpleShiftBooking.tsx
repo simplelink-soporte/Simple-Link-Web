@@ -30,6 +30,7 @@ interface SimpleShiftBookingProps {
   onParticipantChange: (participants: Participant[]) => void
   participants: Participant[]
   selectedDate: Date
+  isVisible?: boolean
 }
 
 export function SimpleShiftBooking({ 
@@ -42,7 +43,8 @@ export function SimpleShiftBooking({
   onPaymentChange,
   participants,
   onParticipantChange,
-  selectedDate
+  selectedDate,
+  isVisible = true
 }: SimpleShiftBookingProps) {
   const { selectedDate: contextDate } = useDateContext()
   const { currentBranch } = useBranchContext()
@@ -50,7 +52,9 @@ export function SimpleShiftBooking({
     branchId: currentBranch?.id,
     onlyActive: true
   })
-  const { data: items = [] } = useItems(currentBranch?.id)
+  const { data: items = [] } = useItems(currentBranch?.id, {
+    enabled: isVisible && !!currentBranch?.id
+  })
   const [rentals, setRentals] = useState<RentalSelection[]>([])
   const [isDetailsOpen, setIsDetailsOpen] = useState(true)
   const [manualCourtPrice, setManualCourtPrice] = useState<number | null>(null)
