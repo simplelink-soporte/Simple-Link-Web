@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { NavigationButtons } from "../layout/NavigationButtons";
+import { NavigationControls } from "../layout/NavigationControls";
 import { Check } from "lucide-react";
 
 interface StepComponentProps {
@@ -250,7 +250,7 @@ export function CouponsPreview({
           </div>
         </div>
 
-        <NavigationButtons
+        <NavigationControls
           onNext={onNext}
           onPrev={onPrev}
           isFirstStep={isFirstStep}

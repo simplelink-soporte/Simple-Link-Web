@@ -1,6 +1,5 @@
 import { FormStepField } from "@/types/form-steps";
 import { PreviewContainer } from "../../layout/PreviewContainer";
-import { NavigationButtons } from "../../layout/NavigationButtons";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSummaryState } from "./hooks/useSummaryState";
@@ -30,19 +29,9 @@ import { MobilePaymentContainer } from './components/mobile/MobilePaymentContain
 import { MobileNavigation } from "@/components/preview/layout/MobileNavigation";
 import { PaymentState } from '@/contexts/FormContext';
 import { PaymentTypeEnum } from './types';
-import { CalculationsColumn } from "./components/CalculationsColumn";
-import { ReservationDataColumn } from "./components/ReservationDataColumn";
-import { useSummaryState as useSummaryStateHook } from './hooks/use-summary-state';
-import { StepContainer } from '@/components/preview/layout/StepContainer';
 import { useSummaryBooking as useSummaryBookingHook } from './hooks/use-summary-booking';
-import { DetailsColumn } from "./components/DetailsColumn";
-import { StepHeader } from '@/components/preview/layout/StepHeader';
-import { StepNavigation } from '@/components/preview/layout/StepNavigation';
-import { PrimaryButton } from '@/components/preview/components/Button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { DesktopGridLayout } from '@/components/preview/layout/DesktopGridLayout';
-import { SummaryDesktopView } from "./components/SummaryDesktopView";
 
 interface SummaryPreviewProps {
   field: SummaryStepField;
@@ -79,18 +68,13 @@ export function SummaryPreview({
     showItemsDetails,
     showPaymentMethods,
     showPaymentTypes,
-    showCouponsPanel,
     setShowItemsDetails,
     setShowPaymentMethods,
     setShowPaymentTypes,
-    setShowCouponsPanel,
     handleSelectPaymentMethod,
     handleSelectPaymentType,
     selectedPaymentMethod,
     selectedPaymentType,
-    appliedCoupon,
-    handleApplyCoupon,
-    handleRemoveCoupon
   } = useSummaryState();
 
   const {
@@ -302,16 +286,17 @@ export function SummaryPreview({
 
   // Función para manejar la selección de cupones
   const handleSelectCoupon = useCallback((coupon: string) => {
-    // Buscar el cupón en la lista de cupones disponibles
-    const selectedCoupon = AVAILABLE_COUPONS.find(c => c.code === coupon);
-    if (selectedCoupon) {
-      // Si se encuentra el cupón, aplicarlo usando handleApplyCoupon
-      handleApplyCoupon(selectedCoupon);
-    }
+    // Implementa la lógica para manejar cupones aquí
+    console.log('Cupón seleccionado:', coupon);
     setShowCoupons(false);
-  }, [handleApplyCoupon]);
+  }, []);
 
   const isMobilePublic = viewType === "mobile" && isPublicView;
+
+  // Determinar si debemos ocultar la navegación estándar
+  // La ocultamos en móvil público o cuando hay botones específicos del componente
+  // que reemplazan la funcionalidad de navegación estándar
+  const shouldHideNavigation = isMobilePublic || (viewType === "desktop" && calculations?.total > 0);
 
   return (
     <PreviewContainer 
@@ -323,7 +308,7 @@ export function SummaryPreview({
       isLastStep={isLastStep}
       isPublicView={isPublicView}
       isNextDisabled={!isValid || isProcessing}
-      hideNavigation={isMobilePublic}
+      hideNavigation={shouldHideNavigation}
       nextLabel="Reservar"
     >
       {empresaId && stripeInitialized ? (
@@ -339,8 +324,8 @@ export function SummaryPreview({
                     ? "px-4 pb-0" 
                     : "space-y-4 px-4 pt-6"
                 )}>
-                  {viewType === 'desktop' && !isPublicView && (
-                    <div className="relative mb-8">
+                  {viewType === 'desktop' && (
+                    <div className="relative">
                       <TotalPrice total={calculations.total} theme={theme} />
                     </div>
                   )}
@@ -436,30 +421,34 @@ export function SummaryPreview({
                       empresaId={empresaId}
                     />
                   ) : (
-                    // Vista de escritorio
-                    <SummaryDesktopView
-                      theme={theme}
-                      field={field}
-                      selectedPaymentMethod={selectedPaymentMethod}
-                      selectedPaymentType={selectedPaymentType as PaymentTypeEnum | null}
-                      calculations={calculations}
-                      appliedCoupon={appliedCoupon}
-                      onShowItemsDetails={() => handleModalAction(() => setShowItemsDetails(true))}
-                      onShowPaymentMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
-                      onShowPaymentTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
-                      onShowCouponsPanel={() => handleModalAction(() => setShowCouponsPanel(true))}
-                      onRemoveCoupon={handleRemoveCoupon}
-                      onSelectPaymentMethod={handleSelectPaymentMethod}
-                      onSelectPaymentType={handleSelectPaymentType}
-                      handleReservar={handleReservar}
-                      isPublicView={isPublicView}
-                      onUpdateMethod={async (method) => {
-                        console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
-                        handleSelectPaymentMethod(method);
-                        return Promise.resolve();
-                      }}
-                      empresaId={empresaId}
-                    />
+                    <>
+                      <PriceBreakdown
+                        theme={theme}
+                        calculations={calculations}
+                        onShowItemsDetails={() => handleModalAction(() => setShowItemsDetails(true))}
+                      />
+
+                      <PaymentTypeSection
+                        theme={theme}
+                        selectedType={selectedPaymentType}
+                        onShowTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
+                        onRemoveType={() => handleSelectPaymentType(null)}
+                      />
+
+                      <PaymentSection
+                        theme={theme}
+                        selectedMethod={selectedPaymentMethod}
+                        onShowMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
+                        onRemoveMethod={() => handleSelectPaymentMethod(null)}
+                        onUpdateMethod={async (method) => {
+                          console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
+                          handleSelectPaymentMethod(method);
+                          return Promise.resolve();
+                        }}
+                        viewType={viewType}
+                        empresaId={empresaId}
+                      />
+                    </>
                   )}
                 </div>
 

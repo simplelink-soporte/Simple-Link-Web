@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { format, addDays, isSameDay, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, startOfDay, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { NavigationButtons } from "../../layout/NavigationButtons";
+import { NavigationControls } from "../../layout/NavigationControls";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { useAvailability } from '@/hooks/useAvailability';

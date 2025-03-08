@@ -92,45 +92,45 @@ export function useSummaryBooking(options: UseSummaryBookingOptions = {}) {
     const errors: ValidationError[] = [];
 
     console.log('[useSummaryBooking] Validando configuración de pago:', {
-      payment: state.payment || {},
-      selectedMethod: state.payment?.selectedPaymentMethod || {},
-      type: state.payment?.type || null,
-      hasMethod: !!state.payment?.method,
-      hasSelectedMethod: !!state.payment?.selectedPaymentMethod,
-      hasType: !!state.payment?.type
+      payment: state.payment,
+      selectedMethod: state.payment.selectedPaymentMethod,
+      type: state.payment.type,
+      hasMethod: !!state.payment.method,
+      hasSelectedMethod: !!state.payment.selectedPaymentMethod,
+      hasType: !!state.payment.type
     });
 
     // Verificación detallada del método de pago
-    const hasValidMethod = !!state.payment?.method || 
-                          (state.payment?.selectedPaymentMethod && 
-                           !!state.payment?.selectedPaymentMethod.id);
+    const hasValidMethod = !!state.payment.method || 
+                          (state.payment.selectedPaymentMethod && 
+                           !!state.payment.selectedPaymentMethod.id);
     
     if (!hasValidMethod) {
-      console.warn('[useSummaryBooking] Método de pago inválido o faltante:', {
-        method: state.payment?.method || null,
-        selectedMethod: state.payment?.selectedPaymentMethod || {}
+      console.error('[useSummaryBooking] Método de pago inválido o faltante:', {
+        method: state.payment.method,
+        selectedMethod: state.payment.selectedPaymentMethod
       });
       
-      // Solo añadir advertencia, no error crítico
       errors.push({
         field: 'paymentMethod',
         message: 'Selecciona un método de pago',
-        severity: 'warning' // Cambiado de 'error' a 'warning'
+        severity: 'error'
       });
     } else {
       console.log('[useSummaryBooking] Método de pago válido encontrado');
     }
 
     // Verificación detallada del tipo de pago
-    if (!state.payment?.type) {
-      console.warn('[useSummaryBooking] Tipo de pago faltante');
+    if (!state.payment.type) {
+      console.error('[useSummaryBooking] Tipo de pago faltante');
       
-      // Solo añadir advertencia, no error crítico
       errors.push({
         field: 'paymentType',
         message: 'Selecciona un tipo de pago',
-        severity: 'warning' // Cambiado de 'error' a 'warning'
+        severity: 'error'
       });
+    } else {
+      console.log('[useSummaryBooking] Tipo de pago válido:', state.payment.type);
     }
 
     // Validar montos

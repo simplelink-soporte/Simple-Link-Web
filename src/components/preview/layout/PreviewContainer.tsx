@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { NavigationButtons } from "./NavigationButtons";
+import { NavigationControls } from "./NavigationControls";
 
 interface PreviewContainerProps {
   children: React.ReactNode;
@@ -31,7 +31,14 @@ export function PreviewContainer({
   isPublicView = false
 }: PreviewContainerProps) {
   const isMobilePublic = viewType === "mobile" && isPublicView;
-  const shouldShowNavigation = !hideNavigation && onNext && onPrev && !isMobilePublic;
+  
+  // Refinamos la lógica para determinar cuándo renderizar los controles
+  // Condiciones para renderizar los controles de navegación:
+  // 1. No están explícitamente ocultados (hideNavigation = false)
+  // 2. Existe una función onNext para permitir avanzar
+  // 3. No estamos en vista móvil pública (que maneja sus propios botones)
+  //    O estamos en vista desktop (que siempre usa estos controles)
+  const shouldRenderControls = !hideNavigation && onNext;
 
   return (
     <div className={cn(
@@ -41,34 +48,27 @@ export function PreviewContainer({
       <div className={cn(
         "flex-1 overflow-y-auto",
         viewType === "mobile" ? "px-0" : "px-4",
-        shouldShowNavigation && !isMobilePublic && "pb-20",
-        isMobilePublic && "pb-28" // Espacio para el botón flotante
+        "pb-28" // Espacio para los botones
       )}>
         {children}
       </div>
 
-      {shouldShowNavigation && !isMobilePublic && (
-        <div className={cn(
-          "absolute bottom-0 left-0 right-0 z-10",
-          "bg-gradient-to-t from-white dark:from-black to-transparent",
-          "pt-4 pb-3",
-          viewType === "mobile" ? "px-3" : "px-4"
-        )}>
-          <NavigationButtons
-            onNext={onNext}
-            onPrev={onPrev}
-            isFirstStep={isFirstStep || false}
-            isLastStep={isLastStep || false}
-            theme={theme}
-            viewType={viewType}
-            isNextDisabled={isNextDisabled}
-            nextLabel={nextLabel}
-            prevLabel={prevLabel}
-            isPreview={true}
-            hidePrevButton={false}
-            isPublicView={isPublicView}
-          />
-        </div>
+      {/* Controles de navegación */}
+      {shouldRenderControls && (
+        <NavigationControls
+          theme={theme}
+          viewType={viewType}
+          onNext={onNext}
+          onPrev={isFirstStep ? undefined : onPrev}
+          isNextDisabled={isNextDisabled}
+          isPublicView={isPublicView}
+          nextLabel={nextLabel}
+          prevLabel={prevLabel}
+          showNextButton={true}
+          className={cn(
+            viewType === "desktop" ? "desktop-navigation" : ""
+          )}
+        />
       )}
     </div>
   );

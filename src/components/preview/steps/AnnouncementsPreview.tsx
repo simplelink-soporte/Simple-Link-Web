@@ -5,7 +5,8 @@ import { Bell, Trophy, Calendar, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { NavigationButtons } from "../layout/NavigationButtons";
+import { NavigationControls } from "../layout/NavigationControls";
+import { MapPin, FileText, Clock } from "lucide-react";
 
 interface StepComponentProps {
   field: FormStepField;
@@ -263,13 +264,13 @@ export function AnnouncementsPreview({
           </div>
         </div>
 
-        <NavigationButtons
-          onNext={onNext}
-          onPrev={onPrev}
-          isFirstStep={isFirstStep}
-          isLastStep={isLastStep}
+        <NavigationControls
           theme={theme}
           viewType={viewType}
+          onNext={onNext}
+          onPrev={!isFirstStep ? onPrev : undefined}
+          isNextDisabled={false}
+          isPublicView={false}
         />
       </div>
     </PreviewContainer>

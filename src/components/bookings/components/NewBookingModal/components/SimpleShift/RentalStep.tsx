@@ -69,7 +69,7 @@ export function RentalStep({
       return Math.max(0, endMinutes - startMinutes);
     } catch (error) {
       console.error('Error calculando la duración:', error);
-      return 0;
+      return 0; 
     }
   }, [startTime, endTime]);
 

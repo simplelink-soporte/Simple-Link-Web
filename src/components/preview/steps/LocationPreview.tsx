@@ -4,7 +4,6 @@ import { PreviewContainer } from "../layout/PreviewContainer";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState, useEffect, memo } from "react";
-import { NavigationButtons } from "../layout/NavigationButtons";
 import { MapPin, Check, Loader2, Clock } from "lucide-react";
 import { useLocationBranches } from "@/hooks/use-location-branches";
 import { formatScheduleRange } from "@/lib/utils/schedule";
@@ -167,6 +166,17 @@ export function LocationPreview({
     }
   };
 
+  // Variable auxiliar para detectar si estamos en vista móvil pública
+  const isMobilePublic = viewType === "mobile" && isPublicView;
+  
+  // Lógica mejorada para ocultar la navegación estándar
+  // 1. En móvil cuando es vista pública (ya que tiene su propio botón)
+  // 2. También en desktop cuando es vista pública (para evitar duplicación con PublicFormLayout)
+  const shouldHideNavigation = isPublicView; // Ocultamos en toda vista pública, sea móvil o desktop
+
+  // Solo mostramos el botón móvil en vista pública móvil
+  const shouldShowMobileButton = isMobilePublic;
+
   return (
     <PreviewContainer 
       viewType={viewType} 
@@ -177,10 +187,10 @@ export function LocationPreview({
       isLastStep={isLastStep}
       isPublicView={isPublicView}
       isNextDisabled={!selectedLocation}
-      hideNavigation={viewType === "mobile" && isPublicView}
+      hideNavigation={shouldHideNavigation}
     >
       <div className="min-h-full flex flex-col relative">
-        {viewType === "mobile" && (
+        {shouldShowMobileButton && (
           <>
             <MobileNextButton
               theme={theme}

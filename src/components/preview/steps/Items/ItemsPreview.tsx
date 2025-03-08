@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft, Check, Search, Loader2, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavigationButtons } from "../../layout/NavigationButtons";
+import { NavigationControls } from "../../layout/NavigationControls";
 import { Input } from "@/components/ui/input";
 import { useItems } from "@/hooks/useItems";
 import { toast } from "sonner";
@@ -129,7 +129,7 @@ export function ItemsPreview({
     rentals, 
     totalPrice,
     selectedItems,
-    updateSelectedItems 
+    updateSelectedItems
   } = useFormItems();
   
   const [itemsWithStock, setItemsWithStock] = useState<ItemWithStock[]>([]);
@@ -299,21 +299,21 @@ export function ItemsPreview({
     return true;
   }, []);
 
-  const handleNext = useCallback(() => {
-    console.log('[ItemsPreview] Intentando avanzar al siguiente paso:', {
-      currentStep: state.currentStep,
-      hasItems: Object.keys(selectedItems).length > 0,
-      isLastStep
-    });
+  const handleNext = () => {
+    console.log('[ItemsPreview] Avanzando al siguiente paso con:', selectedItems);
     
-    // Siempre permitir avanzar ya que los items son opcionales
-    if (typeof onNext === 'function') {
-      console.log('[ItemsPreview] Ejecutando onNext');
-      onNext();
-    } else {
-      console.error('[ItemsPreview] Error: onNext no es una función');
-    }
-  }, [onNext, state.currentStep, selectedItems, isLastStep]);
+    // No es necesario actualizar el estado aquí ya que los selectedItems
+    // ya están en el contexto global a través de useFormItems
+    // y se actualizan dinámicamente al interactuar con los elementos
+    
+    onNext();
+  };
+
+  // Detectar vista móvil pública
+  const isMobilePublic = viewType === "mobile" && isPublicView;
+  
+  // Ocultar navegación en toda vista pública para evitar duplicación con PublicFormLayout
+  const shouldHideNavigation = isPublicView;
 
   // Manejar el click en un item
   const handleItemClick = useCallback((item: ItemWithStock) => {
@@ -484,7 +484,7 @@ export function ItemsPreview({
       isLastStep={isLastStep}
       isPublicView={isPublicView}
       isNextDisabled={false}
-      hideNavigation={viewType === "mobile" && isPublicView}
+      hideNavigation={shouldHideNavigation}
     >
       <div className="min-h-full flex flex-col relative">
         {viewType === "mobile" && (
