@@ -1,6 +1,6 @@
 "use client"
 
-import { IconCopy, IconExternalLink, IconEdit } from "@tabler/icons-react"
+import { IconCopy, IconExternalLink } from "@tabler/icons-react"
 import { useCompanyLink } from "../hooks/useCompanyLink"
 import { cn } from "@/lib/utils"
 import {
@@ -9,7 +9,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { SlugInputPopover } from "./SlugInputPopover"
 
 interface CompanyLinkSectionProps {
   branchId?: string
@@ -21,11 +20,7 @@ export function CompanyLinkSection({ branchId }: CompanyLinkSectionProps) {
     isLoading, 
     error, 
     copyToClipboard, 
-    generateLink,
-    updateLink, 
-    hasExistingLink,
-    defaultSlug,
-    currentSlug 
+    hasExistingLink
   } = useCompanyLink({ branchId })
 
   if (!branchId) {
@@ -52,87 +47,64 @@ export function CompanyLinkSection({ branchId }: CompanyLinkSectionProps) {
     )
   }
 
+  // Si no hay un link existente, no mostrar nada
+  if (!hasExistingLink) {
+    return null;
+  }
+
   return (
     <TooltipProvider>
-      {!hasExistingLink ? (
-        <div className="space-y-4">
-          <SlugInputPopover 
-            onGenerate={generateLink}
-            isLoading={isLoading}
-            defaultSlug={defaultSlug}
-            mode="create"
-          />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex items-center">
-            <span className="text-xs text-gray-600 mr-2">Tu link de clases:</span>
-            <div className={cn(
-              "flex-1",
-              "text-xs text-gray-600 font-mono"
-            )}>
-              <span className="truncate">{companyLink}</span>
-            </div>
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <span className="text-xs text-gray-600 mr-2">Tu link de clases:</span>
+          <div className={cn(
+            "flex-1",
+            "text-xs text-gray-600 font-mono"
+          )}>
+            <span className="truncate">{companyLink}</span>
+          </div>
 
-            <div className="flex items-center">
-              <SlugInputPopover 
-                onGenerate={updateLink}
-                isLoading={isLoading}
-                defaultSlug={currentSlug}
-                mode="edit"
-              >
+          <div className="flex items-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <button
+                  onClick={copyToClipboard}
                   className={cn(
                     "p-1",
                     "text-gray-600 hover:text-gray-900",
                     "transition-all duration-200"
                   )}
                 >
-                  <IconEdit className="w-4 h-4" />
+                  <IconCopy className="w-4 h-4" />
                 </button>
-              </SlugInputPopover>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Copiar al portapapeles</p>
+              </TooltipContent>
+            </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={copyToClipboard}
-                    className={cn(
-                      "p-1",
-                      "text-gray-600 hover:text-gray-900",
-                      "transition-all duration-200"
-                    )}
-                  >
-                    <IconCopy className="w-4 h-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Copiar al portapapeles</p>
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href={companyLink || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      "p-1",
-                      "text-gray-600 hover:text-gray-900",
-                      "transition-all duration-200"
-                    )}
-                  >
-                    <IconExternalLink className="w-4 h-4" />
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Abrir en nueva pestaña</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href={companyLink || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "p-1",
+                    "text-gray-600 hover:text-gray-900",
+                    "transition-all duration-200"
+                  )}
+                >
+                  <IconExternalLink className="w-4 h-4" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Abrir en nueva pestaña</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
-      )}
+      </div>
     </TooltipProvider>
   )
 } 

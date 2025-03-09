@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { FormBuilder } from "@/components/forms/FormBuilder"
 import { FormHistory } from "@/components/forms/FormHistory"
 import { FormPreview } from "@/components/forms/FormPreview"
 import { FormStepField } from "@/types/form-steps"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, Search, Save, Pencil } from "lucide-react"
+import { ArrowLeft, Search, Save, Pencil, FileText, Link2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { FormCard } from "@/components/forms/FormCard"
 import { cn } from "@/lib/utils"
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { FormData } from "@/types/forms"
+import { FormUrlConfig } from "@/types/forms/publish"
 import { useFormState } from '@/hooks/forms/use-form-state';
 import { useFormPublishing } from '@/hooks/forms/use-form-publishing';
 import { toast } from "sonner";
@@ -31,6 +32,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from "@/contexts/AuthContext"
 import { useBranchContext } from "@/contexts/BranchContext"
 import { useQuery } from "@tanstack/react-query"
+import { LinkSection } from "@/components/links/LinkSection"
+import { useCompanyLinks } from "@/hooks/useCompanyLinks"
 
 export default function FormsPage() {
   const router = useRouter()
@@ -48,36 +51,32 @@ export default function FormsPage() {
   } = useFormState();
   
   const {
-    publishForm,
+    handlePublish,
     isPublishing,
-    isLoading: isLoadingPublish,
-    error: publishError
+    error: publishError,
+    isValid,
+    validationErrors,
+    hasWarnings,
+    isConfigurationComplete
   } = useFormPublishing();
 
-  const isLoading = isLoadingPublish || isPublishing
+  // Obtener los links de la empresa
+  const {
+    bookingLink,
+    classesLink,
+    isLoading: isLoadingLinks,
+    error: linksError,
+    createBookingLink,
+    createClassesLink,
+    deactivateBookingLink,
+    deactivateClassesLink,
+    updateBookingLinkSlug,
+    updateClassesLinkSlug,
+    refreshLinks
+  } = useCompanyLinks();
 
-  const handlePublish = async () => {
-    try {
-      const formConfig = {
-        title: formTitle,
-        fields: fields,
-        description: formDescription
-      };
-      
-      const url = await publishForm(formConfig);
-      
-      setPublished(true, {
-        formId: crypto.randomUUID(),
-        slug: url,
-        isCustomizable: true
-      });
-
-      toast.success('Formulario publicado exitosamente');
-    } catch (err) {
-      console.error('Error publishing form:', err);
-      toast.error('Error al publicar el formulario');
-    }
-  };
+  const isLoading = isPublishing || isLoadingLinks;
+  const error = publishError || linksError;
 
   const [isEditing, setIsEditing] = useState(false)
   const [savedForms, setSavedForms] = useState<FormData[]>([])
@@ -180,6 +179,40 @@ export default function FormsPage() {
     router.push('/admin/dashboard/forms-a/new')
   }
 
+  const handleConfigureForm = () => {
+    if (bookingLink) {
+      router.push('/admin/dashboard/forms-a/new')
+    }
+  }
+
+  const handleCreateBookingLink = async () => {
+    try {
+      // Si no hay un link activo de reservas, redirigir a la página de creación
+      if (!bookingLink) {
+        router.push('/admin/dashboard/forms-a/new')
+      } else {
+        // Si ya existe, refrescar los links
+        await refreshLinks();
+        toast.success("Link de reservas actualizado");
+      }
+    } catch (err) {
+      toast.error("Error al manejar el link de reservas", {
+        description: err instanceof Error ? err.message : "Error desconocido"
+      });
+    }
+  }
+
+  const handleCreateClassLink = async () => {
+    try {
+      await createClassesLink();
+      toast.success("Link de clases creado exitosamente");
+    } catch (err) {
+      toast.error("Error al crear el link de clases", {
+        description: err instanceof Error ? err.message : "Error desconocido"
+      });
+    }
+  }
+
   const handleExitClick = () => {
     if (fields.length > 0 && !isPublished) {
       setShowExitDialog(true);
@@ -194,6 +227,18 @@ export default function FormsPage() {
     setFields([]); // Limpiar campos al salir
   };
 
+  useEffect(() => {
+    // Log para depuración de los links
+    if (bookingLink) {
+      console.log('Booking link in page:', bookingLink);
+      console.log('Booking link is_active:', bookingLink.is_active, typeof bookingLink.is_active);
+    }
+    if (classesLink) {
+      console.log('Classes link in page:', classesLink);
+      console.log('Classes link is_active:', classesLink.is_active, typeof classesLink.is_active);
+    }
+  }, [bookingLink, classesLink]);
+
   return (
     <div className="fixed inset-0 overflow-hidden z-0">
       <main className="absolute inset-0 lg:left-[240px]">
@@ -201,9 +246,9 @@ export default function FormsPage() {
           <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.02)] w-full h-full overflow-auto scrollbar-none">
             <div className="px-6 py-4">
               {isLoading ? (
-                <PageLoadingState message="Cargando formularios..." />
-              ) : publishError ? (
-                <PageErrorState message={publishError.message} />
+                <PageLoadingState message="Cargando información..." />
+              ) : error ? (
+                <PageErrorState message={error.message} />
               ) : !user ? (
                 <PageEmptyState message="No hay sesión activa" />
               ) : !currentBranch ? (
@@ -280,8 +325,46 @@ export default function FormsPage() {
                               exit={{ opacity: 0, y: -20 }}
                               className="space-y-4"
                             >
+                              {/* Título y subtítulo de la página */}
+                              <div className="mb-5">
+                                <h1 className="text-lg font-medium text-gray-900">Enlaces de Reservas y Clases</h1>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Gestiona y personaliza los enlaces para reservas y clases de tu negocio
+                                </p>
+                              </div>
+
+                              {/* Secciones de Links - Una debajo de la otra */}
+                              <div className="space-y-4 mb-8">
+                                {/* Sección de Link de Reserva */}
+                                <LinkSection 
+                                  title="Link de Reserva"
+                                  description="Genera y comparte este enlace para que tus clientes puedan realizar reservas de forma rápida y sencilla."
+                                  linkData={bookingLink}
+                                  baseUrl={`${window.location.origin}/f`}
+                                  actionLabel="Crear link de reservas"
+                                  onAction={handleCreateBookingLink}
+                                  onDeactivate={deactivateBookingLink}
+                                  onUpdateSlug={updateBookingLinkSlug}
+                                  onConfigureForm={handleConfigureForm}
+                                  isLoading={isLoadingLinks}
+                                />
+
+                                {/* Sección de Link de Clases */}
+                                <LinkSection 
+                                  title="Link de Clases"
+                                  description="Permite a tus clientes inscribirse en clases a través de este enlace personalizado."
+                                  linkData={classesLink}
+                                  baseUrl={`${window.location.origin}/clases`}
+                                  actionLabel="Crear link de clases"
+                                  onAction={handleCreateClassLink}
+                                  onDeactivate={deactivateClassesLink}
+                                  onUpdateSlug={updateClassesLinkSlug}
+                                  isLoading={isLoadingLinks}
+                                />
+                              </div>
+
                               {/* Header con buscador */}
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-end mt-8">
                                 {savedForms.length > 0 && (
                                   <div className="relative">
                                     <input
@@ -326,25 +409,6 @@ export default function FormsPage() {
                                   </p>
                                 </div>
                               ) : null}
-
-                              {/* Contenedor clickeable modificado */}
-                              <motion.div
-                                onClick={handleCreateNew}
-                                className={cn(
-                                  "bg-white rounded-lg border border-dashed p-6",
-                                  "cursor-pointer hover:bg-gray-50 transition-colors",
-                                  "group relative overflow-hidden"
-                                )}
-                                whileHover={{ scale: 1.005 }}
-                                whileTap={{ scale: 0.995 }}
-                              >
-                                <div className="text-center space-y-1.5">
-                                  <h3 className="text-base font-medium text-gray-900">Crear nuevo formulario</h3>
-                                  <p className="text-sm text-gray-500">
-                                    Haz clic aquí para comenzar a crear un nuevo formulario personalizado
-                                  </p>
-                                </div>
-                              </motion.div>
                             </motion.div>
                           </AnimatePresence>
                         </div>

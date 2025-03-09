@@ -8,7 +8,8 @@ export function UserSettings() {
   const { user } = useAuth()
 
   const handlePasswordReset = async () => {
-    // TODO: Implementar recuperación de contraseña
+    // Redirigir al usuario a la página de restablecimiento de contraseña
+    window.location.href = "https://www.simple-link.com/reset";
   }
 
   return (
