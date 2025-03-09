@@ -32,6 +32,9 @@ import { PaymentTypeEnum } from './types';
 import { useSummaryBooking as useSummaryBookingHook } from './hooks/use-summary-booking';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { DesktopSummaryLayout } from "./layout/DesktopSummaryLayout";
+import { DesktopReservationDetails } from "./components/desktop/DesktopReservationDetails";
+import { PaymentState as PaymentStateType } from '@/types/payments';
 
 interface SummaryPreviewProps {
   field: SummaryStepField;
@@ -186,7 +189,7 @@ export function SummaryPreview({
       // Actualizar el estado global del pago - CRUCIAL para la validación
       setPayment({
         method: 'card',
-        type: 'full',
+        type: 'full' as unknown as PaymentTypeEnum,
         processed: true,
         paymentIntentId: paymentData.paymentIntentId,
         status: 'completed',
@@ -230,10 +233,10 @@ export function SummaryPreview({
         setPaymentIntent(result.paymentIntentId);
         
         // Actualizar el estado global del pago
-        setPayment(prevState => ({
+        setPayment((prevState: PaymentStateType) => ({
           ...prevState,
           method: 'card',
-          type: 'full',
+          type: 'full' as unknown as PaymentTypeEnum,
           processed: true,
           paymentIntentId: result.paymentIntentId,
           status: 'completed'
@@ -298,6 +301,120 @@ export function SummaryPreview({
   // que reemplazan la funcionalidad de navegación estándar
   const shouldHideNavigation = isMobilePublic || (viewType === "desktop" && calculations?.total > 0);
 
+  // Renderizar contenido para el layout de desktop
+  const renderDesktopLayout = () => {
+    return (
+      <DesktopSummaryLayout
+        theme={theme}
+        leftContent={
+          <div className="space-y-6">
+            {/* Título y subtítulo principal */}
+            <div className="mb-6">
+              <h2 className={cn(
+                "text-xl font-semibold mb-1",
+                theme === 'dark' ? "text-white/90" : "text-gray-900"
+              )}>
+                Finaliza tu reserva
+              </h2>
+              <p className={cn(
+                "text-sm",
+                theme === 'dark' ? "text-gray-400" : "text-gray-500"
+              )}>
+                Configura los detalles de pago para confirmar tu reserva
+              </p>
+            </div>
+            
+            {/* Título para la sección de tipo de pago */}
+            <div className="mb-2">
+              <h3 className={cn(
+                "text-sm font-medium",
+                theme === 'dark' ? "text-white/80" : "text-gray-700"
+              )}>
+                Elige cómo deseas realizar el pago
+              </h3>
+            </div>
+            
+            <PaymentTypeSection
+              theme={theme}
+              selectedType={selectedPaymentType}
+              onShowTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
+              onRemoveType={() => handleSelectPaymentType(null)}
+              viewType="desktop"
+              onSelectType={handleSelectPaymentType}
+              empresaId={empresaId || ''}
+            />
+
+            {/* Título para la sección de método de pago */}
+            <div className="mt-6 mb-2">
+              <h3 className={cn(
+                "text-sm font-medium",
+                theme === 'dark' ? "text-white/80" : "text-gray-700"
+              )}>
+                Selecciona tu método de pago
+              </h3>
+            </div>
+
+            <PaymentSection
+              theme={theme}
+              selectedMethod={selectedPaymentMethod}
+              onShowMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
+              onRemoveMethod={() => handleSelectPaymentMethod(null)}
+              onUpdateMethod={async (method) => {
+                console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
+                handleSelectPaymentMethod(method);
+                return Promise.resolve();
+              }}
+              viewType={viewType}
+              empresaId={empresaId || ''}
+              directCardSelect={viewType === 'desktop'}
+            />
+            
+            {isValid ? (
+              <Button 
+                onClick={handleNext}
+                disabled={isProcessing}
+                className="w-full py-3 mt-4 text-sm"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Procesando...
+                  </>
+                ) : (
+                  "Completar Reserva"
+                )}
+              </Button>
+            ) : (
+              validationErrors && validationErrors.length > 0 && (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle className="text-sm">No se puede completar la reserva</AlertTitle>
+                  <AlertDescription className="text-xs">
+                    Por favor, complete todos los campos requeridos.
+                  </AlertDescription>
+                </Alert>
+              )
+            )}
+          </div>
+        }
+        rightContent={
+          <div className="space-y-6">
+            <TotalPrice 
+              total={calculations.total} 
+              theme={theme} 
+              className="mb-4"
+              disableAnimation={true}
+            />
+            
+            <DesktopReservationDetails
+              theme={theme}
+              calculations={calculations}
+            />
+          </div>
+        }
+      />
+    );
+  };
+
   return (
     <PreviewContainer 
       viewType={viewType} 
@@ -310,6 +427,7 @@ export function SummaryPreview({
       isNextDisabled={!isValid || isProcessing}
       hideNavigation={shouldHideNavigation}
       nextLabel="Reservar"
+      customLayout={viewType === "desktop"}
     >
       {empresaId && stripeInitialized ? (
         <StripeConfigProvider empresaId={empresaId}>
@@ -319,18 +437,14 @@ export function SummaryPreview({
                 "flex-1",
                 viewType === "mobile" && isPublicView && "pt-16 pb-24"
               )}>
-                <div className={cn(
-                  viewType === 'mobile' 
-                    ? "px-4 pb-0" 
-                    : "space-y-4 px-4 pt-6"
-                )}>
-                  {viewType === 'desktop' && (
-                    <div className="relative">
-                      <TotalPrice total={calculations.total} theme={theme} />
-                    </div>
-                  )}
-
-                  {viewType === 'mobile' ? (
+                {viewType === 'desktop' ? (
+                  renderDesktopLayout()
+                ) : (
+                  <div className={cn(
+                    viewType === 'mobile' 
+                      ? "px-4 pb-0" 
+                      : "space-y-4 px-4 pt-6"
+                  )}>
                     <MobilePaymentContainer
                       theme={theme}
                       viewType={viewType}
@@ -366,9 +480,9 @@ export function SummaryPreview({
                             console.log('[SummaryPreview] Evento especial de actualización solo de tipo de pago');
                             
                             // En este caso, solo actualizamos el tipo de pago en el estado global
-                            setPayment(prevState => ({
+                            setPayment((prevState: PaymentStateType) => ({
                               ...prevState,
-                              type: paymentContext.selectedPaymentType as any,
+                              type: paymentContext.selectedPaymentType as unknown as PaymentTypeEnum,
                               // Mantener otros valores del estado actual
                               method: prevState.method,
                               selectedPaymentMethod: prevState.selectedPaymentMethod,
@@ -420,37 +534,8 @@ export function SummaryPreview({
                       isPublicView={isPublicView}
                       empresaId={empresaId}
                     />
-                  ) : (
-                    <>
-                      <PriceBreakdown
-                        theme={theme}
-                        calculations={calculations}
-                        onShowItemsDetails={() => handleModalAction(() => setShowItemsDetails(true))}
-                      />
-
-                      <PaymentTypeSection
-                        theme={theme}
-                        selectedType={selectedPaymentType}
-                        onShowTypes={() => handleModalAction(() => setShowPaymentTypes(true))}
-                        onRemoveType={() => handleSelectPaymentType(null)}
-                      />
-
-                      <PaymentSection
-                        theme={theme}
-                        selectedMethod={selectedPaymentMethod}
-                        onShowMethods={() => handleModalAction(() => setShowPaymentMethods(true))}
-                        onRemoveMethod={() => handleSelectPaymentMethod(null)}
-                        onUpdateMethod={async (method) => {
-                          console.log('[SummaryPreview] onUpdateMethod llamado con:', method);
-                          handleSelectPaymentMethod(method);
-                          return Promise.resolve();
-                        }}
-                        viewType={viewType}
-                        empresaId={empresaId}
-                      />
-                    </>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 <ItemsDetailsModal
                   isOpen={showItemsDetails}
@@ -502,7 +587,22 @@ export function SummaryPreview({
         </StripeConfigProvider>
       ) : (
         <div className="flex items-center justify-center h-full">
-          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          {configError ? (
+            <div className="text-center p-6">
+              <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Error de configuración</h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                No se pudo cargar la configuración del formulario. Por favor, intente de nuevo más tarde.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center">
+              <Loader2 className="h-10 w-10 animate-spin mb-4" />
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                Cargando configuración...
+              </p>
+            </div>
+          )}
         </div>
       )}
     </PreviewContainer>

@@ -2,6 +2,7 @@ import { Clock, Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ReservationDetails } from "./ReservationDetails";
+import { DesktopReservationDetails } from "./desktop/DesktopReservationDetails";
 import { TotalPrice } from "./TotalPrice";
 import { useEffect, useRef, useState } from "react";
 
@@ -66,11 +67,18 @@ export function PriceBreakdown({
       )}
     >
       {!hideDetails && (
-        <ReservationDetails 
-          theme={theme} 
-          calculations={calculations}
-          viewType={viewType}
-        />
+        viewType === 'desktop' ? (
+          <DesktopReservationDetails
+            theme={theme}
+            calculations={calculations}
+          />
+        ) : (
+          <ReservationDetails 
+            theme={theme} 
+            calculations={calculations}
+            viewType={viewType}
+          />
+        )
       )}
 
       {calculations.discount > 0 && (

@@ -25,6 +25,7 @@ interface PublicFormContentProps {
   showNextButton: boolean;
   isPublicView: boolean;
   hideNavigation: boolean;
+  customLayout?: boolean;
 }
 
 export function PublicFormContent({
@@ -43,7 +44,8 @@ export function PublicFormContent({
   nextLabel,
   showNextButton,
   isPublicView,
-  hideNavigation
+  hideNavigation,
+  customLayout: propCustomLayout
 }: PublicFormContentProps) {
   const currentField = fields[currentStep];
   const nextField = fields[currentStep + 1];
@@ -156,6 +158,10 @@ export function PublicFormContent({
     return 'Siguiente';
   };
 
+  // Determinar si el paso actual debería usar un layout personalizado
+  const isCustomLayoutStep = currentField?.type === 'summary';
+  const shouldUseCustomLayout = propCustomLayout || (isCustomLayoutStep && viewType === 'desktop');
+
   const renderField = (field: FormStepField) => {
     const PreviewComponent = getPublicComponent(field);
     
@@ -188,20 +194,30 @@ export function PublicFormContent({
       onPrev={onPrev}
       isFirstStep={currentStep === 0}
       isLastStep={isLastStep}
-      hideNavigation={shouldHideNavigation()}
+      hideNavigation={hideNavigation || !showNextButton}
       isNextDisabled={isNextDisabled()}
       nextLabel={getNextButtonLabel()}
       currentStep={currentStep}
       showNextButton={showNextButton}
+      customLayout={shouldUseCustomLayout}
     >
       <div className="max-w-lg mx-auto space-y-8">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync" initial={false}>
           <motion.div
             key={currentField.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 0.5,
+              ease: [0.23, 1, 0.32, 1] // Curva cubic-bezier más suave
+            }}
             className="space-y-6"
+            style={{
+              willChange: 'opacity',
+              backfaceVisibility: 'hidden',
+              WebkitFontSmoothing: 'antialiased'
+            }}
           >
             {renderField(currentField)}
             {error && <FormError message={error.message} theme={theme} />}

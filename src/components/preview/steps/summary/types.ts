@@ -106,7 +106,7 @@ export interface SummaryState {
   couponError: string | null;
   appliedCoupon: Coupon | null;
   selectedPaymentMethod: PaymentMethod | null;
-  selectedPaymentType: string | null;
+  selectedPaymentType: PaymentTypeEnum | null;
   guaranteeConfig: {
     percentage: number;
   };

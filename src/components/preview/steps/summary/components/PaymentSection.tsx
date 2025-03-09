@@ -278,6 +278,37 @@ export function PaymentSection({
     }
   }, [expandCardList, showCardList]);
 
+  // Nueva función para manejar el clic en el componente principal
+  const handleComponentClick = useCallback(() => {
+    if (showCardForm) return;
+
+    // Comportamiento para vista desktop: mostrar/ocultar la lista directamente
+    if (viewType === 'desktop') {
+      // Si hay tarjetas disponibles o estamos cargando, mostrar/ocultar la lista
+      if (!isCardsLoading || cards.length > 0 || isCardsLoading) {
+        console.log('[PaymentSection] Toggle lista de tarjetas en desktop');
+        setIsListExpanded(!isListExpanded);
+      } 
+      // Si no hay tarjetas disponibles, abrir el formulario para agregar una
+      else {
+        console.log('[PaymentSection] No hay tarjetas disponibles, mostrar formulario');
+        setShowCardForm(true);
+      }
+    } 
+    // Comportamiento para otras vistas o cuando directCardSelect/disableModal están activos
+    else if (directCardSelect || disableModal) {
+      setIsListExpanded(!isListExpanded);
+    } 
+    // Comportamiento original
+    else {
+      if (!isCardsLoading && cards.length > 0) {
+        setIsListExpanded(!isListExpanded);
+      } else {
+        openPaymentMethodModal();
+      }
+    }
+  }, [showCardForm, viewType, isCardsLoading, cards.length, isListExpanded, directCardSelect, disableModal, openPaymentMethodModal]);
+
   // Función para determinar si hay un error y debería mostrarse
   const hasError = cardsError !== null && cardsError !== undefined;
 
@@ -297,19 +328,7 @@ export function PaymentSection({
       className="space-y-3"
     >
       <div
-        onClick={() => {
-          if (!showCardForm) {
-            if (directCardSelect || disableModal) {
-              setIsListExpanded(!isListExpanded);
-            } else {
-              if (!isCardsLoading && cards.length > 0) {
-                setIsListExpanded(!isListExpanded);
-              } else {
-                openPaymentMethodModal();
-              }
-            }
-          }
-        }}
+        onClick={handleComponentClick}
         className={cn(
           "w-full rounded-lg cursor-pointer",
           "transition-all duration-200",
@@ -339,7 +358,8 @@ export function PaymentSection({
             </div>
             <div className="pr-4">
               <ChevronDown className={cn(
-                "h-[18px] w-[18px]",
+                "h-[18px] w-[18px] transition-transform duration-300",
+                isListExpanded && "transform rotate-180",
                 theme === 'dark' ? "text-gray-400" : "text-gray-500"
               )} />
             </div>
@@ -379,8 +399,16 @@ export function PaymentSection({
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ChevronDown className={cn(
+                "h-4 w-4 transition-transform duration-300",
+                isListExpanded && "transform rotate-180",
+                theme === 'dark' ? "text-gray-400" : "text-gray-500"
+              )} />
               <button
-                onClick={handleRemoveMethod}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveMethod();
+                }}
                 className={cn(
                   "p-1.5 rounded-lg transition-colors duration-200",
                   theme === 'dark' 
@@ -400,7 +428,7 @@ export function PaymentSection({
           theme={theme}
           cards={cards}
           selectedCardId={methodToDisplay?.id}
-          onSelect={directCardSelect || disableModal ? processCardSelection : handleCardSelect}
+          onSelect={directCardSelect || disableModal || viewType === 'desktop' ? processCardSelection : handleCardSelect}
           onAddCard={handleAddCard}
           onDeleteCard={deleteCard}
           isExpanded={isListExpanded}

@@ -4,8 +4,11 @@ import { useState, useMemo } from 'react';
 import { useItems } from '@/hooks/useItems';
 import { useForm } from '@/contexts/FormContext';
 import { useFormItems } from '@/contexts/FormItemsContext';
-import { PaymentType, PaymentMethod, Coupon, SummaryState, Calculations } from '../types';
+import { PaymentType, PaymentMethod, Coupon, SummaryState, Calculations, PaymentTypeEnum, PAYMENT_TYPES } from '../types';
 import type { Item } from '@/types/items';
+import { useToast } from "@/components/ui/use-toast";
+import { getAvailableCoupons } from "../services/coupon-service";
+import { usePaymentContext } from "../contexts/payment-context";
 
 // Actualizar la lista de cupones disponibles
 const availableCoupons: Coupon[] = [
@@ -71,16 +74,17 @@ export function useSummaryState() {
     return method; // Devolver el método para que pueda ser usado por el componente padre
   };
 
-  const handleSelectPaymentType = (typeId: string | null) => {
-    console.log('[useSummaryState] Actualizando tipo de pago:', {
-      prevType: state.selectedPaymentType,
-      newType: typeId,
-      source: 'handleSelectPaymentType'
-    });
-    
+  const handleSelectPaymentType = (typeId: PaymentTypeEnum | null) => {
     setState(prev => ({ ...prev, selectedPaymentType: typeId }));
     
-    return typeId; // Devolver el tipo seleccionado para facilitar el encadenamiento
+    // Si se está desseleccionando, no hacer acciones adicionales
+    if (typeId === null) {
+      return;
+    }
+    
+    // Verificar si el tipo requiere tarjeta
+    const typeConfig = PAYMENT_TYPES.find(type => type.id === typeId);
+    console.log('[useSummaryState] Tipo de pago seleccionado:', { typeId, config: typeConfig });
   };
 
   const handleApplyCoupon = (coupon: Coupon) =>

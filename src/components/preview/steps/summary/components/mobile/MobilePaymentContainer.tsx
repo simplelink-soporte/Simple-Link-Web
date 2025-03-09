@@ -612,7 +612,7 @@ export function MobilePaymentContainerBase({
         // Esto es CRÍTICO: use-summary-booking.ts verifica este valor antes de crear la reserva
         setPayment({
           method: 'card',
-          type: 'full',
+          type: 'full' as unknown as PaymentTypeEnum,
           processed: true,
           paymentIntentId: result.paymentIntentId,
           status: 'completed',

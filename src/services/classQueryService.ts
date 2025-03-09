@@ -8,6 +8,24 @@ import type {
 } from '@/types/classes'
 import { classSchema } from '@/types/classes'
 
+/**
+ * Servicio para consulta de clases en el panel administrativo
+ * 
+ * IMPORTANTE: Implementación de transformación de zona horaria
+ * -------------------------------------------------------------
+ * Este servicio ahora implementa la transformación de zona horaria al verificar
+ * la disponibilidad de clases, siguiendo los mismos principios que classService.ts
+ * y bookingService.ts:
+ * 
+ * 1. Obtiene la zona horaria de la sede (branch) asociada a la clase
+ * 2. Convierte los horarios locales a UTC antes de consultar las reservas existentes
+ * 3. Compara los horarios en la misma referencia temporal (UTC) para obtener resultados precisos
+ * 
+ * Esto garantiza que todas las consultas de disponibilidad sean consistentes con el proceso
+ * de creación de reservas, independientemente de si se realizan desde el frontend público
+ * o desde el panel administrativo.
+ */
+
 // Crear una instancia de Supabase memoizada
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null
 
@@ -17,6 +35,118 @@ const getSupabaseInstance = () => {
   }
   return supabaseInstance
 }
+
+/**
+ * Obtiene la zona horaria de una sede
+ * 
+ * @param branchId - ID de la sede
+ * @returns La zona horaria de la sede o 'UTC' por defecto
+ */
+const getBranchTimezone = async (branchId: string): Promise<string> => {
+  try {
+    if (!branchId) {
+      console.warn('⚠️ ClassQueryService - No se proporcionó ID de sede, usando UTC por defecto');
+      return 'UTC';
+    }
+
+    const supabase = getSupabaseInstance();
+    const { data: branch, error } = await supabase
+      .from('sedes')
+      .select('timezone')
+      .eq('id', branchId)
+      .single();
+
+    if (error || !branch) {
+      console.error('❌ ClassQueryService - Error al obtener la zona horaria de la sede:', error);
+      return 'UTC';
+    }
+
+    const timezone = branch.timezone || 'UTC';
+    console.log('✅ ClassQueryService - Zona horaria de la sede:', timezone);
+    return timezone;
+  } catch (error) {
+    console.error('❌ ClassQueryService - Error al obtener la zona horaria:', error);
+    return 'UTC';
+  }
+};
+
+/**
+ * Convierte los horarios locales a UTC según la zona horaria de la sede
+ * 
+ * @param branchId - ID de la sede
+ * @param date - Fecha en formato local (YYYY-MM-DD)
+ * @param startTime - Hora de inicio en formato local (HH:MM)
+ * @param endTime - Hora de fin en formato local (HH:MM)
+ * @returns Objeto con las fechas y horas convertidas a UTC, o los valores originales si hay error
+ */
+const convertLocalToUTC = async (
+  branchId: string,
+  date: string,
+  startTime: string,
+  endTime: string
+): Promise<{
+  dateUTC: string;
+  startTimeUTC: string;
+  endTimeUTC: string;
+  timezone: string;
+}> => {
+  try {
+    // Obtener la zona horaria de la sede
+    const timezone = await getBranchTimezone(branchId);
+    
+    // Crear fechas usando Luxon con la zona horaria de la sede
+    const localStartDateTime = DateTime.fromFormat(
+      `${date} ${startTime}`,
+      'yyyy-MM-dd HH:mm',
+      { zone: timezone }
+    );
+    
+    const localEndDateTime = DateTime.fromFormat(
+      `${date} ${endTime}`,
+      'yyyy-MM-dd HH:mm',
+      { zone: timezone }
+    );
+    
+    // Convertir a UTC
+    const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
+    const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
+    const dateUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd');
+    
+    console.log('🕒 ClassQueryService - Conversión de horarios:', {
+      local: {
+        date,
+        start: startTime,
+        end: endTime,
+        timezone,
+        localStart: localStartDateTime.toISO(),
+        localEnd: localEndDateTime.toISO()
+      },
+      utc: {
+        date: dateUTC,
+        start: startTimeUTC,
+        end: endTimeUTC,
+        fullStartUTC: localStartDateTime.toUTC().toISO(),
+        fullEndUTC: localEndDateTime.toUTC().toISO()
+      }
+    });
+    
+    return {
+      dateUTC,
+      startTimeUTC,
+      endTimeUTC,
+      timezone
+    };
+  } catch (error) {
+    console.error('❌ ClassQueryService - Error en la conversión de horarios:', error);
+    // En caso de error, devolvemos los valores originales
+    return {
+      dateUTC: date,
+      startTimeUTC: startTime,
+      endTimeUTC: endTime,
+      timezone: 'UTC'
+    };
+  }
+};
 
 export const classQueryService = {
   /**
@@ -234,7 +364,12 @@ export const classQueryService = {
 
   /**
    * Actualiza la información de participantes para las clases transformadas
-   * @param transformedClasses Clases ya transformadas
+   * 
+   * Esta función:
+   * 1. Para cada clase transformada, obtiene el ID original de la clase
+   * 2. Obtiene la zona horaria de la sede asociada a la clase
+   * 3. Convierte los horarios locales a UTC antes de consultar las reservas
+   * 4. Cuenta las reservas existentes para calcular la disponibilidad
    */
   async updateClassesParticipants(transformedClasses: TransformedClass[]): Promise<TransformedClass[]> {
     if (!transformedClasses.length) return transformedClasses;
@@ -281,16 +416,40 @@ export const classQueryService = {
           startTime: classData.startTime,
           endTime: classData.endTime
         });
+        
+        // Obtener información de la clase para conocer la sede
+        const { data: classInfo, error: classError } = await supabase
+          .from('classes')
+          .select('branch_id')
+          .eq('id', originalClassId)
+          .single();
+          
+        if (classError) {
+          console.error('❌ Error al obtener información de la clase:', classError);
+          continue;
+        }
+        
+        if (!classInfo || !classInfo.branch_id) {
+          console.warn('⚠️ No se encontró sede para la clase:', originalClassId);
+          continue;
+        }
+        
+        // Convertir los horarios locales a UTC según la zona horaria de la sede
+        const { dateUTC, startTimeUTC, endTimeUTC } = await convertLocalToUTC(
+          classInfo.branch_id,
+          classData.date,
+          classData.startTime,
+          classData.endTime
+        );
 
-        // Consultar cuántas reservas existen usando exactamente la misma estructura
-        // que en classService.ts para mantener consistencia
+        // Consultar cuántas reservas existen usando los horarios UTC
         const bookingsResult = await supabase
           .from('bookings')
           .select('*', { count: 'exact', head: false })
           .eq('class_id', originalClassId)
-          .eq('date', classData.date)
-          .eq('start_time', classData.startTime)
-          .eq('end_time', classData.endTime)
+          .eq('date', dateUTC)                 // Fecha en UTC
+          .eq('start_time', startTimeUTC)      // Hora de inicio en UTC
+          .eq('end_time', endTimeUTC)          // Hora de fin en UTC
           .eq('reservation_type', 'class')
           .is('cancelled_at', null);
           
@@ -316,7 +475,20 @@ export const classQueryService = {
             bookedSpots,
             availableSpots,
             totalCapacity: classData.capacity,
-            isAvailable: availableSpots > 0
+            isAvailable: availableSpots > 0,
+            // Incluir información de horarios para debugging
+            horarios: {
+              local: {
+                date: classData.date,
+                startTime: classData.startTime,
+                endTime: classData.endTime
+              },
+              utc: {
+                date: dateUTC,
+                startTime: startTimeUTC,
+                endTime: endTimeUTC
+              }
+            }
           });
         }
       } catch (error) {

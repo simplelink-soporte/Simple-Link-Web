@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Check, CreditCard, Wallet, Building } from "lucide-react";
-import { PaymentType, PaymentTypeEnum } from "../types";
+import { PaymentType, PaymentTypeEnum, PAYMENT_TYPES } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { GuaranteeConfirmationModal } from "./GuaranteeConfirmationModal";
 
 // Función para obtener el icono correspondiente a cada tipo de pago
@@ -18,6 +18,12 @@ function getPaymentTypeIcon(typeId: string) {
       return Wallet;
   }
 }
+
+// Nombres de opciones de pago a excluir
+const EXCLUDED_PAYMENT_OPTIONS = [
+  'Efectivo',
+  'Tarjeta de crédito/débito'
+];
 
 interface PaymentTypeItemProps {
   type: PaymentType;
@@ -118,13 +124,18 @@ export function PaymentTypeList({
   // Estado temporal para almacenar el tipo de pago seleccionado antes de confirmar
   const [pendingGuaranteeSelection, setPendingGuaranteeSelection] = useState<PaymentTypeEnum | null>(null);
   
+  // Filtrar las opciones de pago para excluir Efectivo y Tarjeta de crédito/débito
+  const filteredPaymentTypes = useMemo(() => {
+    return paymentTypes.filter(type => !EXCLUDED_PAYMENT_OPTIONS.includes(type.name));
+  }, [paymentTypes]);
+  
   // Función para manejar la selección de un tipo de pago y asegurar
   // que se actualiza el estado global
   const handleTypeSelect = (type: PaymentTypeEnum) => {
     console.log(`[PaymentTypeList] Seleccionando tipo de pago: ${type}`);
     
     // Obtener información completa del tipo seleccionado
-    const typeInfo = paymentTypes.find(t => t.id === type);
+    const typeInfo = filteredPaymentTypes.find(t => t.id === type);
     
     // Añadir información detallada en los logs
     console.log(`[PaymentTypeList] Detalles del tipo seleccionado:`, {
@@ -143,11 +154,6 @@ export function PaymentTypeList({
     
     // Para otros tipos, seleccionar directamente
     onSelect(type);
-    
-    // Si el tipo requiere tarjeta, incluir más información en los logs
-    if (typeInfo?.requiresCard) {
-      console.log(`[PaymentTypeList] El tipo ${type} requiere una tarjeta. Expandiendo lista automáticamente.`);
-    }
   };
   
   // Manejadores para el modal de garantía
@@ -170,12 +176,12 @@ export function PaymentTypeList({
   const listContent = (
     <div className="py-3 px-2">
       <AnimatePresence>
-        {paymentTypes.map((type) => (
+        {filteredPaymentTypes.map((type) => (
           <PaymentTypeItem
-            key={type.id}
+            key={`${type.id}-${type.name}`}
             type={type}
             isSelected={selectedType === type.id}
-            onClick={() => handleTypeSelect(type.id as PaymentTypeEnum)}
+            onClick={() => handleTypeSelect(type.id)}
             theme={theme}
           />
         ))}
@@ -202,20 +208,33 @@ export function PaymentTypeList({
   // Caso normal: devolver con el contenedor
   return (
     <>
-      <motion.div
-        initial={false}
-        animate={isExpanded ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
-        transition={{ duration: 0.2 }}
+      <div
         className={cn(
-          "overflow-hidden rounded-lg border mt-1",
-          "shadow-none",
-          theme === 'dark' 
-            ? "bg-neutral-900 border-neutral-800" 
-            : "bg-white border-gray-200"
+          "relative",
+          noContainer ? "" : "p-3",
+          isExpanded ? "max-h-none overflow-visible" : "max-h-[300px] overflow-y-auto scrollbar-hide",
+          "rounded-lg",
+          !noContainer && "border shadow-sm",
+          !noContainer && theme === 'dark' 
+            ? "border-neutral-800 bg-neutral-900"
+            : "border-gray-100 bg-white",
         )}
       >
-        {listContent}
-      </motion.div>
+        <div className={cn(
+          "space-y-1",
+          noContainer && "py-2 px-1"
+        )}>
+          {filteredPaymentTypes.map((type) => (
+            <PaymentTypeItem
+              key={`${type.id}-${type.name}`}
+              type={type}
+              isSelected={selectedType === type.id}
+              onClick={() => handleTypeSelect(type.id)}
+              theme={theme}
+            />
+          ))}
+        </div>
+      </div>
       
       <GuaranteeConfirmationModal 
         isOpen={showGuaranteeModal} 
