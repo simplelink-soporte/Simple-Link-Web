@@ -1,0 +1,76 @@
+public.bookings (
+  id uuid not null default gen_random_uuid (),
+  court_id uuid not null,
+  date date not null,
+  start_time time without time zone not null,
+  end_time time without time zone not null,
+  title character varying(255) null,
+  description text null,
+  total_price numeric(10, 2) not null,
+  deposit_amount numeric(10, 2) null,
+  created_at timestamp with time zone not null default timezone ('utc'::text, now()),
+  updated_at timestamp with time zone not null default timezone ('utc'::text, now()),
+  payment_status public.booking_payment_status null default 'pending'::booking_payment_status,
+  payment_method public.payment_method_enum null default 'cash'::payment_method_enum,
+  cancelled_at timestamp with time zone null,
+  cancellation_reason text null,
+  court_price numeric(10, 2) not null default 0,
+  rental_items_price numeric(10, 2) not null default 0,
+  payment_type public.payment_type not null default 'booking'::payment_type,
+  empresa_id uuid null,
+  reservation_type public.reservation_type_enum null default 'booking'::reservation_type_enum,
+  class_id uuid null,
+  class_session_price numeric(10, 2) null default 0,
+  constraint bookings_pkey primary key (id),
+  constraint bookings_class_id_fkey foreign KEY (class_id) references classes (id) on delete set null,
+  constraint bookings_court_id_fkey foreign KEY (court_id) references courts (id),
+  constraint bookings_empresa_id_fkey foreign KEY (empresa_id) references empresas (id),
+  constraint bookings_court_price_check check ((court_price >= (0)::numeric)),
+  constraint bookings_rental_items_price_check check ((rental_items_price >= (0)::numeric))
+) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_payment_status on public.bookings using btree (payment_status) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_cancelled_at on public.bookings using btree (cancelled_at) TABLESPACE pg_default
+where
+  (cancelled_at is not null);
+
+create index IF not exists bookings_court_id_date_idx on public.bookings using btree (court_id, date) TABLESPACE pg_default;
+
+create index IF not exists bookings_date_idx on public.bookings using btree (date) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_date_times on public.bookings using btree (date, start_time, end_time) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_date_time on public.bookings using btree (date, start_time, end_time) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_payment_type on public.bookings using btree (payment_type) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_empresa_date on public.bookings using btree (empresa_id, date) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_class_id on public.bookings using btree (class_id) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_reservation_type_empresa on public.bookings using btree (reservation_type, empresa_id) TABLESPACE pg_default;
+
+create index IF not exists idx_bookings_class_price on public.bookings using btree (class_id, class_session_price) TABLESPACE pg_default
+where
+  (reservation_type = 'class'::reservation_type_enum);
+
+create trigger calculate_total_price_trigger BEFORE INSERT
+or
+update on bookings for EACH row
+execute FUNCTION calculate_total_price ();
+
+create trigger update_bookings_updated_at BEFORE
+update on bookings for EACH row
+execute FUNCTION update_updated_at_column ();
+
+create trigger validate_booking_creation_trigger BEFORE INSERT
+or
+update on bookings for EACH row
+execute FUNCTION validate_booking_creation ();
+
+create trigger update_total_price BEFORE INSERT
+or
+update OF court_price,
+rental_items_price on bookings for EACH row
+execute FUNCTION calculate_total_price ();

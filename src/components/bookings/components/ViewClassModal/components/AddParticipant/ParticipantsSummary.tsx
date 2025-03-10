@@ -1,19 +1,35 @@
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import type { Participant } from "@/types/bookings"
-import { IconUsers, IconArrowLeft } from "@tabler/icons-react"
+import { IconUsers, IconArrowLeft, IconCalendar, IconClock } from "@tabler/icons-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+
+// Función para formatear la hora
+const formatTime = (time?: string) => {
+  if (!time) return '--:--'
+  return time.split(':').slice(0, 2).join(':')
+}
 
 interface ParticipantsSummaryProps {
   participants: Participant[]
   onConfirm: () => void
   onBack: () => void
+  date?: string
+  startTime?: string
+  endTime?: string
 }
 
 export function ParticipantsSummary({
   participants,
   onConfirm,
-  onBack
+  onBack,
+  date,
+  startTime,
+  endTime
 }: ParticipantsSummaryProps) {
+  const hasSessionInfo = date && startTime && endTime;
+
   return (
     <div className="space-y-4">
       {/* Header con contador */}
@@ -34,6 +50,24 @@ export function ParticipantsSummary({
         </span>
       </div>
 
+      {/* Información de la sesión */}
+      {hasSessionInfo && (
+        <div className="space-y-2 p-3 bg-gray-50/70 rounded-lg border border-gray-100/75">
+          <div className="flex items-center gap-2">
+            <IconCalendar size={14} className="text-gray-500" />
+            <span className="text-xs text-gray-700">
+              {format(new Date(date), "dd 'de' MMMM, yyyy", { locale: es })}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <IconClock size={14} className="text-gray-500" />
+            <span className="text-xs text-gray-700">
+              {formatTime(startTime)} - {formatTime(endTime)}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Lista de participantes */}
       <div className="space-y-2">
         {participants.map((participant) => (
@@ -47,7 +81,7 @@ export function ParticipantsSummary({
             )}
           >
             <p className="text-sm font-medium text-gray-900">
-              {participant.fullName}
+              {participant.name}
             </p>
             {participant.email && (
               <p className="text-xs text-gray-500">

@@ -187,11 +187,13 @@ const settingsMenuItems = [
     value: "integrations",
     icon: LinkIcon
   },
+  /* Comentado temporalmente - sección de Miembros oculta
   {
     label: "Miembros",
     value: "members",
     icon: UserCircle2
   },
+  */
   {
     label: "Usuario",
     value: "user",

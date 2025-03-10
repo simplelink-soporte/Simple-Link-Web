@@ -219,20 +219,31 @@ export function ViewClassModal({
                         onClose={() => setShowAddParticipant(false)}
                         onParticipantAdd={(participant) => {
                           console.log('Participante agregado:', participant)
-                          // TODO: Implementar lógica para agregar participante a la clase
                           toast({
                             title: "Participante agregado",
-                            description: `${participant.fullName} ha sido agregado a la clase.`,
+                            description: `${participant.name} ha sido agregado a la clase.`,
                             variant: "default"
                           })
                         }}
+                        classId={classData.classId}
+                        sessionId={classData.sessionId}
+                        sessionPrice={classData.price}
+                        userId={currentBranch?.empresa_id}
+                        empresaId={currentBranch?.empresa_id}
+                        capacity={classData.capacity}
+                        currentParticipants={classData.currentParticipants}
+                        date={classData.date}
+                        startTime={classData.startTime}
+                        endTime={classData.endTime}
+                        courtId={classData.courtId}
                       />
 
                       {/* Modal para ver participantes */}
                       <ViewParticipantsModal
                         isOpen={showParticipants}
                         onClose={() => setShowParticipants(false)}
-                        participants={[]} // TODO: Pasar la lista real de participantes
+                        participants={[]} // Pasamos un array vacío porque el componente obtendrá los participantes usando el classId
+                        classId={classData.classId}
                       />
                     </div>
 

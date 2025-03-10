@@ -83,6 +83,9 @@ export interface TransformedClass {
   currentParticipants: number
   status: string
   visibility: string
+  price?: number // Precio de la sesión
+  classId?: string // ID original de la clase
+  sessionId?: string // ID único para la sesión
   // Propiedades adicionales para compatibilidad con SelectedBooking
   court?: string
   totalAmount?: number

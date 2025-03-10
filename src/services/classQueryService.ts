@@ -182,7 +182,13 @@ export const classQueryService = {
       
       // Convertir la fecha a un objeto DateTime para manipulación
       const targetDate = DateTime.fromISO(date)
-      const dayOfWeek = targetDate.weekday // 1-7 (lunes-domingo)
+      // Obtenemos el día de la semana (1-7, donde 7 es domingo)
+      let dayOfWeek = targetDate.weekday 
+      
+      // Ajustamos para que domingo sea 0 en lugar de 7, para coincidir con el formato de la BD
+      if (dayOfWeek === 7) {
+        dayOfWeek = 0
+      }
 
       // Construir la consulta base con el filtro de empresa
       let query = supabase
@@ -288,7 +294,14 @@ export const classQueryService = {
     const targetDate = DateTime.fromISO(date)
     const startDate = DateTime.fromISO(classData.start_date)
     const endDate = classData.end_date ? DateTime.fromISO(classData.end_date) : null
-    const dayOfWeek = targetDate.weekday
+    
+    // Obtenemos el día de la semana (1-7, donde 7 es domingo)
+    let dayOfWeek = targetDate.weekday
+    
+    // Ajustamos para que domingo sea 0 en lugar de 7, para coincidir con el formato de la BD
+    if (dayOfWeek === 7) {
+      dayOfWeek = 0
+    }
 
     // Verificar estado y visibilidad
     if (classData.status !== 'active') return false
@@ -349,7 +362,10 @@ export const classQueryService = {
             capacity: timeSlot.capacity,
             currentParticipants: 0, // Mantener como 0 hasta que se actualice posteriormente
             status: classData.status,
-            visibility: classData.visibility
+            visibility: classData.visibility,
+            price: timeSlot.price || 0, // Incluir el precio del time slot
+            classId: classData.id, // ID original de la clase
+            sessionId: `${classData.id}-${courtId}-${timeSlot.startTime}-${timeSlot.endTime}` // ID único para la sesión
           })
         }
       }
