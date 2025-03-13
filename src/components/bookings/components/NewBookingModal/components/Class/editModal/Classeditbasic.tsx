@@ -29,6 +29,16 @@ interface ExtendedClassScheduleConfig {
     courtIds: string[]
   }>
   suspendedSessions: SuspendedSession[]
+  specificSessions: Array<{
+    date: string
+    startTime: string
+    endTime: string
+    capacity: number
+    price: number
+    instructors: string[]
+    courtIds: string | string[]
+    createdAt?: string
+  }>
 }
 
 interface ClassEditBasicProps {
@@ -77,7 +87,8 @@ export function ClassEditBasic({
       endDate: undefined,
       weekDays: [],
       timeSlots: [],
-      suspendedSessions: []
+      suspendedSessions: [],
+      specificSessions: []
     }
 
     if (!classData) return defaultConfig
@@ -124,13 +135,17 @@ export function ClassEditBasic({
       // Obtener las sesiones suspendidas si existen
       const suspendedSessions = existingConfig?.suspendedSessions || []
 
+      // Obtener las sesiones específicas si existen
+      const specificSessions = existingConfig?.specificSessions || []
+
       return {
         isRecurring: classData.is_recurring,
         startDate,
         endDate,
         weekDays,
         timeSlots,
-        suspendedSessions
+        suspendedSessions,
+        specificSessions
       }
     } catch (error) {
       console.error('Error parsing schedule config:', error)
@@ -157,7 +172,8 @@ export function ClassEditBasic({
           ...slot,
           courtIds: slot.courtIds || []
         })),
-        suspendedSessions: scheduleConfig.suspendedSessions
+        suspendedSessions: scheduleConfig.suspendedSessions,
+        specificSessions: scheduleConfig.specificSessions
       } as any
     })
   }, [title, description, scheduleConfig, onValidationChange, onChange])
@@ -249,6 +265,8 @@ export function ClassEditBasic({
         startDate={scheduleConfig.startDate?.toISOString().split('T')[0]}
         endDate={scheduleConfig.endDate?.toISOString().split('T')[0]}
         scheduleDays={scheduleConfig.weekDays}
+        // Sesiones específicas del schedule_config
+        specificSessions={scheduleConfig.specificSessions}
         onSessionsUpdate={(updatedTimeSlots) => {
           setScheduleConfig(prev => ({
             ...prev,
@@ -266,7 +284,7 @@ export function ClassEditBasic({
           // Agregamos la nueva sesión a la lista existente
           setScheduleConfig(prev => ({
             ...prev,
-            timeSlots: [...prev.timeSlots, newSession]
+            specificSessions: [...prev.specificSessions, newSession]
           }));
           
           // Mostrar mensaje de éxito

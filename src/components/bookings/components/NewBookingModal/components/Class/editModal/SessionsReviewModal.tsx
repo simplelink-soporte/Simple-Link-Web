@@ -36,6 +36,16 @@ interface SessionsReviewModalProps {
   startDate?: string
   endDate?: string
   scheduleDays?: number[]
+  specificSessions?: Array<{
+    date: string;
+    startTime: string;
+    endTime: string;
+    capacity: number;
+    price: number;
+    instructors: string[];
+    courtIds: string | string[];
+    createdAt?: string;
+  }>
 }
 
 type Step = "review" | "detail" | "edit" | "move"
@@ -51,7 +61,8 @@ export function SessionsReviewModal({
   isRecurring = false,
   startDate,
   endDate,
-  scheduleDays = []
+  scheduleDays = [],
+  specificSessions = []
 }: SessionsReviewModalProps) {
   const [step, setStep] = useState<Step>("review")
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null)
@@ -63,12 +74,60 @@ export function SessionsReviewModal({
     if (isRecurring && startDate) {
       // Para clases recurrentes, generamos sesiones para cada día configurado
       const slots = generateRecurringSessions(timeSlots, startDate, endDate, scheduleDays);
-      setGeneratedTimeSlots(slots);
+      
+      // Procesamos las sesiones específicas
+      const specificTimeSlots = processSpecificSessions(specificSessions);
+      
+      // Combinamos ambos tipos de sesiones
+      setGeneratedTimeSlots([...slots, ...specificTimeSlots]);
     } else {
-      // Para clases únicas, simplemente usamos los slots proporcionados
-      setGeneratedTimeSlots(timeSlots);
+      // Para clases únicas, simplemente usamos los slots proporcionados y las sesiones específicas
+      const specificTimeSlots = processSpecificSessions(specificSessions);
+      setGeneratedTimeSlots([...timeSlots, ...specificTimeSlots]);
     }
-  }, [timeSlots, isRecurring, startDate, endDate, scheduleDays]);
+  }, [timeSlots, isRecurring, startDate, endDate, scheduleDays, specificSessions]);
+  
+  // Función para procesar las sesiones específicas
+  const processSpecificSessions = (
+    sessions: Array<{
+      date: string;
+      startTime: string;
+      endTime: string;
+      capacity: number;
+      price: number;
+      instructors: string[];
+      courtIds: string | string[];
+      createdAt?: string;
+    }>
+  ): TimeSlot[] => {
+    if (!sessions.length) return [];
+    
+    return sessions.map((session, index) => {
+      // Aseguramos que courtIds sea siempre un array
+      const courtIdsArray = Array.isArray(session.courtIds) 
+        ? session.courtIds 
+        : [session.courtIds];
+      
+      return {
+        id: `specific_${index}_${session.date}_${session.startTime}`,
+        startTime: session.startTime,
+        endTime: session.endTime,
+        capacity: session.capacity,
+        price: session.price,
+        instructors: session.instructors,
+        courtIds: courtIdsArray,
+        date: session.date,
+        // Verificamos si la sesión específica está suspendida
+        isSuspended: suspendedSessions.some(
+          suspended => 
+            suspended.date === session.date && 
+            suspended.startTime === session.startTime && 
+            suspended.endTime === session.endTime && 
+            courtIdsArray.some(courtId => courtId === suspended.courtId)
+        )
+      };
+    });
+  };
   
   // Función para generar sesiones recurrentes
   const generateRecurringSessions = (
