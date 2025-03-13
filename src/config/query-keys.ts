@@ -2,7 +2,7 @@ export const queryKeys = {
   classes: {
     all: ['classes'] as const,
     lists: () => [...queryKeys.classes.all, 'list'] as const,
-    list: (filters: { branchId?: string; empresaId?: string }) => 
+    list: (filters: { branchId?: string; empresaId?: string; includeCompleted?: boolean }) => 
       [...queryKeys.classes.lists(), filters] as const,
     details: () => [...queryKeys.classes.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.classes.details(), id] as const,

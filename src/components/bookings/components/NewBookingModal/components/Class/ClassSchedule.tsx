@@ -40,6 +40,8 @@ interface ClassScheduleProps {
   config?: ClassScheduleConfig
   onChange: (config: ClassScheduleConfig) => void
   onValidationChange: (isValid: boolean) => void
+  hideRecurringSwitch?: boolean
+  readOnlyStartDate?: boolean
 }
 
 export function ClassSchedule({
@@ -51,7 +53,9 @@ export function ClassSchedule({
     timeSlots: []
   },
   onChange,
-  onValidationChange
+  onValidationChange,
+  hideRecurringSwitch,
+  readOnlyStartDate
 }: ClassScheduleProps) {
   const { currentBranch } = useBranches()
   const { courtOptions, isLoading: isLoadingCourts, error: courtsError } = useGroupedCourts({ 
@@ -194,17 +198,19 @@ export function ClassSchedule({
       {/* Tipo de Clase y Fechas */}
       <div className="space-y-6">
         {/* Switch de Clase Recurrente */}
-        <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100">
-          <div className="space-y-0.5">
-            <h3 className="text-sm font-medium text-gray-900">Clase Recurrente</h3>
-            <p className="text-sm text-gray-500">La clase se repetirá semanalmente</p>
+        {!hideRecurringSwitch && (
+          <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100">
+            <div className="space-y-0.5">
+              <h3 className="text-sm font-medium text-gray-900">Clase Recurrente</h3>
+              <p className="text-sm text-gray-500">La clase se repetirá semanalmente</p>
+            </div>
+            <Switch
+              checked={config.isRecurring}
+              onCheckedChange={(checked) => onChange({ ...config, isRecurring: checked })}
+              className="data-[state=checked]:bg-black"
+            />
           </div>
-          <Switch
-            checked={config.isRecurring}
-            onCheckedChange={(checked) => onChange({ ...config, isRecurring: checked })}
-            className="data-[state=checked]:bg-black"
-          />
-        </div>
+        )}
 
         {/* Fechas */}
         <div className="grid grid-cols-2 gap-4">
@@ -245,6 +251,7 @@ export function ClassSchedule({
                       weekDays: !config.isRecurring ? [dayOfWeek] : config.weekDays,
                     });
                   }}
+                  disabled={readOnlyStartDate ? () => true : undefined}
                 />
               </PopoverContent>
             </Popover>

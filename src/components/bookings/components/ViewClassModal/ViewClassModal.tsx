@@ -196,21 +196,30 @@ export function ViewClassModal({
                       </div>
 
                       {/* Botón para agregar participantes */}
-                      <div className="mt-4 pt-3 border-t border-gray-100/50">
-                        <button
-                          onClick={() => setShowAddParticipant(true)}
-                          className={cn(
-                            "w-full px-3 py-2 rounded-lg",
-                            "text-xs text-gray-600",
-                            "border border-gray-200/75",
-                            "hover:bg-gray-50 hover:border-gray-300/75",
-                            "transition-all duration-200",
-                            "flex items-center justify-center gap-2"
-                          )}
-                        >
-                          <IconUserPlus size={14} className="text-gray-400" />
-                          Agregar participante
-                        </button>
+                      <div className="mt-4 pt-3 border-t border-gray-100">
+                        {/* Solo mostrar el botón si la clase está activa */}
+                        {classData.status === 'active' ? (
+                          <button
+                            onClick={() => setShowAddParticipant(true)}
+                            className={cn(
+                              "w-full px-3 py-2 rounded-lg",
+                              "text-xs text-gray-600",
+                              "border border-gray-200/75",
+                              "hover:bg-gray-50 hover:border-gray-300/75",
+                              "transition-all duration-200",
+                              "flex items-center justify-center gap-2"
+                            )}
+                          >
+                            <IconUserPlus size={14} className="text-gray-400" />
+                            Agregar participante
+                          </button>
+                        ) : (
+                          <div className="text-xs text-gray-500 text-center py-2 italic">
+                            {classData.status === 'completed' 
+                              ? 'No se pueden agregar participantes a clases finalizadas'
+                              : 'No se pueden agregar participantes a clases canceladas'}
+                          </div>
+                        )}
                       </div>
 
                       {/* Modal para agregar participantes */}
@@ -244,6 +253,11 @@ export function ViewClassModal({
                         onClose={() => setShowParticipants(false)}
                         participants={[]} // Pasamos un array vacío porque el componente obtendrá los participantes usando el classId
                         classId={classData.classId}
+                        date={classData.date}
+                        startTime={classData.startTime}
+                        endTime={classData.endTime}
+                        branchId={currentBranch?.id} // Pasar el ID de la sede para la conversión de zona horaria
+                        classStatus={classData.status} // Pasar el estado de la clase
                       />
                     </div>
 

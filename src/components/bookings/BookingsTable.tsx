@@ -15,6 +15,7 @@ import { ConfigurationMenu } from "./components/ConfigurationMenu"
 import { NewBookingModal } from "./components/NewBookingModal/NewBookingModal"
 import { SimpleShiftBookingModal } from "./components/NewBookingModal/SimpleShiftBookingModal"
 import { ViewBookingModal } from "./components/ViewBookingModal/ViewBookingModal"
+import { ViewClassModal } from "./components/ViewClassModal/ViewClassModal"
 import { timeToMinutes } from "./utils"
 import { Z_LAYERS } from "@/constants/zIndex"
 import { useBookings } from "@/hooks/useBookings"
@@ -23,11 +24,12 @@ import { IconCircleCheck } from "@tabler/icons-react"
 import { toast } from "@/components/ui/use-toast"
 import { useBookingStore } from '@/store/bookingStore'
 import { format } from 'date-fns'
-import type { SelectedBooking } from '@/types/bookings'
+import type { SelectedBooking, SelectionState } from '@/types/bookings'
 import { useBusinessHours } from '@/hooks/useBusinessHours'
 import { DateTime } from 'luxon'
 import { useClasses } from '@/hooks/useClasses'
 import type { TransformedClass } from '@/types/classes'
+import { isTransformedClass } from '@/types/classes'
 import { classQueryService } from '@/services/classQueryService'
 
 const ScrollContainer = ({ children }: { children: React.ReactNode }) => {
@@ -180,8 +182,7 @@ export function BookingsTable() {
   } = useClasses({
     date: selectedDate,
     branchId: currentBranch?.id,
-    status: 'active',
-    visibility: 'public'
+    includeCompleted: true // Incluir clases completadas
   })
 
   // Estado para almacenar las clases con información de participantes actualizada
@@ -290,51 +291,68 @@ export function BookingsTable() {
     };
   }, [classesData.length]);
 
+  // Estado para manejar la clase seleccionada (separado de las reservas)
+  const [selectedClassData, setSelectedClassData] = useState<TransformedClass | null>(null);
+
   // Función modificada para verificar si una celda tiene una reserva o clase existente
   const getExistingBooking = (courtId: string, time: string) => {
     if (!businessHours?.timezone) return null;
 
     // Primero buscar en las clases con información actualizada de participantes
     // Si las clases no están cargadas o no hay clases para procesar
-    if (!classes || classes.length === 0) {
-      // Si no hay clases actualizadas, usar las originales
-      console.log("⚠️ getExistingBooking: usando classesData original porque classes está vacío");
-      
-      // Intentar buscar en classesData
-      const existingClass = classesData.find(classData => 
-        classData.courtId === courtId &&
-        timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
-        timeToMinutes(time) < timeToMinutes(classData.endTime)
-      );
-      
-      if (existingClass) {
-        return existingClass;
+    if (classes && classes.length > 0) {
+      // Debugging: Verificar todas las clases para encontrar sesiones específicas
+      const specificSessions = classes.filter(c => c.isSpecificSession);
+      if (specificSessions.length > 0) {
+        console.log('🔍 BookingsTable - Sesiones específicas disponibles:', {
+          total: specificSessions.length,
+          sesiones: specificSessions.map(s => ({
+            id: s.id,
+            courtId: s.courtId,
+            date: s.date,
+            startTime: s.startTime,
+            endTime: s.endTime,
+            isSpecificSession: s.isSpecificSession
+          }))
+        });
       }
-    } else {
+
       // Buscar en las clases actualizadas
       const existingClass = classes.find(classData => 
+        !classData.isSuspended && // No considerar clases suspendidas
         classData.courtId === courtId &&
         timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
         timeToMinutes(time) < timeToMinutes(classData.endTime)
       );
 
-      // Registrar cuando encontramos una clase para debugging
       if (existingClass) {
         console.log('📊 Celda con clase encontrada:', {
           courtId,
           time,
           classId: existingClass.id,
           title: existingClass.title,
+          isSuspended: existingClass.isSuspended,
+          isSpecificSession: existingClass.isSpecificSession,
           startTime: existingClass.startTime,
-          endTime: existingClass.endTime,
-          currentParticipants: existingClass.currentParticipants,
-          capacity: existingClass.capacity
+          endTime: existingClass.endTime
         });
+        return existingClass;
+      }
+    } else if (classesData && classesData.length > 0) {
+      // Si no hay clases actualizadas, usar las originales (también verificando suspensión)
+      const existingClass = classesData.find(classData => 
+        !classData.isSuspended && // No considerar clases suspendidas
+        classData.courtId === courtId &&
+        timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
+        timeToMinutes(time) < timeToMinutes(classData.endTime)
+      );
+      
+      if (existingClass) {
         return existingClass;
       }
     }
 
-    // Si no hay clase, buscar en las reservas
+    // Si no hay clase activa, buscar en las reservas
     const transformedBookings = bookings.map(booking => {
       const bookingDate = DateTime.fromISO(booking.date);
       const startTime = DateTime.fromFormat(booking.startTime, 'HH:mm:ss', { zone: 'UTC' });
@@ -347,12 +365,76 @@ export function BookingsTable() {
       };
     });
 
-    return transformedBookings.find(booking => 
+    // Buscar una reserva en el horario indicado
+    const existingBooking = transformedBookings.find(booking => 
       booking.courtId === courtId &&
       timeToMinutes(time) >= timeToMinutes(booking.startTime) &&
       timeToMinutes(time) < timeToMinutes(booking.endTime)
-    ) || null;
+    );
+
+    // Si encontramos una reserva, verificar si es de tipo class usando acceso seguro a propiedades
+    if (existingBooking) {
+      // Verificar si la reserva es de tipo clase
+      if (existingBooking.reservation_type === 'class' && existingBooking.class_id) {
+        console.log('🎓 Reserva de tipo clase encontrada:', {
+          bookingId: existingBooking.id,
+          classId: existingBooking.class_id,
+          courtId,
+          time,
+          startTime: existingBooking.startTime,
+          endTime: existingBooking.endTime
+        });
+
+        // Buscar si tenemos información de la clase en el estado actual
+        let classInfo = classes.find(c => c.classId === existingBooking.class_id) || 
+                        classesData.find(c => c.classId === existingBooking.class_id);
+        
+        if (classInfo) {
+          // Usar la información de clase existente
+          return classInfo;
+        } else {
+          // Obtener el precio de la sesión de clase
+          const classSessionPrice = existingBooking.class_session_price || 0;
+
+          // Transformar la reserva a formato de clase
+          return {
+            id: `class-booking-${existingBooking.id}`,
+            courtId: existingBooking.courtId,
+            date: existingBooking.date,
+            startTime: existingBooking.startTime,
+            endTime: existingBooking.endTime,
+            title: existingBooking.title || 'Clase sin nombre',
+            description: existingBooking.description || '',
+            type: 'class',
+            instructor: 'Instructor no disponible', // Valor por defecto
+            capacity: 0, // Estos valores se actualizarán si se necesita
+            currentParticipants: 0,
+            status: 'active',
+            visibility: 'public',
+            price: classSessionPrice,
+            classId: existingBooking.class_id, // ID original de la clase
+            sessionId: `${existingBooking.class_id}-${existingBooking.id}` // ID único para la sesión
+          } as TransformedClass;
+        }
+      }
+    }
+
+    return existingBooking || null;
   };
+
+  // Función para manejar los clics en reservas y clases
+  const handleBookingClick = (booking: any) => {
+    // Verificar si booking es una TransformedClass
+    if (isTransformedClass(booking)) {
+      // Es una clase, mostrar el modal de clase
+      console.log('🎓 Mostrando modal de clase para:', booking);
+      setSelectedClassData(booking);
+    } else {
+      // Es una reserva normal, mostrar el modal de reserva
+      const transformedBooking = transformedBookings.find(b => b.id === booking.id);
+      setSelectedBooking(transformedBooking || booking);
+    }
+  }
 
   // Actualizar el manejador del botón de configuración
   const handleConfigButtonClick = () => {
@@ -463,18 +545,14 @@ export function BookingsTable() {
               <TableBody
                 timeSlots={timeSlots}
                 visibleCourts={visibleCourts}
-                selection={selection as Selection}
+                selection={selection}
                 isMouseDown={isMouseDown}
                 isDragging={isDragging}
                 getExistingBooking={getExistingBooking}
                 onMouseDown={handleCellMouseDown}
                 onMouseMove={handleCellMouseMove}
                 onMouseEnter={handleCellMouseMove}
-                onBookingClick={(booking) => {
-                  // Encontrar la reserva transformada correspondiente
-                  const transformedBooking = transformedBookings.find(b => b.id === booking.id);
-                  setSelectedBooking(transformedBooking || booking);
-                }}
+                onBookingClick={handleBookingClick}
                 isSlotSelected={isSlotSelected}
                 getCourtColumnWidth={getCourtColumnWidth}
               />
@@ -510,9 +588,16 @@ export function BookingsTable() {
       />
 
       <SimpleShiftBookingModal
-        isOpen={showSimpleShiftModal}
+        isOpen={showSimpleShiftModal && selection !== null}
         onClose={handleSimpleShiftModalClose}
-        selection={selection}
+        selection={selection || { 
+          selections: [], 
+          startCourtId: '', 
+          endCourtId: '', 
+          startTime: '', 
+          endTime: '', 
+          slots: 0 
+        }}
         onBookingCreated={handleRefresh}
         selectedDate={selectedDate}
       />
@@ -534,6 +619,13 @@ export function BookingsTable() {
           })
           refetch()
         }}
+      />
+
+      {/* Modal para vista de clase */}
+      <ViewClassModal
+        isOpen={!!selectedClassData}
+        onClose={() => setSelectedClassData(null)}
+        classData={selectedClassData}
       />
     </div>
   )

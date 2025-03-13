@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { CompanyLink } from "@/hooks/useCompanyLinks";
 import { CustomSlugInputPopover } from "./CustomSlugInputPopover";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface LinkSectionProps {
@@ -45,11 +44,6 @@ export const LinkSection = ({
   
   // Determinar el tipo de enlace a partir del título o la propiedad linkData
   const linkType = linkData?.type || (title.toLowerCase().includes('clase') ? 'classes' : 'bookings');
-  
-  // Determinar qué imagen utilizar según el tipo de link
-  const imageSrc = linkType === 'classes' 
-    ? "/images/Miroodles - Sticker 5.png" 
-    : "/images/Miroodles - Sticker 2.png";
 
   // Log para depuración
   useEffect(() => {
@@ -116,117 +110,120 @@ export const LinkSection = ({
   return (
     <motion.div 
       className={cn(
-        "bg-gray-50 rounded-lg p-4 flex flex-col",
+        "bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden",
         className
       )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="space-y-1.5 mb-3">
-        <div className="flex items-center justify-between">
+      {/* Encabezado */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-medium text-gray-900">{title}</h3>
         </div>
         <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
       </div>
       
-      {isLoading || isDeactivating || isUpdatingSlug ? (
-        <div className="flex items-center justify-center h-12 border border-dashed rounded-lg border-gray-200 mb-3">
-          <p className="text-xs text-gray-400 animate-pulse">
-            {isDeactivating ? "Eliminando..." : isUpdatingSlug ? "Actualizando..." : "Cargando..."}
-          </p>
-        </div>
-      ) : linkData ? (
-        <div className="mb-3">
-          <div className="bg-gray-100 rounded-md p-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1 overflow-hidden">
-                <Link className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                <p className="text-xs font-mono text-gray-700 truncate" title={fullUrl || `${baseUrl}/${linkData.slug}`}>
-                  {fullUrl || `${baseUrl}/${linkData.slug}`}
-                </p>
-              </div>
-              
-              <div className="flex items-center ml-2 space-x-1">
-                <Button 
-                  onClick={copyToClipboard}
-                  className="h-6 w-6 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
-                  variant="ghost" 
-                  size="icon"
-                  title="Copiar al portapapeles"
-                >
-                  <Copy className="h-3 w-3 text-gray-500" />
-                </Button>
+      {/* Cuerpo */}
+      <div className="p-4">
+        {isLoading || isDeactivating || isUpdatingSlug ? (
+          <div className="flex items-center justify-center h-20 rounded-md bg-gray-50 border border-dashed border-gray-200">
+            <div className="flex flex-col items-center gap-2">
+              <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-500 rounded-full"></div>
+              <p className="text-xs text-gray-500">
+                {isDeactivating ? "Eliminando..." : isUpdatingSlug ? "Actualizando..." : "Cargando..."}
+              </p>
+            </div>
+          </div>
+        ) : linkData ? (
+          <div className="space-y-3">
+            {/* URL del enlace */}
+            <div className="bg-gray-50 rounded-md p-3 relative overflow-hidden">
+              {/* Barra lateral indicadora según el tipo (similar al diseño de participants) */}
+              <div className={cn(
+                "absolute left-0 top-0 bottom-0 w-[4px]",
+                linkType === 'classes' ? "bg-blue-500/60" : "bg-green-500/60"
+              )} />
+              <div className="flex items-center justify-between pl-2">
+                <div className="flex items-center space-x-1.5 overflow-hidden">
+                  <Link className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                  <p className="text-xs font-mono text-gray-700 truncate" title={fullUrl || `${baseUrl}/${linkData.slug}`}>
+                    {fullUrl || `${baseUrl}/${linkData.slug}`}
+                  </p>
+                </div>
                 
-                {linkData?.is_active && onUpdateSlug && (
-                  <CustomSlugInputPopover
-                    onUpdate={handleUpdateSlug}
-                    isLoading={isLoading || isUpdatingSlug}
-                    defaultSlug={linkData.slug}
-                    linkType={linkData.type}
+                <div className="flex items-center ml-2 space-x-1">
+                  <Button 
+                    onClick={copyToClipboard}
+                    className="h-7 w-7 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
+                    variant="ghost" 
+                    size="icon"
+                    title="Copiar al portapapeles"
                   >
+                    <Copy className="h-3.5 w-3.5 text-gray-500" />
+                  </Button>
+                  
+                  {linkData?.is_active && onUpdateSlug && (
+                    <CustomSlugInputPopover
+                      onUpdate={handleUpdateSlug}
+                      isLoading={isLoading || isUpdatingSlug}
+                      defaultSlug={linkData.slug}
+                      linkType={linkData.type}
+                    >
+                      <Button 
+                        className="h-7 w-7 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
+                        variant="ghost" 
+                        size="icon"
+                        disabled={isLoading || isDeactivating || isUpdatingSlug}
+                        title="Editar enlace"
+                      >
+                        <Settings className="h-3.5 w-3.5 text-gray-500" />
+                      </Button>
+                    </CustomSlugInputPopover>
+                  )}
+                  
+                  {linkData?.is_active && onDeactivate && (
                     <Button 
-                      className="h-6 w-6 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
+                      onClick={handleDeactivateClick}
+                      className="h-7 w-7 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
                       variant="ghost" 
                       size="icon"
                       disabled={isLoading || isDeactivating || isUpdatingSlug}
-                      title="Editar enlace"
+                      title="Eliminar enlace"
                     >
-                      <Settings className="h-3 w-3 text-gray-500" />
+                      <TrashIcon className="h-3.5 w-3.5 text-gray-500" />
                     </Button>
-                  </CustomSlugInputPopover>
-                )}
-                
-                {linkData?.is_active && onDeactivate && (
-                  <Button 
-                    onClick={handleDeactivateClick}
-                    className="h-6 w-6 rounded-full bg-transparent hover:bg-gray-200 transition-colors p-0"
-                    variant="ghost" 
-                    size="icon"
-                    disabled={isLoading || isDeactivating || isUpdatingSlug}
-                    title="Eliminar enlace"
-                  >
-                    <TrashIcon className="h-3 w-3 text-gray-500" />
-                  </Button>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          
-          {/* Nueva sección con imagen, título, subtítulo y botón */}
-          <div className="mt-3 bg-gray-100 rounded-md p-3">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-16 h-16 relative">
-                <Image
-                  src={imageSrc}
-                  alt={linkType === 'classes' ? "Clases" : "Reservas"}
-                  width={64}
-                  height={64}
-                  className="object-contain"
-                />
-              </div>
+            
+            {/* Sección con opciones */}
+            <div className="bg-white rounded-md border border-gray-100 p-3">
               <div className="flex-1">
-                <h4 className="text-xs font-medium text-gray-900">
+                <h4 className="text-sm font-medium text-gray-900">
                   {linkType === 'classes' ? "Crea y administra tus clases" : "Configura tu formulario de reservas"}
                 </h4>
-                <p className="text-[10px] text-gray-500 mt-0.5 mb-2">
+                <p className="text-xs text-gray-500 mt-0.5 mb-2">
                   {linkType === 'classes' 
                     ? "Crea, edita y configura tus clases" 
                     : "Ajusta el formulario de reservas para que se ajuste a tus necesidades"}
                 </p>
                 <Button
                   onClick={handleButtonClick}
-                  variant="ghost"
-                  className="h-7 px-2 text-xs font-mono text-gray-700 hover:text-gray-900 hover:bg-gray-200"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2.5 text-xs bg-white border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   {linkType === 'classes' ? (
                     <>
-                      <CalendarPlus className="h-3 w-3 mr-1" />
+                      <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
                       Crear clase
                     </>
                   ) : (
                     <>
-                      <Settings className="h-3 w-3 mr-1" />
+                      <Settings className="h-3.5 w-3.5 mr-1.5" />
                       Configurar Formulario
                     </>
                   )}
@@ -234,30 +231,29 @@ export const LinkSection = ({
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <Button
-          onClick={onAction}
-          className="flex flex-col items-center justify-center h-12 border border-dashed rounded-lg border-gray-300 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors mb-3"
-          variant="ghost"
-          disabled={isLoading}
-        >
-          <div className="flex items-center gap-1.5">
-            <PlusCircle className="h-4 w-4 text-gray-500" />
-            <p className="text-xs text-gray-600 font-medium">
-              Crear link
-            </p>
-          </div>
-        </Button>
-      )}
+        ) : (
+          <Button
+            onClick={onAction}
+            className="w-full flex flex-col items-center justify-center h-20 border border-dashed rounded-md border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+            variant="ghost"
+            disabled={isLoading}
+          >
+            <div className="flex items-center gap-1.5">
+              <PlusCircle className="h-4 w-4 text-gray-500" />
+              <p className="text-sm text-gray-600 font-medium">
+                Crear link
+              </p>
+            </div>
+          </Button>
+        )}
+      </div>
       
-      <div className="mt-auto border-t border-gray-100 pt-2">
-        <div className="flex items-center gap-1.5">
-          <HelpCircle className="h-3 w-3 text-gray-400" />
-          <p className="text-[10px] text-gray-400">
-            ¿Necesitas ayuda? Contáctanos en <span className="underline">soporte@ejemplo.com</span>
-          </p>
-        </div>
+      {/* Pie de la tarjeta */}
+      <div className="p-3 bg-gray-50 border-t border-gray-100 flex items-center gap-1.5">
+        <HelpCircle className="h-3.5 w-3.5 text-gray-400" />
+        <p className="text-xs text-gray-500">
+          ¿Necesitas ayuda? <span className="text-blue-600 hover:underline cursor-pointer">Contáctanos</span>
+        </p>
       </div>
     </motion.div>
   );

@@ -32,16 +32,16 @@ export const courtService = {
         try {
           if (Array.isArray(court.available_durations)) {
             available_durations = court.available_durations
-              .map(d => Number(d))
-              .filter(d => !isNaN(d))
-              .sort((a, b) => a - b)
+              .map((d: number | string) => Number(d))
+              .filter((d: number) => !isNaN(d))
+              .sort((a: number, b: number) => a - b)
           } else if (typeof court.available_durations === 'string') {
             const parsed = JSON.parse(court.available_durations)
             if (Array.isArray(parsed)) {
               available_durations = parsed
-                .map(d => Number(d))
-                .filter(d => !isNaN(d))
-                .sort((a, b) => a - b)
+                .map((d: number | string) => Number(d))
+                .filter((d: number) => !isNaN(d))
+                .sort((a: number, b: number) => a - b)
             }
           }
         } catch (e) {
@@ -119,9 +119,9 @@ export const courtService = {
       }, {} as Record<string, number>)
 
       const available_durations = (data.available_durations || [])
-        .map(d => Number(d))
-        .filter(d => !isNaN(d))
-        .sort((a, b) => a - b)
+        .map((d: number | string) => Number(d))
+        .filter((d: number) => !isNaN(d))
+        .sort((a: number, b: number) => a - b)
 
       const courtData = {
         name: data.name.trim(),
@@ -202,9 +202,9 @@ export const courtService = {
 
       const available_durations = Array.isArray(data.available_durations)
         ? data.available_durations
-            .map(d => Number(d))
-            .filter(d => !isNaN(d))
-            .sort((a, b) => a - b)
+            .map((d: number | string) => Number(d))
+            .filter((d: number) => !isNaN(d))
+            .sort((a: number, b: number) => a - b)
         : []
 
       const courtData = {
@@ -269,5 +269,73 @@ export const courtService = {
         }
       }
     }
+  },
+
+  // Obtener una pista específica por ID
+  async getCourtById(courtId: string): Promise<ServiceResponse<Court>> {
+    try {
+      const { data, error } = await supabase
+        .from('courts')
+        .select('*')
+        .eq('id', courtId)
+        .single();
+
+      if (error) throw error;
+
+      if (!data) {
+        return {
+          error: {
+            message: 'No se encontró la pista con el ID proporcionado'
+          }
+        };
+      }
+
+      // Procesar available_durations de la misma manera que en getCourtsByBranch
+      let available_durations: number[] = [];
+      
+      try {
+        if (Array.isArray(data.available_durations)) {
+          available_durations = data.available_durations
+            .map((d: number | string) => Number(d))
+            .filter((d: number) => !isNaN(d))
+            .sort((a: number, b: number) => a - b);
+        } else if (typeof data.available_durations === 'string') {
+          const parsed = JSON.parse(data.available_durations);
+          if (Array.isArray(parsed)) {
+            available_durations = parsed
+              .map((d: number | string) => Number(d))
+              .filter((d: number) => !isNaN(d))
+              .sort((a: number, b: number) => a - b);
+          }
+        }
+      } catch (e) {
+        console.error('Error procesando available_durations:', e);
+      }
+
+      return {
+        data: {
+          ...data,
+          available_durations,
+          duration_pricing: typeof data.duration_pricing === 'string' 
+            ? JSON.parse(data.duration_pricing) 
+            : data.duration_pricing,
+          custom_pricing: typeof data.custom_pricing === 'string' 
+            ? JSON.parse(data.custom_pricing) 
+            : data.custom_pricing,
+          features: typeof data.features === 'string' 
+            ? JSON.parse(data.features) 
+            : data.features
+        }
+      };
+    } catch (error: any) {
+      console.error('Error al obtener la pista por ID:', error);
+      return {
+        error: {
+          message: 'Error al obtener la pista',
+          details: error.message,
+          hint: error.hint
+        }
+      };
+    }
   }
-} 
+}

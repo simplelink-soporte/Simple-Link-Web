@@ -1,5 +1,6 @@
 import { createSupabaseClient } from '@/lib/supabase'
 import type { ParticipantRoleEnum } from '@/types/bookings'
+import { DateTime } from 'luxon'
 
 // Detalles de la reserva
 export interface BookingDetails {
@@ -47,26 +48,128 @@ interface ParticipantRecord {
   } | null
 }
 
+/**
+ * Obtiene la zona horaria de una sede
+ * @param branchId - ID de la sede
+ * @returns La zona horaria de la sede o 'UTC' por defecto
+ */
+async function getBranchTimezone(branchId?: string): Promise<string> {
+  if (!branchId) return 'UTC';
+  
+  try {
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase
+      .from('sedes')
+      .select('timezone')
+      .eq('id', branchId)
+      .single();
+    
+    if (error || !data) {
+      console.error('❌ Error al obtener zona horaria de la sede:', error);
+      return 'UTC';
+    }
+    
+    return data.timezone || 'UTC';
+  } catch (error) {
+    console.error('❌ Error inesperado al obtener zona horaria:', error);
+    return 'UTC';
+  }
+}
+
+/**
+ * Convierte horarios locales a UTC para consultas
+ * @param timezone - Zona horaria de origen
+ * @param date - Fecha en formato local
+ * @param startTime - Hora de inicio local
+ * @param endTime - Hora de fin local
+ * @returns Horarios convertidos a UTC
+ */
+function convertToUTC(timezone: string, date: string, startTime?: string, endTime?: string) {
+  // Si no hay horarios, retornar valores por defecto
+  if (!startTime && !endTime) {
+    return {
+      startTimeUTC: undefined,
+      endTimeUTC: undefined
+    };
+  }
+  
+  let startTimeUTC: string | undefined;
+  let endTimeUTC: string | undefined;
+  
+  // Convertir hora de inicio a UTC si está presente
+  if (startTime) {
+    const localStartDateTime = DateTime.fromFormat(
+      `${date} ${startTime}`, 
+      'yyyy-MM-dd HH:mm',
+      { zone: timezone }
+    );
+    
+    // Verificar que la conversión sea válida
+    if (localStartDateTime.isValid) {
+      // Convertir a UTC y formatear como hora
+      startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
+      console.log(`🕒 Hora de inicio convertida: ${startTime} (${timezone}) → ${startTimeUTC} (UTC)`);
+    } else {
+      console.error('❌ Error al convertir hora de inicio a UTC:', localStartDateTime.invalidReason);
+    }
+  }
+  
+  // Convertir hora de fin a UTC si está presente
+  if (endTime) {
+    const localEndDateTime = DateTime.fromFormat(
+      `${date} ${endTime}`, 
+      'yyyy-MM-dd HH:mm',
+      { zone: timezone }
+    );
+    
+    // Verificar que la conversión sea válida
+    if (localEndDateTime.isValid) {
+      // Convertir a UTC y formatear como hora
+      endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
+      console.log(`🕒 Hora de fin convertida: ${endTime} (${timezone}) → ${endTimeUTC} (UTC)`);
+    } else {
+      console.error('❌ Error al convertir hora de fin a UTC:', localEndDateTime.invalidReason);
+    }
+  }
+  
+  return {
+    startTimeUTC,
+    endTimeUTC
+  };
+}
+
 export class ClassParticipantService {
   private supabase = createSupabaseClient()
 
   /**
-   * Obtiene los participantes de una clase específica
+   * Obtiene los participantes de una clase específica o sesión específica
    * @param classId ID de la clase
-   * @returns Lista de participantes de la clase
+   * @param options Opciones para filtrar participantes (fecha, hora)
+   * @returns Lista de participantes de la clase o sesión
    */
-  async getClassParticipants(classId: string): Promise<ClassParticipant[]> {
+  async getClassParticipants(
+    classId: string, 
+    options?: {
+      date?: string,
+      startTime?: string,
+      endTime?: string,
+      branchId?: string
+    }
+  ): Promise<ClassParticipant[]> {
     try {
-      console.log('🔍 Buscando participantes para la clase:', classId);
+      console.log('🔍 Buscando participantes para la clase:', classId, options ? 'con filtros' : 'sin filtros');
 
       if (!classId) {
         console.warn('❌ ClassId no proporcionado');
         return [];
       }
-
-      // 1. Buscar todas las reservas asociadas con la clase
-      // En la tabla "bookings", filtramos por class_id
-      const { data: bookings, error: bookingsError } = await this.supabase
+      
+      // Obtener la zona horaria de la sede para hacer conversiones
+      const timezone = await getBranchTimezone(options?.branchId);
+      console.log(`🌐 Zona horaria de la sede: ${timezone}`);
+      
+      // Construir la consulta base para las reservas
+      let query = this.supabase
         .from('bookings')
         .select(`
           id, 
@@ -87,8 +190,43 @@ export class ClassParticipantService {
           cancellation_reason
         `)
         .eq('class_id', classId)
-        .eq('reservation_type', 'class') // Asegurarnos que son reservas de clase
-        .is('cancelled_at', null); // Excluir reservas canceladas
+        .eq('reservation_type', 'class')
+        .is('cancelled_at', null);
+
+      // Aplicar filtros adicionales si se proporcionan
+      if (options?.date) {
+        console.log('📅 Filtrando por fecha:', options.date);
+        query = query.eq('date', options.date);
+      }
+
+      // Si hay horarios, convertirlos a UTC para las consultas
+      if (options?.startTime || options?.endTime) {
+        const { startTimeUTC, endTimeUTC } = convertToUTC(
+          timezone, 
+          options?.date || new Date().toISOString().split('T')[0],
+          options?.startTime,
+          options?.endTime
+        );
+        
+        // Si se proporciona startTime y endTime, filtrar por el rango horario exacto
+        if (startTimeUTC && endTimeUTC) {
+          console.log('⏰ Filtrando por horario UTC:', startTimeUTC, '-', endTimeUTC);
+          query = query.eq('start_time', startTimeUTC).eq('end_time', endTimeUTC);
+        }
+        // Si solo se proporciona startTime, filtrar por ese horario de inicio
+        else if (startTimeUTC) {
+          console.log('⏰ Filtrando por horario de inicio UTC:', startTimeUTC);
+          query = query.eq('start_time', startTimeUTC);
+        }
+        // Si solo se proporciona endTime, filtrar por ese horario de fin
+        else if (endTimeUTC) {
+          console.log('⏰ Filtrando por horario de fin UTC:', endTimeUTC);
+          query = query.eq('end_time', endTimeUTC);
+        }
+      }
+
+      // Ejecutar la consulta
+      const { data: bookings, error: bookingsError } = await query;
 
       if (bookingsError) {
         console.error('❌ Error al obtener reservas de la clase:', bookingsError);
@@ -96,7 +234,33 @@ export class ClassParticipantService {
       }
 
       if (!bookings || bookings.length === 0) {
-        console.log('⚠️ No se encontraron reservas para la clase:', classId);
+        const filterDescription = options ? 
+          `con filtros: ${options.date ? 'fecha=' + options.date + ', ' : ''}${options.startTime ? 'inicio=' + options.startTime + ', ' : ''}${options.endTime ? 'fin=' + options.endTime : ''}` : 
+          'sin filtros';
+        console.log(`⚠️ No se encontraron reservas para la clase: ${classId} ${filterDescription}`);
+        
+        // Intentar realizar una consulta sin filtros de hora para debug
+        if (options?.startTime || options?.endTime) {
+          console.log('🔍 Realizando consulta sin filtros de hora para debug...');
+          const { data: allBookings } = await this.supabase
+            .from('bookings')
+            .select('id, date, start_time, end_time')
+            .eq('class_id', classId)
+            .eq('reservation_type', 'class')
+            .is('cancelled_at', null);
+          
+          if (allBookings && allBookings.length > 0) {
+            console.log('📋 Reservas encontradas sin filtros de hora:', allBookings.map(b => ({
+              id: b.id,
+              date: b.date,
+              start_time: b.start_time,
+              end_time: b.end_time
+            })));
+          } else {
+            console.log('⚠️ No se encontraron reservas para esta clase, incluso sin filtros de hora');
+          }
+        }
+        
         return [];
       }
 
@@ -203,4 +367,4 @@ export class ClassParticipantService {
       return [];
     }
   }
-} 
+}

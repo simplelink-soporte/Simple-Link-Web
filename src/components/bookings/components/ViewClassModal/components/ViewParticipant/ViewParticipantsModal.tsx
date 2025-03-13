@@ -4,7 +4,7 @@ import { ParticipantBookingDetail } from "./ParticipantBookingDetail"
 import type { Participant } from "@/types/bookings"
 import { IconX } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ClassParticipant } from "@/services/classParticipantService"
 
 interface ViewParticipantsModalProps {
@@ -12,13 +12,23 @@ interface ViewParticipantsModalProps {
   onClose: () => void
   participants: Participant[]
   classId?: string
+  date?: string        // Fecha de la sesión
+  startTime?: string   // Hora de inicio de la sesión
+  endTime?: string     // Hora de fin de la sesión
+  branchId?: string    // ID de la sede para la conversión de zona horaria
+  classStatus?: string // Estado de la clase (active, completed, cancelled)
 }
 
 export function ViewParticipantsModal({
   isOpen,
   onClose,
   participants,
-  classId
+  classId,
+  date,
+  startTime,
+  endTime,
+  branchId,
+  classStatus = 'active' // Valor por defecto
 }: ViewParticipantsModalProps) {
   const [selectedParticipant, setSelectedParticipant] = useState<ClassParticipant | null>(null);
   
@@ -34,6 +44,14 @@ export function ViewParticipantsModal({
     setCurrentView("list");
     setSelectedParticipant(null);
   };
+
+  useEffect(() => {
+    // Al abrir el modal, asegurarnos de que comience en la vista de lista
+    if (isOpen) {
+      setCurrentView("list");
+      setSelectedParticipant(null);
+    }
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -76,6 +94,10 @@ export function ViewParticipantsModal({
                     <EnrolledParticipantsSection 
                       participants={participants}
                       classId={classId}
+                      date={date}
+                      startTime={startTime}
+                      endTime={endTime}
+                      branchId={branchId}
                       onSelectParticipant={handleSelectParticipant}
                     />
                   </motion.div>
@@ -89,6 +111,7 @@ export function ViewParticipantsModal({
                     <ParticipantBookingDetail 
                       participant={selectedParticipant}
                       onBack={handleBackToList}
+                      classStatus={classStatus}
                     />
                   </motion.div>
                 )}

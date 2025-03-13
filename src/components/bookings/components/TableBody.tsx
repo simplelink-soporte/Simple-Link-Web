@@ -59,6 +59,20 @@ const COURT_COLUMN_STYLES = {
   width: '100%'
 }
 
+// Función de ayuda extendida para verificar si una reserva debe tratarse como una clase
+function isBookingAClass(booking: SelectedBooking | TransformedClass | null): boolean {
+  if (!booking) return false;
+  
+  // Verificar si ya es una instancia de TransformedClass usando la función original
+  if (isTransformedClass(booking)) return true;
+  
+  // Verificar si es una reserva de tipo class con class_id
+  return 'reservation_type' in booking && 
+         booking.reservation_type === 'class' && 
+         'class_id' in booking && 
+         !!booking.class_id;
+}
+
 export function TableBody({
   timeSlots,
   visibleCourts,
@@ -196,12 +210,12 @@ export function TableBody({
                             }}
                           >
                             {existingBooking && (
-                              isTransformedClass(existingBooking) ? (
+                              isBookingAClass(existingBooking) ? (
                                 <ClassBlock
                                   startTime={existingBooking.startTime}
                                   endTime={existingBooking.endTime}
                                   currentTime={slotTime}
-                                  classData={existingBooking}
+                                  classData={existingBooking as TransformedClass}
                                   onClick={() => {
                                     onBookingClick({
                                       id: existingBooking.id,
@@ -239,17 +253,17 @@ export function TableBody({
                                       date: existingBooking.date,
                                       startTime: existingBooking.startTime,
                                       endTime: existingBooking.endTime,
-                                      totalAmount: existingBooking.totalAmount,
-                                      depositAmount: existingBooking.depositAmount,
-                                      courtPrice: existingBooking.courtPrice,
-                                      rentalItemsPrice: existingBooking.rentalItemsPrice,
-                                      paymentStatus: existingBooking.paymentStatus,
-                                      paymentMethod: existingBooking.paymentMethod,
-                                      paymentType: 'booking',
+                                      totalAmount: existingBooking.totalAmount || 0,
+                                      depositAmount: existingBooking.depositAmount || 0,
+                                      courtPrice: existingBooking.courtPrice || 0,
+                                      rentalItemsPrice: existingBooking.rentalItemsPrice || 0,
+                                      paymentStatus: existingBooking.paymentStatus || 'pending',
+                                      paymentMethod: existingBooking.paymentMethod || 'cash',
+                                      paymentType: existingBooking.paymentType || 'booking',
                                       title: existingBooking.title,
-                                      description: existingBooking.description,
-                                      participants: existingBooking.participants,
-                                      rentedItems: existingBooking.rentedItems
+                                      description: existingBooking.description || '',
+                                      participants: existingBooking.participants || [],
+                                      rentedItems: existingBooking.rentedItems || []
                                     })
                                   }}
                                 />

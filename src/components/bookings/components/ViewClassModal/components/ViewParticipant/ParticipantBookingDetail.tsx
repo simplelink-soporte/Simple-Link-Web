@@ -15,9 +15,14 @@ import type { PaymentMethodEnum, PaymentStatusEnum } from '@/types/bookings'
 interface ParticipantBookingDetailProps {
   participant: ClassParticipant | null
   onBack: () => void
+  classStatus?: string // Estado de la clase (active, completed, cancelled)
 }
 
-export function ParticipantBookingDetail({ participant, onBack }: ParticipantBookingDetailProps) {
+export function ParticipantBookingDetail({ 
+  participant, 
+  onBack,
+  classStatus = 'active' // Valor por defecto
+}: ParticipantBookingDetailProps) {
   const [isEditingPayment, setIsEditingPayment] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createSupabaseClient();
@@ -25,6 +30,9 @@ export function ParticipantBookingDetail({ participant, onBack }: ParticipantBoo
   if (!participant) {
     return null
   }
+
+  // Verificar si está inhabilitada la edición basado en el estado de la clase
+  const isEditingDisabled = classStatus === 'completed' || classStatus === 'cancelled';
 
   // Función helper para formatear moneda
   const formatCurrency = (amount: number | undefined) => {
@@ -239,11 +247,21 @@ export function ParticipantBookingDetail({ participant, onBack }: ParticipantBoo
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsEditingPayment(true)}
-                  className="h-8 w-8"
+                  className={cn("h-8 w-8", {
+                    "opacity-50 cursor-not-allowed": isEditingDisabled
+                  })}
+                  disabled={isEditingDisabled}
+                  title={isEditingDisabled ? "No se puede editar una reserva de clase finalizada o cancelada" : "Editar detalles de pago"}
                 >
                   <IconEdit size={16} className="text-gray-500" />
                 </Button>
               </div>
+              
+              {isEditingDisabled && (
+                <div className="absolute top-14 right-4 left-4 bg-gray-50 border border-gray-200 rounded-md p-2 text-xs text-gray-500 text-center shadow-sm">
+                  No se puede editar una reserva de {classStatus === 'completed' ? 'clase finalizada' : 'clase cancelada'}
+                </div>
+              )}
               
               <div className="p-4 space-y-4">
                 {/* Estado del pago */}

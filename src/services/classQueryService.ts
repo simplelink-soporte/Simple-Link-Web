@@ -195,12 +195,21 @@ export const classQueryService = {
         .from('classes')
         .select('*')
         .eq('empresa_id', options.empresaId)
-        .eq('status', options?.status || 'active')
+
+      // Determinar qué estados de clase incluir
+      if (options?.includeCompleted) {
+        // Si se solicita incluir completadas, consultamos tanto activas como completadas
+        query = query.in('status', ['active', 'completed'])
+        console.log('🔍 ClassQueryService - Incluyendo clases completadas')
+      } else {
+        // Por defecto, solo consultamos con el estado especificado (o 'active' por defecto)
+        query = query.eq('status', options?.status || 'active')
+      }
 
       // Log de la construcción de la query
       console.log('🔧 ClassQueryService - Construyendo query:', {
         empresaId: options.empresaId,
-        status: options?.status || 'active'
+        status: options?.includeCompleted ? ['active', 'completed'] : options?.status || 'active'
       })
 
       // Filtrar por sede si se especifica
@@ -303,8 +312,8 @@ export const classQueryService = {
       dayOfWeek = 0
     }
 
-    // Verificar estado y visibilidad
-    if (classData.status !== 'active') return false
+    // Verificar estado y visibilidad - Ahora permitimos 'active' y 'completed'
+    if (classData.status !== 'active' && classData.status !== 'completed') return false
 
     // Verificar si la fecha está dentro del rango
     if (targetDate < startDate) return false
@@ -336,19 +345,194 @@ export const classQueryService = {
     const transformedClasses: TransformedClass[] = []
 
     for (const classData of classes) {
+      // Registrar cada clase procesada con su estado
+      console.log(`📊 ClassQueryService - Procesando clase: ${classData.id}, Estado: ${classData.status}`);
+
       // Verificar si la clase está activa para la fecha
       if (!this.isClassActive(classData, date)) {
         console.log('⏭️ ClassQueryService - Clase no activa para la fecha:', {
           classId: classData.id,
+          status: classData.status,
           date
         })
         continue
       }
 
-      // Procesar cada time slot de la clase
+      // Si la clase tiene estado 'completed', registrarlo específicamente
+      if (classData.status === 'completed') {
+        console.log('🏁 ClassQueryService - Incluyendo clase completada:', {
+          classId: classData.id,
+          name: classData.name,
+          date
+        });
+      }
+
+      // Verificar si la clase tiene sesiones suspendidas
+      const suspendedSessions = (classData.schedule_config as any).suspendedSessions || [];
+      
+      // Verificar si la clase tiene sesiones específicas para la fecha dada
+      const specificSessions = (classData.schedule_config as any).specificSessions || [];
+      const specificSessionsForDate = specificSessions.filter(
+        (s: any) => s.date === date
+      );
+      
+      console.log('🔍 ClassQueryService - Sesiones específicas para esta fecha:', {
+        classId: classData.id,
+        date,
+        totalSpecificSessions: specificSessionsForDate.length
+      });
+      
+      // Procesar sesiones específicas (tienen prioridad sobre timeslots normales)
+      for (const specificSession of specificSessionsForDate) {
+        // El courtIds en las sesiones específicas es un string, no un array
+        const courtId = specificSession.courtIds;
+        
+        // Verificar si esta sesión específica está suspendida
+        const isSuspended = suspendedSessions.some(
+          (s: any) => s.date === date && 
+               s.startTime === specificSession.startTime && 
+               s.endTime === specificSession.endTime &&
+               s.courtId === courtId
+        );
+        
+        if (isSuspended) {
+          console.log('⏭️ ClassQueryService - Sesión específica suspendida:', {
+            classId: classData.id,
+            date,
+            startTime: specificSession.startTime,
+            endTime: specificSession.endTime,
+            courtId
+          });
+          
+          // Agregar la sesión suspendida para que la UI pueda mostrarla si es necesario
+          transformedClasses.push({
+            id: `${classData.id}-${courtId}-${specificSession.startTime}`,
+            courtId,
+            date,
+            startTime: specificSession.startTime,
+            endTime: specificSession.endTime,
+            title: classData.name,
+            description: classData.description,
+            type: 'class',
+            instructor: specificSession.instructors[0] || 'Sin instructor',
+            capacity: specificSession.capacity,
+            currentParticipants: 0,
+            status: classData.status,
+            visibility: classData.visibility,
+            price: specificSession.price || 0,
+            classId: classData.id,
+            sessionId: `${classData.id}-${courtId}-${specificSession.startTime}-${specificSession.endTime}`,
+            isSuspended: true,
+            isSpecificSession: true // Añadir un flag para identificar sesiones específicas
+          });
+          continue;
+        }
+        
+        console.log('➕ ClassQueryService - Agregando sesión específica:', {
+          classId: classData.id,
+          date,
+          startTime: specificSession.startTime,
+          endTime: specificSession.endTime,
+          courtId,
+          capacity: specificSession.capacity
+        });
+        
+        // Agregar la sesión específica (usando mismo formato de ID que timeslots normales)
+        transformedClasses.push({
+          id: `${classData.id}-${courtId}-${specificSession.startTime}`,
+          courtId,
+          date,
+          startTime: specificSession.startTime,
+          endTime: specificSession.endTime,
+          title: classData.name,
+          description: classData.description,
+          type: 'class',
+          instructor: specificSession.instructors[0] || 'Sin instructor',
+          capacity: specificSession.capacity,
+          currentParticipants: 0,
+          status: classData.status,
+          visibility: classData.visibility,
+          price: specificSession.price || 0,
+          classId: classData.id,
+          sessionId: `${classData.id}-${courtId}-${specificSession.startTime}-${specificSession.endTime}`,
+          isSuspended: false,
+          isSpecificSession: true // Añadir un flag para identificar sesiones específicas
+        });
+      }
+      
+      // Procesar cada time slot de la clase (solo si no hay sesión específica que lo reemplace)
       for (const timeSlot of classData.schedule_config.timeSlots) {
+        // Verificar si el time slot está deshabilitado
+        if ('isDisabled' in timeSlot && timeSlot.isDisabled === true) {
+          console.log('⏭️ ClassQueryService - Time slot deshabilitado, saltando:', {
+            classId: classData.id,
+            startTime: timeSlot.startTime,
+            endTime: timeSlot.endTime
+          });
+          continue;
+        }
+
         // Crear una entrada por cada cancha asignada
         for (const courtId of timeSlot.courtIds) {
+          // Verificar si existe una sesión específica para esta combinación de fecha/hora/cancha
+          const isReplacedBySpecificSession = specificSessionsForDate.some(
+            (s: any) => s.startTime === timeSlot.startTime && 
+                 s.endTime === timeSlot.endTime &&
+                 s.courtIds === courtId
+          );
+          
+          // Si ya hay una sesión específica para este slot, omitimos el timeslot genérico
+          if (isReplacedBySpecificSession) {
+            console.log('⏭️ ClassQueryService - Time slot reemplazado por sesión específica:', {
+              classId: classData.id,
+              date,
+              startTime: timeSlot.startTime,
+              endTime: timeSlot.endTime,
+              courtId
+            });
+            continue;
+          }
+          
+          // Verificar si esta combinación específica está suspendida para esta fecha
+          const isSuspended = suspendedSessions.some(
+            (s: any) => s.date === date && 
+                 s.startTime === timeSlot.startTime && 
+                 s.endTime === timeSlot.endTime &&
+                 s.courtId === courtId
+          );
+          
+          if (isSuspended) {
+            console.log('⏭️ ClassQueryService - Sesión suspendida para esta fecha, saltando:', {
+              classId: classData.id,
+              date,
+              startTime: timeSlot.startTime,
+              endTime: timeSlot.endTime,
+              courtId
+            });
+            // En lugar de hacer un continue, vamos a marcar la sesión como suspendida
+            // para que la UI pueda decidir qué hacer con ella
+            transformedClasses.push({
+              id: `${classData.id}-${courtId}-${timeSlot.startTime}`,
+              courtId,
+              date,
+              startTime: timeSlot.startTime,
+              endTime: timeSlot.endTime,
+              title: classData.name,
+              description: classData.description,
+              type: 'class',
+              instructor: timeSlot.instructors[0] || 'Sin instructor',
+              capacity: timeSlot.capacity,
+              currentParticipants: 0, // Mantener como 0 hasta que se actualice posteriormente
+              status: classData.status,
+              visibility: classData.visibility,
+              price: timeSlot.price || 0, // Incluir el precio del time slot
+              classId: classData.id, // ID original de la clase
+              sessionId: `${classData.id}-${courtId}-${timeSlot.startTime}-${timeSlot.endTime}`, // ID único para la sesión
+              isSuspended: true // Marcar como suspendida
+            });
+            continue;
+          }
+          
           transformedClasses.push({
             id: `${classData.id}-${courtId}-${timeSlot.startTime}`,
             courtId,
@@ -365,7 +549,8 @@ export const classQueryService = {
             visibility: classData.visibility,
             price: timeSlot.price || 0, // Incluir el precio del time slot
             classId: classData.id, // ID original de la clase
-            sessionId: `${classData.id}-${courtId}-${timeSlot.startTime}-${timeSlot.endTime}` // ID único para la sesión
+            sessionId: `${classData.id}-${courtId}-${timeSlot.startTime}-${timeSlot.endTime}`, // ID único para la sesión
+            isSuspended: false // Marcar explícitamente como no suspendida
           })
         }
       }
@@ -430,8 +615,18 @@ export const classQueryService = {
           classId: originalClassId,
           date: classData.date,
           startTime: classData.startTime,
-          endTime: classData.endTime
+          endTime: classData.endTime,
+          isSuspended: classData.isSuspended // Incluir estado de suspensión
         });
+        
+        // Si la clase está suspendida, no es necesario verificar la disponibilidad
+        if (classData.isSuspended) {
+          console.log('⏭️ Clase suspendida, omitiendo consulta de disponibilidad:', {
+            classId: originalClassId,
+            date: classData.date
+          });
+          continue;
+        }
         
         // Obtener información de la clase para conocer la sede
         const { data: classInfo, error: classError } = await supabase
@@ -492,6 +687,7 @@ export const classQueryService = {
             availableSpots,
             totalCapacity: classData.capacity,
             isAvailable: availableSpots > 0,
+            isSuspended: classData.isSuspended, // Mantener la información de suspensión
             // Incluir información de horarios para debugging
             horarios: {
               local: {

@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { usePackages } from "../hooks/usePackages"
 import type { Database } from "@/types/supabase"
-import { IconEye, IconEyeOff } from "@tabler/icons-react"
+import { IconEye, IconEyeOff, IconPlus, IconPackage } from "@tabler/icons-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { NewPackageModal } from "../components/NewPackageModal/NewPackageModal"
 import { EditPackageModal } from "../components/NewPackageModal/EditPackageModal"
@@ -66,7 +66,7 @@ export function PackagesTable() {
   // Renderizado condicional para estados de carga y error
   if (isLoading) {
     return (
-      <div className="w-full p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="w-full p-6 bg-transparent rounded-xl">
         <div className="text-center py-10">
           <p className="text-gray-500">Cargando paquetes...</p>
         </div>
@@ -76,7 +76,7 @@ export function PackagesTable() {
 
   if (error) {
     return (
-      <div className="w-full p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="w-full p-6 bg-transparent rounded-xl">
         <div className="text-center py-10">
           <p className="text-red-500">Error al cargar los paquetes: {error.message}</p>
         </div>
@@ -85,63 +85,92 @@ export function PackagesTable() {
   }
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header de Paquetes - Actualizado */}
-      <div className="space-y-6 bg-transparent p-4 rounded-lg shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="flex-1 space-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="text-md font-medium text-gray-800">Lista de Paquetes</h3>
-              </div>
-              <Button 
-                onClick={() => setIsNewPackageModalOpen(true)}
-                variant="outline"
-                className="px-4 py-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200"
-              >
-                Crear Paquete
-              </Button>
-            </div>
-            <p className="text-xs text-gray-600">Administra los paquetes de sesiones para tus clientes y crea planes de suscripción a clases para una mejor experiencia.</p>
+      <div className="space-y-5 bg-transparent p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-gray-900">Lista de Paquetes</h3>
+            <p className="text-xs text-gray-500">Administra los paquetes de sesiones para tus clientes y crea planes de suscripción a clases para una mejor experiencia.</p>
           </div>
+          <Button 
+            onClick={() => setIsNewPackageModalOpen(true)}
+            variant="outline"
+            size="sm"
+            className="px-3 py-1.5 h-8 bg-white border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+          >
+            <IconPlus className="h-3.5 w-3.5 mr-1.5" />
+            Crear Paquete
+          </Button>
         </div>
 
         {/* Lista de Paquetes */}
-        <div className="space-y-3">
+        <div className="space-y-2 mt-4">
           {packages.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-gray-500">No hay paquetes registrados</p>
+            <div className="flex flex-col items-center justify-center py-10 bg-gray-50/25 rounded-lg border border-dashed border-gray-100/75">
+              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                <Image 
+                  src="/images/Miroodles - Sticker 5.png"
+                  width={32}
+                  height={32}
+                  alt="No hay paquetes"
+                  className="object-contain"
+                />
+              </div>
+              <p className="text-sm text-gray-500">No hay paquetes registrados</p>
+              <Button 
+                onClick={() => setIsNewPackageModalOpen(true)}
+                variant="outline"
+                size="sm"
+                className="mt-3 px-3 py-1.5 h-8 text-xs bg-white border-gray-200"
+              >
+                <IconPackage className="h-3.5 w-3.5 mr-1.5" />
+                Crear tu primer paquete
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {packages.map((packageItem) => (
                 <div
                   key={packageItem.id}
                   className={cn(
-                    "flex items-center justify-between p-2 rounded-lg",
-                    "bg-white hover:bg-gray-50",
-                    "border border-gray-200 hover:border-gray-300",
+                    "flex items-center justify-between p-3 rounded-md",
+                    "bg-white hover:bg-gray-50/80",
+                    "border border-gray-50 hover:border-gray-100",
                     "transition-all duration-200",
-                    "cursor-pointer",
-                    packageItem.status === 'inactive' && "opacity-60"
+                    "relative overflow-hidden",
+                    packageItem.status === 'inactive' && "opacity-85"
                   )}
                   onClick={() => handlePackageClick(packageItem)}
                 >
-                  <div className="space-y-1">
+                  {/* Indicador visual de estado (barra lateral) */}
+                  <div className={cn(
+                    "absolute left-0 top-0 bottom-0 w-[4px]",
+                    packageItem.status === 'active' 
+                      ? "bg-blue-500/60"
+                      : "bg-gray-300/60"
+                  )} />
+                  
+                  <div className="space-y-1 pl-2">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-md font-medium text-gray-800">
+                      <h4 className="text-sm font-medium text-gray-900">
                         {packageItem.name}
                       </h4>
                       {packageItem.tag && (
-                        <span className="text-xs text-blue-800">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
                           {packageItem.tag}
                         </span>
                       )}
-                      {packageItem.status === 'inactive' && (
-                        <span className="text-xs text-gray-500">(Oculto)</span>
-                      )}
+                      <span className={cn(
+                        "text-[10px] px-1.5 py-0.5 rounded-full",
+                        packageItem.status === 'active'
+                          ? "bg-blue-50 text-blue-700 border border-blue-100"
+                          : "bg-gray-50 text-gray-600 border border-gray-100"
+                      )}>
+                        {packageItem.status === 'active' ? 'Activo' : 'Inactivo'}
+                      </span>
                     </div>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-500">
                       {packageItem.class_count} {packageItem.class_count === 1 ? 'sesión' : 'sesiones'} • 
                       Expira en {packageItem.expiration_days} días • 
                       ${packageItem.price}
@@ -156,24 +185,36 @@ export function PackagesTable() {
                       }}
                     >
                       <PopoverTrigger asChild>
-                        <button
-                          className={cn(
-                            "p-1.5 rounded-md transition-colors",
-                            packageItem.status === 'active'
-                              ? "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                              : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                          )}
-                        >
-                          {packageItem.status === 'active' ? (
-                            <IconEye className="w-4 h-4" />
-                          ) : (
-                            <IconEyeOff className="w-4 h-4" />
-                          )}
-                          <span className="sr-only">
-                            {packageItem.status === 'active' ? 'Ocultar paquete' : 'Mostrar paquete'}
-                          </span>
-                        </button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                className={cn(
+                                  "p-1.5 rounded-md transition-colors",
+                                  packageItem.status === 'active'
+                                    ? "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                                )}
+                              >
+                                {packageItem.status === 'active' ? (
+                                  <IconEye className="w-4 h-4" />
+                                ) : (
+                                  <IconEyeOff className="w-4 h-4" />
+                                )}
+                                <span className="sr-only">
+                                  {packageItem.status === 'active' ? 'Ocultar paquete' : 'Mostrar paquete'}
+                                </span>
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              <p className="text-xs">
+                                {packageItem.status === 'active' ? 'Ocultar paquete' : 'Mostrar paquete'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </PopoverTrigger>
+                      
                       <PopoverContent className="w-auto p-3" align="end">
                         <div className="text-sm">
                           <p>¿Desea {packageItem.status === 'active' ? 'ocultar' : 'mostrar'} este paquete?</p>

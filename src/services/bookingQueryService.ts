@@ -41,6 +41,9 @@ interface BookingDB {
   booking_participants?: ParticipantDB[]
   booking_rentals?: RentalItemDB[]
   payments?: PaymentDB[]
+  reservation_type: string
+  class_id: string
+  class_session_price: number
 }
 
 interface CourtDB {
@@ -116,7 +119,10 @@ const transformBooking = (booking: unknown): SelectedBooking => {
     title: bookingData.title || '',
     description: bookingData.description || '',
     participants,
-    rentedItems
+    rentedItems,
+    reservation_type: bookingData.reservation_type,
+    class_id: bookingData.class_id,
+    class_session_price: bookingData.class_session_price
   }
 }
 
@@ -167,7 +173,10 @@ export const bookingQueryService = {
             items (
               name
             )
-          )
+          ),
+          reservation_type,
+          class_id,
+          class_session_price
         `)
         .eq('id', id)
         .single()
@@ -237,7 +246,10 @@ export const bookingQueryService = {
             items (
               name
             )
-          )
+          ),
+          reservation_type,
+          class_id,
+          class_session_price
         `)
         .eq('date', date)
         .or('payment_status.neq.cancelled,payment_status.is.null')

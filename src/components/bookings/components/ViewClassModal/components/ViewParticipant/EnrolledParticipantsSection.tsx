@@ -8,12 +8,20 @@ import { ClassParticipantService, ClassParticipant } from '@/services/classParti
 interface EnrolledParticipantsSectionProps {
   participants: Participant[]
   classId?: string
+  date?: string        // Fecha de la sesión
+  startTime?: string   // Hora de inicio de la sesión
+  endTime?: string     // Hora de fin de la sesión
+  branchId?: string    // ID de la sede para la conversión de zona horaria
   onSelectParticipant: (participant: ClassParticipant) => void
 }
 
 export function EnrolledParticipantsSection({ 
   participants, 
-  classId, 
+  classId,
+  date,
+  startTime,
+  endTime,
+  branchId,
   onSelectParticipant 
 }: EnrolledParticipantsSectionProps) {
   const [classParticipants, setClassParticipants] = useState<ClassParticipant[]>([]);
@@ -30,11 +38,28 @@ export function EnrolledParticipantsSection({
         
         try {
           const participantService = new ClassParticipantService();
-          const fetchedParticipants = await participantService.getClassParticipants(classId);
+          
+          // Pasamos los parámetros de filtrado si están disponibles
+          const fetchedParticipants = await participantService.getClassParticipants(
+            classId, 
+            {
+              date,
+              startTime,
+              endTime,
+              branchId
+            }
+          );
           
           setClassParticipants(fetchedParticipants);
           setFilteredParticipants(fetchedParticipants);
-          console.log('Participantes cargados:', fetchedParticipants.length);
+          
+          // Mostrar información sobre los filtros aplicados
+          const filterInfo = [];
+          if (date) filterInfo.push(`fecha: ${date}`);
+          if (startTime) filterInfo.push(`inicio: ${startTime}`);
+          if (endTime) filterInfo.push(`fin: ${endTime}`);
+          
+          console.log(`Participantes cargados: ${fetchedParticipants.length}${filterInfo.length > 0 ? ' (filtros: ' + filterInfo.join(', ') + ')' : ''}`);
         } catch (err) {
           console.error('Error al obtener participantes:', err);
           setError('No se pudieron cargar los participantes de la clase');
@@ -60,7 +85,7 @@ export function EnrolledParticipantsSection({
     };
 
     fetchClassParticipants();
-  }, [classId, participants]);
+  }, [classId, participants, date, startTime, endTime, branchId]);
 
   // Filtrar participantes cuando cambia el término de búsqueda
   useEffect(() => {

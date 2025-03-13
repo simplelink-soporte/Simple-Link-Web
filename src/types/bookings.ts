@@ -256,6 +256,9 @@ export interface SelectedBooking {
     quantity: number;
     pricePerUnit: number;
   }>;
+  reservation_type?: ReservationTypeEnum;
+  class_id?: string;
+  class_session_price?: number;
 }
 
 export interface TimeSelection {

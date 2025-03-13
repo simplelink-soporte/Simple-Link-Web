@@ -28,11 +28,21 @@ interface ClassWithLink extends BaseClass {
   }
 }
 
-async function fetchClasses(empresaId: string, branchId?: string) {
+interface FetchClassesOptions {
+  empresaId: string
+  branchId?: string
+  includeCompleted?: boolean // Nuevo parámetro para incluir clases completadas
+}
+
+async function fetchClasses({
+  empresaId,
+  branchId,
+  includeCompleted = false
+}: FetchClassesOptions) {
   const supabase = createClientComponentClient<Database>()
   
   try {
-    console.log('🔍 Iniciando carga de clases...', { empresaId, branchId })
+    console.log('🔍 Iniciando carga de clases...', { empresaId, branchId, includeCompleted })
 
     // 1. Obtener el company_link de la empresa
     const { data: companyLink, error: linkError } = await supabase
@@ -61,6 +71,11 @@ async function fetchClasses(empresaId: string, branchId?: string) {
         )
       `)
       .eq('empresa_id', empresaId)
+    
+    // Filtrar clases completadas a menos que se soliciten explícitamente
+    if (!includeCompleted) {
+      query = query.neq('status', 'completed')
+    }
 
     // 3. Aplicar filtro por sede si existe
     if (branchId) {
@@ -103,7 +118,8 @@ async function fetchClasses(empresaId: string, branchId?: string) {
     console.log('✅ Clases cargadas:', {
       empresaId,
       branchId,
-      count: classesWithLinks.length
+      count: classesWithLinks.length,
+      includeCompleted
     })
 
     return classesWithLinks
@@ -113,15 +129,22 @@ async function fetchClasses(empresaId: string, branchId?: string) {
   }
 }
 
-export function useClasses({ branchId }: UseClassesProps = {}) {
+export function useClasses({
+  branchId,
+  includeCompleted = false
+}: UseClassesProps & { includeCompleted?: boolean } = {}) {
   const { empresa, isLoading: isLoadingEmpresa } = useCurrentEmpresa()
   const queryClient = useQueryClient()
 
   const query = useQuery({
-    queryKey: queryKeys.classes.list({ branchId, empresaId: empresa?.id }),
+    queryKey: queryKeys.classes.list({ branchId, empresaId: empresa?.id, includeCompleted }),
     queryFn: () => {
       if (!empresa?.id) throw new Error('No se encontró la empresa asociada')
-      return fetchClasses(empresa.id, branchId)
+      return fetchClasses({
+        empresaId: empresa.id,
+        branchId,
+        includeCompleted
+      })
     },
     enabled: !isLoadingEmpresa && !!empresa?.id,
     placeholderData: keepPreviousData,
@@ -134,7 +157,7 @@ export function useClasses({ branchId }: UseClassesProps = {}) {
     if (!empresa?.id) return
 
     queryClient.setQueryData<ClassWithLink[]>(
-      queryKeys.classes.list({ branchId, empresaId: empresa.id }),
+      queryKeys.classes.list({ branchId, empresaId: empresa.id, includeCompleted }),
       old => {
         if (!old) return [newClass]
         // Si la clase ya existe, la actualizamos, si no, la agregamos al inicio
@@ -145,7 +168,7 @@ export function useClasses({ branchId }: UseClassesProps = {}) {
         return [newClass, ...old]
       }
     )
-  }, [empresa?.id, branchId, queryClient])
+  }, [empresa?.id, branchId, includeCompleted, queryClient])
 
   // Función para invalidar y refrescar los datos
   const invalidateClasses = useCallback(async () => {
@@ -162,7 +185,11 @@ export function useClasses({ branchId }: UseClassesProps = {}) {
     if (branchId) {
       await queryClient.prefetchQuery({
         queryKey: queryKeys.classes.list({ empresaId: empresa.id }),
-        queryFn: () => fetchClasses(empresa.id),
+        queryFn: () => fetchClasses({
+          empresaId: empresa.id,
+          branchId,
+          includeCompleted: false
+        }),
       })
     }
   }

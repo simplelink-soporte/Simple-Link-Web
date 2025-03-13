@@ -59,11 +59,13 @@ export default function ClassesPage() {
               <NoBranchState />
             ) : (
               <div className="p-6">
-                <div className="flex justify-start mb-6">
-                  <ViewSelector 
-                    value={currentView} 
-                    onValueChange={setCurrentView} 
-                  />
+                <div className="flex items-start mb-6">
+                  <div className="w-48">
+                    <ViewSelector 
+                      value={currentView} 
+                      onValueChange={setCurrentView} 
+                    />
+                  </div>
                 </div>
                 <Suspense fallback={<LoadingState />}>
                   {currentView === 'classes' ? (

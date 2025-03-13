@@ -39,13 +39,18 @@ export function ClassBlock({
         title: classData.title,
         currentParticipants: classData.currentParticipants,
         capacity: classData.capacity,
-        isFull: classData.currentParticipants >= classData.capacity
+        isFull: classData.currentParticipants >= classData.capacity,
+        isSuspended: classData.isSuspended,
+        isSpecificSession: classData.isSpecificSession,
+        courtId: classData.courtId,
+        startTime: classData.startTime,
+        endTime: classData.endTime
       });
     }
   }, [classData, currentTime, startTime]);
 
-  // No mostrar el bloque si la clase está cancelada
-  if (classData.status === 'cancelled') return null
+  // No mostrar el bloque si la clase está cancelada o suspendida
+  if (classData.status === 'cancelled' || classData.isSuspended === true) return null
 
   const isFirstSlot = timeToMinutes(currentTime) === timeToMinutes(startTime)
   const isWithinBooking = 
