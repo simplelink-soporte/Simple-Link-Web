@@ -6,7 +6,7 @@ import { PackageSelectionStep } from './PackageSelectionStep'
 import { ClassSelectionStep } from './ClassSelectionStep'
 import { SessionStep } from './SessionStep'
 import { SummaryStep } from './SummaryStep'
-import { PaymentStep } from './PaymentStep'
+// PaymentStep eliminado del flujo
 import { ConfirmationStep } from './ConfirmationStep'
 import { NoCreditsClass } from './noCreditsClass'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
@@ -58,7 +58,7 @@ export function StepRenderer() {
           {state.step === 'class' && <ClassSelectionStep />}
           {state.step === 'session' && <SessionStep />}
           {state.step === 'summary' && <SummaryStep />}
-          {state.step === 'payment' && <PaymentStep />}
+          {/* PaymentStep eliminado del flujo */}
           {state.step === 'confirmation' && <ConfirmationStep />}
         </AnimatePresence>
       </div>

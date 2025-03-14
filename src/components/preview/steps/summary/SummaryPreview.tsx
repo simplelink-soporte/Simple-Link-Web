@@ -14,7 +14,7 @@ import { PaymentTypeModal } from "./modals/PaymentTypeModal";
 import { CouponsModal } from "./modals/CouponsModal";
 import { TotalPrice } from "./components/TotalPrice";
 import { PreviewPopup } from "../../shared/PreviewPopup";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { SummaryStepField } from "@/components/steps/summary/types";
 import { PaymentMethod, PaymentType, PaymentMethodEnum } from "./types";
 import { StripeProvider } from "@/providers/StripeProvider";
@@ -28,13 +28,16 @@ import { useForm } from '@/contexts/FormContext';
 import { MobilePaymentContainer } from './components/mobile/MobilePaymentContainer';
 import { MobileNavigation } from "@/components/preview/layout/MobileNavigation";
 import { PaymentState } from '@/contexts/FormContext';
-import { PaymentTypeEnum } from './types';
+import { PaymentTypeEnum } from '@/types/bookings';
 import { useSummaryBooking as useSummaryBookingHook } from './hooks/use-summary-booking';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { DesktopSummaryLayout } from "./layout/DesktopSummaryLayout";
 import { DesktopReservationDetails } from "./components/desktop/DesktopReservationDetails";
 import { PaymentState as PaymentStateType } from '@/types/payments';
+import { Coupon } from './types';
+import { useStoredCards } from "@/hooks/useStoredCards";
+import { useStripe } from "@/contexts/StripeContext";
 
 interface SummaryPreviewProps {
   field: SummaryStepField;
@@ -48,6 +51,11 @@ interface SummaryPreviewProps {
   slug: string;
 }
 
+// Función de utilidad para asegurar que nunca se usa un valor null donde se espera un string
+const ensureString = (value: string | null | undefined): string => {
+  return value || '';
+};
+
 export function SummaryPreview({ 
   field, 
   theme, 
@@ -60,11 +68,37 @@ export function SummaryPreview({
   slug
 }: SummaryPreviewProps) {
   const { empresaId, isLoading: isConfigLoading, error: configError } = useFormConfig(slug);
-  const [isValidForNextStep, setIsValidForNextStep] = useState(false);
   const [showStripeError, setShowStripeError] = useState(false);
   const [stripeInitialized, setStripeInitialized] = useState(false);
-  const [showCoupons, setShowCoupons] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { state, setPayment } = useForm();
+  
+  useEffect(() => {
+    if (!isConfigLoading) {
+      if (!empresaId) {
+        console.error('[SummaryPreview] Error: No se encontró el ID de empresa');
+        setShowStripeError(true);
+      } else {
+        console.log('[SummaryPreview] ID de empresa encontrado:', empresaId);
+        setStripeInitialized(true);
+      }
+    }
+  }, [empresaId, isConfigLoading]);
+
+  // Este es un componente interno que maneja la lógica de procesamiento de pago
+  // Solo se renderiza cuando StripeProvider está disponible
+  const SummaryContent = useCallback(() => {
+    // Hooks y estado seguros aquí porque estamos dentro del StripeProvider
+    const { cards, customerInfo } = useStoredCards();
+    const stripeContext = useStripe();
+    const [isValidForNextStep, setIsValidForNextStep] = useState(false);
+    const [showCoupons, setShowCoupons] = useState(false);
+  const [paymentIntent, setPaymentIntent] = useState<string | null>(null);
+    const [showPopup, setShowPopup] = useState(false);
+    
+    // Coupon state
+    const [couponCode, setCouponCode] = useState('');
+    const [couponError, setCouponError] = useState('');
 
   const { 
     calculations,
@@ -84,19 +118,19 @@ export function SummaryPreview({
     isValid,
     hasWarnings,
     validationErrors,
-    isCreating: isProcessing
   } = useSummaryBooking({
     onSuccess: () => {
       toast.success('Configuración completada');
     },
     onError: (error) => {
       toast.error(error.message);
-      setShowStripeError(true);
-    }
-  });
+      }
+    });
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [paymentIntent, setPaymentIntent] = useState<string | undefined>(undefined);
+    // Determinar si el paso requiere pago
+    const requiresPayment = useMemo(() => {
+      return calculations?.total > 0 && selectedPaymentType === 'full';
+    }, [calculations?.total, selectedPaymentType]);
 
   useEffect(() => {
     const validateStep = () => {
@@ -110,196 +144,164 @@ export function SummaryPreview({
     validateStep();
   }, [selectedPaymentType, selectedPaymentMethod]);
 
-  useEffect(() => {
-    if (!isConfigLoading) {
-      if (!empresaId) {
-        console.error('[SummaryPreview] Error: No se encontró el ID de empresa');
-        setShowStripeError(true);
-      } else {
-        console.log('[SummaryPreview] ID de empresa encontrado:', empresaId);
-        setStripeInitialized(true);
+    // Procesar pago con el servicio de pago completo
+    const processPayment = async (): Promise<{success: boolean, paymentIntentId?: string}> => {
+      console.log('[SummaryPreview] Procesando pago con stripe...');
+      
+      if (!selectedPaymentMethod) {
+        console.error('[SummaryPreview] Error: selectedPaymentMethod es null');
+        toast.error('Error en la configuración del método de pago');
+        return { success: false };
       }
-    }
-  }, [empresaId, isConfigLoading]);
-
-  useEffect(() => {
-    if (selectedPaymentMethod && selectedPaymentType) {
-      console.log('[SummaryPreview] Actualizando estado global de pago:', {
-        method: selectedPaymentMethod,
-        type: selectedPaymentType,
-        currentState: state.payment
-      });
       
-      // Crear un objeto de pago completo con todos los datos necesarios
-      const paymentUpdate = {
-        method: selectedPaymentMethod.type === 'card' ? 'stripe' : selectedPaymentMethod.type as any,
-        type: selectedPaymentType as any,
-        config: {
-          paymentMethodId: selectedPaymentMethod.id,
-          brand: selectedPaymentMethod.brand,
-          last4: selectedPaymentMethod.last4,
-          expMonth: selectedPaymentMethod.expMonth,
-          expYear: selectedPaymentMethod.expYear
-        },
-        // Agregar selectedPaymentMethod completo para tener todas las propiedades
-        selectedPaymentMethod: selectedPaymentMethod
-      };
-      
-      console.log('[SummaryPreview] Objeto de pago a actualizar:', paymentUpdate);
-      
-      // Actualizar el estado global con el objeto completo
-      setPayment(paymentUpdate);
-      
-      console.log('[SummaryPreview] Estado global actualizado');
-    }
-  }, [selectedPaymentMethod, selectedPaymentType, setPayment]);
-
-  const handleNext = useCallback(async (paymentData?: any) => {
-    // Log detallado al inicio para diagnóstico
-    console.log('[SummaryPreview] Datos recibidos para avance:', {
-      hasPaymentData: !!paymentData,
-      paymentIntentId: paymentData?.paymentIntentId,
-      processed: paymentData?.processed,
-      paymentType: paymentData?.paymentType,
-      timestamp: new Date().toISOString()
-    });
-
-    // 1. Validaciones iniciales
-    if (!isValid) {
-      const errors = validationErrors.map(err => err.message).join('\n');
-      toast.error(`Por favor, verifica los siguientes campos:\n${errors}`);
-      return;
-    }
-
-    if (!selectedPaymentType || !selectedPaymentMethod) {
-      toast.error('Por favor, completa la configuración de pago');
-      return;
-    }
-
-    // 2. Verificar si el pago ya fue procesado por MobilePaymentContainer
-    if (paymentData?.paymentIntentId && paymentData?.processed) {
-      console.log('[SummaryPreview] Pago ya procesado en MobilePaymentContainer:', {
-        paymentIntentId: paymentData.paymentIntentId,
-        status: paymentData.paymentStatus
-      });
-      
-      // Actualizar estado con el PaymentIntent recibido
-      setPaymentIntent(paymentData.paymentIntentId);
-      
-      // Actualizar el estado global del pago - CRUCIAL para la validación
-      setPayment({
-        method: 'card',
-        type: 'full' as unknown as PaymentTypeEnum,
-        processed: true,
-        paymentIntentId: paymentData.paymentIntentId,
-        status: 'completed',
-        selectedPaymentMethod: selectedPaymentMethod
-      });
-      
-      // Avanzar al siguiente paso
-      onNext();
-      return;
-    }
-
-    // 3. Si tenemos shouldChargeFullAmount, procesar el pago aquí
-    if (paymentData?.shouldChargeFullAmount === true) {
-      console.log('[SummaryPreview] Procesando pago completo localmente');
-      
-      // Mostrar indicador de carga
-      toast.loading('Procesando pago...', { id: 'payment-processing' });
-      
+      // Obtener datos necesarios para procesar el pago
+        const stripeAccountId = stripeContext?.stripeAccountId;
+        const stripeCustomerId = customerInfo?.customerId || customerInfo?.stripeCustomerId;
+        
+        if (!stripeCustomerId) {
+        toast.error('No se encontró información del cliente de Stripe');
+        return { success: false };
+        }
+        
+        if (!stripeAccountId) {
+        toast.error('No se encontró la cuenta de Stripe');
+        return { success: false };
+        }
+        
       try {
-        // Importar dinámicamente el servicio de pago
+        // Importar el servicio de pago dinámicamente (esto sí es válido)
         const { fullPaymentService } = await import('@/services/full-payment-client.service');
         
-        // Procesar el pago
-        const result = await fullPaymentService.processPayment({
-          paymentMethodId: paymentData.stripePaymentMethodId,
-          amount: paymentData.amount,
-          empresaId: empresaId || '',
-          description: 'Pago completo de reserva'
+        console.log('[SummaryPreview] Procesando pago con tarjeta guardada:', {
+          cardId: selectedPaymentMethod.id,
+          amount: calculations.total,
+          stripeCustomerId: stripeCustomerId,
+          stripeAccountId: stripeAccountId
         });
         
-        // Limpiar indicador de carga
-        toast.dismiss('payment-processing');
+        // Procesar el pago con todos los datos necesarios
+        const result = await fullPaymentService.processPayment({
+          paymentMethodId: selectedPaymentMethod.id,
+          amount: calculations.total,
+          empresaId: ensureString(empresaId),
+          description: 'Pago completo de reserva',
+          stripeCustomerId: stripeCustomerId,
+          stripeAccountId: stripeAccountId as string
+        });
         
         if (!result.success) {
           console.error('[SummaryPreview] Error al procesar pago:', result.error);
           toast.error(result.message || 'Error al procesar el pago');
-          return; // No avanzar si hay error
+          return { success: false };
+        }
+
+        // Si el pago fue exitoso, actualizar el estado global
+        if (result.paymentIntentId) {
+          try {
+            localStorage.setItem('lastPaymentIntentId', result.paymentIntentId);
+            localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
+          } catch (storageError) {
+            console.warn('[SummaryPreview] No se pudo guardar en localStorage:', storageError);
+          }
+          
+          // Actualizar estado local
+          setPaymentIntent(result.paymentIntentId);
+          
+          // Actualizar el estado global con el paymentIntentId
+          const paymentState: PaymentState = {
+            method: 'card' as PaymentMethodEnum,
+            type: selectedPaymentType as PaymentTypeEnum,
+            processed: true,
+            paymentIntentId: ensureString(result.paymentIntentId),
+            status: 'completed',
+            selectedPaymentMethod: {
+              id: selectedPaymentMethod.id,
+              brand: selectedPaymentMethod.brand,
+              last4: selectedPaymentMethod.last4,
+              expMonth: selectedPaymentMethod.expMonth,
+              expYear: selectedPaymentMethod.expYear,
+              type: selectedPaymentMethod.type,
+              name: ensureString(selectedPaymentMethod.name),
+              description: ensureString(selectedPaymentMethod.description)
+            }
+          };
+          
+          setPayment(paymentState);
+          
+          return { 
+            success: true, 
+            paymentIntentId: result.paymentIntentId 
+          };
         }
         
-        // Actualizar estado con el PaymentIntent
-        setPaymentIntent(result.paymentIntentId);
-        
-        // Actualizar el estado global del pago
-        setPayment((prevState: PaymentStateType) => ({
-          ...prevState,
-          method: 'card',
-          type: 'full' as unknown as PaymentTypeEnum,
-          processed: true,
-          paymentIntentId: result.paymentIntentId,
-          status: 'completed'
-        }));
-        
-        // Notificar éxito
-        toast.success('Pago procesado correctamente');
-        
-        // Avanzar al siguiente paso
-        onNext();
-        return;
+        return { success: true };
       } catch (error: any) {
-        // Limpiar indicador de carga
-        toast.dismiss('payment-processing');
-        
-        // Log detallado del error
-        console.error('[SummaryPreview] Error al procesar pago:', error);
+        console.error('[SummaryPreview] Error procesando pago:', error);
         toast.error(`Error al procesar el pago: ${error.message || 'Error desconocido'}`);
-        return; // No avanzar si hay error
+        return { success: false };
       }
-    }
+    };
 
-    // 4. Para otros tipos de pago, continuar normalmente
-    console.log('[SummaryPreview] Avanzando sin procesamiento de pago');
-    onNext();
-  }, [isValid, validationErrors, selectedPaymentType, selectedPaymentMethod, onNext, empresaId, setPayment]);
+    // Método específico para el botón "Completar Reserva" en desktop
+    const handleReservar = async () => {
+      if (!isValid) {
+        const errors = validationErrors.map(err => err.message).join('\n');
+        toast.error(`Por favor, verifica los siguientes campos:\n${errors}`);
+        return;
+      }
 
-  const handleModalAction = (action: () => void) => {
-    if (viewType === 'mobile' || isPublicView) {
-      action();
-      return;
-    }
-    setShowPopup(true);
-  };
+      if (!selectedPaymentMethod || !selectedPaymentType) {
+        toast.error('Por favor, completa la configuración de pago');
+        return;
+      }
 
-  const handleReservar = async () => {
-    if (!isValid) {
-      console.warn('Formulario inválido, no se puede proceder');
-      return;
-    }
+      // Iniciar procesamiento de pago
+      setIsProcessing(true);
+      toast.loading('Procesando pago...', { id: 'payment-processing' });
+      
+      try {
+        // Si se requiere pago, procesarlo primero
+        if (requiresPayment) {
+          const paymentResult = await processPayment();
+          
+          // Limpiar indicador de carga
+          toast.dismiss('payment-processing');
+          
+          if (!paymentResult.success) {
+            setIsProcessing(false);
+            return;
+          }
+          
+          toast.success('Pago procesado correctamente');
+        }
+        
+        // Solo avanzar al siguiente paso si todo está bien
+        setIsProcessing(false);
+        onNext();
+      } catch (error: any) {
+        toast.dismiss('payment-processing');
+        console.error('[SummaryPreview] Error en handleReservar:', error);
+        toast.error(`Error: ${error.message || 'Error desconocido'}`);
+        setIsProcessing(false);
+      }
+    };
 
-    if (!selectedPaymentMethod || !selectedPaymentType) {
-      toast.error('Por favor, completa la configuración de pago');
-      return;
-    }
-
-    console.log('Formulario válido, procediendo a farewell');
-    await onNext();
-  };
+    const handleModalAction = (action: () => void) => {
+      if (viewType === 'mobile' || isPublicView) {
+        action();
+        return;
+      }
+      setShowPopup(true);
+    };
 
   // Función para manejar la selección de cupones
-  const handleSelectCoupon = useCallback((coupon: string) => {
+    const handleSelectCoupon = (coupon: Coupon) => {
     // Implementa la lógica para manejar cupones aquí
     console.log('Cupón seleccionado:', coupon);
     setShowCoupons(false);
-  }, []);
+    };
 
   const isMobilePublic = viewType === "mobile" && isPublicView;
-
-  // Determinar si debemos ocultar la navegación estándar
-  // La ocultamos en móvil público o cuando hay botones específicos del componente
-  // que reemplazan la funcionalidad de navegación estándar
-  const shouldHideNavigation = isMobilePublic || (viewType === "desktop" && calculations?.total > 0);
 
   // Renderizar contenido para el layout de desktop
   const renderDesktopLayout = () => {
@@ -341,7 +343,7 @@ export function SummaryPreview({
               onRemoveType={() => handleSelectPaymentType(null)}
               viewType="desktop"
               onSelectType={handleSelectPaymentType}
-              empresaId={empresaId || ''}
+                empresaId={ensureString(empresaId)}
             />
 
             {/* Título para la sección de método de pago */}
@@ -365,24 +367,30 @@ export function SummaryPreview({
                 return Promise.resolve();
               }}
               viewType={viewType}
-              empresaId={empresaId || ''}
+                empresaId={ensureString(empresaId)}
               directCardSelect={viewType === 'desktop'}
             />
             
             {isValid ? (
-              <Button 
-                onClick={handleNext}
-                disabled={isProcessing}
-                className="w-full py-3 mt-4 text-sm"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Procesando...
-                  </>
-                ) : (
-                  "Completar Reserva"
-                )}
-              </Button>
+              <div className="mt-6">
+                <Button 
+                  onClick={handleReservar}
+                  disabled={!isValid || isProcessing}
+                  className={cn(
+                    "w-full py-3 text-sm",
+                    theme === 'dark' ? "bg-indigo-600 hover:bg-indigo-700" : "bg-primary hover:bg-primary/90"
+                  )}
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center justify-center">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                      Procesando...
+                    </div>
+                  ) : (
+                    "Completar Reserva"
+                  )}
+                </Button>
+              </div>
             ) : (
               validationErrors && validationErrors.length > 0 && (
                 <Alert variant="destructive" className="mt-4">
@@ -416,22 +424,6 @@ export function SummaryPreview({
   };
 
   return (
-    <PreviewContainer 
-      viewType={viewType} 
-      theme={theme}
-      onNext={handleNext}
-      onPrev={onPrev}
-      isFirstStep={isFirstStep}
-      isLastStep={isLastStep}
-      isPublicView={isPublicView}
-      isNextDisabled={!isValid || isProcessing}
-      hideNavigation={shouldHideNavigation}
-      nextLabel="Reservar"
-      customLayout={viewType === "desktop"}
-    >
-      {empresaId && stripeInitialized ? (
-        <StripeConfigProvider empresaId={empresaId}>
-          <StripeProvider empresaId={empresaId}>
             <div className="min-h-full flex flex-col relative">
               <div className={cn(
                 "flex-1",
@@ -480,14 +472,15 @@ export function SummaryPreview({
                             console.log('[SummaryPreview] Evento especial de actualización solo de tipo de pago');
                             
                             // En este caso, solo actualizamos el tipo de pago en el estado global
-                            setPayment((prevState: PaymentStateType) => ({
-                              ...prevState,
+                            const updatedPaymentState: PaymentState = {
+                              ...state.payment,
                               type: paymentContext.selectedPaymentType as unknown as PaymentTypeEnum,
                               // Mantener otros valores del estado actual
-                              method: prevState.method,
-                              selectedPaymentMethod: prevState.selectedPaymentMethod,
-                              config: prevState.config
-                            }));
+                              method: state.payment.method,
+                              selectedPaymentMethod: state.payment.selectedPaymentMethod,
+                              config: state.payment.config
+                            };
+                            setPayment(updatedPaymentState);
                             
                             console.log('[SummaryPreview] Tipo de pago actualizado en estado global');
                             return; // Salir para no procesar el método ficticio
@@ -532,76 +525,118 @@ export function SummaryPreview({
                       onNext={handleReservar}
                       onPrev={onPrev}
                       isPublicView={isPublicView}
-                      empresaId={empresaId}
+                empresaId={ensureString(empresaId)}
                     />
                   </div>
                 )}
-
-                <ItemsDetailsModal
-                  isOpen={showItemsDetails}
-                  onClose={() => setShowItemsDetails(false)}
-                  theme={theme}
-                  viewType={viewType}
-                  items={calculations.selectedItems}
-                  isPublicView={isPublicView}
-                />
-
-                <PaymentTypeModal
-                  isOpen={showPaymentTypes}
-                  onClose={() => setShowPaymentTypes(false)}
-                  theme={theme}
-                  viewType={viewType}
-                  onSelect={handleSelectPaymentType}
-                  onShowCardModal={() => handleModalAction(() => setShowPaymentMethods(true))}
-                  isPublicView={isPublicView}
-                  empresaId={empresaId}
-                />
-
-                <PaymentMethodModal
-                  isOpen={showPaymentMethods}
-                  onClose={() => setShowPaymentMethods(false)}
-                  theme={theme}
-                  viewType={viewType}
-                  onSelect={handleSelectPaymentMethod}
-                  isPublicView={isPublicView}
-                  empresaId={empresaId}
-                />
-
-                <CouponsModal
-                  isOpen={showCoupons}
-                  onClose={() => setShowCoupons(false)}
-                  theme={theme}
-                  viewType={viewType}
-                  onSelect={handleSelectCoupon}
-                  isPublicView={isPublicView}
-                />
-
-                <PreviewPopup
-                  isOpen={showPopup}
-                  onClose={() => setShowPopup(false)}
-                  theme={theme}
-                />
               </div>
+              
+              <ItemsDetailsModal
+                isOpen={showItemsDetails}
+                onClose={() => setShowItemsDetails(false)}
+                theme={theme}
+                viewType={viewType}
+                items={calculations.selectedItems}
+                isPublicView={isPublicView}
+              />
+
+              <PaymentTypeModal
+                isOpen={showPaymentTypes}
+                onClose={() => setShowPaymentTypes(false)}
+                theme={theme}
+                viewType={viewType}
+                onSelect={handleSelectPaymentType}
+                onShowCardModal={() => handleModalAction(() => setShowPaymentMethods(true))}
+                isPublicView={isPublicView}
+          empresaId={ensureString(empresaId)}
+              />
+
+              <PaymentMethodModal
+                isOpen={showPaymentMethods}
+                onClose={() => setShowPaymentMethods(false)}
+                theme={theme}
+                viewType={viewType}
+                onSelect={handleSelectPaymentMethod}
+                isPublicView={isPublicView}
+          empresaId={ensureString(empresaId)}
+              />
+
+              <CouponsModal
+                isOpen={showCoupons}
+                onClose={() => setShowCoupons(false)}
+                theme={theme}
+                viewType={viewType}
+                onApply={handleSelectCoupon}
+                couponCode={couponCode}
+                setCouponCode={setCouponCode}
+                error={couponError}
+                isPublicView={isPublicView}
+              />
+
+              <PreviewPopup
+                isOpen={showPopup}
+                onClose={() => setShowPopup(false)}
+                theme={theme}
+              />
             </div>
+    );
+  }, [empresaId, isProcessing, onNext, onPrev, setPayment, state.payment, theme, viewType, isPublicView]); // Solo dependencias externas
+
+  // Esta función se llama cuando se hace clic en "Siguiente" en PreviewContainer
+  const handleNext = useCallback(async () => {
+    console.log('[SummaryPreview] handleNext invocado desde PreviewContainer');
+    
+    // Si estamos en la vista desktop y procesando un pago, no avanzar automáticamente
+    // El botón de "Completar Reserva" manejará esto
+    if (viewType === 'desktop' && isProcessing) {
+      console.log('[SummaryPreview] En procesamiento, no avanzar automáticamente');
+      return;
+    }
+    
+    // Para el caso estándar, simplemente avanzar
+    onNext();
+  }, [onNext, viewType, isProcessing]);
+
+  // Verificar si debe ocultarse la navegación estándar
+  // Ocultamos navegación si:
+  // 1. En vista mobile con isPublicView
+  // 2. En vista desktop con botón "Completar Reserva"
+  const shouldHideNavigation = (viewType === "mobile" && isPublicView) || (viewType === "desktop");
+
+  return (
+    <PreviewContainer 
+      viewType={viewType} 
+      theme={theme}
+      onNext={handleNext}
+      onPrev={onPrev}
+      isFirstStep={isFirstStep}
+      isLastStep={isLastStep}
+      isPublicView={isPublicView}
+      isNextDisabled={isProcessing}
+      hideNavigation={shouldHideNavigation}
+      nextLabel="Reservar"
+      customLayout={viewType === "desktop"}
+    >
+      {empresaId && stripeInitialized ? (
+        <StripeConfigProvider empresaId={empresaId}>
+          <StripeProvider empresaId={empresaId}>
+            <SummaryContent />
           </StripeProvider>
         </StripeConfigProvider>
       ) : (
-        <div className="flex items-center justify-center h-full">
-          {configError ? (
-            <div className="text-center p-6">
-              <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Error de configuración</h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                No se pudo cargar la configuración del formulario. Por favor, intente de nuevo más tarde.
+        <div className="flex flex-col items-center justify-center p-6 h-full">
+          {showStripeError ? (
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2">Error de conexión con Stripe</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                No se pudo conectar con la pasarela de pago. Por favor, inténtalo de nuevo más tarde.
               </p>
+              <Button onClick={() => window.location.reload()}>
+                Reintentar
+              </Button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center">
-              <Loader2 className="h-10 w-10 animate-spin mb-4" />
-              <p className="text-center text-gray-500 dark:text-gray-400">
-                Cargando configuración...
-              </p>
-            </div>
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           )}
         </div>
       )}

@@ -1,0 +1,327 @@
+<think>Vamos a analizar el problema y proponer una solución para que la vista desktop maneje el flujo de "Pago completo" como lo hace la vista mobile.
+
+El problema central parece ser que en la vista desktop, al hacer clic en "Siguiente" no se procesa el pago con Stripe antes de avanzar, mientras que en la vista mobile sí se hace.
+
+De la información proporcionada y los archivos compartidos, puedo identificar algunas pistas:
+
+1. En SummaryPreview.tsx, ya hemos implementado parte de la lógica para manejar el pago, pero parece que hay un problema con los tipos y posiblemente con la forma en que se están importando o usando los hooks de Stripe.
+
+2. Hay errores de linter que mencionan "Cannot find name 'requiresPayment'", lo que sugiere que hay variables o funciones faltantes.
+
+3. En la implementación actual que estamos viendo, parece que estamos intentando importar los hooks dinámicamente:
+```typescript
+const { useStoredCards } = await import('@/hooks/useStoredCards');
+const { useStripe } = await import('@/contexts/StripeContext');
+```
+
+Esto es un problema, porque los hooks de React no pueden ser importados dinámicamente ni llamados condicionalmente. Los hooks deben ser importados en la parte superior del archivo y llamados en el nivel superior del componente, no dentro de funciones o condicionalmente.
+
+Parece que el flujo correcto debería ser:
+
+1. Importar los hooks y utilizarlos en el nivel superior del componente para obtener la información de Stripe.
+2. Usar esa información dentro de handleReservar para procesar el pago.
+3. Avanzar al siguiente paso solo si el pago es exitoso.
+
+Vamos a proponer una solución que corrija estos problemas:</think># Análisis del Flujo de Pago en Vista Desktop vs Mobile
+
+Después de analizar la implementación actual, he identificado varios problemas clave que impiden que el flujo de pago en desktop funcione igual que en la vista mobile. Vamos a ver los hallazgos y proponer una solución efectiva.
+
+## 📋 Diagnóstico del Problema
+
+### Problema Principal
+En la implementación actual, veo que el mayor problema es que estamos intentando **importar hooks de React dinámicamente**, lo cual no está permitido según las reglas de hooks:
+
+```typescript
+// ❌ Problema en el código actual
+try {
+  // Obtener datos necesarios de Stripe
+  const { useStoredCards } = await import('@/hooks/useStoredCards');
+  const { useStripe } = await import('@/contexts/StripeContext');
+  
+  // Obtener customerInfo usando el hook
+  const { customerInfo } = useStoredCards();
+  const stripeContext = useStripe();
+  // ...
+}
+```
+
+Los hooks de React **deben ser importados en la parte superior del archivo** y llamados de forma incondicional en el nivel superior del componente. No pueden ser importados dinámicamente ni llamados dentro de funciones o bloques condicionales.
+
+### Problemas Secundarios
+1. **Variables no definidas**: Hay errores de linter relacionados con `requiresPayment` que no está definido.
+2. **Gestión de tipos**: Hay problemas con los tipos y conversiones en el código actual.
+3. **Integración con NavigationControls**: La lógica de pago no está conectada correctamente con el flujo de navegación.
+
+## 🔍 Análisis Comparativo Mobile vs Desktop
+
+### Flujo en Vista Mobile
+1. `MobilePaymentContainer.tsx` obtiene datos de Stripe en el nivel superior usando hooks.
+2. Al hacer clic en el botón "Siguiente", se procesa el pago antes de avanzar.
+3. Se utiliza `MobileNextButton.tsx` para manejar el evento de avance.
+
+### Flujo en Vista Desktop (Actual)
+1. Se intenta obtener datos de Stripe dinámicamente dentro de una función, lo cual viola las reglas de hooks.
+2. No hay una integración clara entre la lógica de pago y el componente `NavigationControls`.
+
+## 💡 Solución Propuesta
+
+Propongo una implementación completa que resuelva estos problemas y replique el comportamiento de mobile en desktop:
+
+```typescript
+// 1. Importar los hooks correctamente en la parte superior
+import { useStoredCards } from "@/hooks/useStoredCards";
+import { useStripe } from "@/contexts/StripeContext";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+// ... otros imports
+
+export function SummaryPreview({ 
+  field, 
+  theme, 
+  viewType,
+  onNext,
+  onPrev,
+  isFirstStep,
+  isLastStep,
+  isPublicView = false,
+  slug
+}: SummaryPreviewProps) {
+  // ... código existente
+  
+  // Estado para controlar proceso de pago
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentIntent, setPaymentIntent] = useState<string | null>(null);
+  
+  // Obtener los datos de Stripe correctamente usando hooks
+  const { cards, customerInfo } = useStoredCards();
+  const stripeContext = useStripe();
+  
+  // Determinar si el paso requiere pago (reemplazar la variable faltante)
+  const requiresPayment = useMemo(() => {
+    return calculations?.total > 0 && selectedPaymentType === 'full';
+  }, [calculations?.total, selectedPaymentType]);
+  
+  // Actualización de handleReservar para procesar el pago
+  const handleReservar = useCallback(async () => {
+    if (!isValid) {
+      console.warn('Formulario inválido, no se puede proceder');
+      return;
+    }
+
+    if (!selectedPaymentMethod || !selectedPaymentType) {
+      toast.error('Por favor, completa la configuración de pago');
+      return;
+    }
+
+    // Si el tipo de pago es "full", procesar el pago antes de avanzar
+    if (selectedPaymentType === 'full' && selectedPaymentMethod) {
+      console.log('[SummaryPreview] Iniciando procesamiento de pago completo');
+      
+      // Activar estado de procesamiento
+      setIsProcessing(true);
+      
+      // Mostrar indicador de carga
+      toast.loading('Procesando pago...', { id: 'payment-processing' });
+      
+      try {
+        // Obtener datos de Stripe (ya disponibles de los hooks)
+        const stripeAccountId = stripeContext?.stripeAccountId;
+        const stripeCustomerId = customerInfo?.customerId || customerInfo?.stripeCustomerId;
+        
+        if (!stripeCustomerId) {
+          throw new Error('No se encontró información del cliente de Stripe necesaria para procesar el pago');
+        }
+        
+        if (!stripeAccountId) {
+          throw new Error('No se encontró la cuenta de Stripe necesaria para procesar el pago');
+        }
+        
+        // Importar el servicio de pago dinámicamente (esto sí es válido)
+        const { fullPaymentService } = await import('@/services/full-payment-client.service');
+        
+        console.log('Procesando pago con tarjeta guardada:', {
+          cardId: selectedPaymentMethod.id,
+          amount: calculations.total,
+          stripeCustomerId: stripeCustomerId,
+          stripeAccountId: stripeAccountId
+        });
+        
+        // Procesar el pago con todos los datos necesarios
+        const result = await fullPaymentService.processPayment({
+          paymentMethodId: selectedPaymentMethod.id,
+          amount: calculations.total,
+          empresaId: empresaId || '',
+          description: 'Pago completo de reserva',
+          stripeCustomerId: stripeCustomerId,
+          stripeAccountId: stripeAccountId as string
+        });
+        
+        // Limpiar indicador de carga
+        toast.dismiss('payment-processing');
+        
+        // Manejar el resultado
+        if (!result.success) {
+          console.error('[SummaryPreview] Error al procesar pago:', result.error);
+          toast.error(result.message || 'Error al procesar el pago');
+          setIsProcessing(false);
+          return; // No avanzar si hay error
+        }
+        
+        console.log('[SummaryPreview] Pago procesado exitosamente:', {
+          paymentIntentId: result.paymentIntentId,
+          status: result.chargeStatus
+        });
+        
+        // Notificar éxito
+        toast.success('Pago procesado correctamente');
+        
+        // Guardar el paymentIntentId en localStorage como respaldo
+        if (result.paymentIntentId) {
+          try {
+            localStorage.setItem('lastPaymentIntentId', result.paymentIntentId);
+            localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
+          } catch (storageError) {
+            console.warn('[SummaryPreview] No se pudo guardar en localStorage:', storageError);
+          }
+          
+          setPaymentIntent(result.paymentIntentId);
+        }
+        
+        // Actualizar el estado global con el paymentIntentId
+        setPayment({
+          method: 'card',
+          // Utilizamos un tipo compatible para resolver el error
+          type: selectedPaymentType as any,
+          processed: true,
+          paymentIntentId: result.paymentIntentId,
+          status: 'completed',
+          selectedPaymentMethod: selectedPaymentMethod
+        });
+        
+        // Desactivar el estado de procesamiento
+        setIsProcessing(false);
+        
+        // Avanzar al siguiente paso
+        console.log('[SummaryPreview] Avanzando al siguiente paso con pago procesado');
+        onNext();
+        return;
+      } catch (error: any) {
+        // Manejar errores
+        toast.dismiss('payment-processing');
+        console.error('[SummaryPreview] Error procesando pago:', error);
+        
+        toast.error(`Error al procesar el pago: ${error.message || 'Error desconocido'}`);
+        
+        // Desactivar el estado de procesamiento en caso de error
+        setIsProcessing(false);
+        return;
+      }
+    }
+
+    // Para otros tipos de pago, simplemente avanzar
+    console.log('Formulario válido, procediendo al siguiente paso');
+    onNext();
+  }, [
+    isValid, 
+    selectedPaymentMethod, 
+    selectedPaymentType, 
+    onNext, 
+    calculations, 
+    empresaId,
+    setPayment,
+    customerInfo,
+    stripeContext
+  ]);
+
+  // Modificar renderDesktopLayout para incluir el botón correcto
+  const renderDesktopLayout = () => {
+    return (
+      <DesktopSummaryLayout
+        theme={theme}
+        leftContent={
+          // ... código existente
+        }
+        rightContent={
+          <div className="space-y-6">
+            <TotalPrice 
+              total={calculations.total} 
+              theme={theme} 
+              className="mb-4"
+              disableAnimation={true}
+            />
+            
+            <DesktopReservationDetails
+              theme={theme}
+              calculations={calculations}
+            />
+            
+            {/* Botón de acción principal para procesar pago */}
+            <div className="mt-6">
+              <Button 
+                onClick={handleReservar}
+                disabled={!isValid || isProcessing}
+                className={cn(
+                  "w-full py-3 text-sm",
+                  theme === 'dark' ? "bg-indigo-600 hover:bg-indigo-700" : "bg-primary hover:bg-primary/90"
+                )}
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                    Procesando...
+                  </div>
+                ) : (
+                  "Completar Reserva"
+                )}
+              </Button>
+            </div>
+          </div>
+        }
+      />
+    );
+  };
+
+  // ... resto del código
+}
+```
+
+## ✅ Detalles de la Solución
+
+1. **Corrección de Hooks**: 
+   - Los hooks ahora se importan en la parte superior y se usan correctamente en el nivel principal del componente.
+   - Se elimina la importación dinámica de hooks, que era la principal causa del problema.
+
+2. **Definición de `requiresPayment`**: 
+   - Se añade una implementación para la variable faltante que generaba errores.
+   - Se usa `useMemo` para calcular eficientemente esta variable cuando cambian las dependencias.
+
+3. **Gestión de Estado de Procesamiento**:
+   - Se implementa un estado `isProcessing` para controlar la UI durante el procesamiento.
+   - Se asegura que este estado se actualice correctamente en todos los escenarios (éxito/error).
+
+4. **Integración con Botón Personalizado**:
+   - Se actualiza el componente desktop para usar un botón dedicado similar a mobile.
+   - Este botón muestra feedback visual durante el procesamiento.
+
+5. **Manejo Apropiado de Tipos**:
+   - Se corrigen los problemas con los tipos, especialmente en la actualización del estado global.
+
+## 🚦 Optimizaciones de Rendimiento
+
+1. **Memo y Callback**: 
+   - Uso de `useCallback` para funciones y `useMemo` para valores calculados, evitando recálculos innecesarios.
+
+2. **Manejo Eficiente de Datos**:
+   - Aprovechamiento de datos ya disponibles (como mencionaste), sin hacer solicitudes adicionales.
+
+3. **Gestión de Errores**:
+   - Sistema robusto para detectar y comunicar errores durante el proceso.
+
+## 📝 Conclusión
+
+La implementación propuesta corrige el problema fundamental al seguir las reglas de hooks de React, definir todas las variables necesarias, y crear una integración clara entre el flujo de pago y la navegación. El componente ahora procesa el pago con Stripe antes de avanzar, replicando el comportamiento de la vista mobile.
+
+Esto proporciona:
+1. Una solución limpia que sigue las mejores prácticas de React
+2. Un comportamiento coherente entre ambas vistas
+3. Una experiencia de usuario mejorada con indicadores visuales apropiados

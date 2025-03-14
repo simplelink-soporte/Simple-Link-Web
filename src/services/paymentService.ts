@@ -1,5 +1,5 @@
 import { getAuthenticatedSupabaseClient } from '@/lib/supabase/client'
-import type { PaymentMethod, StripePaymentResult } from '@/types/payments'
+import type { PaymentMethod } from '@/types/payments'
 import { createId } from '@paralleldrive/cuid2'
 import type { Database } from '@/types/supabase'
 
@@ -24,9 +24,11 @@ interface StripePaymentData {
   customerId?: string | null;
 }
 
-interface Payment {
-  stripe_payment_method_id?: string;
+// Interfaz para mejorar la tipificación de los pagos
+interface PaymentWithStripe {
+  id: string;
   payment_method: string;
+  stripe_payment_method_id: string | null;
   created_at: string;
 }
 
@@ -96,6 +98,7 @@ export const paymentService = {
         timestamp: new Date().toISOString()
       });
       
+      // 1. Intentar obtener el pago más reciente con stripe_payment_method_id
       const { data: payments, error } = await client
         .from('payments')
         .select('stripe_payment_method_id, payment_method, created_at')
@@ -111,7 +114,14 @@ export const paymentService = {
         return null;
       }
 
-      const validPayment = payments?.find((payment: Payment) => 
+      // 2. Filtrar y obtener el primer pago con stripe_payment_method_id
+      type PaymentRecord = {
+        payment_method: string;
+        stripe_payment_method_id: string | null;
+        created_at: string;
+      };
+      
+      const validPayment = payments?.find((payment: PaymentRecord) => 
         payment.payment_method === 'stripe' && 
         payment.stripe_payment_method_id
       );
@@ -141,7 +151,10 @@ export const paymentService = {
     try {
       // Usar el cliente apropiado según el contexto
       const client = isServer 
-        ? createServerComponentClient<Database>({ cookies })
+        ? (await import('next/headers')).cookies && 
+          (await import('@supabase/auth-helpers-nextjs')).createServerComponentClient<Database>({ 
+            cookies: (await import('next/headers')).cookies 
+          })
         : (await getAuthenticatedSupabaseClient()).client;
 
       console.log(`🔍 [${requestId}] Iniciando búsqueda de datos Stripe:`, {
@@ -229,44 +242,48 @@ export const paymentService = {
         return null;
       }
 
-      // 3. Obtener el payment_method_id del pago más reciente con Stripe
-      const validPayment = booking.payments
-        ?.sort((a: Payment, b: Payment) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        ?.find((payment: Payment) => 
-          payment.payment_method === 'stripe' && 
-          payment.stripe_payment_method_id
-        );
+      // 3. Obtener el payment_method_id del pago más reciente con información de Stripe
+      // Modificación importante: buscar cualquier pago con stripe_payment_method_id, 
+      // independientemente del payment_method que tenga registrado
+      const payments = booking.payments as PaymentWithStripe[];
+      const validPayment = payments
+        ?.sort((a: PaymentWithStripe, b: PaymentWithStripe) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        ?.find((payment: PaymentWithStripe) => payment.stripe_payment_method_id);
 
-      if (!validPayment?.stripe_payment_method_id) {
+      // Si no se encuentra un método de pago con stripe_payment_method_id
+      if (!validPayment || !validPayment.stripe_payment_method_id) {
         console.log(`⚠️ [${requestId}] No se encontró método de pago válido:`, {
           bookingId,
           userId: booking.booking_participants[0].user_id,
-          paymentsCount: booking.payments?.length,
-          hasStripePayments: booking.payments?.some((p: Payment) => p.payment_method === 'stripe'),
+          paymentsCount: payments?.length,
+          hasStripePayments: payments?.some((p: PaymentWithStripe) => p.payment_method === 'stripe'),
+          hasStripePaymentMethodId: payments?.some((p: PaymentWithStripe) => Boolean(p.stripe_payment_method_id)),
           context: isServer ? 'server' : 'client'
         });
         return null;
       }
 
-      // 4. Construir y validar respuesta
-      const response = {
+      // Hemos encontrado un método de pago válido, devolver los datos
+      const result: StripePaymentData = {
         paymentMethodId: validPayment.stripe_payment_method_id,
         accountId: stripeCustomer.stripe_account_id,
         customerId: stripeCustomer.stripe_customer_id
       };
 
-      console.log(`✅ [${requestId}] Datos de Stripe completos:`, {
+      console.log(`✅ [${requestId}] Datos Stripe encontrados:`, {
         bookingId,
         userId: booking.booking_participants[0].user_id,
-        response,
+        paymentMethodId: result.paymentMethodId.substring(0, 10) + '...',
+        accountId: result.accountId.substring(0, 10) + '...',
+        hasCustomerId: Boolean(result.customerId),
         context: isServer ? 'server' : 'client',
         timestamp: new Date().toISOString()
       });
 
-      return response;
-
+      return result;
     } catch (error) {
-      console.error(`❌ [${requestId}] Error inesperado al obtener datos de Stripe:`, {
+      console.error(`❌ [${requestId}] Error inesperado obteniendo datos Stripe:`, {
         error,
         bookingId,
         context: isServer ? 'server' : 'client',

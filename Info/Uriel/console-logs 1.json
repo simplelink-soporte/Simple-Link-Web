@@ -1,0 +1,38 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Toggle lista de tarjetas"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[StoredCards] ❌ Error al cargar las tarjetas:",
+      {
+        "message": "Error al obtener/crear el customer de Stripe",
+        "stripeAccountId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "error": {}
+      }
+    ]
+  }
+]

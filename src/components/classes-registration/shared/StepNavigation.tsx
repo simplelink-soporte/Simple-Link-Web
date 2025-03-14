@@ -19,9 +19,9 @@ const STEP_CONFIG: Record<Step, { backStep?: Step; nextStep?: Step }> = {
   'package': { nextStep: 'class' },
   'class': { backStep: 'package', nextStep: 'session' },
   'session': { backStep: 'class', nextStep: 'summary' },
-  'summary': { backStep: 'session', nextStep: 'payment' },
-  'payment': { backStep: 'summary', nextStep: 'confirmation' },
-  'confirmation': { backStep: 'payment' }
+  'summary': { backStep: 'session', nextStep: 'confirmation' },
+  'confirmation': { backStep: 'summary' },
+  'noCredits': { backStep: 'class' } // Permitir volver al paso de selección de clase
 }
 
 export function StepNavigation({
@@ -35,7 +35,8 @@ export function StepNavigation({
 }: StepNavigationProps) {
   const { state, goToStep } = useClassRegistration()
   const currentStep = state.step
-  const config = STEP_CONFIG[currentStep]
+  // Asegurarnos de que config exista, si no, crear un objeto vacío por defecto
+  const config = STEP_CONFIG[currentStep] || { backStep: undefined, nextStep: undefined }
 
   // Determinar el estilo y texto del botón según el paso actual
   const isPackageStep = currentStep === 'package'
@@ -46,6 +47,23 @@ export function StepNavigation({
     
     try {
       console.log('Ejecutando navegación al siguiente paso')
+      
+      // Si estamos en el paso summary, emitimos el evento para crear la reserva
+      if (currentStep === 'summary') {
+        console.log('📌 Emitiendo evento para crear reserva desde StepNavigation')
+        const event = new CustomEvent('create-class-reservation')
+        window.dispatchEvent(event)
+        
+        // Si hay un manejador personalizado, lo ejecutamos también
+        if (onNext) {
+          await onNext()
+        }
+        // No navegamos automáticamente - la navegación ocurrirá en SummaryStep
+        // después de procesar exitosamente la reserva
+        return
+      }
+      
+      // Para otros pasos, comportamiento normal
       if (onNext) {
         await onNext()
       } else if (config.nextStep) {
@@ -111,7 +129,7 @@ export function StepNavigation({
             </motion.button>
           )}
 
-          {showBack && config.backStep && (
+          {showBack && config?.backStep && (
             <motion.button
               onClick={handleBack}
               disabled={isProcessing}
@@ -133,4 +151,4 @@ export function StepNavigation({
       </div>
     </div>
   )
-} 
+}

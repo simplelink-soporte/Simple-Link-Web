@@ -10,6 +10,7 @@ interface StoredCard {
   last4: string;
   expMonth: number;
   expYear: number;
+  customerId: string;
 }
 
 export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true }) {
@@ -17,32 +18,47 @@ export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true })
   const [isLoading, setIsLoading] = useState(options.autoLoad);
   const [error, setError] = useState<Error | null>(null);
   const [customerId, setCustomerId] = useState<string | null>(null);
+  const [isStripeAvailable, setIsStripeAvailable] = useState(true);
   const { user } = useAuth();
+  
+  // Manejar el acceso a Stripe con protección contra errores
   let stripeContext;
   let isConnected = false;
+  let stripeAccountId = null;
 
   try {
     stripeContext = useStripe();
     isConnected = stripeContext?.isConnected || false;
+    stripeAccountId = stripeContext?.stripeAccountId || null;
   } catch (error) {
     console.error('[StoredCards] Error al obtener contexto de Stripe:', error);
+    setIsStripeAvailable(false);
     setError(error instanceof Error ? error : new Error('Error al obtener contexto de Stripe'));
     setIsLoading(false);
-    return { cards: [], isLoading: false, error, deleteCard: async () => {} };
   }
 
-  const { stripeAccountId } = stripeContext;
+  // Si Stripe no está disponible, devolver valores por defecto inmediatamente
+  if (!isStripeAvailable) {
+    return {
+      cards: [],
+      isLoading: false,
+      error: error || new Error('Stripe no está disponible'),
+      deleteCard: async () => { console.log('Stripe no disponible, no se puede eliminar tarjeta') }
+    };
+  }
+
   const mountedRef = useRef(true);
   const retryCountRef = useRef(0);
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 1000;
 
   const loadCards = useCallback(async () => {
-    if (!stripeAccountId || !isConnected || !user) {
+    if (!stripeAccountId || !isConnected || !user || !isStripeAvailable) {
       console.log('[StoredCards] No se puede cargar tarjetas:', {
         stripeAccountId,
         isConnected,
-        hasUser: Boolean(user)
+        hasUser: Boolean(user),
+        isStripeAvailable
       });
       setCards([]);
       setIsLoading(false);
@@ -128,8 +144,20 @@ export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true })
         setCustomerId(customerData.stripeCustomerId);
       }
       
+      // Añadir el customerId a cada tarjeta
+      const effectiveCustomerId = data.customerId || customerData?.stripeCustomerId || customerId;
+      const cardsWithCustomerId = newCards.map((card: StoredCard) => ({
+        ...card,
+        customerId: effectiveCustomerId
+      }));
+      
+      console.log('[StoredCards] 🔄 Tarjetas con customerId:', {
+        count: cardsWithCustomerId.length,
+        customerId: effectiveCustomerId
+      });
+      
       // Solo reintentar si no hay tarjetas Y no hemos excedido los reintentos
-      if (newCards.length === 0 && retryCountRef.current < MAX_RETRIES) {
+      if (cardsWithCustomerId.length === 0 && retryCountRef.current < MAX_RETRIES) {
         retryCountRef.current += 1;
         console.log('[StoredCards] 🔄 Reintentando carga:', {
           attempt: retryCountRef.current,
@@ -139,11 +167,11 @@ export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true })
         return;
       }
 
-      setCards(newCards);
+      setCards(cardsWithCustomerId);
       setIsLoading(false);
 
       console.log('[StoredCards] 💾 Estado actualizado:', {
-        cardCount: newCards.length,
+        cardCount: cardsWithCustomerId.length,
         lastUpdate: new Date().toISOString(),
         retryCount: retryCountRef.current
       });
@@ -162,7 +190,7 @@ export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true })
       setError(err as Error);
       setIsLoading(false);
     }
-  }, [stripeAccountId, isConnected, refreshTrigger, user]);
+  }, [stripeAccountId, isConnected, refreshTrigger, user, isStripeAvailable]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -179,10 +207,11 @@ export function useStoredCards(refreshTrigger = 0, options = { autoLoad: true })
   }, [loadCards, options.autoLoad]);
 
   const deleteCard = async (cardId: string) => {
-    if (!stripeAccountId || !user) {
+    if (!stripeAccountId || !user || !isStripeAvailable) {
       console.error('[StoredCards] ❌ No se puede eliminar la tarjeta:', {
         hasStripeAccount: Boolean(stripeAccountId),
-        hasUser: Boolean(user)
+        hasUser: Boolean(user),
+        isStripeAvailable
       });
       return;
     }

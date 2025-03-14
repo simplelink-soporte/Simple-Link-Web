@@ -1,0 +1,1051 @@
+---
+description: Estructura del proecto actual, incluyendo carpetas y archivos.
+globs: 
+alwaysApply: true
+---
+│   │   │   │   ├───pricing
+│   │   │   │   │   ├───articles
+│   │   │   │   │   │       page.tsx
+│   │   │   │   │   │
+│   │   │   │   │   ├───coupons
+│   │   │   │   │   │       page.tsx
+│   │   │   │   │   │
+│   │   │   │   │   └───courts
+│   │   │   │   │           page.tsx
+│   │   │   │   │
+│   │   │   │   ├───settings
+│   │   │   │   │       page.tsx
+│   │   │   │   │
+│   │   │   │   ├───upgrade
+│   │   │   │   │   │   layout.tsx
+│   │   │   │   │   │   page.tsx
+│   │   │   │   │   │
+│   │   │   │   │   └───components
+│   │   │   │   │           PaymentForm.tsx
+│   │   │   │   │           PlanCard.tsx
+│   │   │   │   │           PlanFeatures.tsx
+│   │   │   │   │
+│   │   │   │   └───users
+│   │   │   │           page.tsx
+│   │   │   │
+│   │   │   ├───login
+│   │   │   │       layout.tsx
+│   │   │   │       page.tsx
+│   │   │   │
+│   │   │   └───onboarding
+│   │   │       │   layout.tsx
+│   │   │       │   page.tsx
+│   │   │       │
+│   │   │       ├───components
+│   │   │       │   │   FAQ.tsx
+│   │   │       │   │   OnboardingSteps.tsx
+│   │   │       │   │   StepsList.tsx
+│   │   │       │   │
+│   │   │       │   ├───Dialogs
+│   │   │       │   │       OnboardingDialog.tsx
+│   │   │       │   │
+│   │   │       │   └───steps
+│   │   │       │       │   BillingSelector.tsx
+│   │   │       │       │   CompanyStep.tsx
+│   │   │       │       │   FinalStep.tsx
+│   │   │       │       │   IntegrationsStep.tsx
+│   │   │       │       │   Planes.tsx
+│   │   │       │       │   SuccessPayment.tsx
+│   │   │       │       │
+│   │   │       │       └───Branches
+│   │   │       │           │   BranchesStep.tsx
+│   │   │       │           │   constants.ts
+│   │   │       │           │   Sucursal-Selection.tsx
+│   │   │       │           │   types.ts
+│   │   │       │           │
+│   │   │       │           ├───components
+│   │   │       │           │       BranchBasicInfo.tsx
+│   │   │       │           │       CourtsList.tsx
+│   │   │       │           │       ScheduleList.tsx
+│   │   │       │           │       StepHeader.tsx
+│   │   │       │           │       StepIndicator.tsx
+│   │   │       │           │       StepNavigation.tsx
+│   │   │       │           │
+│   │   │       │           └───hooks
+│   │   │       │                   useBranchData.ts
+│   │   │       │                   useBranchForm.ts
+│   │   │       │
+│   │   │       └───context
+│   │   │               OnboardingContext.tsx
+│   │   │
+│   │   ├───api
+│   │   │   ├───booking-count
+│   │   │   │       route.ts
+│   │   │   │
+│   │   │   ├───forms
+│   │   │   │   └───publish
+│   │   │   │           route.ts
+│   │   │   │
+│   │   │   ├───stripe
+│   │   │   │   ├───callback
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   ├───charge-no-show
+│   │   │   │   │   │   route.ts
+│   │   │   │   │   │
+│   │   │   │   │   └───__tests__
+│   │   │   │   │           route.test.ts
+│   │   │   │   │
+│   │   │   │   ├───connection
+│   │   │   │   │   └───[empresaId]
+│   │   │   │   │           route.ts
+│   │   │   │   │
+│   │   │   │   ├───connection-status
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   ├───customer
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   ├───disconnect
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   ├───payment-method
+│   │   │   │   │   │   route.ts
+│   │   │   │   │   │
+│   │   │   │   │   └───attach
+│   │   │   │   │           route.ts
+│   │   │   │   │
+│   │   │   │   ├───payment-methods
+│   │   │   │   │   │   route.ts
+│   │   │   │   │   │
+│   │   │   │   │   └───[id]
+│   │   │   │   │           route.ts
+│   │   │   │   │
+│   │   │   │   ├───process-deposit-payment
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   ├───process-full-payment
+│   │   │   │   │       route.ts
+│   │   │   │   │
+│   │   │   │   └───setup-intent
+│   │   │   │       │   route.ts
+│   │   │   │       │
+│   │   │   │       └───[id]
+│   │   │   │           │   route.ts
+│   │   │   │           │
+│   │   │   │           └───confirm
+│   │   │   │                   route.ts
+│   │   │   │
+│   │   │   └───webhooks
+│   │   │       └───paypal
+│   │   │               route.ts
+│   │   │
+│   │   ├───auth
+│   │   │   └───callback
+│   │   │           route.ts
+│   │   │
+│   │   ├───clases
+│   │   │   │   layout.tsx
+│   │   │   │   page.tsx
+│   │   │   │
+│   │   │   ├───login
+│   │   │   │       page.tsx
+│   │   │   │
+│   │   │   └───[empresaId]
+│   │   │       │   page.tsx
+│   │   │       │
+│   │   │       └───[classId]
+│   │   │               page.tsx
+│   │   │
+│   │   ├───error
+│   │   │       page.tsx
+│   │   │
+│   │   ├───f
+│   │   │   └───[slug]
+│   │   │           layout.tsx
+│   │   │           page.tsx
+│   │   │
+│   │   ├───login
+│   │   │       page.tsx
+│   │   │
+│   │   └───unauthorized
+│   │           page.tsx
+│   │
+│   ├───assets
+│   │   └───card-brands
+│   │           American_Express-Logo.wine.svg
+│   │           mastercard-dark.svg
+│   │           mastercard-light.svg
+│   │           Visa_2021.svg
+│   │
+│   ├───components
+│   │   │   AppInitializer.tsx
+│   │   │   CancelMembershipModal.tsx
+│   │   │   MemberDetailsModal.tsx
+│   │   │   MembersTable.tsx
+│   │   │   NewMemberForm.tsx
+│   │   │   PauseMembershipModal.tsx
+│   │   │   ReservationHistoryModal.tsx
+│   │   │   sidebar.tsx
+│   │   │
+│   │   ├───analytics
+│   │   │   │   AnalyticsChart.tsx
+│   │   │   │   AnalyticsWidgets.tsx
+│   │   │   │   index.ts
+│   │   │   │
+│   │   │   └───widgets
+│   │   │           CustomerDetailsWidget.tsx
+│   │   │           DiscountPopup.tsx
+│   │   │           HeatmapWidget.tsx
+│   │   │           index.ts
+│   │   │           LocationComparisonWidget.tsx
+│   │   │           PromotionsWidget.tsx
+│   │   │           RetentionWidget.tsx
+│   │   │           StatsWidget.tsx
+│   │   │
+│   │   ├───auth
+│   │   │       AdminLoginForm.tsx
+│   │   │       LoginForm.tsx
+│   │   │
+│   │   ├───booking
+│   │   │       BookingLimitStatus.tsx
+│   │   │       ConfirmationStep.tsx
+│   │   │
+│   │   ├───bookings
+│   │   │   │   BookingsTable.tsx
+│   │   │   │   ClassDescriptionModal.tsx
+│   │   │   │   ConfigurationMenu.tsx
+│   │   │   │   ConfirmationModal.tsx
+│   │   │   │   CourtPricingConfig.tsx
+│   │   │   │   CourtsTable.tsx
+│   │   │   │   CustomPricing.tsx
+│   │   │   │   DateSelector.tsx
+│   │   │   │   DurationPricing.tsx
+│   │   │   │   NewCourtModal.tsx
+│   │   │   │   OverlapWarningPopup.tsx
+│   │   │   │   TableNavigationButtons.tsx
+│   │   │   │   TimeErrorAlert.tsx
+│   │   │   │   TimeRangeSelect.tsx
+│   │   │   │   TimeSlotSelector.tsx
+│   │   │   │   types.ts
+│   │   │   │   utils.ts
+│   │   │   │
+│   │   │   ├───classes
+│   │   │   │   │   ClassesTable.tsx
+│   │   │   │   │   CompanyLinkSection.tsx
+│   │   │   │   │   PackagesTable.tsx
+│   │   │   │   │   SlugInputPopover.tsx
+│   │   │   │   │
+│   │   │   │   └───components
+│   │   │   │           ViewSelector.tsx
+│   │   │   │
+│   │   │   ├───components
+│   │   │   │   │   ConfigurationMenu.tsx
+│   │   │   │   │   RefreshButton.tsx
+│   │   │   │   │   TableBody.tsx
+│   │   │   │   │   TableCell.tsx
+│   │   │   │   │   TableHeader.tsx
+│   │   │   │   │   TableNavigationButtons.tsx
+│   │   │   │   │
+│   │   │   │   ├───BookingBlock
+│   │   │   │   │       BookingBlock.tsx
+│   │   │   │   │       ClassBlock.tsx
+│   │   │   │   │
+│   │   │   │   ├───BookingsTable
+│   │   │   │   │       BookingsTable.tsx
+│   │   │   │   │
+│   │   │   │   ├───CancelBookingModal
+│   │   │   │   │       CancelBookingModal.tsx
+│   │   │   │   │
+│   │   │   │   ├───NewBookingModal
+│   │   │   │   │   │   ClassBooking.tsx
+│   │   │   │   │   │   constants.ts
+│   │   │   │   │   │   index.tsx
+│   │   │   │   │   │   NewBookingModal.tsx
+│   │   │   │   │   │   SimpleShiftBooking.tsx
+│   │   │   │   │   │   SimpleShiftBookingModal.tsx
+│   │   │   │   │   │   types.ts
+│   │   │   │   │   │   useBookingState.ts
+│   │   │   │   │   │
+│   │   │   │   │   ├───components
+│   │   │   │   │   │   │   AccordionItem.tsx
+│   │   │   │   │   │   │   BookingTypeSelector.tsx
+│   │   │   │   │   │   │   CourtSelector.tsx
+│   │   │   │   │   │   │   DateNavigator.tsx
+│   │   │   │   │   │   │   ModalFooter.tsx
+│   │   │   │   │   │   │   ModalHeader.tsx
+│   │   │   │   │   │   │
+│   │   │   │   │   │   ├───Class
+│   │   │   │   │   │   │   │   ClassBooking.tsx
+│   │   │   │   │   │   │   │   ClassConfirmationStep.tsx
+│   │   │   │   │   │   │   │   ClassDetails.tsx
+│   │   │   │   │   │   │   │   ClassPaymentMethods.tsx
+│   │   │   │   │   │   │   │   ClassSchedule.tsx
+│   │   │   │   │   │   │   │   ClassSessions.tsx
+│   │   │   │   │   │   │   │   index.tsx
+│   │   │   │   │   │   │   │   SessionSelector.tsx
+│   │   │   │   │   │   │   │
+│   │   │   │   │   │   │   └───editModal
+│   │   │   │   │   │   │           Classeditbasic.tsx
+│   │   │   │   │   │   │           editclassmodal.tsx
+│   │   │   │   │   │   │
+│   │   │   │   │   │   └───SimpleShift
+│   │   │   │   │   │           ConfirmationStep.tsx
+│   │   │   │   │   │           CongratsStep.tsx
+│   │   │   │   │   │           CourtSelector.tsx
+│   │   │   │   │   │           DateSelector.tsx
+│   │   │   │   │   │           index.tsx
+│   │   │   │   │   │           noCredits.tsx
+│   │   │   │   │   │           ParticipantStep.tsx
+│   │   │   │   │   │           PaymentStep.tsx
+│   │   │   │   │   │           RentalStep.tsx
+│   │   │   │   │   │           SimpleShiftBooking.tsx
+│   │   │   │   │   │           TimeSelector.tsx
+│   │   │   │   │   │
+│   │   │   │   │   └───hooks
+│   │   │   │   │           useBookingState.ts
+│   │   │   │   │           useClassBookingState.ts
+│   │   │   │   │           useSimpleShiftState.ts
+│   │   │   │   │
+│   │   │   │   ├───NewPackageModal
+│   │   │   │   │   │   EditPackageModal.tsx
+│   │   │   │   │   │   NewPackageModal.tsx
+│   │   │   │   │   │   types.ts
+│   │   │   │   │   │
+│   │   │   │   │   └───components
+│   │   │   │   │           ModalFooter.tsx
+│   │   │   │   │           ModalHeader.tsx
+│   │   │   │   │           PackageConfirmationStep.tsx
+│   │   │   │   │           PackageDetails.tsx
+│   │   │   │   │           PackagePaymentMethods.tsx
+│   │   │   │   │
+│   │   │   │   ├───PaymentModal
+│   │   │   │   │       PaymentModal.tsx
+│   │   │   │   │
+│   │   │   │   ├───ViewBookingModal
+│   │   │   │   │       ViewBookingModal.tsx
+│   │   │   │   │
+│   │   │   │   └───ViewClassModal
+│   │   │   │       │   ViewClassModal.tsx
+│   │   │   │       │
+│   │   │   │       └───components
+│   │   │   │           ├───AddParticipant
+│   │   │   │           │       AddParticipantModal.tsx
+│   │   │   │           │       AddParticipantSection.tsx
+│   │   │   │           │       ParticipantsSummary.tsx
+│   │   │   │           │       SuccessMessage.tsx
+│   │   │   │           │
+│   │   │   │           └───ViewParticipant
+│   │   │   │                   EnrolledParticipantsSection.tsx
+│   │   │   │                   ViewParticipantsModal.tsx
+│   │   │   │
+│   │   │   └───hooks
+│   │   │           useBookingModals.ts
+│   │   │           useBookingSelection.ts
+│   │   │           useBookingState.ts
+│   │   │           useClasses.ts
+│   │   │           useClassLink.ts
+│   │   │           useCompanyLink.ts
+│   │   │           usePackages.ts
+│   │   │           useParticipantSearch.ts
+│   │   │           useTableNavigation.ts
+│   │   │           useTimeSlots.ts
+│   │   │
+│   │   ├───classes-registration
+│   │   │   │   ClassesContent.tsx
+│   │   │   │   ClassRegistration.tsx
+│   │   │   │   ClassRegistrationForm.tsx
+│   │   │   │   index.ts
+│   │   │   │   types.ts
+│   │   │   │
+│   │   │   ├───components
+│   │   │   │       ClassBookingConfirmation.tsx
+│   │   │   │       ClassBookingSuccess.tsx
+│   │   │   │       RegisterForm.tsx
+│   │   │   │
+│   │   │   ├───config
+│   │   │   │       constants.ts
+│   │   │   │       mock-data.ts
+│   │   │   │
+│   │   │   ├───context
+│   │   │   │       ClassRegistrationContext.tsx
+│   │   │   │       index.ts
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───hooks
+│   │   │   │       index.ts
+│   │   │   │       useAuth.ts
+│   │   │   │       useClasses.ts
+│   │   │   │       useOrganization.ts
+│   │   │   │       usePackages.ts
+│   │   │   │       useUserPackages.ts
+│   │   │   │
+│   │   │   ├───services
+│   │   │   │       classService.ts
+│   │   │   │       index.ts
+│   │   │   │       linkService.ts
+│   │   │   │       organizationService.ts
+│   │   │   │       packageService.ts
+│   │   │   │       stripeService.ts
+│   │   │   │       userPackageService.ts
+│   │   │   │       userService.ts
+│   │   │   │
+│   │   │   ├───shared
+│   │   │   │       ErrorMessage.tsx
+│   │   │   │       index.ts
+│   │   │   │       LoadingSpinner.tsx
+│   │   │   │       LoadingState.tsx
+│   │   │   │       MobileDrawer.tsx
+│   │   │   │       PackageCard.tsx
+│   │   │   │       PackageStatusModal.tsx
+│   │   │   │       PaymentIcon.tsx
+│   │   │   │       PaymentOptions.tsx
+│   │   │   │       SessionGrid.tsx
+│   │   │   │       StepContainer.tsx
+│   │   │   │       StepNavigation.tsx
+│   │   │   │       StepSection.tsx
+│   │   │   │       UserBadge.tsx
+│   │   │   │
+│   │   │   ├───steps
+│   │   │   │       AuthStep.tsx
+│   │   │   │       ClassSelectionStep.tsx
+│   │   │   │       ConfirmationStep.tsx
+│   │   │   │       index.ts
+│   │   │   │       InfoStep.tsx
+│   │   │   │       noCreditsClass.tsx
+│   │   │   │       PackageSelectionStep.tsx
+│   │   │   │       PaymentStep.tsx
+│   │   │   │       SessionStep.tsx
+│   │   │   │       StepRenderer.tsx
+│   │   │   │       SummaryStep.tsx
+│   │   │   │
+│   │   │   ├───types
+│   │   │   │       class.ts
+│   │   │   │       error.ts
+│   │   │   │       index.ts
+│   │   │   │       models.ts
+│   │   │   │       package.ts
+│   │   │   │       payment.ts
+│   │   │   │       registration.ts
+│   │   │   │       settings.ts
+│   │   │   │
+│   │   │   └───validation
+│   │   │           index.ts
+│   │   │           schemas.ts
+│   │   │           utils.ts
+│   │   │
+│   │   ├───forms
+│   │   │   │   FormBuilder.tsx
+│   │   │   │   FormCard.tsx
+│   │   │   │   FormHistory.tsx
+│   │   │   │   FormPreview.tsx
+│   │   │   │   FormShare.tsx
+│   │   │   │   FormStep.tsx
+│   │   │   │   NewFieldModal.tsx
+│   │   │   │
+│   │   │   ├───dialogs
+│   │   │   │       PublishFormDialog.tsx
+│   │   │   │
+│   │   │   └───shared
+│   │   │           FormUrlPreview.tsx
+│   │   │
+│   │   ├───icons
+│   │   │       mercadopago-logo.tsx
+│   │   │       stripe-logo.tsx
+│   │   │
+│   │   ├───links
+│   │   │       CustomSlugInputPopover.tsx
+│   │   │       LinkSection.tsx
+│   │   │
+│   │   ├───modals
+│   │   │       upgrade-modal.tsx
+│   │   │
+│   │   ├───preview
+│   │   │   ├───layout
+│   │   │   │       MobileNavigation.tsx
+│   │   │   │       MobileNextButton.tsx
+│   │   │   │       NavigationControls.tsx
+│   │   │   │       PreviewContainer.tsx
+│   │   │   │       README.md
+│   │   │   │
+│   │   │   ├───shared
+│   │   │   │       PreviewPopup.tsx
+│   │   │   │
+│   │   │   └───steps
+│   │   │       │   AnnouncementsPreview.tsx
+│   │   │       │   CouponsPreview.tsx
+│   │   │       │   FarewellPreview.tsx
+│   │   │       │   GreetingPreview.tsx
+│   │   │       │   index.ts
+│   │   │       │   LocationPreview.tsx
+│   │   │       │   UsersPreview.tsx
+│   │   │       │
+│   │   │       ├───Items
+│   │   │       │   │   ItemsPreview.tsx
+│   │   │       │   │   types.ts
+│   │   │       │   │
+│   │   │       │   ├───components
+│   │   │       │   │       ResponsiveExample.tsx
+│   │   │       │   │
+│   │   │       │   ├───constants
+│   │   │       │   │       responsive-styles.ts
+│   │   │       │   │
+│   │   │       │   ├───desktop
+│   │   │       │   │       DesktopItemsPreview.tsx
+│   │   │       │   │
+│   │   │       │   ├───hoc
+│   │   │       │   │       withResponsiveView.tsx
+│   │   │       │   │
+│   │   │       │   ├───hooks
+│   │   │       │   │       useResponsiveStyles.ts
+│   │   │       │   │
+│   │   │       │   └───mobile
+│   │   │       │           MobileItemCard.tsx
+│   │   │       │           MobileItemsList.tsx
+│   │   │       │           MobileItemsPreview.tsx
+│   │   │       │
+│   │   │       ├───Shifts
+│   │   │       │   │   ShiftsPreview.tsx
+│   │   │       │   │
+│   │   │       │   ├───components
+│   │   │       │   │   │   ResponsiveExample.tsx
+│   │   │       │   │   │
+│   │   │       │   │   ├───DateSelector
+│   │   │       │   │   │       index.tsx
+│   │   │       │   │   │
+│   │   │       │   │   ├───PageHeader
+│   │   │       │   │   │       index.tsx
+│   │   │       │   │   │
+│   │   │       │   │   ├───ShiftFilters
+│   │   │       │   │   │       index.tsx
+│   │   │       │   │   │
+│   │   │       │   │   └───ShiftsList
+│   │   │       │   │           index.tsx
+│   │   │       │   │
+│   │   │       │   ├───constants
+│   │   │       │   │       responsive-styles.ts
+│   │   │       │   │
+│   │   │       │   ├───desktop
+│   │   │       │   │       DesktopShiftsPreview.tsx
+│   │   │       │   │
+│   │   │       │   ├───hoc
+│   │   │       │   │       withResponsiveView.tsx
+│   │   │       │   │
+│   │   │       │   ├───hooks
+│   │   │       │   │       useGlobalScroll.ts
+│   │   │       │   │       useResponsiveStyles.ts
+│   │   │       │   │
+│   │   │       │   ├───mobile
+│   │   │       │   │       MobileShiftsPreview.tsx
+│   │   │       │   │
+│   │   │       │   ├───types
+│   │   │       │   │       index.ts
+│   │   │       │   │
+│   │   │       │   └───utils
+│   │   │       │           courtTypeUtils.ts
+│   │   │       │
+│   │   │       └───summary
+│   │   │           │   constants.ts
+│   │   │           │   SummaryPreview.tsx
+│   │   │           │   types.ts
+│   │   │           │
+│   │   │           ├───components
+│   │   │           │   │   CardBrandIcon.tsx
+│   │   │           │   │   CardCarousel.tsx
+│   │   │           │   │   CardList.tsx
+│   │   │           │   │   CardSetupForm.tsx
+│   │   │           │   │   CardSetupModal.tsx
+│   │   │           │   │   ConfirmationModal.tsx
+│   │   │           │   │   CouponsSection.tsx
+│   │   │           │   │   GuaranteeCardForm.tsx
+│   │   │           │   │   GuaranteeConfirmationModal.tsx
+│   │   │           │   │   GuaranteeSettings.tsx
+│   │   │           │   │   icons.tsx
+│   │   │           │   │   PaymentSection.tsx
+│   │   │           │   │   PaymentTypeCarousel.tsx
+│   │   │           │   │   PaymentTypeList.tsx
+│   │   │           │   │   PaymentTypeSection.tsx
+│   │   │           │   │   PriceBreakdown.tsx
+│   │   │           │   │   ReservationDetails.tsx
+│   │   │           │   │   ResponsiveExample.tsx
+│   │   │           │   │   SavedCard.tsx
+│   │   │           │   │   stripe-elements.css
+│   │   │           │   │   TotalPrice.tsx
+│   │   │           │   │
+│   │   │           │   ├───desktop
+│   │   │           │   │       DesktopReservationDetails.tsx
+│   │   │           │   │
+│   │   │           │   └───mobile
+│   │   │           │           MobilePaymentContainer.tsx
+│   │   │           │           MobileReservationHeader.tsx
+│   │   │           │
+│   │   │           ├───constants
+│   │   │           │       responsive-styles.ts
+│   │   │           │
+│   │   │           ├───hoc
+│   │   │           │       withResponsiveView.tsx
+│   │   │           │
+│   │   │           ├───hooks
+│   │   │           │       use-summary-booking.ts
+│   │   │           │       useResponsiveStyles.ts
+│   │   │           │       useSummaryState.ts
+│   │   │           │
+│   │   │           ├───layout
+│   │   │           │       DesktopSummaryLayout.tsx
+│   │   │           │
+│   │   │           └───modals
+│   │   │                   CouponsModal.tsx
+│   │   │                   ItemsDetailsModal.tsx
+│   │   │                   PaymentMethodModal.tsx
+│   │   │                   PaymentTypeModal.tsx
+│   │   │
+│   │   ├───pricing
+│   │   │   │   AdvancePaymentModal.tsx
+│   │   │   │   AdvanceTimeModal.tsx
+│   │   │   │   AgeRestrictionModal.tsx
+│   │   │   │   ApplyRateModal.tsx
+│   │   │   │   CouponsTable.tsx
+│   │   │   │   CourtCostsModal.tsx
+│   │   │   │   FreeResourcesModal.tsx
+│   │   │   │   GuestsConfigModal.tsx
+│   │   │   │   ItemCostsModal.tsx
+│   │   │   │   ItemsTable.tsx
+│   │   │   │   LastDayTimeModal.tsx
+│   │   │   │   LaunchDateModal.tsx
+│   │   │   │   NewItemModal.tsx
+│   │   │   │   NewSubscriptionModal.tsx
+│   │   │   │   PackagesTable.tsx
+│   │   │   │   SubscriptionsTable.tsx
+│   │   │   │
+│   │   │   └───NewCouponModal
+│   │   │       │   index.tsx
+│   │   │       │
+│   │   │       ├───components
+│   │   │       │       ModalFooter.tsx
+│   │   │       │       ModalHeader.tsx
+│   │   │       │       TimeRangeSelector.tsx
+│   │   │       │
+│   │   │       ├───config
+│   │   │       │       steps.ts
+│   │   │       │
+│   │   │       └───steps
+│   │   │               BasicInfo.tsx
+│   │   │               DiscountConfig.tsx
+│   │   │               Restrictions.tsx
+│   │   │               UsageLimits.tsx
+│   │   │
+│   │   ├───providers
+│   │   │       paypal-provider.tsx
+│   │   │       stripe-provider.tsx
+│   │   │
+│   │   ├───public-form
+│   │   │   │   PublicFormContent.tsx
+│   │   │   │
+│   │   │   ├───fields
+│   │   │   │   │   index.ts
+│   │   │   │   │   TextInput.tsx
+│   │   │   │   │
+│   │   │   │   └───base
+│   │   │   │           BaseField.tsx
+│   │   │   │
+│   │   │   ├───layout
+│   │   │   │       FormContainer.tsx
+│   │   │   │       NavigationButtons.tsx
+│   │   │   │       PublicFormContent.tsx
+│   │   │   │       PublicFormHeader.tsx
+│   │   │   │       PublicFormLayout.tsx
+│   │   │   │       PublicFormProgress.tsx
+│   │   │   │
+│   │   │   ├───shared
+│   │   │   │       FormFeedback.tsx
+│   │   │   │       FormStatusMessages.tsx
+│   │   │   │
+│   │   │   └───steps
+│   │   │           index.ts
+│   │   │           UsersStep.tsx
+│   │   │
+│   │   ├───settings
+│   │   │       BillingSettings.tsx
+│   │   │       BranchSettings.tsx
+│   │   │       CompanySettings.tsx
+│   │   │       EditBranchModal.tsx
+│   │   │       MembersSettings.tsx
+│   │   │       NewBankAccountModal.tsx
+│   │   │       NewBranchModal.tsx
+│   │   │       NewMemberModal.tsx
+│   │   │       PlanInfo.tsx
+│   │   │       UserSettings.tsx
+│   │   │
+│   │   ├───shared
+│   │   │       index.ts
+│   │   │       LoadingSpinner.tsx
+│   │   │       NotFound.tsx
+│   │   │
+│   │   ├───sidebar
+│   │   │       FeedbackCard.tsx
+│   │   │       PromoCard.tsx
+│   │   │
+│   │   ├───stats
+│   │   │       ReservationStats.tsx
+│   │   │       ReservationStatsAlt.tsx
+│   │   │
+│   │   ├───steps
+│   │   │   │   index.ts
+│   │   │   │   registry.ts
+│   │   │   │
+│   │   │   ├───announcements
+│   │   │   │       AnnouncementsStep.tsx
+│   │   │   │       constants.ts
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───coupons
+│   │   │   │       constants.ts
+│   │   │   │       CouponsStep.tsx
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───farewell
+│   │   │   │       constants.ts
+│   │   │   │       FarewellStep.tsx
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───greeting
+│   │   │   │       createField.ts
+│   │   │   │       GreetingStep.tsx
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───items
+│   │   │   │       constants.ts
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       ItemsStep.tsx
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───location
+│   │   │   │       constants.ts
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       LocationStep.tsx
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───shifts
+│   │   │   │       constants.ts
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       ShiftsStep.tsx
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   ├───summary
+│   │   │   │       constants.ts
+│   │   │   │       helpers.ts
+│   │   │   │       index.ts
+│   │   │   │       SummaryStep.tsx
+│   │   │   │       types.ts
+│   │   │   │
+│   │   │   └───users
+│   │   │           constants.ts
+│   │   │           defaults.ts
+│   │   │           helpers.ts
+│   │   │           index.ts
+│   │   │           types.ts
+│   │   │           UsersStep.tsx
+│   │   │
+│   │   ├───ui
+│   │   │       accordion.tsx
+│   │   │       alert-dialog.tsx
+│   │   │       alert.tsx
+│   │   │       badge.tsx
+│   │   │       boxesorigin.tsx
+│   │   │       button.tsx
+│   │   │       calendar.tsx
+│   │   │       card.tsx
+│   │   │       category-multi-select.tsx
+│   │   │       checkbox.tsx
+│   │   │       collapsible.tsx
+│   │   │       command.tsx
+│   │   │       confirm-branch-dialog.tsx
+│   │   │       confirm-dialog.tsx
+│   │   │       confirmation-dialog.tsx
+│   │   │       court-select.tsx
+│   │   │       custom-calendar.tsx
+│   │   │       custom-tooltip.tsx
+│   │   │       dialog.tsx
+│   │   │       dropdown-menu.tsx
+│   │   │       grouped-multi-select.tsx
+│   │   │       icons.tsx
+│   │   │       input.tsx
+│   │   │       label.tsx
+│   │   │       loading-spinner.tsx
+│   │   │       logoutconfirm.tsx
+│   │   │       mobile-warning.tsx
+│   │   │       modal.tsx
+│   │   │       multi-select.tsx
+│   │   │       onboarding-completed-warning.tsx
+│   │   │       page-loading-state.tsx
+│   │   │       paypal-subscription-button.tsx
+│   │   │       popover.tsx
+│   │   │       progress.tsx
+│   │   │       radio-group.tsx
+│   │   │       scroll-area.tsx
+│   │   │       scroll-bar.tsx
+│   │   │       scrollable(FAQ).tsx
+│   │   │       section-title.tsx
+│   │   │       select-2.tsx
+│   │   │       select-3.tsx
+│   │   │       select.tsx
+│   │   │       selectoption.tsx
+│   │   │       separator.tsx
+│   │   │       sheet.tsx
+│   │   │       simple-calendar.tsx
+│   │   │       single-select.tsx
+│   │   │       skeleton.tsx
+│   │   │       slider.tsx
+│   │   │       spinner.tsx
+│   │   │       stripe-disconnect-warning.tsx
+│   │   │       stripe-warning-toast.tsx
+│   │   │       success-subscription-toast.tsx
+│   │   │       switch.tsx
+│   │   │       table.tsx
+│   │   │       tabs.tsx
+│   │   │       textarea.tsx
+│   │   │       time-select.tsx
+│   │   │       time-selector.tsx
+│   │   │       toast.tsx
+│   │   │       toaster.tsx
+│   │   │       toggle-group.tsx
+│   │   │       tooltip.tsx
+│   │   │       use-toast.ts
+│   │   │
+│   │   └───usersSection
+│   │       │   index.ts
+│   │       │   MembersTable.tsx
+│   │       │
+│   │       ├───hooks
+│   │       │       useUserPackageDetails.ts
+│   │       │       useUsers.ts
+│   │       │       useVinculaciones.ts
+│   │       │
+│   │       ├───modals
+│   │       │       CancelMembershipModal.tsx
+│   │       │       MemberDetailsModal.tsx
+│   │       │       NewMemberForm.tsx
+│   │       │       PauseMembershipModal.tsx
+│   │       │
+│   │       └───types
+│   │               index.ts
+│   │
+│   ├───config
+│   │       auth.config.ts
+│   │       availability.ts
+│   │       paypal.ts
+│   │       query-keys.ts
+│   │       supabase.config.ts
+│   │       theme.ts
+│   │
+│   ├───constants
+│   │       form-fields.ts
+│   │       zIndex.ts
+│   │
+│   ├───contexts
+│   │       AuthContext.tsx
+│   │       BranchContext.tsx
+│   │       ClientOrganizationContext.tsx
+│   │       DateContext.tsx
+│   │       FormContext.tsx
+│   │       FormItemsContext.tsx
+│   │       OrganizationContext.tsx
+│   │       RentalContext.tsx
+│   │       StripeConfigContext.tsx
+│   │       StripeContext.tsx
+│   │
+│   ├───database
+│   │   └───functions
+│   │           cancel-booking-v1.sql
+│   │           no-show-charge-transaction.sql
+│   │
+│   ├───db
+│   │       init-subscription-plans.sql
+│   │
+│   ├───docs
+│   │   └───Uriel
+│   │           analisis-flujo-cancelacion-stripe.md
+│   │           estrategia-implementacion-pagos-stripe.md
+│   │           guia-desarrollo-pagos.md
+│   │           implementacion-cobro-stripe.md
+│   │           resumen-implementacion.md
+│   │
+│   ├───hooks
+│   │   │   use-location-branches.ts
+│   │   │   useAvailability.ts
+│   │   │   useBookingCount.ts
+│   │   │   useBookings.ts
+│   │   │   useBookingState.ts
+│   │   │   useBranches.ts
+│   │   │   useBusinessHours.ts
+│   │   │   useClassBooking.ts
+│   │   │   useClasses.ts
+│   │   │   useCompanyLinks.ts
+│   │   │   useCourts.ts
+│   │   │   useCurrentEmpresa.ts
+│   │   │   useFormConfig.ts
+│   │   │   useFormPublishing.ts
+│   │   │   useGroupedCourts.ts
+│   │   │   useItems.ts
+│   │   │   useOnboardingStatus.ts
+│   │   │   useOrganization.ts
+│   │   │   usePackages.ts
+│   │   │   useStoredCards.ts
+│   │   │   useStripeConfig.ts
+│   │   │   useStripeConnection.ts
+│   │   │   useStripeCustomer.ts
+│   │   │   useSubscriptionInfo.ts
+│   │   │   useUsers.ts
+│   │   │
+│   │   └───forms
+│   │           use-booking-creation.ts
+│   │           use-booking-transformer.ts
+│   │           use-form-publishing.ts
+│   │           use-form-state.ts
+│   │           use-initial-form.ts
+│   │           use-public-form.ts
+│   │
+│   ├───lib
+│   │   │   auth.ts
+│   │   │   data.ts
+│   │   │   database.types.ts
+│   │   │   emailjs.ts
+│   │   │   redis.ts
+│   │   │   storage-utils.ts
+│   │   │   stripe.ts
+│   │   │   supabase-client.ts
+│   │   │   supabase.ts
+│   │   │   theme-utils.ts
+│   │   │   time-utils.ts
+│   │   │   utils.ts
+│   │   │   validations.ts
+│   │   │
+│   │   ├───mappers
+│   │   │       field-components.ts
+│   │   │       preview-to-public.ts
+│   │   │
+│   │   ├───services
+│   │   │   └───forms
+│   │   │           publish-service.ts
+│   │   │           responses-service.ts
+│   │   │
+│   │   ├───storage
+│   │   │       clientStorage.ts
+│   │   │       constants.ts
+│   │   │       index.ts
+│   │   │
+│   │   ├───supabase
+│   │   │       admin.ts
+│   │   │       client.ts
+│   │   │       index.ts
+│   │   │
+│   │   ├───templates
+│   │   │       booking-form-template.ts
+│   │   │
+│   │   ├───utils
+│   │   │       schedule-utils.ts
+│   │   │       schedule.ts
+│   │   │       slug-generator.ts
+│   │   │       string-utils.ts
+│   │   │
+│   │   └───validations
+│   │           form-fields.ts
+│   │
+│   ├───providers
+│   │       StripeProvider.tsx
+│   │
+│   ├───services
+│   │   │   availability.service.ts
+│   │   │   bookingCountService.ts
+│   │   │   bookingQueryService.ts
+│   │   │   bookingService.ts
+│   │   │   branchService.ts
+│   │   │   classBookingService.ts
+│   │   │   classBookingTransformService.ts
+│   │   │   classQueryService.ts
+│   │   │   company-links.service.ts
+│   │   │   courtService.ts
+│   │   │   deposit-payment-client.service.ts
+│   │   │   empresaService.ts
+│   │   │   form-publishing.service.ts
+│   │   │   full-payment-client.service.ts
+│   │   │   full-payment.service.ts
+│   │   │   index.ts
+│   │   │   initializationService.ts
+│   │   │   itemService.ts
+│   │   │   memberService.ts
+│   │   │   NoShowService.ts
+│   │   │   onboardingBranchService.ts
+│   │   │   onboardingCompanyService.ts
+│   │   │   onboardingService.ts
+│   │   │   organizationService.ts
+│   │   │   paymentService.ts
+│   │   │   stripe-customer.service.ts
+│   │   │   stripe-payment-data.service.ts
+│   │   │   stripe-payment.service.ts
+│   │   │   stripe-setup-intent.service.ts
+│   │   │   stripeConnectionService.ts
+│   │   │   subscriptionService.ts
+│   │   │   supabase.ts
+│   │   │   userService.ts
+│   │   │   ValidationService.ts
+│   │   │   vinculacionService.ts
+│   │   │
+│   │   ├───server
+│   │   │       stripe-data.service.ts
+│   │   │
+│   │   └───supabase
+│   │           index.ts
+│   │
+│   ├───store
+│   │       appStore.ts
+│   │       bookingStore.ts
+│   │
+│   ├───styles
+│   │       calendar.css
+│   │       theme.css
+│   │
+│   ├───supabase
+│   │       default.ts
+│   │       index.ts
+│   │       types.ts
+│   │
+│   ├───types
+│   │   │   api.ts
+│   │   │   audience.ts
+│   │   │   availability.ts
+│   │   │   bookings.ts
+│   │   │   branch.ts
+│   │   │   classes.ts
+│   │   │   coupon.ts
+│   │   │   court.ts
+│   │   │   courts.ts
+│   │   │   database.types.ts
+│   │   │   empresa.ts
+│   │   │   form-steps.ts
+│   │   │   forms.ts
+│   │   │   items.ts
+│   │   │   members.ts
+│   │   │   organization.ts
+│   │   │   payments.ts
+│   │   │   rentals.ts
+│   │   │   stripe.ts
+│   │   │   supabase-auth.ts
+│   │   │   supabase.ts
+│   │   │
+│   │   └───forms
+│   │           publish.ts
+│   │           responses.ts
+│   │
+│   └───utils
+├───supabase
+│   └───migrations
+│           trigger_totalprice.sql
+│
+└───types
+        supabase.ts
+        test.ts

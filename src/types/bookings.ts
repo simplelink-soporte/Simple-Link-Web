@@ -69,7 +69,7 @@ export interface Court {
 
 export type PaymentStatusEnum = 'pending' | 'partial' | 'completed' | 'cancelled'
 export type PaymentMethodEnum = 'cash' | 'stripe' | 'transfer' | 'card'
-export type PaymentTypeEnum = 'booking' | 'deposit' | 'remaining' | 'guarantee' | 'no_show_charge'
+export type PaymentTypeEnum = 'booking' | 'deposit' | 'remaining' | 'guarantee' | 'no_show_charge' | 'full'
 export type ParticipantRoleEnum = 'player' | 'guest'
 export type ReservationTypeEnum = 'booking' | 'class'
 
@@ -306,6 +306,10 @@ export const PAYMENT_TYPE_MAPPINGS: Record<PaymentTypeEnum, PaymentMapping> = {
     type: 'no_show_charge',
     defaultMethod: 'stripe',
     defaultStatus: 'pending'
+  },
+  full: {
+    type: 'full',
+    defaultMethod: 'cash',
+    defaultStatus: 'pending'
   }
 };
-

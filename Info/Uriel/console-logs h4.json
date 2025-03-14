@@ -1,0 +1,424 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "3a6aca5f-f08d-44b8-8e85-636fce91ede2",
+        "hasGuarantee": true,
+        "totalAmount": 52,
+        "timestamp": "2025-03-11T07:05:19.916Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando carga de datos Stripe:",
+      {
+        "booking_id": "3a6aca5f-f08d-44b8-8e85-636fce91ede2",
+        "timestamp": "2025-03-11T07:05:19.916Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Estableciendo cargo por defecto:",
+      {
+        "stripeEnabled": true,
+        "isLoadingStripe": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "guarantee",
+        "canChargeNoShow": true,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 52
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1QddDLC4oQv4vCtF",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1QddDLC4oQv4vCtF",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:00",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:15",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:30",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:45",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:00",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:15",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:30",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:45",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:00",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:15",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:30",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "09:45",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:00",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:15",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:30",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Celda con clase encontrada:",
+      {
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "time": "10:45",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clases | Chupee",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "currentParticipants": 0,
+        "capacity": 8
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "guarantee",
+        "canChargeNoShow": true,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 52
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [cieu392b4aaja9s608rwcgon] Iniciando búsqueda de datos Stripe:",
+      {
+        "bookingId": "3a6aca5f-f08d-44b8-8e85-636fce91ede2",
+        "context": "client",
+        "timestamp": "2025-03-11T07:05:20.319Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [cieu392b4aaja9s608rwcgon] Datos Stripe encontrados:",
+      {
+        "bookingId": "3a6aca5f-f08d-44b8-8e85-636fce91ede2",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "paymentMethodId": "pm_1QtY3rC...",
+        "accountId": "acct_1QddD...",
+        "hasCustomerId": true,
+        "context": "client",
+        "timestamp": "2025-03-11T07:05:20.536Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Datos de pago obtenidos:",
+      {
+        "hasPaymentMethod": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "timestamp": "2025-03-11T07:05:20.536Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Estableciendo cargo por defecto:",
+      {
+        "stripeEnabled": true,
+        "isLoadingStripe": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Procesando cargo por no-show:",
+      {
+        "bookingId": "3a6aca5f-f08d-44b8-8e85-636fce91ede2",
+        "amount": 15.6,
+        "timestamp": "2025-03-11T07:05:21.845Z"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Error al procesar cargo:",
+      {
+        "code": "STRIPE_DATA_NOT_FOUND",
+        "message": "No se encontraron datos de Stripe para la reserva"
+      }
+    ]
+  }
+]

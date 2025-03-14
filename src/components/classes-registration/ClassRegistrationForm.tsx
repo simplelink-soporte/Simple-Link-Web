@@ -157,17 +157,17 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
         }
         break
       case 'summary':
-        config.onNext = () => goToStep('payment')
         config.onBack = () => goToStep('session')
-        break
-      case 'payment':
-        config.nextLabel = 'Confirmar pago'
-        config.onNext = () => goToStep('confirmation')
-        config.onBack = () => goToStep('summary')
+        // El onNext se maneja en el SummaryStep a través del evento create-class-reservation
+        config.nextLabel = 'Confirmar reserva'
         break
       case 'confirmation':
         config.showNext = false
-        config.onBack = () => goToStep('payment')
+        config.onBack = () => goToStep('summary')
+        break
+      case 'noCredits':
+        config.showNext = false
+        config.onBack = () => goToStep('class')
         break
     }
 
@@ -210,6 +210,8 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
       )}>
         <StepRenderer />
       </div>
+
+      {/* Navegación entre pasos */}
       <StepNavigation
         onNext={stepConfig.onNext}
         onBack={stepConfig.onBack}
@@ -220,4 +222,4 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
       />
     </div>
   )
-} 
+}

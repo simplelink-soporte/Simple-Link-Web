@@ -17,6 +17,11 @@ interface NoShowChargeParams {
   amount: number;
   reason?: string;
   empresaId: string;
+  stripeData?: {
+    paymentMethodId: string;
+    accountId: string;
+    customerId?: string;
+  };
 }
 
 interface NoShowResult {
@@ -54,16 +59,23 @@ export class NoShowService {
     });
 
     try {
-      // 1. Obtener datos de Stripe
-      const stripeData = await stripeDataService.getStripePaymentData(params.bookingId);
+      // 1. Obtener datos de Stripe (del servidor o usar los proporcionados)
+      let stripeData = params.stripeData;
+      
+      // Si no se proporcionaron datos de Stripe, intentar obtenerlos del servidor
       if (!stripeData) {
-        return {
-          success: false,
-          error: {
-            code: 'STRIPE_DATA_NOT_FOUND',
-            message: 'No se encontraron datos de Stripe para la reserva'
-          }
-        };
+        console.log(`🔍 [${requestId}] Buscando datos Stripe en servidor para:`, params.bookingId);
+        stripeData = await stripeDataService.getStripePaymentData(params.bookingId);
+        
+        if (!stripeData) {
+          return {
+            success: false,
+            error: {
+              code: 'STRIPE_DATA_NOT_FOUND',
+              message: 'No se encontraron datos de Stripe para la reserva'
+            }
+          };
+        }
       }
 
       // 2. Procesar el cargo en Stripe

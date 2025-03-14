@@ -1,0 +1,509 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Toggle lista de tarjetas"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 3,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-13T22:36:02.850Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 3,
+        "lastUpdate": "2025-03-13T22:36:03.597Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Seleccionando tarjeta:",
+      "pm_1R1MaQC4oQv4vCtFcCNCgIee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando selección de tarjeta:",
+      {
+        "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 2,
+        "expYear": 2033
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Actualizando método de pago global:",
+      {
+        "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 2,
+        "expYear": 2033,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 02/2033"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📢 Actualizando método de pago:",
+      {
+        "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 2,
+        "expYear": 2033,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 02/2033"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 2,
+        "expYear": 2033,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 02/2033"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSectionWithStripe] Estado:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isValidStripeId": true,
+        "isValidUser": true,
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "userEmail": "urieltac11@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 2,
+        "expYear": 2033,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 02/2033"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSectionWithStripe] Estado:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isValidStripeId": true,
+        "isValidUser": true,
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "userEmail": "urieltac11@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Tarjeta seleccionada correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Ejecutando navegación al siguiente paso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📌 Emitiendo evento para crear reserva desde StepNavigation"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📣 Evento de creación de reserva recibido"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Iniciando creación de reserva:"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Método de pago:",
+      "card"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Tipo de pago seleccionado:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de clase seleccionada:",
+      {
+        "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "title": "Clases | Chupee",
+        "description": "",
+        "is_active": true,
+        "created_at": "2025-03-05T06:10:34.999558+00:00",
+        "updated_at": "2025-03-05T06:10:34.999558+00:00",
+        "schedule": {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "timeSlots": [
+            {
+              "startTime": "09:00",
+              "endTime": "11:00",
+              "capacity": 8,
+              "spotsLeft": 8,
+              "instructors": [
+                "El profe"
+              ],
+              "courtIds": [
+                "8f69eb96-fde1-4085-8577-61da097e4f99"
+              ],
+              "price": 10
+            }
+          ],
+          "daysOfWeek": [
+            "lunes",
+            "martes",
+            "miércoles",
+            "jueves",
+            "viernes",
+            "sábado"
+          ],
+          "startDate": "2025-03-03",
+          "endDate": "2025-03-31"
+        },
+        "availablePaymentMethods": [
+          "cash",
+          "card"
+        ],
+        "visibility": "public",
+        "is_recurring": true,
+        "instructor": "El profe",
+        "sessions": [
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-1-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-17",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 3,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-2-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-18",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 6,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-3-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-19",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 8,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-4-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-13",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 7,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-5-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-14",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 7,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          },
+          {
+            "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-6-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "11:00",
+            "spotsLeft": 7,
+            "totalSpots": 8,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "El profe",
+            "price": 10
+          }
+        ],
+        "branchInfo": {
+          "id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "name": "Sede 2",
+          "address": "Dirección de la sede 2",
+          "phone": "xc"
+        },
+        "courts": [
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "description": "crystal - covered"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] ID de sesión seleccionada:",
+      "19ce6f10-2cbb-45c3-9526-b4a71433413e-6-09:00-8f69eb96-fde1-4085-8577-61da097e4f99"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de sesión completa:",
+      {
+        "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-6-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+        "date": "2025-03-15",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "spotsLeft": 7,
+        "totalSpots": 8,
+        "courts": [
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "description": "crystal - covered"
+          }
+        ],
+        "instructor": "El profe",
+        "price": 10
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] Verificando condiciones para procesar pago con Stripe:"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Método seleccionado es card:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Existe método de tarjeta:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Tipo de pago seleccionado:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Session existe:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - stripeAccountId existe:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Datos de tarjeta:",
+      "{\"id\":\"pm_1R1MaQC4oQv4vCtFcCNCgIee\",\"brand\":\"visa\",\"last4\":\"4242\"}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Iniciando proceso de pago completo con Stripe"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [SummaryStep] No se encontró customerId en el método de pago seleccionado"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [SummaryStep] Error inesperado al crear la reserva:",
+      {}
+    ]
+  }
+]

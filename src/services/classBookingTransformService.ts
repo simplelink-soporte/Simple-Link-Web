@@ -16,6 +16,7 @@ interface ClassBookingTransformOptions {
   depositAmount?: number;
   empresaId?: string;
   userId?: string;
+  stripePaymentMethodId?: string;
 }
 
 /**
@@ -100,7 +101,10 @@ export class ClassBookingTransformService {
       depositAmount: options.depositAmount || 0,
       
       // Identificador de empresa
-      empresa_id: options.empresaId
+      empresa_id: options.empresaId,
+      
+      // ID del método de pago de Stripe
+      stripe_payment_method_id: options.stripePaymentMethodId
     };
   }
   

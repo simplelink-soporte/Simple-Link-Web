@@ -14,9 +14,12 @@ export function ConfirmationStep() {
 
   // Verificar que hemos llegado aquí después de crear reservas
   useEffect(() => {
-    // Si no hay IDs de reserva o el estado no es success, redirigir al paso de pago
+    // Si no hay IDs de reserva o el estado no es success, redirigir al paso de resumen
     if (state.bookingIds.length === 0 || state.bookingStatus !== 'success') {
-      goToStep('payment')
+      console.log('No hay reservas confirmadas, redirigiendo a resumen')
+      goToStep('summary')
+    } else {
+      console.log('Reservas confirmadas:', state.bookingIds)
     }
   }, [state.bookingIds, state.bookingStatus, goToStep])
 

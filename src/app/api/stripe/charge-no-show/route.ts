@@ -13,6 +13,15 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
   try {
     const payload = await request.json() as NoShowChargeRequest;
     
+    // Verificar si se incluye información de stripe directamente en el payload
+    if (payload.stripeData) {
+      console.log(`✅ [${requestId}] Usando datos Stripe proporcionados por el cliente:`, {
+        bookingId: payload.bookingId,
+        hasPaymentMethodId: Boolean(payload.stripeData.paymentMethodId),
+        hasAccountId: Boolean(payload.stripeData.accountId)
+      });
+    }
+    
     // Crear instancia del servicio
     const validationService = new ValidationService(supabaseAdmin);
     const noShowService = new NoShowService({
@@ -26,7 +35,8 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       bookingId: payload.bookingId,
       amount: payload.amount,
       reason: payload.reason,
-      empresaId: payload.empresaId
+      empresaId: payload.empresaId,
+      stripeData: payload.stripeData // Pasar los datos de Stripe si están disponibles
     });
 
     if (!result.success) {

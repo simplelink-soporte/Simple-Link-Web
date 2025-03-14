@@ -9,12 +9,22 @@ interface StripePaymentData {
   customerId?: string | null;
 }
 
+// Interfaz para mejorar la tipificación de los pagos
+interface PaymentWithStripe {
+  id: string;
+  payment_method: string;
+  stripe_payment_method_id: string | null;
+  created_at: string;
+}
+
 export const stripeDataService = {
   async getStripePaymentData(bookingId: string): Promise<StripePaymentData | null> {
     const requestId = createId();
     try {
+      // Obtenemos las cookies de forma asíncrona
+      const cookiesInstance = cookies();
       const client = createServerComponentClient<Database>({ 
-        cookies,
+        cookies: () => cookiesInstance,
         options: { db: { schema: 'public' } }
       });
 
@@ -97,20 +107,24 @@ export const stripeDataService = {
         return null;
       }
 
-      // 3. Obtener el payment_method_id del pago más reciente con Stripe
-      const validPayment = booking.payments
-        ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        ?.find(payment => 
-          payment.payment_method === 'stripe' && 
-          payment.stripe_payment_method_id
-        );
+      // 3. Obtener el payment_method_id del pago más reciente con información de Stripe
+      // Modificación importante: buscar cualquier pago con stripe_payment_method_id, 
+      // independientemente del payment_method que tenga registrado
+      const payments = booking.payments as PaymentWithStripe[];
+      const validPayment = payments
+        ?.sort((a: PaymentWithStripe, b: PaymentWithStripe) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        ?.find((payment: PaymentWithStripe) => payment.stripe_payment_method_id);
 
-      if (!validPayment?.stripe_payment_method_id) {
+      // Si no se encuentra un método de pago con stripe_payment_method_id
+      if (!validPayment || !validPayment.stripe_payment_method_id) {
         console.log(`⚠️ [${requestId}] No se encontró método de pago válido:`, {
           bookingId,
           userId: booking.booking_participants[0].user_id,
-          paymentsCount: booking.payments?.length,
-          hasStripePayments: booking.payments?.some(p => p.payment_method === 'stripe')
+          paymentsCount: payments?.length,
+          hasStripePayments: payments?.some((p: PaymentWithStripe) => p.payment_method === 'stripe'),
+          hasStripePaymentMethodId: payments?.some((p: PaymentWithStripe) => Boolean(p.stripe_payment_method_id)),
+          timestamp: new Date().toISOString()
         });
         return null;
       }
@@ -122,17 +136,19 @@ export const stripeDataService = {
         customerId: stripeCustomer.stripe_customer_id
       };
 
-      console.log(`✅ [${requestId}] Datos de Stripe completos:`, {
+      console.log(`✅ [${requestId}] Datos de Stripe encontrados (Server):`, {
         bookingId,
         userId: booking.booking_participants[0].user_id,
-        response,
+        paymentMethodId: response.paymentMethodId.substring(0, 10) + '...',
+        accountId: response.accountId.substring(0, 10) + '...',
+        hasCustomerId: Boolean(response.customerId),
         timestamp: new Date().toISOString()
       });
 
       return response;
 
     } catch (error) {
-      console.error(`❌ [${requestId}] Error inesperado al obtener datos de Stripe:`, {
+      console.error(`❌ [${requestId}] Error inesperado al obtener datos de Stripe (Server):`, {
         error,
         bookingId,
         timestamp: new Date().toISOString()

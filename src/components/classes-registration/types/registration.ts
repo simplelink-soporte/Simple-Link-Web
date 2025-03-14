@@ -1,7 +1,7 @@
 import type { ClassPackage, PublicClass, PaymentMethod } from './models'
 import type { CompanyLinkSettings } from './settings'
 
-export type Step = 'auth' | 'package' | 'class' | 'session' | 'summary' | 'payment' | 'confirmation' | 'noCredits'
+export type Step = 'auth' | 'package' | 'class' | 'session' | 'summary' | 'confirmation' | 'noCredits'
 export type AuthView = 'login' | 'register'
 
 export interface RegistrationState {

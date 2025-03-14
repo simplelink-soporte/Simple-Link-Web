@@ -22,7 +22,7 @@ import { createSupabaseClient } from '@/lib/supabase';
 import type { BookingCreationData } from '@/types/bookings';
 import { ClassBookingTransformService } from './classBookingTransformService';
 import type { PublicClass, ClassSession } from '@/components/classes-registration/types/models';
-import type { PaymentMethodEnum, PaymentStatusEnum } from '@/types/bookings';
+import type { PaymentMethodEnum, PaymentStatusEnum, PaymentTypeEnum } from '@/types/bookings';
 import { DateTime } from 'luxon'; // Importamos DateTime de Luxon para manejar zonas horarias
 
 // Interfaces para el servicio
@@ -41,6 +41,8 @@ interface BookingOptions {
   paymentMethod?: PaymentMethodEnum;
   paymentStatus?: PaymentStatusEnum;
   depositAmount?: number;
+  paymentType?: PaymentTypeEnum;
+  stripePaymentMethodId?: string;
 }
 
 /**
@@ -167,7 +169,8 @@ export class ClassBookingService {
     options: BookingOptions
   ): Promise<BookingResult> {
     try {
-      console.log('Creando reserva para la clase:', classData.title, 'sesión:', session.date);
+      console.log('📋 [ClassBookingService] Creando reserva para la clase:', classData.title, 'sesión:', session.date);
+      console.log('📋 [ClassBookingService] Opciones recibidas:', JSON.stringify(options, null, 2));
       
       // 1. Transformar los datos de sesión a formato de reserva
       const bookingData = ClassBookingTransformService.transformSessionToBookingData(classData, session, {
@@ -175,11 +178,16 @@ export class ClassBookingService {
         paymentStatus: options.paymentStatus,
         depositAmount: options.depositAmount,
         empresaId: options.empresaId,
-        userId: options.userId
+        userId: options.userId,
+        paymentType: options.paymentType,
+        stripePaymentMethodId: options.stripePaymentMethodId
       });
+      
+      console.log('📋 [ClassBookingService] Datos de reserva transformados:', JSON.stringify(bookingData, null, 2));
       
       // Asegurarnos de que el tipo de pago sea válido
       const normalizedPaymentType = ClassBookingTransformService.normalizePaymentType(bookingData.paymentType);
+      console.log('📋 [ClassBookingService] Tipo de pago normalizado:', normalizedPaymentType);
       
       // 2. Obtener la información de la cancha para obtener la sede
       let courtId = bookingData.courtId;
@@ -207,6 +215,7 @@ export class ClassBookingService {
       );
       
       if (!timeConversion) {
+        console.error('❌ [ClassBookingService] Error al convertir los horarios a UTC');
         return {
           error: {
             message: 'Error al convertir los horarios a UTC',
@@ -215,8 +224,10 @@ export class ClassBookingService {
         };
       }
       
+      console.log('📋 [ClassBookingService] Conversión de horarios completada:', JSON.stringify(timeConversion, null, 2));
+      
       // 4. Llamar a la RPC para crear la reserva (ahora con horarios en UTC)
-      const { data, error } = await this.supabase.rpc('create_booking_v2', {
+      const rpcParams = {
         p_court_id: courtId,
         p_date: timeConversion.bookingDateUTC,             // Fecha en UTC
         p_start_time: timeConversion.startTimeUTC,         // Hora de inicio en UTC
@@ -234,11 +245,16 @@ export class ClassBookingService {
         p_empresa_id: options.empresaId,
         p_reservation_type: 'class',
         p_class_id: classData.id,
-        p_class_session_price: session.price || 0
-      });
+        p_class_session_price: session.price || 0,
+        p_stripe_payment_method_id: options.stripePaymentMethodId || bookingData.stripe_payment_method_id
+      };
+      
+      console.log('📋 [ClassBookingService] Parámetros enviados a RPC create_booking_v2:', JSON.stringify(rpcParams, null, 2));
+      
+      const { data, error } = await this.supabase.rpc('create_booking_v2', rpcParams);
 
       if (error) {
-        console.error('❌ Error creating class booking:', error);
+        console.error('❌ [ClassBookingService] Error creating class booking:', error);
         return {
           error: {
             message: 'Error al crear la reserva de clase',
@@ -250,7 +266,7 @@ export class ClassBookingService {
 
       return { id: data };
     } catch (error: any) {
-      console.error('❌ Exception creating class booking:', error);
+      console.error('❌ [ClassBookingService] Exception creating class booking:', error);
       return {
         error: {
           message: 'Error inesperado al crear la reserva de clase',

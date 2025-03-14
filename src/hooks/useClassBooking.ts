@@ -11,6 +11,7 @@ import { useClassRegistration } from '@/components/classes-registration/context/
 import { ClassBookingTransformService } from '@/services/classBookingTransformService';
 import { classBookingService } from '@/services/classBookingService';
 import { useToast } from '@/components/ui/use-toast';
+import { PaymentMethodEnum, PaymentTypeEnum, PaymentStatusEnum } from '@/types/bookings';
 
 /**
  * Hook para el proceso de reserva de sesiones de clase
@@ -40,7 +41,11 @@ export function useClassBooking() {
   /**
    * Procesa la reserva de todas las sesiones seleccionadas
    */
-  const submitClassBooking = async (options = {}) => {
+  const submitClassBooking = async (options: {
+    paymentMethod?: PaymentMethodEnum;
+    paymentType?: PaymentTypeEnum;
+    paymentMethodDetails?: { id: string; [key: string]: any };
+  } = {}) => {
     // Validar datos antes de proceder
     const validation = validateClassData();
     if (!validation.isValid) {
@@ -65,6 +70,42 @@ export function useClassBooking() {
     updateState({ type: 'SET_BOOKING_STATUS', payload: 'submitting' });
     
     try {
+      console.log('📋 [useClassBooking] Opciones recibidas para la reserva:', options);
+      
+      // Calcular importe para pagos completos
+      let depositAmount = 0;
+      let paymentStatus: PaymentStatusEnum = 'pending';
+      
+      // Determinar el estado de pago y el importe del depósito según el tipo de pago
+      if (options.paymentType === 'full') {
+        // Si es pago completo, establecer el importe al precio total y marcar como completado
+        const sessionsSummary = getSessionsSummary();
+        depositAmount = sessionsSummary.totalPrice;
+        paymentStatus = 'completed';
+        console.log('📋 [useClassBooking] Pago completo detectado, configurando importe:', depositAmount);
+      } else if (options.paymentType === 'deposit') {
+        // Si es pago con seña, calcular el 30% y establecer estado como parcial
+        const sessionsSummary = getSessionsSummary();
+        depositAmount = sessionsSummary.totalPrice * 0.3; // 30% como seña
+        paymentStatus = 'partial'; // Establecer estado como parcial
+        console.log('📋 [useClassBooking] Pago con seña detectado, configurando importe:', depositAmount);
+        
+        // Intentar recuperar información adicional del depósito si está disponible en localStorage
+        try {
+          const lastDepositInfo = localStorage.getItem('lastDepositAmount');
+          if (lastDepositInfo) {
+            const depositInfo = JSON.parse(lastDepositInfo);
+            if (depositInfo.depositAmount) {
+              // Usar el monto del depósito real procesado por Stripe
+              depositAmount = depositInfo.depositAmount;
+              console.log('📋 [useClassBooking] Usando monto de seña real de Stripe:', depositAmount);
+            }
+          }
+        } catch (err) {
+          console.warn('⚠️ [useClassBooking] No se pudo recuperar la información de depósito:', err);
+        }
+      }
+      
       // Utilizar el nuevo servicio para crear las reservas
       const result = await classBookingService.createMultipleClassBookings(
         state.selectedClass,
@@ -73,8 +114,11 @@ export function useClassBooking() {
           userId: user.id,
           empresaId: organization.id,
           paymentMethod: options.paymentMethod || 'cash',
-          paymentStatus: 'pending',
-          depositAmount: 0
+          paymentStatus: paymentStatus,
+          depositAmount: depositAmount,
+          paymentType: options.paymentType,
+          // Añadir el ID del método de pago de Stripe si está presente
+          stripePaymentMethodId: options.paymentMethodDetails?.id
         }
       );
       

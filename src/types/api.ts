@@ -1,13 +1,22 @@
 import { PaymentMethodEnum, PaymentStatusEnum, PaymentTypeEnum } from '@/types/bookings';
 
 // Tipos para el endpoint de cargo por no-show
+export interface StripeData {
+  paymentMethodId: string;
+  accountId: string;
+  customerId?: string;
+}
+
 export interface NoShowChargeRequest {
   bookingId: string;
   amount: number;
-  stripeAccountId: string;
   reason?: string;
   empresaId: string;
-  stripePaymentMethodId: string;
+  // Campos opcionales para especificar información de Stripe directamente
+  stripeData?: StripeData;
+  // Campos deprecados (mantener por compatibilidad hacia atrás)
+  stripeAccountId?: string;
+  stripePaymentMethodId?: string;
 }
 
 export interface NoShowChargeResponse {

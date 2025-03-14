@@ -164,17 +164,33 @@ export function CancelBookingModal({
           timestamp: new Date().toISOString()
         });
 
+        // Preparar los datos para la API incluyendo stripeData cuando estén disponibles
+        const requestData = {
+          bookingId: booking.id,
+          amount: totalAmount * 0.3,
+          reason,
+          empresaId: organization?.id
+        };
+
+        // Si tenemos los datos de Stripe, incluirlos directamente para evitar problemas en el servidor
+        if (stripeAccountId && stripePaymentMethodId) {
+          console.log('✅ Enviando datos Stripe al servidor:', {
+            hasAccountId: Boolean(stripeAccountId),
+            hasPaymentMethodId: Boolean(stripePaymentMethodId)
+          });
+
+          Object.assign(requestData, {
+            stripeData: {
+              accountId: stripeAccountId,
+              paymentMethodId: stripePaymentMethodId
+            }
+          });
+        }
+
         const response = await fetch('/api/stripe/charge-no-show', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            bookingId: booking.id,
-            amount: totalAmount * 0.3,
-            reason,
-            stripeAccountId,
-            stripePaymentMethodId,
-            empresaId: organization?.id
-          })
+          body: JSON.stringify(requestData)
         });
 
         const result = await response.json();
