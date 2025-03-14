@@ -44,8 +44,6 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   // Estado para la fecha seleccionada en el calendario
   const [selectedDate, setSelectedDate] = useState<string>(propSelectedDate || '');
-  // Estado para mostrar/ocultar el calendario
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
   // Estado para el mes y año actuales del calendario
   const [currentMonth, setCurrentMonth] = useState<Date>(() => {
     return propSelectedDate ? new Date(propSelectedDate) : new Date();
@@ -60,7 +58,6 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
   // Función para manejar la selección de fecha
   const handleDateSelect = (dateStr: string) => {
     setSelectedDate(dateStr);
-    setShowCalendar(false);
     if (onDateSelect) {
       onDateSelect(dateStr);
     }
@@ -123,114 +120,7 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
   return (
     <div className="space-y-4">
       {/* Sección de información */}
-      <div className="space-y-2">
-        {/* Selector de fecha con calendario */}
-        <div className="relative">
-          <div 
-            className="flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50"
-            onClick={() => setShowCalendar(!showCalendar)}
-          >
-            <div className="flex items-center gap-2">
-              <IconCalendar size={16} className="text-gray-500" />
-              <span className="text-sm text-gray-800">
-                {selectedDate ? formatDate(selectedDate) : 'Todas las fechas'}
-              </span>
-            </div>
-            <IconChevronDown size={16} className="text-gray-500" />
-          </div>
-          
-          {/* Calendario desplegable */}
-          {showCalendar && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden">
-              {/* Encabezado del calendario */}
-              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
-                <button
-                  onClick={goToPreviousMonth}
-                  className="p-1 rounded-md hover:bg-gray-200 transition-colors"
-                >
-                  <IconChevronLeft size={16} className="text-gray-600" />
-                </button>
-                <span className="text-sm font-medium text-gray-800">
-                  {currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-                </span>
-                <button
-                  onClick={goToNextMonth}
-                  className="p-1 rounded-md hover:bg-gray-200 transition-colors"
-                >
-                  <IconChevronRight size={16} className="text-gray-600" />
-                </button>
-              </div>
-              
-              {/* Días de la semana */}
-              <div className="grid grid-cols-7 text-center pt-2">
-                {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, index) => (
-                  <div key={index} className="text-xs text-gray-500 py-1">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              
-              {/* Días del mes */}
-              <div className="grid grid-cols-7 text-center pb-2">
-                {getDaysInMonth().map((day, index) => {
-                  if (day === null) {
-                    return <div key={`empty-${index}`} className="h-8" />;
-                  }
-                  
-                  const dateStr = formatYYYYMMDD(day);
-                  const isSelected = dateStr === selectedDate;
-                  const hasSessions = hasSessionsOnDate(dateStr);
-                  
-                  return (
-                    <div 
-                      key={dateStr} 
-                      className="py-1 px-1"
-                    >
-                      <button
-                        onClick={() => handleDateSelect(dateStr)}
-                        className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center text-xs transition-colors",
-                          isSelected 
-                            ? "bg-blue-600 text-white hover:bg-blue-700" 
-                            : hasSessions
-                              ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                              : "text-gray-700 hover:bg-gray-100"
-                        )}
-                      >
-                        {day.getDate()}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {/* Pie del calendario */}
-              <div className="flex justify-between items-center px-3 py-2 bg-gray-50 border-t border-gray-200">
-                <button
-                  onClick={() => {
-                    setSelectedDate('');
-                    setShowCalendar(false);
-                    if (onDateSelect) onDateSelect('');
-                  }}
-                  className="text-xs text-gray-700 hover:text-gray-900 font-medium"
-                >
-                  Ver todas
-                </button>
-                <button
-                  onClick={() => {
-                    const today = formatYYYYMMDD(new Date());
-                    setSelectedDate(today);
-                    setShowCalendar(false);
-                    if (onDateSelect) onDateSelect(today);
-                  }}
-                  className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded-md font-medium"
-                >
-                  Hoy
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="space-y-3">
         <div className="space-y-0.5">
           <h3 className="text-sm font-medium text-gray-900/75">
             Sesiones programadas
@@ -238,6 +128,94 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
           <p className="text-xs text-gray-500/75">
             Selecciona una sesión para ver más detalles
           </p>
+        </div>
+        
+        {/* Calendario integrado directamente */}
+        <div className="bg-white border border-gray-200 rounded-md p-2">
+          {/* Encabezado del calendario */}
+          <div className="flex items-center justify-between px-2 py-1.5 mb-2">
+            <button
+              onClick={goToPreviousMonth}
+              className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            >
+              <IconChevronLeft size={16} className="text-gray-600" />
+            </button>
+            <span className="text-xs font-medium text-gray-800">
+              {currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+            </span>
+            <button
+              onClick={goToNextMonth}
+              className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            >
+              <IconChevronRight size={16} className="text-gray-600" />
+            </button>
+          </div>
+          
+          {/* Días de la semana */}
+          <div className="grid grid-cols-7 text-center">
+            {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, index) => (
+              <div key={index} className="text-xs text-gray-500 py-1">
+                {day}
+              </div>
+            ))}
+          </div>
+          
+          {/* Días del mes */}
+          <div className="grid grid-cols-7 text-center">
+            {getDaysInMonth().map((day, index) => {
+              if (day === null) {
+                return <div key={`empty-${index}`} className="h-7" />;
+              }
+              
+              const dateStr = formatYYYYMMDD(day);
+              const isSelected = dateStr === selectedDate;
+              const hasSessions = hasSessionsOnDate(dateStr);
+              
+              return (
+                <div 
+                  key={dateStr} 
+                  className="py-1 px-1"
+                >
+                  <button
+                    onClick={() => handleDateSelect(dateStr)}
+                    className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors",
+                      isSelected 
+                        ? "bg-gray-600 text-white hover:bg-gray-700" 
+                        : hasSessions
+                          ? "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          : "text-gray-700 hover:bg-gray-100"
+                    )}
+                  >
+                    {day.getDate()}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* Pie del calendario */}
+          <div className="flex justify-between items-center pt-1.5">
+            <button
+              onClick={() => {
+                setSelectedDate('');
+                if (onDateSelect) onDateSelect('');
+              }}
+              className="text-xs text-gray-700 hover:text-gray-900 font-medium"
+            >
+              Ver todas
+            </button>
+            <button
+              onClick={() => {
+                const today = formatYYYYMMDD(new Date());
+                setSelectedDate(today);
+                if (onDateSelect) onDateSelect(today);
+              }}
+              className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-2 py-1 rounded-md font-medium"
+            >
+              Hoy
+            </button>
+          </div>
         </div>
       </div>
 
@@ -271,7 +249,7 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
                   "flex items-center justify-between",
                   slot.isSuspended 
                     ? "bg-red-50/70 hover:bg-red-100/80 border-red-100"
-                    : "bg-gray-50 hover:bg-gray-100 border-gray-100"
+                    : "bg-transparent hover:bg-gray-100 border-gray-100"
                 )}
                 onClick={() => onSessionSelect(slot.id, slot)}
                 onMouseEnter={() => setHoveredId(slot.id)}

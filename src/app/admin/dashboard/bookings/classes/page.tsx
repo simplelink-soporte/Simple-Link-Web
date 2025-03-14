@@ -6,7 +6,9 @@ import { ViewSelector } from "@/components/bookings/classes/components/ViewSelec
 import { useAuth } from "@/contexts/AuthContext"
 import { useBranchContext } from "@/contexts/BranchContext"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect } from "react"
+import { BetaFeaturesNotification } from "@/components/ui/beta-features-toast"
+import { useLocalStorage } from "@/hooks/useLocalStorage"
 
 function LoadingState() {
   return (
@@ -44,7 +46,17 @@ export default function ClassesPage() {
   const { isLoading: isLoadingBranch, currentBranch } = useBranchContext()
   const [currentView, setCurrentView] = useState<'classes' | 'packages'>('classes')
   
+  // Estado para controlar la visualización del toast beta
+  const [hasDismissedBetaNotice, setHasDismissedBetaNotice] = useLocalStorage<boolean>('dismissed-classes-beta-notice', false)
+  const [showBetaNotice, setShowBetaNotice] = useState(!hasDismissedBetaNotice)
+  
   const isLoading = isLoadingAuth || isLoadingBranch
+
+  // Manejar el cierre del toast y guardar la preferencia
+  const handleCloseBetaNotice = () => {
+    setShowBetaNotice(false)
+    setHasDismissedBetaNotice(true)
+  }
 
   return (
     <div className="fixed inset-0 overflow-hidden z-0">
@@ -79,6 +91,13 @@ export default function ClassesPage() {
           </div>
         </div>
       </main>
+      
+      {/* Notificación de característica Beta */}
+      <BetaFeaturesNotification
+        show={showBetaNotice}
+        featureName="Clases"
+        onClose={handleCloseBetaNotice}
+      />
     </div>
   )
 } 

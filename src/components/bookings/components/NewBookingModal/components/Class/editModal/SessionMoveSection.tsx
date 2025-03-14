@@ -141,9 +141,9 @@ export function SessionMoveSection({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header con botón de regreso */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center mb-2">
         <button
           onClick={onBack}
           className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-xs"
@@ -152,26 +152,97 @@ export function SessionMoveSection({
           <IconChevronLeft size={14} />
           <span>Volver</span>
         </button>
-        
-        <h3 className="text-sm font-medium text-gray-900">
-          Mover sesión
-        </h3>
       </div>
       
-      {/* Información de la sesión a mover - versión más compacta */}
-      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200 flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-50 border border-blue-100">
-          <IconClock size={12} className="text-blue-500" />
+      {/* Título y descripción - similar a SessionsReviewSection */}
+      <div className="space-y-0.5">
+        <h3 className="text-sm font-medium text-gray-900/75">
+          Mover sesión
+        </h3>
+        <p className="text-xs text-gray-500/75">
+          Selecciona una nueva fecha y sesión de destino
+        </p>
+      </div>
+      
+      {/* Implementación de un calendario minimalista como en SessionsReviewSection */}
+      <div className="bg-white border border-gray-200 rounded-md p-2">
+        {/* Encabezado del calendario */}
+        <div className="flex items-center justify-between px-2 py-1.5 mb-2">
+          <button
+            onClick={() => setSelectedDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() - 1, 1) : new Date())}
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            <IconChevronLeft size={16} className="text-gray-600" />
+          </button>
+          <span className="text-xs font-medium text-gray-800">
+            {selectedDate?.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) || new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+          </span>
+          <button
+            onClick={() => setSelectedDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() + 1, 1) : new Date())}
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            <IconChevronRight size={16} className="text-gray-600" />
+          </button>
         </div>
-        <div className="flex-1">
+        
+        {/* Días de la semana */}
+        <div className="grid grid-cols-7 text-center pt-1 bg-white">
+          {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, index) => (
+            <div key={index} className="text-[10px] text-gray-500 py-1">
+              {day}
+            </div>
+          ))}
+        </div>
+        
+        {/* Días del mes */}
+        <div className="grid grid-cols-7 text-center pb-1 px-1 bg-white">
+          {getDaysInMonth(selectedDate || new Date()).map((day, index) => {
+            if (day === null) {
+              return <div key={`empty-${index}`} className="h-6" />;
+            }
+            
+            const dateStr = formatYYYYMMDD(day);
+            const isSelected = selectedDate && dateStr === formatYYYYMMDD(selectedDate);
+            const hasSessions = hasSessionsOnDate(dateStr);
+            
+            return (
+              <div key={dateStr} className="py-1 px-1">
+                <button
+                  onClick={() => setSelectedDate(day)}
+                  className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-colors",
+                    isSelected 
+                      ? "bg-gray-600 text-white hover:bg-gray-700" 
+                      : hasSessions
+                        ? "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        : "text-gray-700 hover:bg-gray-100"
+                  )}
+                >
+                  {day.getDate()}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Información de la sesión a mover - debajo del calendario */}
+      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-gray-200">
+            <IconClock size={12} className="text-gray-600" />
+          </div>
+          <span className="text-xs font-medium text-gray-700">Sesión a mover:</span>
+        </div>
+        
+        <div className="ml-7">
           <div className="flex items-center gap-1">
-            <span className="text-xs font-medium text-gray-700">Sesión a mover:</span>
-            <span className="text-xs text-gray-900">
+            <span className="text-xs text-gray-900 font-medium">
               {formatTime(session.startTime)} - {formatTime(session.endTime)}
             </span>
           </div>
           {session.date && (
-            <p className="text-[10px] text-gray-500">
+            <p className="text-xs text-gray-500">
               {new Date(session.date).toLocaleDateString('es-ES', {
                 day: 'numeric',
                 month: 'long'
@@ -181,78 +252,9 @@ export function SessionMoveSection({
         </div>
       </div>
       
-      {/* Sección para seleccionar la nueva fecha - calendario personalizado */}
-      <div className="rounded-lg border border-gray-100 p-3">
-        <h4 className="text-xs font-medium text-gray-700 mb-2">
-          Selecciona la nueva fecha
-        </h4>
-        
-        {/* Implementación de un calendario minimalista como en SessionsReviewSection */}
-        <div className="border border-gray-200 rounded-md overflow-hidden">
-          {/* Encabezado del calendario */}
-          <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
-            <button
-              onClick={() => setSelectedDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() - 1, 1) : new Date())}
-              className="p-1 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              <IconChevronLeft size={14} className="text-gray-600" />
-            </button>
-            <span className="text-xs font-medium text-gray-800">
-              {selectedDate?.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) || new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-            </span>
-            <button
-              onClick={() => setSelectedDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() + 1, 1) : new Date())}
-              className="p-1 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              <IconChevronRight size={14} className="text-gray-600" />
-            </button>
-          </div>
-          
-          {/* Días de la semana */}
-          <div className="grid grid-cols-7 text-center pt-1 bg-white">
-            {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, index) => (
-              <div key={index} className="text-[10px] text-gray-500 py-1">
-                {day}
-              </div>
-            ))}
-          </div>
-          
-          {/* Días del mes - simplificado para el ejemplo */}
-          <div className="grid grid-cols-7 text-center pb-1 px-1 bg-white">
-            {getDaysInMonth(selectedDate || new Date()).map((day, index) => {
-              if (day === null) {
-                return <div key={`empty-${index}`} className="h-6" />;
-              }
-              
-              const dateStr = formatYYYYMMDD(day);
-              const isSelected = selectedDate && dateStr === formatYYYYMMDD(selectedDate);
-              const hasSessions = hasSessionsOnDate(dateStr);
-              
-              return (
-                <div key={dateStr} className="py-1 px-1">
-                  <button
-                    onClick={() => setSelectedDate(day)}
-                    className={cn(
-                      "w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-colors",
-                      isSelected 
-                        ? "bg-blue-600 text-white hover:bg-blue-700" 
-                        : hasSessions
-                          ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                          : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    {day.getDate()}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-      
       {/* Sección para seleccionar la sesión */}
       <div className={cn(
-        "rounded-lg border p-4 transition-opacity duration-200",
+        "rounded-lg border p-3 transition-opacity duration-200",
         selectedDate ? "border-gray-100 opacity-100" : "border-gray-50 opacity-50"
       )}>
         <h4 className="text-xs font-medium text-gray-700 mb-3">
@@ -265,9 +267,9 @@ export function SessionMoveSection({
               <div 
                 key={slot.id} 
                 className={cn(
-                  "border rounded-md p-3 cursor-pointer transition-all",
+                  "border rounded-md p-2.5 cursor-pointer transition-all",
                   selectedSessionId === slot.id 
-                    ? "border-blue-200 bg-blue-50/50 shadow-sm" 
+                    ? "border-gray-300 bg-gray-50/80 shadow-sm" 
                     : "border-gray-100 bg-white hover:bg-gray-50"
                 )}
                 onClick={() => setSelectedSessionId(slot.id)}
@@ -275,10 +277,10 @@ export function SessionMoveSection({
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center",
-                      selectedSessionId === slot.id ? "bg-blue-100" : "bg-gray-100"
+                      "w-6 h-6 rounded-full flex items-center justify-center",
+                      selectedSessionId === slot.id ? "bg-gray-200" : "bg-gray-100"
                     )}>
-                      <IconClock size={14} className={selectedSessionId === slot.id ? "text-blue-600" : "text-gray-500"} />
+                      <IconClock size={14} className={selectedSessionId === slot.id ? "text-gray-600" : "text-gray-500"} />
                     </div>
                     <span className="text-sm font-medium text-gray-800">
                       {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
@@ -286,18 +288,18 @@ export function SessionMoveSection({
                   </div>
                   
                   {selectedSessionId === slot.id && (
-                    <IconCheck size={16} className="text-blue-500" />
+                    <IconCheck size={16} className="text-gray-500" />
                   )}
                 </div>
               </div>
             ))}
           </div>
         ) : selectedDate ? (
-          <div className="py-4 text-center text-sm text-gray-500">
+          <div className="py-3 text-center text-sm text-gray-500">
             No hay sesiones disponibles para esta fecha
           </div>
         ) : (
-          <div className="py-4 text-center text-sm text-gray-500">
+          <div className="py-3 text-center text-sm text-gray-500">
             Selecciona una fecha para ver las sesiones disponibles
           </div>
         )}

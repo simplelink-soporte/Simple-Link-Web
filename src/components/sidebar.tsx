@@ -118,6 +118,7 @@ const menuItems = [
       {
         title: "Clases",
         href: "/admin/dashboard/bookings/classes",
+        beta: true
       }
     ]
   },
@@ -643,6 +644,11 @@ function MenuItem({
                   )}
                 >
                   {subItem.title}
+                  {'beta' in subItem && subItem.beta && (
+                    <span className="ml-1.5 px-1.5 py-0.5 text-[9px] font-medium bg-gray-100 text-gray-700 rounded-sm">
+                      BETA
+                    </span>
+                  )}
                 </Link>
               );
             })}

@@ -330,15 +330,9 @@ export function SessionsReviewModal({
         >
           <div className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-900">
-                {step === "review" ? "Sesiones de Clase" : 
-                 step === "detail" ? "Detalle de Sesión" : 
-                 step === "move" ? "Mover Sesión" :
-                 "Editar Sesión"}
-              </h3>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 rounded-lg p-1 hover:bg-gray-50 transition-colors duration-200"
+                className="ml-auto text-gray-400 hover:text-gray-500 rounded-lg p-1 hover:bg-gray-50 transition-colors duration-200"
               >
                 <IconX size={16} />
               </button>

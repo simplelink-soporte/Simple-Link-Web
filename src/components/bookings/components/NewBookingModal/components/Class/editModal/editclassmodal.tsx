@@ -87,12 +87,17 @@ export function EditClassModal({ isOpen, onClose, classData, onSuccess }: EditCl
 
     setIsSubmitting(true)
     try {
+      // Aseguramos que updatedData contenga toda la información relacionada con las sesiones
+      const finalUpdatedData = {
+        ...updatedData,
+        updated_at: new Date().toISOString(),
+        // Verificamos si hay datos de schedule_config en updatedData
+        schedule_config: updatedData.schedule_config || classData.schedule_config
+      }
+
       const { error } = await supabase
         .from('classes')
-        .update({
-          ...updatedData,
-          updated_at: new Date().toISOString()
-        })
+        .update(finalUpdatedData)
         .eq('id', classData.id)
 
       if (error) throw error
@@ -121,7 +126,7 @@ export function EditClassModal({ isOpen, onClose, classData, onSuccess }: EditCl
           description="Modifica los detalles de la clase"
         />
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
           <ClassEditBasic
             classData={classData}
             onValidationChange={setIsValid}
