@@ -216,23 +216,23 @@ export function AddSpecificSessionModal({
           className="fixed right-[520px] top-[10%] w-full max-w-sm bg-white rounded-xl shadow-lg z-50 border border-gray-100/50"
           style={{ transform: 'translateX(-100%)' }}
         >
-          <div className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-900">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-medium text-gray-900">
                 Agregar Sesión Específica
               </h3>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 rounded-lg p-1 hover:bg-gray-50 transition-colors duration-200"
+                className="text-gray-400 hover:text-gray-500 rounded-lg p-0.5 hover:bg-gray-50 transition-colors duration-200"
               >
-                <IconX size={16} />
+                <IconX size={14} />
               </button>
             </div>
             
-            <div className="space-y-5">
+            <div className="space-y-3">
               {/* Fecha */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700 block">
                   Fecha de la Sesión
                 </label>
                 <Popover>
@@ -240,13 +240,13 @@ export function AddSpecificSessionModal({
                     <button
                       className={cn(
                         "w-full flex items-center justify-between",
-                        "px-3 py-2 rounded-lg border border-gray-200",
-                        "text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-black",
+                        "px-2.5 py-1.5 rounded-lg border border-gray-200",
+                        "text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-black",
                         !selectedDate && "text-gray-400"
                       )}
                     >
-                      <span className="flex items-center gap-2">
-                        <IconCalendar size={16} className="text-gray-400" />
+                      <span className="flex items-center gap-1.5">
+                        <IconCalendar size={14} className="text-gray-400" />
                         {selectedDate
                           ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
                               locale: es,
@@ -259,15 +259,16 @@ export function AddSpecificSessionModal({
                     <CustomCalendar
                       selected={selectedDate}
                       onSelect={setSelectedDate}
+                      className="scale-90 origin-center"
                     />
                   </PopoverContent>
                 </Popover>
               </div>
               
               {/* Horario */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-gray-700">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-700 block">
                     Hora de Inicio
                   </label>
                   <TimeSelector 
@@ -275,11 +276,11 @@ export function AddSpecificSessionModal({
                     onChange={setStartTime} 
                     minHour={6}
                     maxHour={22}
-                    className="w-full"
+                    className="w-full h-[30px] text-xs"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-700 block">
                     Hora de Fin
                   </label>
                   <TimeSelector 
@@ -287,80 +288,80 @@ export function AddSpecificSessionModal({
                     onChange={setEndTime} 
                     minHour={6}
                     maxHour={23}
-                    className="w-full"
+                    className="w-full h-[30px] text-xs"
                   />
                 </div>
               </div>
               
               {/* Capacidad y precio */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-gray-700">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-700 block">
                     Capacidad
                   </label>
                   <div className="relative">
-                    <IconUsers size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <IconUsers size={14} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <Input
                       type="number"
                       value={capacity}
                       onChange={(e) => setCapacity(Number(e.target.value))}
                       min={1}
-                      className="pl-9"
+                      className="pl-8 h-[30px] text-xs"
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-700 block">
                     Precio
                   </label>
                   <div className="relative">
-                    <IconCoin size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400">€</span>
                     <Input
                       type="number"
                       value={price}
                       onChange={(e) => setPrice(Number(e.target.value))}
                       min={0}
-                      className="pl-9"
+                      className="pl-8 h-[30px] text-xs"
                     />
                   </div>
                 </div>
               </div>
               
               {/* Instructores */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700 block">
                   Instructores
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex space-x-1">
                   <Input
                     value={newInstructor}
                     onChange={(e) => setNewInstructor(e.target.value)}
                     onKeyDown={handleInstructorKeyDown}
                     placeholder="Nombre del instructor"
-                    className="flex-1"
+                    className="flex-1 h-[30px] text-xs"
                   />
                   <Button 
                     type="button" 
                     onClick={handleAddInstructor}
                     variant="outline"
-                    className="px-3"
+                    className="px-2 h-[30px] min-h-0"
                   >
-                    <IconPlus size={16} />
+                    <IconPlus size={14} />
                   </Button>
                 </div>
                 
                 {/* Lista de instructores */}
                 {instructors.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-1.5 flex flex-wrap gap-1">
                     {instructors.map((instructor) => (
                       <div
                         key={instructor}
-                        className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-700"
+                        className="flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-700"
                       >
                         {instructor}
                         <button
                           onClick={() => handleRemoveInstructor(instructor)}
-                          className="ml-1 text-gray-500 hover:text-gray-700"
+                          className="ml-0.5 text-gray-500 hover:text-gray-700"
                         >
                           <IconX size={12} />
                         </button>
@@ -371,8 +372,8 @@ export function AddSpecificSessionModal({
               </div>
               
               {/* Canchas */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700 block">
                   Canchas
                 </label>
                 <SingleSelect
@@ -380,37 +381,38 @@ export function AddSpecificSessionModal({
                   onChange={setSelectedCourt}
                   options={flatCourtOptions}
                   placeholder="Seleccionar cancha"
+                  className="h-[30px]"
                 />
                 {courtsError && (
-                  <p className="text-xs text-red-500 mt-1">
+                  <p className="text-[10px] text-red-500 mt-0.5">
                     Error al cargar las canchas. Por favor, intente nuevamente.
                   </p>
                 )}
                 {!isLoadingCourts && !courtsError && flatCourtOptions.length === 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-[10px] text-gray-500 mt-0.5">
                     No hay canchas disponibles para esta sede.
                   </p>
                 )}
               </div>
               
               {/* Botones de acciones */}
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end pt-1">
                 <Button
                   variant="outline"
                   onClick={handleClose}
-                  className="mr-2"
+                  className="mr-1.5 h-7 min-h-0 text-xs px-3"
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="bg-black hover:bg-gray-800 text-white"
+                  className="bg-black hover:bg-gray-800 text-white h-7 min-h-0 text-xs"
                 >
                   {loading ? (
-                    <IconLoader2 size={16} className="animate-spin mr-2" />
+                    <IconLoader2 size={14} className="animate-spin mr-1.5" />
                   ) : (
-                    <IconPlus size={16} className="mr-2" />
+                    <IconPlus size={14} className="mr-1.5" />
                   )}
                   Agregar Sesión
                 </Button>

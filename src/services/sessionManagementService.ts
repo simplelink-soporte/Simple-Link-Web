@@ -382,6 +382,60 @@ export const sessionManagementService = {
         }
       }
       
+      // NUEVO: Verificar si es una sesión específica
+      if (scheduleConfig.specificSessions && scheduleConfig.specificSessions.length > 0) {
+        // Intentamos encontrar la sesión específica que coincida con los parámetros dados
+        const specificSessionIndex = scheduleConfig.specificSessions.findIndex(
+          (s: SpecificSession) => 
+            s.date === date && 
+            s.startTime === startTime && 
+            s.endTime === endTime && 
+            s.courtIds === courtId
+        );
+        
+        // Si encontramos una sesión específica que coincide, la eliminamos en lugar de suspenderla
+        if (specificSessionIndex !== -1) {
+          console.log('✅ Se encontró una sesión específica, eliminándola en lugar de suspenderla:', {
+            date,
+            startTime,
+            endTime,
+            courtId,
+            indexEncontrado: specificSessionIndex
+          });
+          
+          // Eliminamos la sesión específica del array
+          scheduleConfig.specificSessions.splice(specificSessionIndex, 1);
+          
+          // Actualizamos la clase con el nuevo schedule_config
+          const { error: updateError } = await supabase
+            .from('classes')
+            .update({
+              schedule_config: scheduleConfig,
+              updated_at: currentTime
+            })
+            .eq('id', classId);
+          
+          if (updateError) {
+            console.error('❌ Error al actualizar la clase:', updateError);
+            return {
+              success: false,
+              error: {
+                message: "Error al actualizar la configuración de la clase",
+                code: "UPDATE_ERROR",
+                details: updateError.message
+              }
+            };
+          }
+          
+          return {
+            success: true,
+            data: {
+              message: "Sesión específica eliminada correctamente"
+            }
+          };
+        }
+      }
+      
       // 3. Encontrar el time slot correspondiente para referencia
       let targetSlotIndex = -1
       

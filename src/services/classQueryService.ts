@@ -255,8 +255,17 @@ export const classQueryService = {
             const validatedClass = classSchema.parse(classData)
             
             // Verificar si la clase ocurre en el día de la semana especificado
+            // o si tiene una sesión específica para esta fecha
             const scheduleConfig = validatedClass.schedule_config
-            if (!scheduleConfig.days.includes(dayOfWeek)) {
+            
+            // Buscar si hay sesiones específicas para esta fecha
+            const specificSessions = scheduleConfig.specificSessions || []
+            const hasSpecificSessionForDate = specificSessions.some(
+              (session: any) => session.date === date
+            )
+            
+            // Incluir la clase si el día está en days O si hay una sesión específica para esta fecha
+            if (!scheduleConfig.days.includes(dayOfWeek) && !hasSpecificSessionForDate) {
               return null
             }
 
@@ -318,6 +327,22 @@ export const classQueryService = {
     // Verificar si la fecha está dentro del rango
     if (targetDate < startDate) return false
     if (endDate && targetDate > endDate) return false
+
+    // NUEVO: Verificar si hay sesiones específicas para esta fecha
+    const specificSessions = (classData.schedule_config as any).specificSessions || [];
+    const hasSpecificSessionForDate = specificSessions.some(
+      (s: any) => s.date === date
+    );
+    
+    // Si hay una sesión específica para esta fecha, la clase está activa
+    if (hasSpecificSessionForDate) {
+      console.log('✅ ClassQueryService - Clase activa por sesión específica:', {
+        classId: classData.id,
+        date,
+        totalSpecificSessions: specificSessions.length
+      });
+      return true;
+    }
 
     // Para clases recurrentes, verificar el día de la semana
     if (classData.is_recurring) {
@@ -462,6 +487,28 @@ export const classQueryService = {
       
       // Procesar cada time slot de la clase (solo si no hay sesión específica que lo reemplace)
       for (const timeSlot of classData.schedule_config.timeSlots) {
+        // NUEVO: Verificar si este es un día programado para las sesiones normales
+        // Obtenemos el día de la semana (1-7, donde 7 es domingo)
+        const targetDate = DateTime.fromISO(date);
+        let dayOfWeek = targetDate.weekday;
+        
+        // Ajustamos para que domingo sea 0 en lugar de 7
+        if (dayOfWeek === 7) {
+          dayOfWeek = 0;
+        }
+        
+        // Si no es un día programado para sesiones normales, omitimos este time slot
+        // (Las sesiones específicas ya fueron procesadas anteriormente)
+        if (!classData.schedule_config.days.includes(dayOfWeek)) {
+          console.log('⏭️ ClassQueryService - Día no programado para sesiones normales, saltando timeslot:', {
+            classId: classData.id,
+            date,
+            dayOfWeek,
+            scheduledDays: classData.schedule_config.days
+          });
+          continue;
+        }
+
         // Verificar si el time slot está deshabilitado
         if ('isDisabled' in timeSlot && timeSlot.isDisabled === true) {
           console.log('⏭️ ClassQueryService - Time slot deshabilitado, saltando:', {
@@ -677,7 +724,9 @@ export const classQueryService = {
           // Actualizar la información de participantes en la clase
           updatedClasses[i] = {
             ...classData,
-            currentParticipants: bookedSpots
+            currentParticipants: bookedSpots,
+            // Asegurarnos de preservar la propiedad isSpecificSession
+            isSpecificSession: classData.isSpecificSession
           };
           
           console.log('✅ Disponibilidad de clase:', {

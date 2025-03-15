@@ -158,7 +158,7 @@ export function SessionDetailSection({
   }, [session.courtIds]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header con botón de regreso */}
       <div className="flex items-center justify-between mb-2">
         <button
@@ -168,23 +168,19 @@ export function SessionDetailSection({
           <IconChevronLeft size={14} />
           <span>Volver</span>
         </button>
-        
-        <h3 className="text-sm font-medium text-gray-900">
-          Detalles de la sesión
-        </h3>
       </div>
 
       {/* Indicador de sesión suspendida */}
       {session.isSuspended && (
         <div className={cn(
-          "bg-red-50 border border-red-100 rounded-lg p-3",
-          "flex items-start gap-2.5"
+          "bg-red-50 border border-red-100 rounded-lg p-2",
+          "flex items-start gap-2"
         )}>
           <div className="mt-0.5">
-            <IconAlertTriangle size={16} className="text-red-500" />
+            <IconAlertTriangle size={14} className="text-red-500" />
           </div>
           <div>
-            <h4 className="text-sm font-medium text-red-700">
+            <h4 className="text-xs font-medium text-red-700">
               Sesión suspendida
             </h4>
             <p className="text-xs text-red-600 mt-0.5">
@@ -196,19 +192,16 @@ export function SessionDetailSection({
 
       {/* Información principal en una única tarjeta */}
       <div className={cn(
-        "bg-white border rounded-lg p-4 shadow-sm",
+        "bg-white border rounded-lg p-3 shadow-sm",
         session.isSuspended ? "border-red-100" : "border-gray-100"
       )}>
         {/* Horario de la sesión - encabezado */}
-        <div className="flex items-center space-x-3 mb-3">
-          <div className={cn(
-            "h-8 w-8 rounded-full flex items-center justify-center",
-            session.isSuspended 
-              ? "bg-red-50 border border-red-100" 
-              : "bg-blue-50 border border-blue-100"
-          )}>
-            <IconClock size={16} className={session.isSuspended ? "text-red-500" : "text-blue-500"} />
-          </div>
+        <div className="flex items-center mb-2">
+          {session.isSuspended && (
+            <div className="mr-2">
+              <IconAlertTriangle size={14} className="text-red-500" />
+            </div>
+          )}
           <div>
             <h3 className={cn(
               "text-sm font-medium",
@@ -225,116 +218,119 @@ export function SessionDetailSection({
           </div>
         </div>
         
-        {/* Detalles de la sesión */}
-        <div className="space-y-4 mt-4">
+        {/* Detalles de la sesión - en línea */}
+        <div className="grid grid-cols-2 gap-2 mt-3 mb-3">
           {/* Capacidad */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <IconUsers size={16} className="text-gray-400" />
-              <span className="text-sm text-gray-600">Capacidad</span>
+          <div className="bg-gray-50 rounded-md p-2">
+            <div className="flex items-center gap-1.5 mb-1">
+              <IconUsers size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600">Capacidad</span>
             </div>
-            <span className="text-sm text-gray-900">
+            <span className="text-sm font-medium text-gray-900 ml-5">
               {session.capacity} participantes
             </span>
           </div>
           
           {/* Precio */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <IconCoin size={16} className="text-gray-400" />
-              <span className="text-sm text-gray-600">Precio</span>
+          <div className="bg-gray-50 rounded-md p-2">
+            <div className="flex items-center gap-1.5 mb-1">
+              <IconCoin size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600">Precio</span>
             </div>
-            <span className="text-sm text-gray-900">
-              ${session.price.toFixed(2)}
+            <span className="text-sm font-medium text-gray-900 ml-5">
+              €{session.price.toFixed(2)}
             </span>
           </div>
         </div>
         
-        {/* Instructores */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2 mb-2">
-            <IconUserStar size={16} className="text-gray-400" />
-            <span className="text-sm text-gray-600">Instructores</span>
-          </div>
-          
-          {session.instructors && session.instructors.length > 0 ? (
-            <div className="space-y-2 mt-2">
-              {session.instructors.map((instructor, index) => (
-                <div 
-                  key={index} 
-                  className="flex items-center gap-2 py-1.5 px-2 border border-gray-100 rounded-md"
-                >
-                  <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 flex-shrink-0">
-                    {instructor.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-xs text-gray-800">{instructor}</span>
-                </div>
-              ))}
+        {/* Grid para instructores y pistas */}
+        <div className="grid grid-cols-2 gap-3 border-t border-gray-100 pt-3">
+          {/* Instructores */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <IconUserStar size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600">Instructores</span>
             </div>
-          ) : (
-            <p className="text-xs text-gray-500 italic">
-              No hay instructores asignados
-            </p>
-          )}
-        </div>
-        
-        {/* Pistas asignadas */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2 mb-2">
-            <IconDisc size={16} className="text-gray-400" />
-            <span className="text-sm text-gray-600">Pistas asignadas</span>
-          </div>
-          
-          {session.courtIds && session.courtIds.length > 0 ? (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {session.courtIds.map((courtId, index) => (
-                <div 
-                  key={index} 
-                  className="text-xs py-1 px-2 border border-gray-100 rounded-md text-gray-800 bg-gray-50"
-                >
-                  {loadingCourts ? (
-                    <div className="flex items-center">
-                      <IconLoader2 size={12} className="animate-spin mr-1" />
-                      <span>Cargando...</span>
+            
+            {session.instructors && session.instructors.length > 0 ? (
+              <div className="space-y-1">
+                {session.instructors.map((instructor, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center gap-1.5 py-0.5"
+                  >
+                    <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 flex-shrink-0 text-[10px]">
+                      {instructor.charAt(0).toUpperCase()}
                     </div>
-                  ) : courts[courtId] ? (
-                    courts[courtId].name
-                  ) : (
-                    `Pista ${index + 1}`
-                  )}
-                </div>
-              ))}
+                    <span className="text-xs text-gray-800 truncate">{instructor}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 italic">
+                No hay instructores asignados
+              </p>
+            )}
+          </div>
+          
+          {/* Pistas asignadas */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <IconDisc size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600">Pistas</span>
             </div>
-          ) : (
-            <p className="text-xs text-gray-500 italic">
-              No hay pistas asignadas
-            </p>
-          )}
+            
+            {session.courtIds && session.courtIds.length > 0 ? (
+              <div className="flex flex-col gap-1">
+                {session.courtIds.map((courtId, index) => (
+                  <div 
+                    key={index} 
+                    className="text-xs py-0.5 text-gray-800"
+                  >
+                    {loadingCourts ? (
+                      <div className="flex items-center">
+                        <IconLoader2 size={10} className="animate-spin mr-1" />
+                        <span>Cargando...</span>
+                      </div>
+                    ) : courts[courtId] ? (
+                      courts[courtId].name
+                    ) : (
+                      `Pista ${index + 1}`
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 italic">
+                No hay pistas asignadas
+              </p>
+            )}
+          </div>
         </div>
         
         {/* Reservas afectadas */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2 mb-2">
-            <IconCalendarEvent size={16} className="text-gray-400" />
-            <span className="text-sm text-gray-600">
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <IconCalendarEvent size={14} className="text-gray-400" />
+            <span className="text-xs text-gray-600">
               Reservas asociadas
             </span>
           </div>
           
           {isLoading ? (
-            <div className="py-4 flex items-center justify-center">
-              <IconLoader2 size={16} className="animate-spin mr-2 text-gray-400" />
+            <div className="py-2 flex items-center justify-center">
+              <IconLoader2 size={14} className="animate-spin mr-1.5 text-gray-400" />
               <span className="text-xs text-gray-500">Consultando reservas...</span>
             </div>
           ) : error ? (
-            <div className="py-2 text-xs text-red-500">
+            <div className="py-1.5 text-xs text-red-500">
               {error}
             </div>
           ) : bookingSummary ? (
-            <div className="mt-2">
+            <div>
               {bookingSummary.hasFutureBookings ? (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between bg-amber-50/50 rounded-md py-1.5 px-3 border border-amber-100/50">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between bg-amber-50/50 rounded-md py-1.5 px-2 border border-amber-100/50">
                     <span className="text-xs font-medium text-amber-700">
                       Reservas activas
                     </span>
@@ -344,17 +340,17 @@ export function SessionDetailSection({
                   </div>
                   
                   {bookingSummary.reservationDates && bookingSummary.reservationDates.length > 0 && (
-                    <div className="mt-1">
-                      <p className="text-xs text-gray-500 mb-2">Fechas con reservas:</p>
-                      <div className="space-y-1">
-                        {bookingSummary.reservationDates.map((date, index) => (
-                          <div key={index} className="text-xs py-1 px-2 bg-gray-50 border border-gray-100 rounded-md">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1.5">Fechas con reservas:</p>
+                      <div className="grid grid-cols-2 gap-1">
+                        {bookingSummary.reservationDates.slice(0, 4).map((date, index) => (
+                          <div key={index} className="text-xs py-1 px-2 bg-gray-50 border border-gray-100 rounded-md truncate">
                             {formatDate(date)}
                           </div>
                         ))}
-                        {bookingSummary.uniqueDates && bookingSummary.uniqueDates > 5 && (
-                          <div className="text-xs text-center text-gray-500 italic mt-1">
-                            Y {bookingSummary.uniqueDates - 5} fechas más...
+                        {bookingSummary.uniqueDates && bookingSummary.uniqueDates > 4 && (
+                          <div className="text-xs text-center text-gray-500 italic col-span-2 mt-0.5">
+                            Y {bookingSummary.uniqueDates - 4} fechas más...
                           </div>
                         )}
                       </div>
@@ -362,18 +358,18 @@ export function SessionDetailSection({
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-between bg-green-50/50 rounded-md py-1.5 px-3 border border-green-100/50">
-                  <span className="text-xs font-medium text-green-700">
+                <div className="flex items-center justify-between bg-gray-50/50 rounded-md py-1.5 px-2 border border-gray-100/50">
+                  <span className="text-xs font-medium text-gray-700">
                     No hay reservas activas
                   </span>
-                  <span className="text-xs font-bold text-green-700">
+                  <span className="text-xs font-bold text-gray-700">
                     0
                   </span>
                 </div>
               )}
             </div>
           ) : (
-            <div className="py-2 text-xs text-gray-500 italic">
+            <div className="py-1.5 text-xs text-gray-500 italic">
               No hay información de reservas disponible
             </div>
           )}
@@ -396,29 +392,12 @@ export function SessionDetailSection({
       
       {/* Mensaje informativo cuando la sesión está suspendida */}
       {session.isSuspended && (
-        <div className="mt-4 bg-red-50/70 rounded-lg p-3 border border-red-100 text-center">
+        <div className="bg-red-50/70 rounded-lg p-2 border border-red-100 text-center">
           <p className="text-xs text-red-600">
             Las acciones no están disponibles para sesiones suspendidas
           </p>
         </div>
       )}
-      
-      {/* Botón de edición */}
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={onEdit}
-          className={cn(
-            "inline-flex items-center gap-1.5",
-            "text-xs font-medium text-white",
-            "px-3 py-1.5 rounded-md",
-            "bg-blue-500 hover:bg-blue-600",
-            "transition-colors duration-200"
-          )}
-        >
-          <IconEdit size={14} />
-          Editar sesión
-        </button>
-      </div>
     </div>
   )
 }
