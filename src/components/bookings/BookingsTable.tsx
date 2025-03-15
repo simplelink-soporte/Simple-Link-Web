@@ -146,7 +146,7 @@ export function BookingsTable() {
             booking.startTime,
             'HH:mm:ss',
             { zone: 'UTC' }
-        ).reconfigure({ 
+        ).set({ 
             year: DateTime.fromISO(booking.date).year,
             month: DateTime.fromISO(booking.date).month,
             day: DateTime.fromISO(booking.date).day
@@ -156,7 +156,7 @@ export function BookingsTable() {
             booking.endTime,
             'HH:mm:ss',
             { zone: 'UTC' }
-        ).reconfigure({ 
+        ).set({ 
             year: DateTime.fromISO(booking.date).year,
             month: DateTime.fromISO(booking.date).month,
             day: DateTime.fromISO(booking.date).day
@@ -194,28 +194,30 @@ export function BookingsTable() {
 
   // Efecto para actualizar la información de participantes cuando cambian las clases
   useEffect(() => {
-    // Comparar si realmente han cambiado los datos de clases
-    const classesDataChanged = JSON.stringify(classesData) !== JSON.stringify(lastClassesDataRef.current)
+    // Comprobación para evitar actualizaciones innecesarias
+    const classesDataChanged = JSON.stringify(lastClassesDataRef.current) !== JSON.stringify(classesData);
     
-    // Solo actualizar si realmente han cambiado los datos
     if (classesDataChanged) {
       // Actualizar la referencia con el valor actual
       lastClassesDataRef.current = classesData
       
       // Mostrar información detallada sobre las clases recibidas para debug
-      console.log('📊 Clases recibidas de useClasses:', {
-        totalClases: classesData.length,
-        clases: classesData.map(c => ({
-          id: c.id,
-          title: c.title,
-          date: c.date,
-          startTime: c.startTime,
-          endTime: c.endTime,
-          courtId: c.courtId,
-          capacity: c.capacity,
-          currentParticipants: c.currentParticipants
-        }))
-      });
+      // Solo en desarrollo y limitado a una vez por cambio de datos
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 Clases recibidas de useClasses:', {
+          totalClases: classesData.length,
+          clases: classesData.map(c => ({
+            id: c.id,
+            title: c.title,
+            date: c.date,
+            startTime: c.startTime,
+            endTime: c.endTime,
+            courtId: c.courtId,
+            capacity: c.capacity,
+            currentParticipants: c.currentParticipants
+          }))
+        });
+      }
       
       const updateParticipants = async () => {
         if (classesData.length > 0) {
@@ -225,18 +227,21 @@ export function BookingsTable() {
             const updatedClasses = await classQueryService.updateClassesParticipants(classesData)
             
             // Comparar resultados antes y después para debug
-            console.log('📈 Comparación de participantes:', {
-              antes: classesData.map(c => ({ 
-                id: c.id, 
-                currentParticipants: c.currentParticipants, 
-                capacity: c.capacity 
-              })),
-              después: updatedClasses.map(c => ({ 
-                id: c.id, 
-                currentParticipants: c.currentParticipants, 
-                capacity: c.capacity 
-              }))
-            });
+            // Solo en desarrollo y limitado a una vez por actualización
+            if (process.env.NODE_ENV === 'development') {
+              console.log('📈 Comparación de participantes:', {
+                antes: classesData.map(c => ({ 
+                  id: c.id, 
+                  currentParticipants: c.currentParticipants, 
+                  capacity: c.capacity 
+                })),
+                después: updatedClasses.map(c => ({ 
+                  id: c.id, 
+                  currentParticipants: c.currentParticipants, 
+                  capacity: c.capacity 
+                }))
+              });
+            }
             
             setClasses(updatedClasses)
           } catch (error) {
@@ -259,11 +264,18 @@ export function BookingsTable() {
     // Solo configurar el intervalo si hay clases para actualizar
     if (classesData.length === 0) return;
     
-    console.log('⏱️ Configurando actualización automática de participantes cada 2 minutos');
+    // Log una sola vez al configurar el intervalo
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⏱️ Configurando actualización automática de participantes cada 2 minutos');
+    }
     
     const intervalId = setInterval(() => {
       const updateParticipants = async () => {
-        console.log('🔄 Actualizando participantes automáticamente...');
+        // Log controlado para la actualización automática
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔄 Actualizando participantes automáticamente...');
+        }
+        
         try {
           // Hacer una copia profunda para no modificar directamente
           const currentClasses = [...classes];
@@ -272,9 +284,11 @@ export function BookingsTable() {
           // Solo actualizar si hay cambios reales
           const hasChanges = JSON.stringify(currentClasses) !== JSON.stringify(updatedClasses);
           if (hasChanges) {
-            console.log('✅ Cambios en participantes detectados en la actualización automática');
+            if (process.env.NODE_ENV === 'development') {
+              console.log('✅ Cambios en participantes detectados en la actualización automática');
+            }
             setClasses(updatedClasses);
-          } else {
+          } else if (process.env.NODE_ENV === 'development') {
             console.log('ℹ️ No hay cambios en la disponibilidad');
           }
         } catch (error) {
@@ -286,7 +300,9 @@ export function BookingsTable() {
     }, 2 * 60 * 1000); // 2 minutos
     
     return () => {
-      console.log('🛑 Limpiando intervalo de actualización automática');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🛑 Limpiando intervalo de actualización automática');
+      }
       clearInterval(intervalId);
     };
   }, [classesData.length]);
@@ -294,16 +310,12 @@ export function BookingsTable() {
   // Estado para manejar la clase seleccionada (separado de las reservas)
   const [selectedClassData, setSelectedClassData] = useState<TransformedClass | null>(null);
 
-  // Función modificada para verificar si una celda tiene una reserva o clase existente
-  const getExistingBooking = (courtId: string, time: string) => {
-    if (!businessHours?.timezone) return null;
-
-    // Primero buscar en las clases con información actualizada de participantes
-    // Si las clases no están cargadas o no hay clases para procesar
+  // Memoizar el procesamiento de sesiones específicas para evitar recálculos innecesarios
+  const specificSessionsInfo = useMemo(() => {
     if (classes && classes.length > 0) {
-      // Debugging: Verificar todas las clases para encontrar sesiones específicas
       const specificSessions = classes.filter(c => c.isSpecificSession);
-      if (specificSessions.length > 0) {
+      if (specificSessions.length > 0 && process.env.NODE_ENV === 'development') {
+        // Log controlado y una sola vez al detectar sesiones específicas
         console.log('🔍 BookingsTable - Sesiones específicas disponibles:', {
           total: specificSessions.length,
           sesiones: specificSessions.map(s => ({
@@ -316,7 +328,18 @@ export function BookingsTable() {
           }))
         });
       }
+      return specificSessions;
+    }
+    return [];
+  }, [classes]);
 
+  // Función modificada para verificar si una celda tiene una reserva o clase existente
+  const getExistingBooking = (courtId: string, time: string): SelectedBooking | TransformedClass | null => {
+    if (!businessHours?.timezone) return null;
+
+    // Primero buscar en las clases con información actualizada de participantes
+    // Si las clases no están cargadas o no hay clases para procesar
+    if (classes && classes.length > 0) {
       // Buscar en las clases actualizadas
       const existingClass = classes.find(classData => 
         !classData.isSuspended && // No considerar clases suspendidas
@@ -326,100 +349,22 @@ export function BookingsTable() {
       );
 
       if (existingClass) {
-        console.log('📊 Celda con clase encontrada:', {
-          courtId,
-          time,
-          classId: existingClass.id,
-          title: existingClass.title,
-          isSuspended: existingClass.isSuspended,
-          isSpecificSession: existingClass.isSpecificSession,
-          startTime: existingClass.startTime,
-          endTime: existingClass.endTime
-        });
-        return existingClass;
-      }
-    } else if (classesData && classesData.length > 0) {
-      // Si no hay clases actualizadas, usar las originales (también verificando suspensión)
-      const existingClass = classesData.find(classData => 
-        !classData.isSuspended && // No considerar clases suspendidas
-        classData.courtId === courtId &&
-        timeToMinutes(time) >= timeToMinutes(classData.startTime) &&
-        timeToMinutes(time) < timeToMinutes(classData.endTime)
-      );
-      
-      if (existingClass) {
         return existingClass;
       }
     }
 
-    // Si no hay clase activa, buscar en las reservas
-    const transformedBookings = bookings.map(booking => {
-      const bookingDate = DateTime.fromISO(booking.date);
-      const startTime = DateTime.fromFormat(booking.startTime, 'HH:mm:ss', { zone: 'UTC' });
-      const endTime = DateTime.fromFormat(booking.endTime, 'HH:mm:ss', { zone: 'UTC' });
-
-      return {
-        ...booking,
-        startTime: startTime.setZone(businessHours.timezone).toFormat('HH:mm'),
-        endTime: endTime.setZone(businessHours.timezone).toFormat('HH:mm')
-      };
-    });
-
-    // Buscar una reserva en el horario indicado
-    const existingBooking = transformedBookings.find(booking => 
+    // Luego buscar en las reservas normales
+    const existingBooking = bookings.find(booking => 
       booking.courtId === courtId &&
       timeToMinutes(time) >= timeToMinutes(booking.startTime) &&
       timeToMinutes(time) < timeToMinutes(booking.endTime)
     );
 
-    // Si encontramos una reserva, verificar si es de tipo class usando acceso seguro a propiedades
     if (existingBooking) {
-      // Verificar si la reserva es de tipo clase
-      if (existingBooking.reservation_type === 'class' && existingBooking.class_id) {
-        console.log('🎓 Reserva de tipo clase encontrada:', {
-          bookingId: existingBooking.id,
-          classId: existingBooking.class_id,
-          courtId,
-          time,
-          startTime: existingBooking.startTime,
-          endTime: existingBooking.endTime
-        });
-
-        // Buscar si tenemos información de la clase en el estado actual
-        let classInfo = classes.find(c => c.classId === existingBooking.class_id) || 
-                        classesData.find(c => c.classId === existingBooking.class_id);
-        
-        if (classInfo) {
-          // Usar la información de clase existente
-          return classInfo;
-        } else {
-          // Obtener el precio de la sesión de clase
-          const classSessionPrice = existingBooking.class_session_price || 0;
-
-          // Transformar la reserva a formato de clase
-          return {
-            id: `class-booking-${existingBooking.id}`,
-            courtId: existingBooking.courtId,
-            date: existingBooking.date,
-            startTime: existingBooking.startTime,
-            endTime: existingBooking.endTime,
-            title: existingBooking.title || 'Clase sin nombre',
-            description: existingBooking.description || '',
-            type: 'class',
-            instructor: 'Instructor no disponible', // Valor por defecto
-            capacity: 0, // Estos valores se actualizarán si se necesita
-            currentParticipants: 0,
-            status: 'active',
-            visibility: 'public',
-            price: classSessionPrice,
-            classId: existingBooking.class_id, // ID original de la clase
-            sessionId: `${existingBooking.class_id}-${existingBooking.id}` // ID único para la sesión
-          } as TransformedClass;
-        }
-      }
+      return existingBooking;
     }
 
-    return existingBooking || null;
+    return null;
   };
 
   // Función para manejar los clics en reservas y clases
@@ -427,7 +372,6 @@ export function BookingsTable() {
     // Verificar si booking es una TransformedClass
     if (isTransformedClass(booking)) {
       // Es una clase, mostrar el modal de clase
-      console.log('🎓 Mostrando modal de clase para:', booking);
       setSelectedClassData(booking);
     } else {
       // Es una reserva normal, mostrar el modal de reserva

@@ -135,7 +135,7 @@ export const sessionManagementService = {
       // 1. Primero obtenemos la información de la clase para conocer la sede
       const { data: classData, error: classError } = await supabase
         .from('classes')
-        .select('branch_id, empresa_id')
+        .select('id, branch_id, empresa_id, name')
         .eq('id', classId)
         .single()
       
@@ -347,7 +347,7 @@ export const sessionManagementService = {
       // 1. Primero obtenemos la información actual de la clase
       const { data: classData, error: classError } = await supabase
         .from('classes')
-        .select('*')
+        .select('id, branch_id, empresa_id, name, schedule_config')
         .eq('id', classId)
         .single()
       
@@ -675,7 +675,7 @@ export const sessionManagementService = {
       // 1. Primero obtenemos la información actual de la clase
       const { data: classData, error: classError } = await supabase
         .from('classes')
-        .select('*')
+        .select('id, branch_id, empresa_id, name, schedule_config')
         .eq('id', classId)
         .single()
       
@@ -691,7 +691,59 @@ export const sessionManagementService = {
         }
       }
       
-      // 2. Extraemos y validamos el schedule_config
+      // 2. Obtenemos la zona horaria de la sede
+      const { data: branchData, error: branchError } = await supabase
+        .from('sedes')
+        .select('timezone')
+        .eq('id', classData.branch_id)
+        .single()
+        
+      if (branchError) {
+        console.error('❌ Error al obtener la sede:', branchError)
+        return {
+          success: false,
+          error: {
+            message: "No se pudo obtener la información de la sede",
+            code: "BRANCH_NOT_FOUND",
+            details: branchError.message
+          }
+        }
+      }
+      
+      const timezone = branchData?.timezone || 'UTC'
+      console.log('🌐 Zona horaria de la sede:', timezone)
+      
+      // 3. Verificar disponibilidad usando el servicio de disponibilidad
+      const timeSlot = {
+        startTime,
+        endTime,
+        courtIds: [courtIds],
+        capacity,
+        price,
+        instructors
+      }
+      
+      // Importar el servicio de disponibilidad dinámicamente
+      const { checkClassAvailability } = await import('./classAvailabilityService')
+      const availabilityResult = await checkClassAvailability(date, [timeSlot], timezone)
+      
+      // Si hay reservas que se solapan, no permitir agregar la sesión específica
+      if (!availabilityResult.available) {
+        const overlappingDetails = availabilityResult.overlappingBookings.map(booking => 
+          `${booking.court_name} (${booking.start_time}-${booking.end_time})`
+        ).join(', ')
+        
+        return {
+          success: false,
+          error: {
+            message: "No se puede agregar la sesión específica porque se solapa con reservas existentes",
+            code: "OVERLAPPING_BOOKINGS",
+            details: `Se solapa con: ${overlappingDetails}`
+          }
+        }
+      }
+      
+      // 4. Extraemos y validamos el schedule_config
       let scheduleConfig: ScheduleConfig
       try {
         scheduleConfig = classData.schedule_config as ScheduleConfig
@@ -710,7 +762,7 @@ export const sessionManagementService = {
         }
       }
       
-      // 3. Agregar la sesión específica al schedule_config
+      // 5. Agregar la sesión específica al schedule_config
       if (!scheduleConfig.specificSessions) {
         scheduleConfig.specificSessions = []
       }
@@ -729,7 +781,7 @@ export const sessionManagementService = {
         createdAt: currentTime
       })
       
-      // 4. Actualizamos la clase con el nuevo schedule_config
+      // 6. Actualizamos la clase con el nuevo schedule_config
       const { error: updateError } = await supabase
         .from('classes')
         .update({
@@ -831,7 +883,7 @@ export const sessionManagementService = {
       // 1. Obtenemos la información de la clase para conocer la sede
       const { data: classData, error: classError } = await supabase
         .from('classes')
-        .select('branch_id, empresa_id')
+        .select('id, branch_id, empresa_id, name')
         .eq('id', classId)
         .single();
       

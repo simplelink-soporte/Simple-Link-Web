@@ -10,6 +10,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createSupabaseClient } from '@/lib/supabase'
+import { vinculacionService } from '@/services/vinculacionService'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import type { Database } from '@/types/supabase'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -49,12 +52,82 @@ function LoginFormContent({ onLoginSuccess }: LoginFormProps) {
     try {
       setIsLoading(true)
       const supabase = createSupabaseClient()
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data: authData } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password
       })
 
       if (error) throw error
+      
+      // Obtener el usuario de la respuesta de autenticación
+      const user = authData?.user;
+      if (!user) {
+        throw new Error('No se pudo obtener la información del usuario');
+      }
+
+      console.log('🔐 Login exitoso, usuario:', user.id);
+
+      // Extraer el slug de la URL de redirección
+      let slug = '';
+      if (redirectTo) {
+        const decodedUrl = decodeURIComponent(redirectTo);
+        console.log('🔍 URL decodificada:', decodedUrl);
+        
+        // Buscar patrones en la URL: /clases/{slug}, /form/{slug} o /f/{slug}
+        const classesMatch = decodedUrl.match(/\/clases\/([^\/]+)/);
+        const formMatch = decodedUrl.match(/\/form\/([^\/]+)/);
+        const fMatch = decodedUrl.match(/\/f\/([^\/]+)/);
+        
+        if (classesMatch && classesMatch[1]) {
+          slug = classesMatch[1];
+          console.log('📝 Slug extraído de patrón /clases/:', slug);
+        } else if (formMatch && formMatch[1]) {
+          slug = formMatch[1];
+          console.log('📝 Slug extraído de patrón /form/:', slug);
+        } else if (fMatch && fMatch[1]) {
+          slug = fMatch[1];
+          console.log('📝 Slug extraído de patrón /f/:', slug);
+        }
+        
+        console.log('🔑 Slug extraído final:', slug || 'No se encontró slug');
+      }
+
+      // Si tenemos un slug, crear la vinculación con la empresa
+      if (slug) {
+        try {
+          console.log('📱 Intentando crear vinculación con slug:', slug);
+          const supabaseClient = createClientComponentClient<Database>();
+          
+          // Obtener el empresa_id usando el slug
+          const { data: link, error: linkError } = await supabaseClient
+            .from('company_links')
+            .select('empresa_id')
+            .eq('slug', slug)
+            .eq('is_active', true)
+            .single();
+
+          if (linkError) {
+            console.error('❌ Error al buscar link de empresa:', linkError);
+            throw linkError;
+          }
+          
+          if (!link) {
+            console.error('❌ No se encontró el link de la empresa para el slug:', slug);
+            throw new Error('No se encontró el link de la empresa');
+          }
+          
+          console.log('🏢 Empresa ID encontrado:', link.empresa_id);
+
+          // Crear la vinculación usando el empresa_id real
+          const vinculacion = await vinculacionService.createVinculacion(user.id, link.empresa_id);
+          console.log('✅ Vinculación creada exitosamente:', vinculacion);
+        } catch (vinculacionError) {
+          console.error('❌ Error al crear vinculación:', vinculacionError);
+          // No interrumpimos el flujo si falla la vinculación
+        }
+      } else {
+        console.log('⚠️ No se encontró slug en la URL, no se creará vinculación');
+      }
 
       toast.success('Inicio de sesión exitoso')
       

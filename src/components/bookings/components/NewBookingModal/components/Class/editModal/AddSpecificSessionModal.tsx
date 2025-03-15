@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { IconX, IconPlus, IconCalendar, IconClock, IconUsers, IconCoin, IconSportTennis, IconLoader2 } from "@tabler/icons-react"
+import { IconX, IconPlus, IconCalendar, IconClock, IconUsers, IconCoin, IconLoader2 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { CustomCalendar } from "@/components/ui/custom-calendar"
@@ -172,7 +172,14 @@ export function AddSpecificSessionModal({
         // Cerrar el modal y reiniciar el formulario
         handleClose()
       } else {
-        throw new Error(result.error?.message || "Error al agregar la sesión")
+        // Manejo específico para solapamientos con reservas existentes
+        if (result.error?.code === "OVERLAPPING_BOOKINGS") {
+          toast.error("No se puede agregar la sesión específica", {
+            description: `La sesión específica se solapa con reservas existentes: ${result.error.details}`
+          })
+        } else {
+          throw new Error(result.error?.message || "Error al agregar la sesión")
+        }
       }
     } catch (error) {
       console.error("Error al agregar la sesión:", error)
@@ -274,8 +281,6 @@ export function AddSpecificSessionModal({
                   <TimeSelector 
                     value={startTime} 
                     onChange={setStartTime} 
-                    minHour={6}
-                    maxHour={22}
                     className="w-full h-[30px] text-xs"
                   />
                 </div>
@@ -286,8 +291,6 @@ export function AddSpecificSessionModal({
                   <TimeSelector 
                     value={endTime} 
                     onChange={setEndTime} 
-                    minHour={6}
-                    maxHour={23}
                     className="w-full h-[30px] text-xs"
                   />
                 </div>

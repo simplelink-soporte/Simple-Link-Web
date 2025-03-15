@@ -243,125 +243,141 @@ export function MembersTable() {
       </div>
 
       <div className="rounded-md border">
-        <table className="min-w-full table-fixed bg-white">
-          <thead>
-            <tr>
-              {columnVisibility.name && (
-                <th className="w-[25%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Nombre
-                </th>
-              )}
-              {columnVisibility.email && (
-                <th className="w-[25%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Email
-                </th>
-              )}
-              {columnVisibility.phone && (
-                <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Teléfono
-                </th>
-              )}
-              {columnVisibility.city && (
-                <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Ciudad
-                </th>
-              )}
-              {columnVisibility.date && (
-                <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Fecha de Registro
-                </th>
-              )}
-              {columnVisibility.package && (
-                <th className="w-[10%] px-6 py-3 border-b border-gray-200 bg-white text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Paquete
-                </th>
-              )}
-              <th className="w-[5%] px-4 py-3 border-b border-gray-200 bg-white"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {isLoading ? (
+        {getCurrentPageUsers().length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 bg-gray-50/25 rounded-lg border border-dashed border-gray-100/75">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+              <img 
+                src="/images/Miroodles - No credits.png" 
+                alt="No hay usuarios" 
+                className="w-8 h-8 object-contain" 
+              />
+            </div>
+            <p className="text-sm text-gray-500">No hay usuarios disponibles</p>
+            <p className="text-xs text-gray-400 max-w-md text-center mt-1 px-4">
+              Comparte el link de reservas o clases con tus clientes para que puedan registrarse y aparezcan en esta lista.
+            </p>
+          </div>
+        ) : (
+          <table className="min-w-full table-fixed bg-white">
+            <thead>
               <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                  Cargando usuarios...
-                </td>
+                {columnVisibility.name && (
+                  <th className="w-[25%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Nombre
+                  </th>
+                )}
+                {columnVisibility.email && (
+                  <th className="w-[25%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Email
+                  </th>
+                )}
+                {columnVisibility.phone && (
+                  <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Teléfono
+                  </th>
+                )}
+                {columnVisibility.city && (
+                  <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Ciudad
+                  </th>
+                )}
+                {columnVisibility.date && (
+                  <th className="w-[15%] px-6 py-3 border-b border-gray-200 bg-white text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Fecha de Registro
+                  </th>
+                )}
+                {columnVisibility.package && (
+                  <th className="w-[10%] px-6 py-3 border-b border-gray-200 bg-white text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Paquete
+                  </th>
+                )}
+                <th className="w-[5%] px-4 py-3 border-b border-gray-200 bg-white"></th>
               </tr>
-            ) : getCurrentPageUsers().length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                  No se encontraron usuarios
-                </td>
-              </tr>
-            ) : (
-              getCurrentPageUsers().map((user: UserWithPackage) => (
-                <tr 
-                  key={user.id} 
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleRowClick(user)}
-                >
-                  {columnVisibility.name && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm h-16">
-                      <div className="flex items-center h-full">
-                        <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
-                          <IconUser className="h-5 w-5 text-gray-500" />
-                        </div>
-                        <span className="truncate text-sm">
-                          {user.nombre}
-                        </span>
-                      </div>
-                    </td>
-                  )}
-                  {columnVisibility.email && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
-                      <span className="truncate block text-sm">{user.email}</span>
-                    </td>
-                  )}
-                  {columnVisibility.phone && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
-                      <span className="truncate block text-sm">{user.telefono || '-'}</span>
-                    </td>
-                  )}
-                  {columnVisibility.city && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
-                      <span className="truncate block text-sm">{user.ciudad || '-'}</span>
-                    </td>
-                  )}
-                  {columnVisibility.date && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle text-center">
-                      <span className="truncate block">
-                        {formatDate(user.created_at)}
-                      </span>
-                    </td>
-                  )}
-                  {columnVisibility.package && (
-                    <td className="px-6 py-4 border-b border-gray-200 text-sm h-16 align-middle text-center">
-                      <span className="text-sm text-gray-500">
-                        {user.hasActivePackage ? 'Sí' : 'No'}
-                      </span>
-                    </td>
-                  )}
-                  <td className="px-4 py-4 border-b border-gray-200 text-sm h-16">
-                    <div className="flex space-x-2 items-center justify-center h-full">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="focus:outline-none">
-                          <div className="p-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <IconDots className="h-4 w-4 text-gray-500" />
-                          </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[160px]">
-                          <DropdownMenuItem className="text-sm cursor-pointer">
-                            <IconEdit className="h-4 w-4 mr-2" />
-                            Editar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                    Cargando usuarios...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : getCurrentPageUsers().length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                    No se encontraron usuarios
+                  </td>
+                </tr>
+              ) : (
+                getCurrentPageUsers().map((user: UserWithPackage) => (
+                  <tr 
+                    key={user.id} 
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleRowClick(user)}
+                  >
+                    {columnVisibility.name && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm h-16">
+                        <div className="flex items-center h-full">
+                          <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                            <IconUser className="h-5 w-5 text-gray-500" />
+                          </div>
+                          <span className="truncate text-sm">
+                            {user.nombre}
+                          </span>
+                        </div>
+                      </td>
+                    )}
+                    {columnVisibility.email && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
+                        <span className="truncate block text-sm">{user.email}</span>
+                      </td>
+                    )}
+                    {columnVisibility.phone && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
+                        <span className="truncate block text-sm">{user.telefono || '-'}</span>
+                      </td>
+                    )}
+                    {columnVisibility.city && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle">
+                        <span className="truncate block text-sm">{user.ciudad || '-'}</span>
+                      </td>
+                    )}
+                    {columnVisibility.date && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm text-gray-500 h-16 align-middle text-center">
+                        <span className="truncate block">
+                          {formatDate(user.created_at)}
+                        </span>
+                      </td>
+                    )}
+                    {columnVisibility.package && (
+                      <td className="px-6 py-4 border-b border-gray-200 text-sm h-16 align-middle text-center">
+                        <span className="text-sm text-gray-500">
+                          {user.hasActivePackage ? 'Sí' : 'No'}
+                        </span>
+                      </td>
+                    )}
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm h-16">
+                      <div className="flex space-x-2 items-center justify-center h-full">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="focus:outline-none">
+                            <div className="p-2 hover:bg-gray-100 rounded-md transition-colors">
+                              <IconDots className="h-4 w-4 text-gray-500" />
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-[160px]">
+                            <DropdownMenuItem className="text-sm cursor-pointer">
+                              <IconEdit className="h-4 w-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Paginación */}
@@ -409,4 +425,3 @@ export function MembersTable() {
     </div>
   )
 }
-

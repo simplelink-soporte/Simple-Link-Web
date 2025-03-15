@@ -18,6 +18,7 @@ interface ClassConfirmationStepProps {
   classId?: string
   timeSlots?: TimeSlot[]
   paymentConfig?: ClassPaymentConfig
+  error?: string
 }
 
 const paymentMethodLabels: Record<string, string> = {
@@ -35,7 +36,8 @@ export function ClassConfirmationStep({
   isCreated = false,
   classId,
   timeSlots = [],
-  paymentConfig
+  paymentConfig,
+  error
 }: ClassConfirmationStepProps) {
   const { currentBranch } = useBranches()
   const { classLink, isLoading: isLoadingLink, copyToClipboard } = useClassLink({
@@ -219,10 +221,10 @@ export function ClassConfirmationStep({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={cn("space-y-6", className)}
+      className={cn("space-y-6")}
     >
       {/* Mensaje de éxito */}
-      {isCreated && (
+      {isCreated && !error && (
         <div className="bg-green-50 p-4 rounded-lg">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -235,6 +237,24 @@ export function ClassConfirmationStep({
                 <p>
                   {classLink && 'Puedes compartir el link de abajo para que tus alumnos se inscriban directamente.'}
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mensaje de error */}
+      {error && (
+        <div className="bg-red-50 p-4 rounded-lg">
+          <div className="flex">
+            <div className="flex-shrink-0">
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Error al crear la clase
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{error}</p>
               </div>
             </div>
           </div>

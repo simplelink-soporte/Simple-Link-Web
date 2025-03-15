@@ -28,6 +28,7 @@ interface ClassBookingProps {
   onPaymentConfigChange: (config: ClassPaymentConfig) => void
   onValidationChange: (isValid: boolean) => void
   createdClassId?: string
+  createError?: string
 }
 
 export function ClassBooking({
@@ -45,7 +46,8 @@ export function ClassBooking({
   onScheduleConfigChange,
   onPaymentConfigChange,
   onValidationChange,
-  createdClassId
+  createdClassId,
+  createError
 }: ClassBookingProps) {
 
   const renderStep = () => {
@@ -90,6 +92,7 @@ export function ClassBooking({
             classId={createdClassId}
             timeSlots={scheduleConfig?.timeSlots || []}
             paymentConfig={paymentConfig}
+            error={createError}
           />
         )
 

@@ -253,7 +253,7 @@ export function ClassEditBasic({
         <div>
           <label className="text-xs font-medium text-gray-700 mb-1 block">Fecha de inicio</label>
           <div 
-            className="flex items-center py-2 px-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed text-xs"
+            className="flex items-center py-2 px-3 rounded-lg border border-gray-200 bg-white text-gray-500 cursor-not-allowed text-xs"
           >
             <IconCalendar size={14} className="mr-1.5 text-gray-400" />
             {scheduleConfig.startDate 
@@ -266,7 +266,7 @@ export function ClassEditBasic({
         <div>
           <label className="text-xs font-medium text-gray-700 mb-1 block">Fecha de finalización</label>
           <div 
-            className="flex items-center py-2 px-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed text-xs"
+            className="flex items-center py-2 px-3 rounded-lg border border-gray-200 bg-white text-gray-500 cursor-not-allowed text-xs"
           >
             <IconCalendar size={14} className="mr-1.5 text-gray-400" />
             {scheduleConfig.endDate 

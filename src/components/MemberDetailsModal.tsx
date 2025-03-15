@@ -729,14 +729,14 @@ export function MemberDetailsModal({ isOpen, onClose, member }: MemberDetailsMod
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={onClose}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    className="flex-1 px-4 py-2 bg-transparent text-gray-700 font-normal rounded-md transition-colors"
                   >
                     Cerrar
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+                    className="flex-1 px-4 py-2 bg-transparent text-gray-700 font-normal rounded-md transition-colors"
                   >
                     Guardar Cambios
                   </motion.button>

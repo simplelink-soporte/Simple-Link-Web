@@ -13,9 +13,10 @@ import { useBookingState } from "@/hooks/useBookingState"
 import type { BookingStep } from "./types"
 import type { Database } from "@/types/supabase"
 import useOrganization from '@/hooks/useOrganization'
-import { useBranches } from '@/hooks/useBranches'
+import { useBranchContext } from '@/contexts/BranchContext'
 import { useCurrentEmpresa } from '@/hooks/useCurrentEmpresa'
 import { useClasses } from '../../hooks/useClasses'
+import { checkClassAvailability, checkRecurringClassAvailability } from '@/services/classAvailabilityService'
 
 interface NewBookingModalProps {
   isOpen: boolean
@@ -33,8 +34,9 @@ export function NewBookingModal({
   const [mounted, setMounted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [createdClassId, setCreatedClassId] = useState<string>()
+  const [createError, setCreateError] = useState<string>()
   const supabase = createClientComponentClient<Database>()
-  const { currentBranch } = useBranches()
+  const { currentBranch } = useBranchContext()
   const { empresa } = useCurrentEmpresa()
   const { organizationId } = useOrganization()
   const { updateClassesCache, invalidateClasses } = useClasses({ branchId: currentBranch?.id })
@@ -72,6 +74,7 @@ export function NewBookingModal({
     if (!isOpen) {
       resetState()
       setCreatedClassId(undefined)
+      setCreateError(undefined)
     }
   }, [isOpen, resetState])
 
@@ -124,6 +127,69 @@ export function NewBookingModal({
       const firstTimeSlot = bookingState.scheduleConfig.timeSlots[0]
       if (!firstTimeSlot.price || firstTimeSlot.price <= 0) {
         throw new Error('El precio por sesión debe ser mayor a 0')
+      }
+
+      // Verificar disponibilidad para evitar solapamientos, dependiendo de si es recurrente o no
+      if (bookingState.scheduleConfig.isRecurring) {
+        // Para clases recurrentes
+        console.log('[DEBUG] Iniciando verificación para clase recurrente')
+        console.log('[DEBUG] Timezone de sede:', currentBranch?.timezone)
+        console.log('[DEBUG] Fecha de inicio:', bookingState.scheduleConfig.startDate)
+        console.log('[DEBUG] Fecha de fin:', bookingState.scheduleConfig.endDate)
+        console.log('[DEBUG] Días de la semana:', bookingState.scheduleConfig.weekDays)
+        console.log('[DEBUG] Time slots:', JSON.stringify(bookingState.scheduleConfig.timeSlots))
+        
+        try {
+          // Verificar disponibilidad para las fechas y horarios seleccionados
+          const availabilityResult = await checkRecurringClassAvailability(
+            bookingState.scheduleConfig.startDate,
+            bookingState.scheduleConfig.weekDays,
+            bookingState.scheduleConfig.timeSlots,
+            bookingState.scheduleConfig.endDate,
+            currentBranch?.timezone || 'America/New_York' // Usar la zona horaria de la sede o un valor por defecto
+          )
+
+          // Si hay reservas solapadas, mostrar un error
+          if (!availabilityResult.available) {
+            const overlappingCourts = availabilityResult.overlappingBookings.map(b => b.court_name);
+            const uniqueOverlappingCourts = Array.from(new Set(overlappingCourts)); // Eliminar duplicados
+            
+            throw new Error(
+              `No se puede crear la clase porque hay reservas existentes que se solaparían con el horario seleccionado. ` + 
+              `Pistas afectadas: ${uniqueOverlappingCourts.join(', ')}.`
+            )
+          }
+        } catch (availabilityError: any) {
+          throw new Error(`Error al verificar disponibilidad: ${availabilityError.message}`)
+        }
+      } else {
+        // Para clases no recurrentes (únicas)
+        console.log('[DEBUG] Iniciando verificación para clase no recurrente (única)')
+        console.log('[DEBUG] Timezone de sede:', currentBranch?.timezone)
+        console.log('[DEBUG] Fecha seleccionada:', bookingState.scheduleConfig.startDate)
+        console.log('[DEBUG] Time slots:', JSON.stringify(bookingState.scheduleConfig.timeSlots))
+        
+        try {
+          // Verificar disponibilidad para la fecha y horarios seleccionados
+          const availabilityResult = await checkClassAvailability(
+            bookingState.scheduleConfig.startDate,
+            bookingState.scheduleConfig.timeSlots,
+            currentBranch?.timezone || 'America/New_York' // Usar la zona horaria de la sede o un valor por defecto
+          )
+
+          // Si hay reservas solapadas, mostrar un error
+          if (!availabilityResult.available) {
+            const overlappingCourts = availabilityResult.overlappingBookings.map(b => b.court_name);
+            const uniqueOverlappingCourts = Array.from(new Set(overlappingCourts)); // Eliminar duplicados
+            
+            throw new Error(
+              `No se puede crear la clase porque hay reservas existentes que se solaparían con el horario seleccionado. ` + 
+              `Pistas afectadas: ${uniqueOverlappingCourts.join(', ')}.`
+            )
+          }
+        } catch (availabilityError: any) {
+          throw new Error(`Error al verificar disponibilidad: ${availabilityError.message}`)
+        }
       }
 
       // Preparar la configuración del horario
@@ -202,12 +268,17 @@ export function NewBookingModal({
   const handleContinueWithSave = useCallback(async () => {
     if (currentStep === 'confirmation' && !createdClassId) {
       try {
+        // Limpiar cualquier error previo
+        setCreateError(undefined)
+        
         const classId = await createClass()
         setCreatedClassId(classId)
         const classLink = `${window.location.origin}/inscripcion/${classId}`
         navigator.clipboard.writeText(classLink)
       } catch (error) {
-        // El error ya se maneja en createClass
+        // Capturar el mensaje de error para mostrarlo en el paso de confirmación
+        setCreateError(error instanceof Error ? error.message : 'Error desconocido al crear la clase')
+        console.error('Error al crear clase:', error)
       }
     } else if (currentStep === 'confirmation' && createdClassId) {
       onClose()
@@ -251,6 +322,7 @@ export function NewBookingModal({
               updateState({ isStepValid: isValid })
             }}
             createdClassId={createdClassId}
+            createError={createError}
           />
         </div>
 

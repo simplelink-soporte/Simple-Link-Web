@@ -77,10 +77,10 @@ export function ItemsTable() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items', currentBranch?.id] })
-      toast.success('Artículo eliminado correctamente')
+      toast.success('Artículo desactivado correctamente')
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Error al eliminar el artículo')
+      toast.error(error.message || 'Error al desactivar el artículo')
     }
   })
 
@@ -220,7 +220,7 @@ export function ItemsTable() {
 
           <Button 
             onClick={() => setIsNewItemModalOpen(true)}
-            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-md hover:bg-gray-100 flex items-center gap-2 text-sm"
           >
             <IconPlus className="h-5 w-5" />
             <span>Nuevo Artículo</span>
@@ -230,6 +230,27 @@ export function ItemsTable() {
 
       {/* Tabla */}
       <div className="rounded-md border">
+        {getFilteredItems().length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 bg-gray-50/25 rounded-lg border border-dashed border-gray-100/75">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+              <img 
+                src="/images/Miroodles - No credits.png" 
+                alt="No hay artículos" 
+                className="w-8 h-8 object-contain" 
+              />
+            </div>
+            <p className="text-sm text-gray-500">No hay artículos disponibles</p>
+            <Button 
+              onClick={() => setIsNewItemModalOpen(true)}
+              variant="outline"
+              size="sm"
+              className="mt-3 px-3 py-1.5 h-8 text-xs bg-white border-gray-200"
+            >
+              <IconPlus className="h-3.5 w-3.5 mr-1.5" />
+              Agregar nuevo artículo
+            </Button>
+          </div>
+        ) : (
         <table className="min-w-full table-fixed bg-white">
           <thead>
             <tr>
@@ -303,6 +324,7 @@ export function ItemsTable() {
             ))}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Modal */}

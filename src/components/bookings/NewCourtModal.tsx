@@ -440,7 +440,7 @@ export function NewCourtModal({
               <>
                 <button
                   onClick={handleBack}
-                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors"
+                  className="flex-1 bg-transparent  text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors"
                 >
                   Anterior
                 </button>
@@ -455,7 +455,7 @@ export function NewCourtModal({
               <>
                 <button
                   onClick={handleClose}
-                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 rounded-lg text-sm font-normal bg-transparent text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   Cancelar
                 </button>
@@ -464,8 +464,8 @@ export function NewCourtModal({
                   disabled={!isFirstStepValid()}
                   className={`flex-1 px-4 py-2 rounded-md transition-colors ${
                     isFirstStepValid()
-                      ? 'bg-black text-white hover:bg-gray-800'
-                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      ? 'bg-transparent text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-right'
+                      : 'bg-transparent text-gray-500 cursor-not-allowed text-right'
                   }`}
                 >
                   Siguiente

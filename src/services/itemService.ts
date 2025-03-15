@@ -161,28 +161,35 @@ export const itemService = {
 
   async deleteItem(id: string, sedeId: string) {
     try {
-      console.log('📍 Eliminando item:', { id, sedeId })
+      console.log('📍 Desactivando item:', { id, sedeId })
 
       if (!id) throw new Error('El ID del item es requerido')
       if (!sedeId) throw new Error('El ID de la sede es requerido')
 
-      // Eliminación real del item
-      const { error } = await supabase
+      // En lugar de eliminar, actualizamos is_active a false
+      const { data, error } = await supabase
         .from('items')
-        .delete()
+        .update({ 
+          is_active: false,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', id)
         .eq('sede_id', sedeId)
+        .select()
+        .single()
 
       if (error) throw error
+      if (!data) throw new Error('No se pudo desactivar el item')
 
-      console.log('✅ Item eliminado exitosamente')
+      console.log('✅ Item desactivado exitosamente')
+      return this.dbItemToAppItem(data)
     } catch (error: any) {
       console.error('❌ Error en deleteItem:', error)
-      throw new Error(`Error al eliminar item: ${error.message}`)
+      throw new Error(`Error al desactivar item: ${error.message}`)
     }
   },
 
-  private dbItemToAppItem(dbItem: Database['public']['Tables']['items']['Row']): Item {
+  dbItemToAppItem(dbItem: Database['public']['Tables']['items']['Row']): Item {
     return {
       id: dbItem.id,
       name: dbItem.name,
@@ -196,7 +203,7 @@ export const itemService = {
     }
   },
 
-  private validateItemData(item: Omit<Item, 'id'>) {
+  validateItemData(item: Omit<Item, 'id'>) {
     if (!item.name?.trim()) throw new Error('El nombre es requerido')
     if (!item.type) throw new Error('El tipo es requerido')
     if (item.stock === undefined || item.stock === null) throw new Error('El stock es requerido')
@@ -212,7 +219,7 @@ export const itemService = {
     return { stock, defaultDuration }
   },
 
-  private validatePricing(pricing: Record<string, number> = {}) {
+  validatePricing(pricing: Record<string, number> = {}) {
     const duration_pricing: Record<string, number> = {}
     
     Object.entries(pricing).forEach(([duration, price]) => {
