@@ -174,7 +174,7 @@ export function BookingsTable() {
     });
 }, [bookings, businessHours?.timezone]);
 
-  // Obtener las clases usando el nuevo hook
+  // Obtener las clases usando el hook con caché configurado
   const { 
     data: classesData = [], 
     isLoading: isLoadingClasses, 
@@ -191,9 +191,38 @@ export function BookingsTable() {
   
   // Referencia para almacenar el último valor de classesData
   const lastClassesDataRef = useRef<TransformedClass[]>([])
+  
+  // Caché de participantes por fecha para evitar reconsultas innecesarias
+  const [participantsCache, setParticipantsCache] = useState<Record<string, TransformedClass[]>>({})
 
   // Efecto para actualizar la información de participantes cuando cambian las clases
   useEffect(() => {
+    // Si no hay datos de clases, no hacer nada
+    if (!classesData || classesData.length === 0) {
+      // Evitamos llamar a setClasses si no es necesario para prevenir el ciclo infinito
+      if (classes.length !== 0) {
+        setClasses([]);
+      }
+      return;
+    }
+    
+    // Clave para el caché (usando la fecha formateada)
+    const cacheKey = format(selectedDate, 'yyyy-MM-dd');
+    
+    // Comprobar si ya tenemos esta fecha en caché
+    if (participantsCache[cacheKey]) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔄 Usando participantes en caché para:', cacheKey, {
+          totalClases: participantsCache[cacheKey].length
+        });
+      }
+      // Evitamos re-renderizar si los datos son los mismos
+      if (JSON.stringify(classes) !== JSON.stringify(participantsCache[cacheKey])) {
+        setClasses(participantsCache[cacheKey]);
+      }
+      return;
+    }
+    
     // Comprobación para evitar actualizaciones innecesarias
     const classesDataChanged = JSON.stringify(lastClassesDataRef.current) !== JSON.stringify(classesData);
     
@@ -243,7 +272,18 @@ export function BookingsTable() {
               });
             }
             
+            // Actualizar el estado actual
             setClasses(updatedClasses)
+            
+            // Guardar en caché para futuras referencias
+            setParticipantsCache(prevCache => ({
+              ...prevCache,
+              [cacheKey]: updatedClasses
+            }));
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log('💾 Guardando en caché participantes para:', cacheKey);
+            }
           } catch (error) {
             console.error('❌ Error al actualizar participantes:', error)
             setClasses(classesData) // Usar los datos originales en caso de error
@@ -251,18 +291,30 @@ export function BookingsTable() {
             setIsLoadingParticipants(false)
           }
         } else {
-          setClasses([])
+          if (classes.length !== 0) {
+            setClasses([])
+          }
         }
       }
 
       updateParticipants()
     }
-  }, [classesData])
+  // Eliminamos 'classes' de las dependencias para evitar el ciclo infinito
+  }, [classesData, selectedDate, participantsCache])
 
-  // Refrescar automáticamente los participantes cada 2 minutos
+  // Refrescar automáticamente los participantes cada 2 minutos SOLO para el día actual
   useEffect(() => {
-    // Solo configurar el intervalo si hay clases para actualizar
-    if (classesData.length === 0) return;
+    // Solo configurar el intervalo si:
+    // 1. Hay clases para actualizar
+    // 2. Es el día actual (no tiene sentido actualizar días pasados o futuros en tiempo real)
+    const isToday = format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+    
+    if (classesData.length === 0 || !isToday) {
+      if (process.env.NODE_ENV === 'development' && !isToday && classesData.length > 0) {
+        console.log('⏱️ Omitiendo actualización automática: no es el día actual');
+      }
+      return;
+    }
     
     // Log una sola vez al configurar el intervalo
     if (process.env.NODE_ENV === 'development') {
@@ -288,6 +340,13 @@ export function BookingsTable() {
               console.log('✅ Cambios en participantes detectados en la actualización automática');
             }
             setClasses(updatedClasses);
+            
+            // También actualizar el caché para mantener coherencia
+            const cacheKey = format(selectedDate, 'yyyy-MM-dd');
+            setParticipantsCache(prevCache => ({
+              ...prevCache,
+              [cacheKey]: updatedClasses
+            }));
           } else if (process.env.NODE_ENV === 'development') {
             console.log('ℹ️ No hay cambios en la disponibilidad');
           }
@@ -305,7 +364,7 @@ export function BookingsTable() {
       }
       clearInterval(intervalId);
     };
-  }, [classesData.length]);
+  }, [classesData.length, classes, selectedDate]);
 
   // Estado para manejar la clase seleccionada (separado de las reservas)
   const [selectedClassData, setSelectedClassData] = useState<TransformedClass | null>(null);
@@ -401,28 +460,38 @@ export function BookingsTable() {
     try {
       setIsRefreshing(true)
       
-      // Iniciar la actualización de reservas y clases
-      const refreshPromises = [
-        refetch(),
-        refetchClasses()
-      ]
+      // Refrescar reservas
+      await refetch()
       
-      // Esperar al menos 1 segundo para la animación
-      const animationPromise = new Promise(resolve => setTimeout(resolve, 1000))
+      // Refrescar clases
+      await refetchClasses()
       
-      // Esperar a que todas las promesas se completen
-      await Promise.all([...refreshPromises, animationPromise])
-
+      // También actualizar participantes manualmente para el día actual
+      const cacheKey = format(selectedDate, 'yyyy-MM-dd');
+      if (classes.length > 0) {
+        const updatedClasses = await classQueryService.updateClassesParticipants(classes);
+        setClasses(updatedClasses);
+        
+        // Actualizar caché
+        setParticipantsCache(prevCache => ({
+          ...prevCache,
+          [cacheKey]: updatedClasses
+        }));
+      }
+      
       toast({
-        title: "Datos actualizados",
-        description: "Las reservas y clases se han actualizado correctamente",
-        variant: "default"
+        description: (
+          <div className="flex items-center gap-2">
+            <IconCircleCheck className="w-4 h-4 text-emerald-500" />
+            <span>Contenido actualizado</span>
+          </div>
+        ),
       })
     } catch (error) {
+      console.error('Error al refrescar:', error)
       toast({
-        title: "Error al actualizar",
-        description: "No se pudieron actualizar los datos. Por favor, intente nuevamente.",
-        variant: "destructive"
+        variant: "destructive",
+        description: "Error al actualizar. Intente nuevamente.",
       })
     } finally {
       setIsRefreshing(false)

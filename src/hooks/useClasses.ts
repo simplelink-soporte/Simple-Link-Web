@@ -12,20 +12,21 @@ interface UseClassesOptions extends Omit<ClassQueryOptions, 'empresaId' | 'date'
 export function useClasses(options: UseClassesOptions) {
   const { organization } = useOrganization()
 
+  // Formatear la fecha a YYYY-MM-DD si está presente para usarla en clave de caché
+  const formattedDate = options.date 
+    ? options.date instanceof Date
+      ? format(options.date, 'yyyy-MM-dd')
+      : options.date
+    : format(new Date(), 'yyyy-MM-dd'); // Si no hay fecha, usar hoy
+
   return useQuery({
-    queryKey: ['classes', options.date, options.branchId, organization?.id, options.includeCompleted],
+    // Usar una clave más descriptiva para mejorar la identificación de caché
+    queryKey: ['classes', formattedDate, options.branchId, organization?.id, options.includeCompleted],
     queryFn: async () => {
       if (!organization?.id) {
         console.warn('⚠️ useClasses - No hay organización activa')
         return []
       }
-
-      // Formatear la fecha a YYYY-MM-DD si está presente
-      const formattedDate = options.date 
-        ? options.date instanceof Date
-          ? format(options.date, 'yyyy-MM-dd')
-          : options.date
-        : format(new Date(), 'yyyy-MM-dd'); // Si no hay fecha, usar hoy
 
       console.log('🔄 useClasses - Consultando clases:', {
         date: formattedDate,
@@ -60,8 +61,9 @@ export function useClasses(options: UseClassesOptions) {
       return transformedClasses
     },
     enabled: Boolean(organization?.id),
-    staleTime: 1000 * 60 * 5, // 5 minutos
-    gcTime: 1000 * 60 * 15, // 15 minutos
+    // Aumentar el staleTime para reducir consultas innecesarias a días ya visitados
+    staleTime: 1000 * 60 * 60, // 60 minutos (en lugar de 5)
+    gcTime: 1000 * 60 * 120, // 2 horas (en lugar de 15 minutos)
     retry: 2
   })
 } 

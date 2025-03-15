@@ -162,21 +162,22 @@ export function ItemsTable() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Filtros */}
+          {/* Filtros - Versión Mejorada */}
           <Popover>
             <PopoverTrigger asChild>
               <Button 
                 variant="outline" 
-                size="icon"
-                className="p-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200 transition-colors"
+                size="sm"
+                className="px-3 py-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200 flex items-center gap-2 h-9 text-sm"
               >
                 <IconFilter className="h-4 w-4" stroke={1.5} />
+                <span className="text-gray-700">Filtrar</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2 text-sm">Buscar por nombre</h4>
+            <PopoverContent className="w-72 p-4 shadow-md" align="end" sideOffset={5}>
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-gray-700">Buscar por nombre</h4>
                   <Input
                     placeholder="Escriba para buscar..."
                     value={filters.search}
@@ -184,10 +185,11 @@ export function ItemsTable() {
                       ...prev,
                       search: e.target.value
                     }))}
+                    className="h-9"
                   />
                 </div>
-                <div>
-                  <h4 className="font-medium mb-2 text-sm">Tipo de artículo</h4>
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-gray-700">Tipo de artículo</h4>
                   <Select
                     value={filters.type}
                     onValueChange={(value) => setFilters(prev => ({
@@ -195,7 +197,7 @@ export function ItemsTable() {
                       type: value
                     }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 bg-white">
                       <SelectValue placeholder="Todos los tipos" />
                     </SelectTrigger>
                     <SelectContent>
@@ -206,10 +208,12 @@ export function ItemsTable() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex justify-end pt-4 border-t">
+                <div className="flex justify-end pt-2 border-t border-gray-100">
                   <Button
                     variant="ghost"
+                    size="sm"
                     onClick={() => setFilters({ search: "", type: "all" })}
+                    className="h-8 text-xs font-medium text-gray-600 hover:text-gray-900"
                   >
                     Limpiar filtros
                   </Button>

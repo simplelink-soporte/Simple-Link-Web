@@ -44,10 +44,8 @@ export function SessionsReviewSection({ timeSlots, onSessionSelect, selectedDate
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   // Estado para la fecha seleccionada en el calendario
   const [selectedDate, setSelectedDate] = useState<string>(propSelectedDate || '');
-  // Estado para el mes y año actuales del calendario
-  const [currentMonth, setCurrentMonth] = useState<Date>(() => {
-    return propSelectedDate ? new Date(propSelectedDate) : new Date();
-  });
+  // Estado para el mes y año actuales del calendario - SIEMPRE INICIALIZAR CON EL DÍA ACTUAL
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   
   // Filtrar las sesiones por fecha seleccionada
   const filteredTimeSlots = useMemo(() => {
