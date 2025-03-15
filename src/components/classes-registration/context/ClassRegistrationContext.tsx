@@ -26,7 +26,7 @@ interface AuthUser {
 
 type EmpresaRow = Database['public']['Tables']['empresas']['Row']
 
-type Step = 'auth' | 'package' | 'class' | 'session' | 'summary' | 'payment' | 'confirmation' | 'noCredits'
+export type Step = 'auth' | 'package' | 'class' | 'session' | 'summary' | 'payment' | 'confirmation' | 'noCredits'
 
 interface RegistrationState {
   step: Step

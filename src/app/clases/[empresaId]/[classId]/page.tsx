@@ -49,7 +49,7 @@ export default function ClassRegistrationPage({ params }: Props) {
 
   return (
     <div className={cn(
-      "min-h-screen w-full",
+      "h-screen w-full",
       "bg-white",
       "flex flex-col",
       "py-12",

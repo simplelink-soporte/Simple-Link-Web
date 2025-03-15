@@ -154,19 +154,21 @@ export function PaymentTypeSection({
             exit={{ opacity: 0, y: -5, height: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              "absolute left-0 right-0 z-50 mt-2 origin-top",
+              "fixed inset-x-4 sm:static sm:w-full z-[100] mt-2 origin-top",
               "rounded-lg shadow-lg",
               "overflow-hidden bg-white",
               "border border-gray-200"
             )}
           >
-            <PaymentTypeList
-              selectedType={selectedType}
-              onSelect={handleSelectPaymentType}
-              paymentTypes={FILTERED_PAYMENT_TYPES}
-              isExpanded={true}
-              noContainer={true}
-            />
+            <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+              <PaymentTypeList
+                selectedType={selectedType}
+                onSelect={handleSelectPaymentType}
+                paymentTypes={FILTERED_PAYMENT_TYPES}
+                isExpanded={true}
+                noContainer={true}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

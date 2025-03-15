@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import { useClassRegistration } from '../context/ClassRegistrationContext'
 import { PackageSelectionStep } from './PackageSelectionStep'
 import { ClassSelectionStep } from './ClassSelectionStep'
+import { ClassDetailStep } from './ClassDetailStep'
 import { SessionStep } from './SessionStep'
 import { SummaryStep } from './SummaryStep'
 // PaymentStep eliminado del flujo

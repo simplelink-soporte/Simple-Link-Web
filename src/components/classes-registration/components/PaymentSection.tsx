@@ -53,7 +53,7 @@ export function PaymentSection({
   
   // Hook para cargar las tarjetas guardadas
   const { cards = [], isLoading: isCardsLoading, error: cardsError, deleteCard } = useStoredCards(refreshTrigger, {
-    autoLoad: isListExpanded || expandCardList
+    autoLoad: true // Siempre cargar las tarjetas independientemente del estado de expandCardList
   })
 
   // Actualizar método seleccionado cuando cambia desde props
@@ -61,7 +61,7 @@ export function PaymentSection({
     if (selectedMethod && selectedMethod.id) {
       console.log('Actualizando método de pago local:', selectedMethod)
       setLocalMethod(selectedMethod)
-      setIsListExpanded(false)
+      // No cerramos la lista aquí para evitar conflictos con la selección manual
     } else {
       setLocalMethod(null)
     }
@@ -69,10 +69,12 @@ export function PaymentSection({
 
   // Actualizar expansión de la lista cuando cambia desde props
   useEffect(() => {
-    if (expandCardList !== undefined) {
-      setIsListExpanded(expandCardList)
+    // Solo actualizamos el estado si expandCardList es true y la lista no está ya expandida
+    // Esto previene un ciclo de re-expansión después de una selección
+    if (expandCardList === true && !isListExpanded) {
+      setIsListExpanded(true)
     }
-  }, [expandCardList])
+  }, [expandCardList, isListExpanded])
 
   // Procesar la selección de una tarjeta
   const processCardSelection = useCallback((card: any) => {
@@ -93,8 +95,7 @@ export function PaymentSection({
 
       // Actualizar estado local
       setLocalMethod(paymentMethod)
-      setIsListExpanded(false)
-
+      
       // Propagar al contexto global
       if (onUpdateMethod) {
         console.log('[PaymentSection] Actualizando método de pago global:', paymentMethod)
@@ -122,11 +123,34 @@ export function PaymentSection({
     originalOnShowMethods()
   }, [originalOnShowMethods])
 
-  // Manejar la selección de tarjeta
+  // Manejar la selección de tarjeta con un sistema de bloqueo para evitar reaperturas
+  const isProcessingRef = useRef(false);
+
   const handleCardSelect = useCallback((card: any) => {
-    console.log('handleCardSelect llamado con:', card)
-    return processCardSelection(card)
-  }, [processCardSelection])
+    console.log('[PaymentSection] handleCardSelect llamado con:', card)
+    
+    // Si ya estamos procesando una selección, ignorar
+    if (isProcessingRef.current) {
+      console.log('[PaymentSection] Ignorando selección - ya hay una selección en proceso')
+      return;
+    }
+    
+    // Activar el bloqueo
+    isProcessingRef.current = true;
+    
+    // Cerrar inmediatamente la lista
+    setIsListExpanded(false);
+    
+    // Procesar la selección después de un pequeño retraso
+    setTimeout(() => {
+      processCardSelection(card);
+      
+      // Liberar el bloqueo después de procesar
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 300);
+    }, 50);
+  }, [processCardSelection]);
 
   // Manejar la adición de una tarjeta
   const handleAddCard = () => {
@@ -271,7 +295,7 @@ export function PaymentSection({
       <CardList
         cards={cards}
         selectedCardId={methodToDisplay?.id}
-        onSelect={processCardSelection}
+        onSelect={handleCardSelect}
         onAddCard={handleAddCard}
         onDeleteCard={deleteCard}
         isExpanded={isListExpanded}

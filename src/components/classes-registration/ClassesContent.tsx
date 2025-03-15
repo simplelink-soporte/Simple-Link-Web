@@ -52,7 +52,9 @@ export function ClassesContent({ empresaId }: ClassesContentProps) {
   }
 
   return (
-    <div className="min-h-screen py-12">
+    <div 
+      className="h-full flex flex-col justify-start overflow-visible"
+    >
       {activePackage && (
         <PackageStatusModal
           isOpen={showPackageModal}

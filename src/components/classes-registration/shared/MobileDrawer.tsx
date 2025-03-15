@@ -16,6 +16,10 @@ interface MobileDrawerProps {
    * @default '/images/Miroodles - Sticker.png'
    */
   imageUrl?: string
+  /**
+   * Contenido que se mostrará fijo en la parte inferior del drawer
+   */
+  footer?: ReactNode
 }
 
 export function MobileDrawer({
@@ -24,7 +28,8 @@ export function MobileDrawer({
   onClose,
   title,
   className,
-  imageUrl = '/images/Miroodles - Sticker.png'
+  imageUrl = '/images/Miroodles - Sticker.png',
+  footer
 }: MobileDrawerProps) {
   // Prevenir scroll cuando el drawer está abierto
   useEffect(() => {
@@ -71,40 +76,56 @@ export function MobileDrawer({
               "rounded-t-2xl",
               "shadow-lg",
               "border border-gray-200",
-              // Padding y scroll
-              "p-6",
-              "overflow-y-auto",
-              "scrollbar-none",
+              // Estructura para contenido + footer
+              "flex flex-col",
               className
             )}
           >
-            {/* Header */}
-            <div className="flex flex-col items-left gap-3 mb-6">
-              {imageUrl && (
-                <div className="relative w-16 h-16">
-                  <Image
-                    src={imageUrl}
-                    alt="Drawer icon"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              )}
-              {title && (
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {title}
-                </h3>
-              )}
+            {/* Contenido principal con scroll */}
+            <div className={cn(
+              "flex-1",
+              "overflow-y-auto scrollbar-none",
+              "p-6 pb-4" // Reducimos el padding bottom para que no haya mucho espacio antes del footer
+            )}>
+              {/* Header */}
+              <div className="flex flex-col items-left gap-3 mb-6">
+                {imageUrl && (
+                  <div className="relative w-16 h-16">
+                    <Image
+                      src={imageUrl}
+                      alt="Drawer icon"
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+                )}
+                {title && (
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {title}
+                  </h3>
+                )}
+              </div>
+
+              {/* Contenido */}
+              <div>
+                {children}
+              </div>
             </div>
 
-            {/* Contenido */}
-            <div className="h-full">
-              {children}
-            </div>
+            {/* Footer fijo */}
+            {footer && (
+              <div className={cn(
+                "flex-shrink-0",
+                "p-4 pt-2", // Padding en los lados y abajo, pero reducido arriba
+                "bg-white" // Aseguramos que el fondo sea blanco para que no se vea el contenido debajo
+              )}>
+                {footer}
+              </div>
+            )}
           </motion.div>
         </>
       )}
     </AnimatePresence>
   )
-} 
+}

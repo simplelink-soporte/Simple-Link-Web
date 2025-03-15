@@ -13,20 +13,11 @@ import { cn } from '@/lib/utils'
 import type { PublicClass } from '../types/models'
 import { useRouter } from 'next/navigation'
 import { LinkService } from '../services/linkService'
-import Image from 'next/image'
+import { StepNavigation } from '../shared/StepNavigation'
 
 interface Filters {
   type: 'all' | 'single' | 'recurring'
   branchId: string | null
-}
-
-const CLASS_IMAGES = [
-  '/images/Miroodles - Sticker 3.png',
-  '/images/Miroodles - Sticker 2.png'
-]
-
-function getClassImage(index: number): string {
-  return CLASS_IMAGES[index % CLASS_IMAGES.length]
 }
 
 export function ClassSelectionStep() {
@@ -106,17 +97,62 @@ export function ClassSelectionStep() {
     }
   }, [state.selectedPackage, state.isGuest, state.skipPackageSelection])
 
-  const handleNext = async () => {
-    if (state.selectedClass && companySlug) {
-      try {
-        // Solo realizamos la navegación, el cambio de paso se manejará por la URL
-        const newUrl = `/clases/${companySlug}/${state.selectedClass.id}`
-        await router.push(newUrl)
-      } catch (error) {
-        console.error('Error durante la navegación:', error)
-      }
-    }
-  }
+  // Hook para capturar y redirigir todos los eventos de scroll
+  useEffect(() => {
+    // Referencia al contenedor de clases
+    const getContainer = () => document.getElementById('classes-container');
+    
+    // Garantizamos que los manejadores se añaden cuando el DOM está listo
+    setTimeout(() => {
+      const container = getContainer();
+      if (!container) return;
+      
+      // Aplicar estilos para ocultar scrollbar
+      container.style.cssText += '; -webkit-scrollbar: none;';
+      
+      // Bloqueamos el scroll en body y html para forzar nuestro manejador
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      
+      // Función de captura de eventos wheel - se ejecuta en la fase de captura
+      const handleWheelCapture = (e: WheelEvent) => {
+        // Siempre prevenimos el comportamiento predeterminado excepto en inputs
+        const target = e.target as HTMLElement;
+        const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+        
+        if (!isInputField) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const container = getContainer();
+          if (container) {
+            // Aplicamos velocidad mejorada
+            const scrollFactor = 1.5;
+            container.scrollBy({
+              top: e.deltaY * scrollFactor,
+              behavior: 'smooth'
+            });
+          }
+        }
+      };
+      
+      // Usamos la fase de captura (true) para interceptar antes que otros manejadores
+      window.addEventListener('wheel', handleWheelCapture, { 
+        passive: false,
+        capture: true 
+      });
+      
+      // Anclamos la página al inicio para evitar scroll nativo
+      window.scrollTo(0, 0);
+      
+      // Limpieza
+      return () => {
+        window.removeEventListener('wheel', handleWheelCapture, { capture: true });
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+      };
+    }, 100); // Pequeño retraso para asegurar que el DOM está listo
+  }, []);
 
   const handleClassClick = async (classData: PublicClass) => {
     try {
@@ -126,17 +162,47 @@ export function ClassSelectionStep() {
         return
       }
       
-      // En desktop, solo seleccionamos la clase
+      // En desktop, seleccionamos la clase y navegamos a la URL con el slug/id
       selectClass(classData)
+      
+      // Redireccionar a la URL con el formato /clases/slug/classId
+      if (companySlug) {
+        const newUrl = `/clases/${companySlug}/${classData.id}`
+        await router.push(newUrl)
+      } else {
+        // Si no tenemos el slug por alguna razón, usamos goToStep como fallback
+        goToStep('session')
+      }
     } catch (error) {
       console.error('Error al seleccionar la clase:', error)
     }
   }
 
-  const handleConfirmMobileSelection = () => {
+  const handleConfirmMobileSelection = async () => {
     if (selectedClassForMobile) {
       selectClass(selectedClassForMobile)
       setSelectedClassForMobile(null)
+      
+      // Redireccionar a la URL con el formato /clases/slug/classId
+      if (companySlug) {
+        const newUrl = `/clases/${companySlug}/${selectedClassForMobile.id}`
+        await router.push(newUrl)
+      } else {
+        // Si no tenemos el slug por alguna razón, usamos goToStep como fallback
+        goToStep('session')
+      }
+    }
+  }
+
+  const handleNext = async () => {
+    if (state.selectedClass && companySlug) {
+      try {
+        // Solo realizamos la navegación, el cambio de paso se manejará por la URL
+        const newUrl = `/clases/${companySlug}/${state.selectedClass.id}`
+        await router.push(newUrl)
+      } catch (error) {
+        console.error('Error durante la navegación:', error)
+      }
     }
   }
 
@@ -203,15 +269,15 @@ export function ClassSelectionStep() {
   }
 
   return (
-    <StepContainer stepId="class-selection" centered={false}>
-      <div className="w-full max-w-3xl mx-auto px-5 sm:px-6 lg:px-0">
-        <div className="space-y-6">
+    <StepContainer stepId="class-selection" centered={false} className="px-4 sm:px-[var(--padding-container-tablet)] lg:px-[var(--padding-container-desktop)]">
+      <div className="w-full max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
+        <div className="space-y-6 flex-none">
           {/* Encabezado */}
           <div className="text-left space-y-1.5">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-gray-900">
               Elige tu clase
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               Selecciona la clase a la que deseas asistir
             </p>
           </div>
@@ -252,18 +318,17 @@ export function ClassSelectionStep() {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={cn(
-                  "px-4 py-2.5 rounded-lg",
+                  "p-2.5 rounded-lg",
                   "border border-gray-200",
-                  "text-sm font-medium",
-                  "flex items-center gap-2",
+                  "flex items-center justify-center",
                   "transition-colors duration-200",
                   showFilters 
                     ? "bg-gray-100 text-gray-900 border-gray-300"
                     : "bg-white text-gray-700 hover:border-gray-300"
                 )}
+                aria-label="Mostrar filtros"
               >
-                <IconFilter className="w-4 h-4" />
-                <span>Filtros</span>
+                <IconFilter className="w-5 h-5" />
               </button>
             </div>
 
@@ -356,8 +421,25 @@ export function ClassSelectionStep() {
             )}
           </div>
 
-          {/* Lista de clases filtradas */}
-          <div className="space-y-4">
+          {/* Lista de clases filtradas - Con scroll y margen inferior */}
+          <div 
+            className="space-y-4 overflow-y-auto pr-0 sm:pr-2 pb-12 relative flex-1" 
+            id="classes-container"
+            style={{
+              height: 'auto',
+              maxHeight: 'calc(80vh - 80px)', // Reducimos 80px para dejar margen inferior
+              minHeight: '550px',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              marginBottom: '80px' // Margen inferior explícito
+            }}
+          >
+            {/* Degradado sutil en la parte superior del contenedor */}
+            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
+            
+            {/* Degradado sutil en la parte inferior del contenedor */}
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
+            
             {filteredClasses.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-sm text-gray-500">
@@ -376,35 +458,19 @@ export function ClassSelectionStep() {
                       "w-full rounded-xl",
                       "border",
                       isSelected 
-                        ? "border-gray-300 bg-gray-50/80 ring-1 ring-gray-200"
-                        : "border-gray-100 hover:border-gray-200 bg-white",
+                        ? "border-gray-400"
+                        : "border-gray-200 hover:border-gray-300",
                       "transition-all duration-200",
                       "relative overflow-hidden",
-                      "sm:h-[250px]"
+                      "sm:h-[250px]",
+                      "cursor-pointer", // Añadir cursor pointer para indicar que es clickable
+                      "bg-transparent" // Sin fondo
                     )}
+                    onClick={() => handleClassClick(classItem)} // Hacer todo el componente clickable
                   >
                     <div className="flex flex-col sm:flex-row h-full">
-                      {/* Imagen de la clase - contenedor del mismo tamaño, imagen más pequeña */}
-                      <div className={cn(
-                        "relative",
-                        "sm:w-[200px] shrink-0",
-                        "h-[160px] sm:h-full",
-                        "flex items-center justify-center", // Centrar contenido
-                        "bg-transparent" // Fondo sutil para el área sin imagen
-                      )}>
-                        <div className="relative w-24 h-24"> {/* Contenedor fijo para la imagen */}
-                          <Image
-                            src={getClassImage(index)}
-                            alt={classItem.title}
-                            fill
-                            className="object-contain"
-                            priority={index < 3}
-                          />
-                        </div>
-                      </div>
-
                       {/* Contenido con padding consistente */}
-                      <div className="flex-1 min-w-0 p-5 sm:p-6 flex flex-col justify-between">
+                      <div className="flex-1 min-w-0 p-3 sm:p-5 md:p-6 flex flex-col justify-between">
                         <div className="space-y-3 sm:space-y-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="space-y-1 flex-1">
@@ -416,18 +482,7 @@ export function ClassSelectionStep() {
                               </p>
                             </div>
 
-                            {/* Botón Seleccionar (solo desktop) */}
-                            <button
-                              onClick={() => handleClassClick(classItem)}
-                              className={cn(
-                                "hidden sm:block",
-                                "text-sm font-medium",
-                                "text-gray-900 hover:text-gray-700",
-                                "transition-colors"
-                              )}
-                            >
-                              Seleccionar
-                            </button>
+                            {/* El botón "Seleccionar" se ha eliminado ya que todo el componente es clickable */}
                           </div>
 
                           {/* Descripción con "ver más" en desktop */}
@@ -459,7 +514,7 @@ export function ClassSelectionStep() {
                             {classItem.instructor && (
                               <div className="flex items-center gap-1.5">
                                 <span className="text-gray-500">Profesor:</span>
-                                <span className="font-medium text-gray-700">{classItem.instructor}</span>
+                                <span className="text-gray-700">{classItem.instructor}</span>
                               </div>
                             )}
                             {classItem.branchInfo && (
@@ -467,58 +522,80 @@ export function ClassSelectionStep() {
                                 <span className="text-gray-300">•</span>
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-gray-500">Sede:</span>
-                                  <span className="font-medium text-gray-700">{classItem.branchInfo.name}</span>
+                                  <span className="text-gray-700">{classItem.branchInfo.name}</span>
                                 </div>
                               </>
                             )}
                           </div>
+
+                          {/* Días de clase */}
+                          <div className="flex items-center gap-1.5 text-sm">
+                            <span className="text-gray-500">Días:</span>
+                            <span className="text-gray-700">
+                              {classItem.schedule.daysOfWeek.join(', ')}
+                            </span>
+                          </div>
                         </div>
 
-                        {/* Días de clase */}
-                        <div className="flex items-center gap-1.5 text-sm">
-                          <span className="text-gray-500">Días:</span>
-                          <span className="font-medium text-gray-700">
-                            {classItem.schedule.daysOfWeek.join(', ')}
-                          </span>
-                        </div>
+                        {/* Área clickeable para móvil */}
+                        <button
+                          onClick={() => handleClassClick(classItem)}
+                          className="sm:hidden w-full h-full absolute inset-0"
+                          aria-label={`Seleccionar ${classItem.title}`}
+                        />
                       </div>
                     </div>
-
-                    {/* Área clickeable para móvil */}
-                    <button
-                      onClick={() => handleClassClick(classItem)}
-                      className="sm:hidden w-full h-full absolute inset-0"
-                      aria-label={`Seleccionar ${classItem.title}`}
-                    />
                   </div>
                 )
               })
             )}
           </div>
         </div>
-      </div>
 
-      {/* Mobile Drawer */}
-      <MobileDrawer
-        isOpen={!!selectedClassForMobile}
-        onClose={() => setSelectedClassForMobile(null)}
-        imageUrl="/images/Miroodles - Sticker.png"
-      >
-        {selectedClassForMobile && (
-          <div className="space-y-6">
-            {/* Información de la clase */}
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+        {/* Mobile Drawer */}
+        <MobileDrawer
+          isOpen={!!selectedClassForMobile}
+          onClose={() => setSelectedClassForMobile(null)}
+          title="Detalles de la clase"
+          className="px-0 py-0"
+          footer={
+            selectedClassForMobile && (
+              <button
+                onClick={handleConfirmMobileSelection}
+                className={cn(
+                  "w-full px-4 py-3 rounded-xl",
+                  "bg-gray-900 text-white",
+                  "text-sm font-medium",
+                  "transition-all duration-200",
+                  "hover:bg-gray-800",
+                  "flex items-center justify-center gap-2"
+                )}
+              >
+                <span>Seleccionar esta clase</span>
+                <IconChevronRight size={16} className="text-white/70" />
+              </button>
+            )
+          }
+        >
+          {selectedClassForMobile && (
+            <div className="space-y-6">
+              {/* Información de la clase */}
+              <div className="space-y-4">
+                {/* Título */}
+                <h3 className="text-xl font-semibold text-gray-900">
                   {selectedClassForMobile.title}
                 </h3>
+
+                {/* Descripción */}
                 {selectedClassForMobile.description && (
-                  <div className="mt-2">
-                    <p className={cn(
-                      "text-sm text-gray-600",
-                      !expandedDescriptions.has(selectedClassForMobile.id) && "line-clamp-4"
-                    )}>
-                      {selectedClassForMobile.description}
+                  <div>
+                    <p className="text-gray-600 text-sm">
+                      {expandedDescriptions.has(selectedClassForMobile.id)
+                        ? selectedClassForMobile.description
+                        : selectedClassForMobile.description.length > 250
+                          ? selectedClassForMobile.description.slice(0, 250) + '...'
+                          : selectedClassForMobile.description
+                      }
                     </p>
                     {selectedClassForMobile.description.length > 250 && (
                       <button
@@ -530,63 +607,49 @@ export function ClassSelectionStep() {
                     )}
                   </div>
                 )}
-              </div>
 
-              <div className="flex flex-wrap gap-3 text-sm">
-                <span className="text-gray-600">
-                  {selectedClassForMobile.is_recurring ? 'Clase recurrente' : 'Clase única'}
-                </span>
-                {selectedClassForMobile.branchInfo && (
-                  <>
-                    <span className="text-gray-300">•</span>
-                    <span className="text-gray-600">
-                      Sede: {selectedClassForMobile.branchInfo.name}
-                    </span>
-                  </>
-                )}
-              </div>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <span className="text-gray-600">
+                    {selectedClassForMobile.is_recurring ? 'Clase recurrente' : 'Clase única'}
+                  </span>
+                  {selectedClassForMobile.branchInfo && (
+                    <>
+                      <span className="text-gray-300">•</span>
+                      <span className="text-gray-600">
+                        Sede: {selectedClassForMobile.branchInfo.name}
+                      </span>
+                    </>
+                  )}
+                </div>
 
-              {/* Días de clase */}
-              <div className="pt-4 border-t border-gray-100">
-                <h4 className="text-sm font-medium text-gray-900 mb-2">
-                  Días de clase
-                </h4>
-                <p className="text-sm text-gray-600">
-                  {selectedClassForMobile.schedule.daysOfWeek.join(', ')}
-                </p>
-              </div>
-
-              {/* Instructor */}
-              {selectedClassForMobile.instructor && (
+                {/* Días de clase */}
                 <div className="pt-4 border-t border-gray-100">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">
-                    Instructor
+                    Días de clase
                   </h4>
                   <p className="text-sm text-gray-600">
-                    {selectedClassForMobile.instructor}
+                    {selectedClassForMobile.schedule.daysOfWeek.join(', ')}
                   </p>
                 </div>
-              )}
-            </div>
 
-            {/* Botón de confirmación */}
-            <button
-              onClick={handleConfirmMobileSelection}
-              className={cn(
-                "w-full px-4 py-3 rounded-xl",
-                "bg-gray-900 text-white",
-                "text-sm font-medium",
-                "transition-all duration-200",
-                "hover:bg-gray-800",
-                "flex items-center justify-center gap-2"
-              )}
-            >
-              <span>Seleccionar esta clase</span>
-              <IconChevronRight size={16} className="text-white/70" />
-            </button>
-          </div>
-        )}
-      </MobileDrawer>
+                {/* Instructor */}
+                {selectedClassForMobile.instructor && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Instructor
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {selectedClassForMobile.instructor}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </MobileDrawer>
+
+        {/* Los botones de navegación se han eliminado para mejorar la experiencia de usuario */}
+      </div>
     </StepContainer>
   )
-} 
+}

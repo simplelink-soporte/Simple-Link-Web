@@ -1,19 +1,19 @@
 "use client"
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useClassRegistration } from './context'
 import { useClasses } from './hooks'
 import { StepRenderer } from './steps/StepRenderer'
-import { useClassRegistration } from './context'
 import { LoadingSpinner } from './shared/LoadingSpinner'
 import { ErrorMessage } from './shared/ErrorMessage'
 import { StepContainer } from './shared/StepContainer'
-import { StepNavigation } from './shared/StepNavigation'
-import type { Step } from './types/registration'
+import { LoadingState } from './shared/LoadingState'
+import type { Step } from './context/ClassRegistrationContext'
 import { useRouter } from 'next/navigation'
 import { LinkService } from './services/linkService'
 import { cn } from '@/lib/utils'
 import { NoCreditsClass } from './steps/noCreditsClass'
-import { LoadingState } from './shared/LoadingState'
+import { StepNavigation } from './shared/StepNavigation'
 
 const linkService = new LinkService()
 
@@ -25,6 +25,51 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
   const { state, isLoading, organization, goToStep, dispatch, selectClass } = useClassRegistration()
   const { classes = [], isLoading: isLoadingClasses } = useClasses(organization?.id || '')
   const router = useRouter()
+  // Estado para detectar si es un dispositivo móvil
+  const [isMobile, setIsMobile] = useState(false)
+  // Estado para rastrear la vista actual del SummaryStep en móvil
+  const [summaryMobileView, setSummaryMobileView] = useState<'details' | 'payment'>('details')
+
+  // Efecto para detectar si es un dispositivo móvil
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    // Verificar de inmediato
+    checkIsMobile()
+    
+    // Configurar listener para cambios de tamaño
+    window.addEventListener('resize', checkIsMobile)
+    
+    return () => {
+      window.removeEventListener('resize', checkIsMobile)
+    }
+  }, [])
+  
+  // Efecto para rastrear cambios en el localStorage para summaryStepMobileView
+  useEffect(() => {
+    const checkMobileView = () => {
+      try {
+        const storedView = localStorage.getItem('summaryStepMobileView')
+        if (storedView === 'details' || storedView === 'payment') {
+          setSummaryMobileView(storedView)
+        }
+      } catch (error) {
+        console.warn('Error al leer summaryStepMobileView de localStorage:', error)
+      }
+    }
+    
+    // Verificar de inmediato
+    checkMobileView()
+    
+    // Configurar un intervalo para verificar periódicamente
+    const interval = setInterval(checkMobileView, 300)
+    
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
 
   // Efecto para manejar el acceso directo a una clase
   useEffect(() => {
@@ -35,7 +80,8 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
           // Solo activamos skipPackage si accedemos directamente a una clase
           dispatch({ type: 'SET_SKIP_PACKAGE', payload: true })
           await selectClass(selectedClass)
-          dispatch({ type: 'SET_STEP', payload: 'session' })
+          // Modificar para ir al paso de sesiones directamente
+          dispatch({ type: 'SET_STEP', payload: 'session' as Step })
         }
       }
     }
@@ -135,8 +181,9 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
         config.onNext = () => goToStep('summary')
         config.onBack = async () => {
           try {
-            // Primero obtenemos el slug de la empresa
-            if (selectedClassId && organization?.id) {
+            // Si venimos de un enlace directo, vamos al paso de clases
+            if (organization?.id) {
+              // Navegación normal al paso de clases
               const companyLink = await linkService.getCompanyLink(organization.id)
               if (!companyLink?.slug) {
                 console.error('No se encontró el slug de la organización')
@@ -159,7 +206,7 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
       case 'summary':
         config.onBack = () => goToStep('session')
         // El onNext se maneja en el SummaryStep a través del evento create-class-reservation
-        config.nextLabel = 'Confirmar reserva'
+        config.nextLabel = isMobile && summaryMobileView === 'details' ? 'Continuar' : 'Confirmar reserva'
         break
       case 'confirmation':
         config.showNext = false
@@ -179,47 +226,27 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
   // Si el usuario no tiene créditos
   if (state.step === 'noCredits') {
     return (
-      <div className={cn(
-        "relative min-h-screen",
-        "w-full",
-        "flex flex-col",
-        "overflow-hidden"
-      )}>
-        <div className={cn(
-          "flex-1",
-          // Evitamos el overflow-y-auto aquí para evitar duplicación de scroll
-          "overflow-hidden"
-        )}>
-          <NoCreditsClass />
-        </div>
+      <div className="h-full overflow-hidden relative">
+        <NoCreditsClass />
       </div>
     )
   }
 
   return (
-    <div className={cn(
-      "relative min-h-screen",
-      "w-full",
-      "flex flex-col",
-      "overflow-hidden"
-    )}>
-      <div className={cn(
-        "flex-1",
-        // Evitamos el overflow-y-auto aquí para evitar duplicación de scroll
-        "overflow-hidden"
-      )}>
-        <StepRenderer />
-      </div>
-
-      {/* Navegación entre pasos */}
-      <StepNavigation
-        onNext={stepConfig.onNext}
-        onBack={stepConfig.onBack}
-        nextLabel={stepConfig.nextLabel}
-        showBack={stepConfig.showBack}
-        showNext={stepConfig.showNext}
-        isNextDisabled={stepConfig.isNextDisabled}
-      />
+    <div className="h-full overflow-hidden relative">
+      <StepRenderer />
+      {['auth', 'package', 'session', 'summary', 'payment', 'confirmation', 'noCredits'].includes(state.step) && (
+        <div className="mt-8">
+          <StepNavigation
+            onNext={stepConfig.onNext}
+            onBack={stepConfig.onBack}
+            nextLabel={stepConfig.nextLabel}
+            showBack={stepConfig.showBack}
+            showNext={stepConfig.showNext}
+            isNextDisabled={stepConfig.isNextDisabled}
+          />
+        </div>
+      )}
     </div>
   )
 }

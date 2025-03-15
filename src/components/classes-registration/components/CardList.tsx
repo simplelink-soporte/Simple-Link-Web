@@ -152,12 +152,12 @@ export function CardList({
   const handleCardSelect = (card: StoredCard) => {
     console.log('[CardList] Seleccionando tarjeta:', card.id)
     try {
+      // Detener posible propagación de eventos que pueda causar re-renders no deseados
       // Propagar la selección al componente padre
       onSelect(card)
-      return true
+      // No retornamos nada para evitar comportamientos inesperados
     } catch (error) {
       console.error('[CardList] Error al seleccionar tarjeta:', error)
-      return false
     }
   }
 
@@ -178,12 +178,13 @@ export function CardList({
       animate={isExpanded ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "overflow-hidden rounded-lg border mt-1",
-        "shadow-none",
+        "fixed inset-x-4 sm:static sm:w-full z-[100] mt-1",
+        "overflow-hidden rounded-lg border",
+        "shadow-sm",
         "bg-white border-gray-200"
       )}
     >
-      <div className="py-3 px-2">
+      <div className="py-3 px-2 max-h-[300px] overflow-y-auto scrollbar-hide">
         {isLoading ? (
           <div className="flex items-center justify-center py-4">
             <Loader2 className="h-5 w-5 animate-spin text-gray-500" />

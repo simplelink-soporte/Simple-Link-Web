@@ -37,14 +37,15 @@ export function StepContainer({
       className={cn(
         // Layout base
         "w-full",
-        // Establecemos una altura fija para que el scroll sea dentro del contenedor
-        "h-[calc(100vh-var(--user-badge-height)-var(--navigation-height))]",
+        // Establecemos altura diferente según si está centrado o no
+        centered 
+          ? "h-[calc(100vh-var(--user-badge-height)-var(--navigation-height))]" 
+          : "min-h-[calc(100vh-var(--user-badge-height)-var(--navigation-height))]",
         "max-w-[var(--container-default)]",
         // Centrado
         "mx-auto",
-        // Habilitamos el scroll en este contenedor específico con scrollbar-none
-        // que está bien definida en globals.css
-        "overflow-y-auto scrollbar-none",
+        // Ajustamos el overflow basado en si está centrado o no
+        centered ? "overflow-hidden" : "overflow-visible",
         // Padding horizontal responsivo
         "px-[var(--padding-container-mobile)]",
         "sm:px-[var(--padding-container-tablet)]",

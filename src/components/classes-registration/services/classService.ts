@@ -233,9 +233,9 @@ export class ClassService {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
-    // Fecha límite para mostrar sesiones (1 semana hacia adelante)
-    const oneWeekFromNow = new Date(today)
-    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7)
+    // Fecha límite para mostrar sesiones (30 días hacia adelante)
+    const thirtyDaysFromNow = new Date(today)
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
 
     // Para cada día en el horario
     days.forEach(dayNumber => {
@@ -263,9 +263,9 @@ export class ClassService {
           sessionDate.setDate(sessionDate.getDate() + 7)
         }
         
-        // Verificar si la sesión está dentro del rango de tiempo deseado (hasta una semana adelante)
-        if (sessionDate > oneWeekFromNow) {
-          return // No incluir esta sesión si está más allá de una semana
+        // Verificar si la sesión está dentro del rango de tiempo deseado (hasta 30 días adelante)
+        if (sessionDate > thirtyDaysFromNow) {
+          return // No incluir esta sesión si está más allá de 30 días
         }
 
         // Crear una sesión por cada cancha en el slot

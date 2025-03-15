@@ -22,8 +22,6 @@ import { ClassService } from '../services/classService'
 import { useRouter } from 'next/navigation'
 import throttle from 'lodash.throttle'
 
-const SESSIONS_PER_PAGE = 4
-
 const classService = new ClassService()
 
 // Estado para controlar la disponibilidad de sesiones
@@ -76,7 +74,6 @@ export function SessionStep() {
   // 1. Estados y variables
   const [isInitializing, setIsInitializing] = useState(true)
   const [filteredSessions, setFilteredSessions] = useState<ClassSession[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
   const [sessionQuery, setSessionQuery] = useState('')
   const [selectedSessionForMobile, setSelectedSessionForMobile] = useState<ClassSession | null>(null)
   const [packagesAreValid, setPackagesAreValid] = useState<boolean | null>(null)
@@ -188,16 +185,51 @@ export function SessionStep() {
     state.selectedClass?.id // Solo reinicializar si cambia la clase seleccionada
   ])
 
-  // Modificar la función de selección de sesión para eliminar la verificación adicional
-  const handleSessionSelect = useCallback(async (sessionId: string) => {
-    // Buscar la sesión en el estado actual
-    if (state.selectedClass) {
-      const session = state.selectedClass.sessions.find(s => s.id === sessionId)
-      
-      if (session) {
-        // Verificar la disponibilidad utilizando los datos ya cargados
+  // 5. Calcular variables
+  const allSessions = useMemo(() => {
+    console.log('Sessions en state:', state.selectedClass?.sessions)
+    if (!state.selectedClass?.sessions) return []
+    return state.selectedClass.sessions
+  }, [state.selectedClass?.sessions])
+
+  // 6. Funciones de utilidad
+  // Hook personalizado para detectar dispositivo móvil
+  const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+      const checkIsMobile = () => {
+        setIsMobile(window.innerWidth < 640)
+      }
+
+      // Verificar inicialmente
+      checkIsMobile()
+
+      // Agregar listener para cambios de tamaño
+      window.addEventListener('resize', checkIsMobile)
+
+      // Limpiar listener
+      return () => window.removeEventListener('resize', checkIsMobile)
+    }, [])
+
+    return isMobile
+  }
+
+  // Usar el hook en el componente
+  const isMobile = useIsMobile()
+
+  // Modificar la función handleSessionClick para usar el nuevo hook y avanzar automáticamente
+  const handleSessionClick = useCallback((session: ClassSession) => {
+    if (isMobile) {
+      // En móvil, abrimos el modal
+      setSelectedSessionForMobile(session)
+    } else {
+      // En desktop, manejamos la selección/deselección
+      if (state.selectedSessions.includes(session.id)) {
+        deselectSession(session.id)
+      } else {
+        // Verificar disponibilidad primero
         if (session.spotsLeft <= 0) {
-          // Mostrar mensaje si no hay disponibilidad según datos ya cargados
           toast({
             title: "Sesión no disponible",
             description: `Esta sesión está completa (0 plazas disponibles)`,
@@ -206,17 +238,81 @@ export function SessionStep() {
           return
         }
         
-        // Si hay disponibilidad según los datos cargados, continuar con la selección
-        selectSession(sessionId)
+        // Deseleccionar sesiones previas
+        const currentlySelected = [...state.selectedSessions];
+        currentlySelected.forEach(id => {
+          if (id !== session.id) {
+            deselectSession(id);
+          }
+        });
         
-        // Opcional: mostrar mensaje informativo
+        // Seleccionar la nueva sesión
+        selectSession(session.id)
+        
+        // Mostrar mensaje informativo
         toast({
           title: "Sesión seleccionada",
           description: `Plazas disponibles: ${session.spotsLeft}/${session.totalSpots}`,
         })
+        
+        // Avanzar al siguiente paso después de un breve retraso
+        // Usar el siguiente paso según la configuración en StepNavigation.tsx
+        setTimeout(() => {
+          // Siguiendo STEP_CONFIG en StepNavigation.tsx, de 'session' vamos a 'summary'
+          goToStep('summary')
+        }, 300)
       }
     }
-  }, [state.selectedClass, selectSession, toast])
+  }, [isMobile, state.selectedSessions, deselectSession, selectSession, toast, goToStep])
+
+  // Función para confirmar selección en móvil
+  const handleMobileConfirm = useCallback(() => {
+    if (!selectedSessionForMobile) {
+      return
+    }
+
+    if (state.selectedSessions.includes(selectedSessionForMobile.id)) {
+      deselectSession(selectedSessionForMobile.id)
+    } else {
+      // Verificar disponibilidad primero
+      if (selectedSessionForMobile.spotsLeft <= 0) {
+        toast({
+          title: "Sesión no disponible",
+          description: `Esta sesión está completa (0 plazas disponibles)`,
+          variant: "destructive"
+        })
+        setSelectedSessionForMobile(null)
+        return
+      }
+      
+      // Deseleccionar sesiones previas
+      const currentlySelected = [...state.selectedSessions];
+      currentlySelected.forEach(id => {
+        if (id !== selectedSessionForMobile.id) {
+          deselectSession(id);
+        }
+      });
+      
+      // Seleccionar la nueva sesión
+      selectSession(selectedSessionForMobile.id)
+      
+      // Cerrar el modal
+      setSelectedSessionForMobile(null)
+      
+      // Mostrar mensaje informativo
+      toast({
+        title: "Sesión seleccionada",
+        description: `Plazas disponibles: ${selectedSessionForMobile.spotsLeft}/${selectedSessionForMobile.totalSpots}`,
+      })
+      
+      // Avanzar al siguiente paso después de un breve retraso
+      // Usar el siguiente paso según la configuración en StepNavigation.tsx
+      setTimeout(() => {
+        // Siguiendo STEP_CONFIG en StepNavigation.tsx, de 'session' vamos a 'summary'
+        goToStep('summary')
+      }, 300)
+    }
+  }, [selectedSessionForMobile, state.selectedSessions, deselectSession, selectSession, toast, goToStep])
 
   // Actualizar handleNext para incluir un indicador visual más claro durante la verificación
   const handleNext = useCallback(async () => {
@@ -265,7 +361,8 @@ export function SessionStep() {
       }
       
       // Todo está bien, continuar al siguiente paso
-      goToStep('payment')
+      // Usar el siguiente paso según la configuración en StepNavigation.tsx
+      goToStep('summary')
     } catch (error) {
       console.error('❌ Error al verificar disponibilidad final:', error)
       toast({
@@ -279,76 +376,6 @@ export function SessionStep() {
       setIsLoading(false)
     }
   }, [goToStep, state.selectedSessions.length, state.selectedClass, state.selectedSessions, updateAvailabilityInfo, toast])
-
-  // 5. Calcular variables
-  const currentSessions = useMemo(() => {
-    console.log('Sessions en state:', state.selectedClass?.sessions)
-    if (!state.selectedClass?.sessions) return []
-    const startIndex = (currentPage - 1) * SESSIONS_PER_PAGE
-    const endIndex = startIndex + SESSIONS_PER_PAGE
-    const sessions = state.selectedClass.sessions.slice(startIndex, endIndex)
-    console.log('Sessions procesadas:', sessions)
-    return sessions
-  }, [state.selectedClass?.sessions, currentPage])
-
-  const totalPages = useMemo(() => {
-    if (!state.selectedClass?.sessions) return 0
-    return Math.ceil(state.selectedClass.sessions.length / SESSIONS_PER_PAGE)
-  }, [state.selectedClass?.sessions])
-
-  // Hook personalizado para detectar dispositivo móvil
-  const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false)
-
-    useEffect(() => {
-      const checkIsMobile = () => {
-        setIsMobile(window.innerWidth < 640)
-      }
-
-      // Verificar inicialmente
-      checkIsMobile()
-
-      // Agregar listener para cambios de tamaño
-      window.addEventListener('resize', checkIsMobile)
-
-      // Limpiar listener
-      return () => window.removeEventListener('resize', checkIsMobile)
-    }, [])
-
-    return isMobile
-  }
-
-  // Usar el hook en el componente
-  const isMobile = useIsMobile()
-
-  // Modificar la función handleSessionClick para usar el nuevo hook
-  const handleSessionClick = useCallback((session: ClassSession) => {
-    if (isMobile) {
-      // En móvil, abrimos el modal
-      setSelectedSessionForMobile(session)
-    } else {
-      // En desktop, manejamos la selección/deselección
-      if (state.selectedSessions.includes(session.id)) {
-        deselectSession(session.id)
-      } else {
-        handleSessionSelect(session.id)
-      }
-    }
-  }, [isMobile, state.selectedSessions, deselectSession, handleSessionSelect])
-
-  // Función para confirmar selección en móvil
-  const handleMobileConfirm = useCallback(() => {
-    if (!selectedSessionForMobile) {
-      return
-    }
-
-    if (state.selectedSessions.includes(selectedSessionForMobile.id)) {
-      deselectSession(selectedSessionForMobile.id)
-    } else {
-      handleSessionSelect(selectedSessionForMobile.id)
-    }
-    setSelectedSessionForMobile(null)
-  }, [selectedSessionForMobile, state.selectedSessions, deselectSession, handleSessionSelect])
 
   // 7. Funciones de formato
   const formatSessionDate = useCallback((dateStr: string) => {
@@ -365,6 +392,34 @@ export function SessionStep() {
       month: monthName.charAt(0).toUpperCase() + monthName.slice(1)
     }
   }, [])
+
+  // Renderización de disponibilidad de cupos - solo la función
+  const renderAvailability = (session: ClassSession) => {
+    // Si estamos cargando (tanto inicial como actualizaciones)
+    if (isLoadingAvailability) {
+      return (
+        <div className="inline-flex items-center">
+          <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-1" />
+          <span className="ml-1 text-xs text-gray-500">Verificando...</span>
+        </div>
+      )
+    }
+    
+    // Mostrar la disponibilidad real
+    const spotsLeft = session.spotsLeft;
+    const isFewSpots = spotsLeft <= 3 && spotsLeft > 0;
+    const isNoSpots = spotsLeft === 0;
+    
+    return (
+      <p className={cn(
+        "text-xs",
+        isFewSpots ? "text-amber-600" : (isNoSpots ? "text-red-600" : "text-gray-600"),
+        "font-medium"
+      )}>
+        ({spotsLeft} {spotsLeft === 1 ? 'cupo' : 'cupos'})
+      </p>
+    )
+  }
 
   // Cargar disponibilidad de sesiones
   useEffect(() => {
@@ -403,33 +458,47 @@ export function SessionStep() {
     fetchAvailability()
   }, [state.selectedClass, updateAvailabilityInfo])
 
-  // Renderización de disponibilidad de cupos - solo la función
-  const renderAvailability = (session: ClassSession) => {
-    // Si estamos cargando (tanto inicial como actualizaciones)
-    if (isLoadingAvailability) {
-      return (
-        <div className="inline-flex items-center">
-          <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-1" />
-          <span className="ml-1 text-xs text-gray-500">Verificando...</span>
-        </div>
-      )
-    }
+  // Redirigir scroll al contenedor de sesiones
+  useEffect(() => {
+    const getContainer = () => document.getElementById('sessions-container');
     
-    // Mostrar la disponibilidad real
-    const spotsLeft = session.spotsLeft;
-    const isFewSpots = spotsLeft <= 3 && spotsLeft > 0;
-    const isNoSpots = spotsLeft === 0;
-    
-    return (
-      <p className={cn(
-        "text-xs",
-        isFewSpots ? "text-amber-600" : (isNoSpots ? "text-red-600" : "text-gray-600"),
-        "font-medium"
-      )}>
-        ({spotsLeft} {spotsLeft === 1 ? 'cupo' : 'cupos'})
-      </p>
-    )
-  }
+    setTimeout(() => {
+      const container = getContainer();
+      if (!container) return;
+      
+      // Ocultamos la barra pero mantenemos el scroll funcional
+      container.style.cssText += '; scrollbar-width: none; -ms-overflow-style: none;';
+      container.style.cssText += '; -webkit-overflow-scrolling: touch;';
+      
+      // Ocultar la barra de scroll completamente
+      const style = document.createElement('style');
+      style.textContent = `
+        #sessions-container::-webkit-scrollbar {
+          width: 0px;
+          display: none;
+          background: transparent;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      const handleWheel = (e: WheelEvent) => {
+        const container = getContainer();
+        if (container && container.contains(e.target as Node)) {
+          // Permitimos que el navegador maneje el scroll naturalmente
+        }
+      };
+      
+      window.addEventListener('wheel', handleWheel, { 
+        passive: true
+      });
+      
+      return () => {
+        window.removeEventListener('wheel', handleWheel);
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+      };
+    }, 100);
+  }, []);
 
   // 8. Early returns
   if (isInitializing || isLoadingPackage) {
@@ -469,9 +538,9 @@ export function SessionStep() {
 
   // 10. Render principal
   return (
-    <StepContainer stepId="session-selection" centered={false}>
-      <div className="w-full max-w-3xl mx-auto px-5 sm:px-6 lg:px-0">
-        <div className="pt-8 space-y-8">
+    <StepContainer stepId="session-selection" centered={false} className="px-4 sm:px-[var(--padding-container-tablet)] lg:px-[var(--padding-container-desktop)]">
+      <div className="w-full max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
+        <div className="space-y-6 flex-none">
           {/* Imagen decorativa */}
           <div className="flex justify-start">
             <div className="relative w-24 h-24">
@@ -487,44 +556,48 @@ export function SessionStep() {
 
           {/* Encabezado */}
           <div className="space-y-1.5">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-gray-900">
               Elige tus sesiones
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               Selecciona las sesiones a las que deseas asistir
             </p>
           </div>
 
-          {/* Información de la clase */}
-          <div className="space-y-1 text-gray-500/80">
-            <p className="text-sm font-medium">
-              {state.selectedClass.title}
-            </p>
-            <div className="flex items-center gap-2 text-xs">
-              <span>{state.selectedClass.is_recurring ? 'Clase recurrente' : 'Clase única'}</span>
-              {state.selectedClass.branchInfo && (
-                <>
-                  <span className="text-gray-300">•</span>
-                  <span>Sede: {state.selectedClass.branchInfo.name}</span>
-                </>
-              )}
-            </div>
-          </div>
+          {/* Información de la clase - Visible solo en desktop */}
+          {!isMobile && (
+            <>
+              <div className="space-y-1 text-gray-500/80">
+                <p className="text-sm font-medium">
+                  {state.selectedClass.title}
+                </p>
+                <div className="flex items-center gap-2 text-xs">
+                  <span>{state.selectedClass.is_recurring ? 'Clase recurrente' : 'Clase única'}</span>
+                  {state.selectedClass.branchInfo && (
+                    <>
+                      <span className="text-gray-300">•</span>
+                      <span>Sede: {state.selectedClass.branchInfo.name}</span>
+                    </>
+                  )}
+                </div>
+              </div>
 
-          {/* Descripción de la clase */}
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600">
-              {displayDescription}
-            </p>
-            {isLongDescription && (
-              <button
-                onClick={() => setShowFullDescription(!showFullDescription)}
-                className="text-xs text-blue-600 hover:text-blue-800"
-              >
-                {showFullDescription ? 'Ver menos' : 'Ver más'}
-              </button>
-            )}
-          </div>
+              {/* Descripción de la clase */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  {displayDescription}
+                </p>
+                {isLongDescription && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    {showFullDescription ? 'Ver menos' : 'Ver más'}
+                  </button>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Información del paquete activo */}
           {activePackage && (
@@ -564,9 +637,27 @@ export function SessionStep() {
             </div>
           )}
 
-          {/* Grid de sesiones */}
-          <div className="space-y-4">
-            {currentSessions.map((session) => {
+          {/* Grid de sesiones - Con scroll optimizado - estructura idéntica a ClassSelectionStep */}
+          <div 
+            className="space-y-4 overflow-y-auto pr-0 sm:pr-2 pb-12 relative flex-1" 
+            id="sessions-container"
+            style={{
+              height: '60vh',
+              maxHeight: 'calc(80vh - 80px)',
+              minHeight: '400px',
+              overflowY: 'auto',
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none', 
+              marginBottom: '60px'
+            }}
+          >
+            {/* Degradado sutil en la parte superior del contenedor */}
+            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
+            
+            {/* Degradado sutil en la parte inferior del contenedor */}
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
+            
+            {allSessions.map((session) => {
               const { dayName, dayNumber, month } = formatSessionDate(session.date)
               const isSelected = state.selectedSessions.includes(session.id)
 
@@ -577,14 +668,16 @@ export function SessionStep() {
                   className={cn(
                     // Estilos base del contenedor
                     "w-full rounded-xl",
-                    "border",
+                    // Usar mismo grosor de borde para evitar movimiento al seleccionar
+                    "border border-solid box-border",
                     isSelected 
-                      ? "border-gray-300 bg-gray-50/80 ring-1 ring-gray-200"
+                      ? "border-black" // Borde negro para elemento seleccionado
                       : "border-gray-100 hover:border-gray-200 bg-white",
-                    "transition-all duration-200",
+                    // Quitar cualquier transición para evitar movimiento
+                    "transition-none",
                     "relative overflow-hidden",
-                    // Accesibilidad
-                    "focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    // Accesibilidad - quitar anillo azul al seleccionar
+                    "focus:outline-none focus:ring-0"
                   )}
                   aria-pressed={isSelected}
                   title={isSelected ? "Sesión seleccionada" : "Seleccionar sesión"}
@@ -660,140 +753,121 @@ export function SessionStep() {
             })}
           </div>
 
-          {/* Paginación */}
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => (
+          {/* Mobile Drawer */}
+          <MobileDrawer
+            isOpen={!!selectedSessionForMobile}
+            onClose={() => setSelectedSessionForMobile(null)}
+            imageUrl="/images/Miroodles - Sticker 3.png"
+            footer={
+              selectedSessionForMobile && (
                 <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={handleMobileConfirm}
                   className={cn(
-                    "w-8 h-8 rounded-lg text-sm font-medium",
-                    "transition-colors duration-200",
-                    currentPage === i + 1
-                      ? "bg-gray-100 text-gray-700"
-                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-600"
+                    "w-full px-4 py-3 rounded-xl",
+                    "bg-gray-900 text-white",
+                    "text-sm font-medium",
+                    "transition-all duration-200",
+                    "hover:bg-gray-800",
+                    "flex items-center justify-center gap-2"
                   )}
                 >
-                  {i + 1}
+                  <span>Seleccionar esta sesión</span>
+                  <IconChevronRight size={16} className="text-white/70" />
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Drawer */}
-        <MobileDrawer
-          isOpen={!!selectedSessionForMobile}
-          onClose={() => setSelectedSessionForMobile(null)}
-          imageUrl="/images/Miroodles - Sticker 3.png"
-        >
-          {selectedSessionForMobile && (
-            <div className="space-y-6">
-              {/* Información de la sesión */}
+              )
+            }
+          >
+            {selectedSessionForMobile && (
               <div className="space-y-4">
-                {/* Fecha y hora */}
-                <div>
-                  {(() => {
-                    const { dayName, dayNumber, month } = formatSessionDate(selectedSessionForMobile.date)
-                    return (
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {dayName}, {dayNumber} de {month}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {selectedSessionForMobile.startTime} - {selectedSessionForMobile.endTime}
-                        </p>
-                      </div>
-                    )
-                  })()}
-                </div>
-
-                {/* Detalles adicionales */}
-                <div className="pt-4 border-t border-gray-100 space-y-4">
-                  {/* Instructor */}
-                  {selectedSessionForMobile.instructor && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 mb-1">
-                        Instructor
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {selectedSessionForMobile.instructor}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Cancha */}
-                  {selectedSessionForMobile.courts && selectedSessionForMobile.courts.length > 0 && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 mb-1">
-                        Cancha
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {selectedSessionForMobile.courts[0].name}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Cupos */}
+                {/* Información de la sesión */}
+                <div className="space-y-4">
+                  {/* Fecha y hora */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      Cupos disponibles
-                    </h4>
-                    {isLoadingAvailability ? (
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-2" />
-                        <span className="text-sm text-gray-500">Verificando disponibilidad...</span>
-                      </div>
-                    ) : (
-                      <p className={cn(
-                        "text-sm",
-                        selectedSessionForMobile.spotsLeft <= 3 && selectedSessionForMobile.spotsLeft > 0 
-                          ? "text-amber-600" 
-                          : (selectedSessionForMobile.spotsLeft === 0 ? "text-red-600" : "text-gray-600"),
-                        selectedSessionForMobile.spotsLeft <= 3 ? "font-medium" : ""
-                      )}>
-                        {selectedSessionForMobile.spotsLeft} {selectedSessionForMobile.spotsLeft === 1 ? 'cupo' : 'cupos'}
-                      </p>
-                    )}
+                    {(() => {
+                      const { dayName, dayNumber, month } = formatSessionDate(selectedSessionForMobile.date)
+                      return (
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {dayName}, {dayNumber} de {month}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {selectedSessionForMobile.startTime} - {selectedSessionForMobile.endTime}
+                          </p>
+                        </div>
+                      )
+                    })()}
                   </div>
 
-                  {/* Precio */}
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      Precio
-                    </h4>
-                    <p className="text-base font-medium text-gray-900">
-                      {typeof selectedSessionForMobile.price === 'number'
-                        ? selectedSessionForMobile.price.toLocaleString('es-AR', {
-                            style: 'currency',
-                            currency: 'ARS',
-                          })
-                        : 'Precio no disponible'
-                      }
-                    </p>
+                  {/* Detalles adicionales */}
+                  <div className="space-y-4">
+                    {/* Instructor */}
+                    {selectedSessionForMobile.instructor && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          Instructor
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {selectedSessionForMobile.instructor}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Cancha */}
+                    {selectedSessionForMobile.courts && selectedSessionForMobile.courts.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          Cancha
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {selectedSessionForMobile.courts[0].name}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Cupos */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        Cupos disponibles
+                      </h4>
+                      {isLoadingAvailability ? (
+                        <div className="flex items-center">
+                          <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-2" />
+                          <span className="text-sm text-gray-500">Verificando disponibilidad...</span>
+                        </div>
+                      ) : (
+                        <p className={cn(
+                          "text-sm",
+                          selectedSessionForMobile.spotsLeft <= 3 && selectedSessionForMobile.spotsLeft > 0 
+                            ? "text-amber-600" 
+                            : (selectedSessionForMobile.spotsLeft === 0 ? "text-red-600" : "text-gray-600"),
+                          selectedSessionForMobile.spotsLeft <= 3 ? "font-medium" : ""
+                        )}>
+                          {selectedSessionForMobile.spotsLeft} {selectedSessionForMobile.spotsLeft === 1 ? 'cupo' : 'cupos'}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Precio */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        Precio
+                      </h4>
+                      <p className="text-base font-medium text-gray-900">
+                        {typeof selectedSessionForMobile.price === 'number'
+                          ? selectedSessionForMobile.price.toLocaleString('es-AR', {
+                              style: 'currency',
+                              currency: 'ARS',
+                            })
+                          : 'Precio no disponible'
+                        }
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Botón de confirmación */}
-              <button
-                onClick={handleMobileConfirm}
-                className={cn(
-                  "w-full px-4 py-3 rounded-xl",
-                  "bg-gray-900 text-white",
-                  "text-sm font-medium",
-                  "transition-all duration-200",
-                  "hover:bg-gray-800",
-                  "flex items-center justify-center gap-2"
-                )}
-              >
-                <span>Seleccionar esta sesión</span>
-                <IconChevronRight size={16} className="text-white/70" />
-              </button>
-            </div>
-          )}
-        </MobileDrawer>
+            )}
+          </MobileDrawer>
+        </div>
       </div>
     </StepContainer>
   )

@@ -6,10 +6,11 @@ import { format, parseISO, isValid } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cn } from '@/lib/utils'
-import { useClassRegistration, useClassRegistrationDispatch } from '../context/ClassRegistrationContext'
+import { useClassRegistration } from '../context/ClassRegistrationContext'
 import { UserPackageService } from '../services'
 import { StepContainer } from '../shared/StepContainer'
 import { StepHeader } from '../shared/StepSection'
+import { StepNavigation } from '../shared/StepNavigation'
 import { useClassBooking } from '@/hooks/useClassBooking'
 import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -61,6 +62,18 @@ export function SummaryStep() {
   const [showCardMethodsList, setShowCardMethodsList] = useState(false)
   // Estado para controlar la visibilidad del overlay
   const [showOverlay, setShowOverlay] = useState(false)
+  // Estado para controlar la vista actual en dispositivos móviles
+  const [mobileView, setMobileView] = useState<'details' | 'payment'>('details')
+  
+  // Exponemos el estado mobileView para ser utilizado por el componente StepNavigation global
+  // Este efecto actualiza el localStorage cuando cambia mobileView
+  useEffect(() => {
+    try {
+      localStorage.setItem('summaryStepMobileView', mobileView);
+    } catch (error) {
+      console.warn('No se pudo guardar el estado mobileView en localStorage', error);
+    }
+  }, [mobileView]);
   
   // Obtenemos la organización del contexto específico de cliente
   const { organization } = useClientOrganizationContext()
@@ -168,6 +181,9 @@ export function SummaryStep() {
   const handleUpdatePaymentMethod = useCallback(async (method: CardPaymentMethod) => {
     console.log('📢 Actualizando método de pago:', method)
     setSelectedCardMethod(method)
+    
+    // Una vez seleccionado el método, también aseguramos que la lista permanezca cerrada
+    setShowCardMethodsList(false)
     
     // Si el método es tarjeta, actualizar también el método de pago general
     if (method.type === 'card' && state.selectedPayment !== 'card') {
@@ -405,8 +421,15 @@ export function SummaryStep() {
   // Usar useCallback para crear una función estable
   const handleCreateReservationEvent = useCallback(() => {
     console.log('📣 Evento de creación de reserva recibido')
-    handleCreateReservation()
-  }, [handleCreateReservation]) // Dependencia estable gracias al useCallback anterior
+    // Solo avanzar a la creación de reserva si estamos en la vista de pago en móvil
+    // o si estamos en desktop
+    if (!isMobile || mobileView === 'payment') {
+      handleCreateReservation()
+    } else {
+      // Si estamos en la vista de detalles en móvil, cambiar a la vista de pago
+      setMobileView('payment')
+    }
+  }, [handleCreateReservation, isMobile, mobileView]) // Añadimos mobileView como dependencia
   
   useEffect(() => {
     // Escuchar un evento personalizado que se emitirá desde ClassRegistrationForm
@@ -417,6 +440,65 @@ export function SummaryStep() {
       window.removeEventListener('create-class-reservation', handleCreateReservationEvent)
     }
   }, [handleCreateReservationEvent]) // Solo se vuelve a ejecutar si cambia handleCreateReservationEvent
+
+  // Función para manejar el clic del botón de navegación en modo móvil
+  const handleNavigationButtonClick = useCallback(() => {
+    if (isMobile) {
+      if (mobileView === 'details') {
+        // Si estamos en la vista de detalles, cambiamos a la vista de pago
+        setMobileView('payment');
+        return true; // Indicamos que manejamos el evento
+      }
+      // En la vista de pago, dejamos que el manejador normal haga su trabajo
+    }
+    return false; // No manejamos el evento, dejamos que el handler por defecto lo maneje
+  }, [isMobile, mobileView]);
+  
+  // Registrar un evento personalizado para interceptar clics en el botón "Continuar"
+  useEffect(() => {
+    const handleStepButtonClick = (event: Event) => {
+      // Si manejamos el evento, detenemos la propagación
+      if (handleNavigationButtonClick()) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    };
+    
+    // Escuchar eventos de clic en el botón de navegación del paso
+    document.addEventListener('step-navigation-next-click', handleStepButtonClick);
+    
+    return () => {
+      document.removeEventListener('step-navigation-next-click', handleStepButtonClick);
+    };
+  }, [handleNavigationButtonClick]);
+
+  // Función para manejar el clic del botón de volver en modo móvil
+  const handleBackButtonClick = useCallback(() => {
+    if (isMobile && mobileView === 'payment') {
+      // Si estamos en la vista de pago, volvemos a la vista de detalles
+      setMobileView('details');
+      return true; // Indicamos que manejamos el evento
+    }
+    return false; // No manejamos el evento, dejamos que el handler por defecto lo maneje
+  }, [isMobile, mobileView]);
+  
+  // Registrar un evento personalizado para interceptar clics en el botón "Volver"
+  useEffect(() => {
+    const handleStepBackClick = (event: Event) => {
+      // Si manejamos el evento, detenemos la propagación
+      if (handleBackButtonClick()) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    };
+    
+    // Escuchar eventos de clic en el botón de volver del paso
+    document.addEventListener('step-navigation-back-click', handleStepBackClick);
+    
+    return () => {
+      document.removeEventListener('step-navigation-back-click', handleStepBackClick);
+    };
+  }, [handleBackButtonClick]);
 
   // Verificar si el usuario tiene paquetes activos y si son válidos para la clase
   useEffect(() => {
@@ -490,14 +572,14 @@ export function SummaryStep() {
     const [integerPart, decimalPart] = formatted.split('.');
     
     return (
-      <div className="flex flex-col items-center justify-center py-4 mb-4">
+      <div className="flex flex-col items-center justify-center py-5 my-4">
         {/* Título de Precio Total */}
         <p className="text-sm font-semibold mb-2 text-gray-500">
           Precio Total
         </p>
 
         {/* Precio con decimales estilizados */}
-        <p className="text-4xl font-semibold leading-none mb-4 text-gray-900">
+        <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
           €{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
         </p>
 
@@ -742,7 +824,7 @@ export function SummaryStep() {
                 stiffness: 300
               }
             }}
-            className="fixed inset-0 flex items-center justify-center z-50 bg-white/70"
+            className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70"
           >
             <motion.div 
               initial={{ opacity: 0 }}
@@ -788,20 +870,72 @@ export function SummaryStep() {
             className="w-full"
           >
             {isMobile ? (
-              // Layout móvil - una columna
-              <div className="w-full max-w-lg mx-auto space-y-6">
+              // Layout móvil - una columna con dos vistas
+              <div className="w-full max-w-lg mx-auto space-y-6 px-4">
                 <div className="mb-6">
-                  <h2 className="text-xl font-semibold mb-1 text-gray-900">
-                    Finaliza tu reserva
+                  <h2 className="text-2xl font-semibold mb-1 text-gray-900">
+                    {mobileView === 'details' ? '' : ''}
                   </h2>
                   <p className="text-sm text-gray-500">
-                    Configura los detalles de pago para confirmar tu reserva
+                    {mobileView === 'details' 
+                      ? '' 
+                      : ''}
                   </p>
                 </div>
-                <ReservationDetails />
-                <PaymentTypesSection />
-                <CardPaymentSection />
-                <DebugInfo />
+                <AnimatePresence mode="wait">
+                  {mobileView === 'details' ? (
+                    <motion.div
+                      key="details"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <TotalPriceDisplay />
+                      <ReservationDetails />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="payment"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <TotalPriceDisplay />
+                      
+                      {/* Contenedor unificado para la sección de pago similar a ReservationDetails */}
+                      <div className="space-y-4 rounded-lg border border-gray-200 bg-white/60 overflow-hidden">
+                        <div className="p-6 space-y-6">
+                          {/* Título y subtítulo de la sección */}
+                          <div className="flex items-start gap-3">
+                            <div className="hidden sm:flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-md bg-gray-100">
+                              <IconCreditCard className="h-4 w-4 text-gray-500" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="space-y-1 pb-2">
+                                <p className="text-sm font-semibold text-gray-900">
+                                  Finaliza tu reserva
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Configura los detalles de pago para confirmar tu reserva
+                                </p>
+                              </div>
+                              <div className="border-b border-gray-200 my-2" />
+                            </div>
+                          </div>
+                          
+                          {/* Elementos de pago con mejor separación */}
+                          <PaymentTypesSection />
+                          <div className="border-b border-gray-200 my-4" />
+                          <CardPaymentSection />
+                        </div>
+                      </div>
+                      
+                      <DebugInfo />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               // Layout desktop - dos columnas con estilo de DesktopSummaryLayout
@@ -842,6 +976,11 @@ export function SummaryStep() {
       
       {/* Espacio para la navegación (StepNavigation se mostrará al final de la página) */}
       <div className="w-full h-12 md:h-16"></div>
+      
+      <StepNavigation
+        isProcessing={isProcessing}
+        nextLabel="Confirmar reserva"
+      />
     </StepContainer>
   )
 }

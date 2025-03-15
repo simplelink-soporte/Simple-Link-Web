@@ -9,12 +9,16 @@ import { ErrorMessage } from '../shared/ErrorMessage'
 import { StepContainer } from '../shared/StepContainer'
 import { StepHeader, StepSection, StepGrid, StepActions } from '../shared/StepSection'
 import { cn } from '@/lib/utils'
-import type { Organization, ClassPackage } from '../types/models'
+import type { ClassPackage } from '../types/models'
 import Image from 'next/image'
 import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext'
 
 interface PackageSelectionStepProps {
-  organization: Organization
+  organization: {
+    id: string;
+    name: string;
+    [key: string]: any;
+  }
 }
 
 // Aumentamos el número de paquetes por página para mostrar 4 en una vista
@@ -114,8 +118,14 @@ export function PackageSelectionStep({ organization }: PackageSelectionStepProps
 
   return (
     <StepContainer stepId="package-selection" centered={false}>
-      <div className="w-full max-w-3xl mx-auto px-5 sm:px-6 lg:px-0">
-        <div className="space-y-8">
+      <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-0 h-full flex flex-col overflow-hidden">
+        <div className="space-y-8 overflow-y-auto flex-1 pb-12" style={{
+          height: 'auto',
+          maxHeight: 'calc(100vh - 80px)',
+          minHeight: '550px',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}>
           {/* Imagen decorativa */}
           <div className="flex justify-start">
             <div className="relative w-24 h-24">
@@ -131,10 +141,10 @@ export function PackageSelectionStep({ organization }: PackageSelectionStepProps
 
           {/* Encabezado */}
           <div className="text-left space-y-1.5">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-gray-900">
               ¿No tienes un paquete?
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               Si deseas obtener varias clases con un descuento y grandes beneficios.
             </p>
           </div>
