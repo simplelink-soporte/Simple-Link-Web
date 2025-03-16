@@ -265,7 +265,7 @@ export function SessionMoveSection({
           <div className="space-y-2">
             {filteredSessions.map(slot => (
               <div 
-                key={slot.id} 
+                key={`${slot.id}_${slot.startTime}_${slot.endTime}`} 
                 className={cn(
                   "border rounded-md p-2.5 cursor-pointer transition-all",
                   selectedSessionId === slot.id 

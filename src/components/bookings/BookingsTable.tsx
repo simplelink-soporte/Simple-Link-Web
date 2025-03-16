@@ -135,44 +135,15 @@ export function BookingsTable() {
   
   // Transformar las reservas para convertir los horarios
   const transformedBookings = useMemo(() => {
-    if (!bookings || !businessHours?.timezone) return [];
+    if (!bookings) return [];
 
     // Filtrar reservas canceladas
-    const activeBookings = bookings.filter(booking => booking.paymentStatus !== 'cancelled');
-
-    return activeBookings.map(booking => {
-        // Crear objetos DateTime de Luxon para la conversión
-        const startDateTime = DateTime.fromFormat(
-            booking.startTime,
-            'HH:mm:ss',
-            { zone: 'UTC' }
-        ).set({ 
-            year: DateTime.fromISO(booking.date).year,
-            month: DateTime.fromISO(booking.date).month,
-            day: DateTime.fromISO(booking.date).day
-        }).setZone(businessHours.timezone);
-
-        const endDateTime = DateTime.fromFormat(
-            booking.endTime,
-            'HH:mm:ss',
-            { zone: 'UTC' }
-        ).set({ 
-            year: DateTime.fromISO(booking.date).year,
-            month: DateTime.fromISO(booking.date).month,
-            day: DateTime.fromISO(booking.date).day
-        }).setZone(businessHours.timezone);
-
-        // Convertir a la zona horaria de la sede
-        const localStartTime = startDateTime.toFormat('HH:mm');
-        const localEndTime = endDateTime.toFormat('HH:mm');
-
-        return {
-            ...booking,
-            startTime: localStartTime,
-            endTime: localEndTime
-        };
-    });
-}, [bookings, businessHours?.timezone]);
+    return bookings.filter(booking => booking.paymentStatus !== 'cancelled');
+    
+    // Ya no necesitamos convertir los horarios aquí, ya que ahora vienen 
+    // convertidos desde el servicio de consulta bookingQueryService
+    
+  }, [bookings]);
 
   // Obtener las clases usando el hook con caché configurado
   const { 

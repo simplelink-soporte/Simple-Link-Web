@@ -93,13 +93,14 @@ class AvailabilityService {
     
     // Obtener el día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
     const dayOfWeek = date.getDay();
+    const formattedDate = format(date, 'yyyy-MM-dd');
     
     const { data: classes, error } = await supabase
       .from('classes')
       .select('*')
       .eq('branch_id', branchId)
       .eq('status', 'active')
-      .lte('start_date', format(date, 'yyyy-MM-dd'));
+      .lte('start_date', formattedDate);
     
     console.log('AvailabilityService - getClassSchedules - classes raw:', classes);
     
@@ -112,9 +113,31 @@ class AvailabilityService {
       return [];
     }
     
-    // Filtrar las clases que tienen programación para el día de la semana actual
-    // y que utilizan alguna de las canchas especificadas
+    // Filtrar las clases relevantes (con sesiones regulares o específicas para esta fecha)
     const relevantClasses = classes.filter(classItem => {
+      // Verificar si tiene sesiones específicas para esta fecha
+      const hasSpecificSessions = classItem.schedule_config?.specificSessions?.some((session: any) => {
+        if (session.date !== formattedDate) return false;
+        
+        // Verificar si la sesión específica usa alguna de las canchas especificadas
+        const sessionCourtIds = Array.isArray(session.courtIds) 
+          ? session.courtIds 
+          : [session.courtIds];
+          
+        return sessionCourtIds.some((id: string) => courtIds.includes(id));
+      });
+      
+      // Si tiene sesiones específicas para esta fecha, incluirla
+      if (hasSpecificSessions) {
+        console.log('AvailabilityService - Clase incluida por sesiones específicas:', {
+          classId: classItem.id,
+          className: classItem.name,
+          date: formattedDate
+        });
+        return true;
+      }
+      
+      // Si no tiene configuración de horarios regulares, no incluirla
       if (!classItem.schedule_config || !classItem.schedule_config.days) {
         return false;
       }
@@ -146,34 +169,87 @@ class AvailabilityService {
     startTime: string,
     endTime: string,
     classSchedules: any[],
-    courtId: string
+    courtId: string,
+    date: Date
   ): boolean {
     // Convertir los tiempos del slot a minutos para comparación
     const slotStartMinutes = this.timeToMinutes(startTime);
     const slotEndMinutes = this.timeToMinutes(endTime);
+    const formattedDate = format(date, 'yyyy-MM-dd');
     
     // Revisar si alguna clase ocupa este horario y cancha
     for (const classItem of classSchedules) {
-      if (!classItem.schedule_config?.timeSlots) continue;
+      // Verificar sesiones regulares (timeSlots)
+      if (classItem.schedule_config?.timeSlots) {
+        for (const timeSlot of classItem.schedule_config.timeSlots) {
+          // Verificar si esta clase usa esta cancha
+          if (!timeSlot.courtIds?.includes(courtId)) continue;
+          
+          // Verificar si esta sesión está suspendida para la fecha actual
+          const isSuspended = classItem.schedule_config?.suspendedSessions?.some(
+            (suspendedSession: any) => 
+              suspendedSession.date === formattedDate &&
+              suspendedSession.courtId === courtId &&
+              suspendedSession.startTime === timeSlot.startTime &&
+              suspendedSession.endTime === timeSlot.endTime
+          );
+          
+          // Si la sesión está suspendida, no bloquea el horario
+          if (isSuspended) {
+            console.log('AvailabilityService - Sesión suspendida, no bloquea horario:', {
+              date: formattedDate,
+              slot: { start: timeSlot.startTime, end: timeSlot.endTime },
+              class: { name: classItem.name }
+            });
+            continue;
+          }
+          
+          // Convertir horarios de la clase a minutos
+          const classStartMinutes = this.timeToMinutes(timeSlot.startTime);
+          const classEndMinutes = this.timeToMinutes(timeSlot.endTime);
+          
+          // Verificar si hay superposición (solapamiento) entre horarios
+          // Un solapamiento ocurre cuando no es verdad que uno termina antes de que comience el otro
+          const overlap = !(slotEndMinutes <= classStartMinutes || slotStartMinutes >= classEndMinutes);
+          
+          if (overlap) {
+            console.log('AvailabilityService - Slot ocupado por clase regular:', {
+              slot: { start: startTime, end: endTime },
+              class: { name: classItem.name, start: timeSlot.startTime, end: timeSlot.endTime }
+            });
+            return true; // El slot está ocupado por una clase regular
+          }
+        }
+      }
       
-      for (const timeSlot of classItem.schedule_config.timeSlots) {
-        // Verificar si esta clase usa esta cancha
-        if (!timeSlot.courtIds?.includes(courtId)) continue;
-        
-        // Convertir horarios de la clase a minutos
-        const classStartMinutes = this.timeToMinutes(timeSlot.startTime);
-        const classEndMinutes = this.timeToMinutes(timeSlot.endTime);
-        
-        // Verificar si hay superposición (solapamiento) entre horarios
-        // Un solapamiento ocurre cuando no es verdad que uno termina antes de que comience el otro
-        const overlap = !(slotEndMinutes <= classStartMinutes || slotStartMinutes >= classEndMinutes);
-        
-        if (overlap) {
-          console.log('AvailabilityService - Slot ocupado por clase:', {
-            slot: { start: startTime, end: endTime },
-            class: { name: classItem.name, start: timeSlot.startTime, end: timeSlot.endTime }
-          });
-          return true; // El slot está ocupado por una clase
+      // Verificar sesiones específicas para esta fecha
+      if (classItem.schedule_config?.specificSessions) {
+        for (const specificSession of classItem.schedule_config.specificSessions) {
+          // Verificar si la sesión específica es para la fecha actual
+          if (specificSession.date !== formattedDate) continue;
+          
+          // Verificar si la sesión específica usa esta cancha
+          // Nota: specificSessions puede tener courtIds como string o array
+          const sessionCourtIds = Array.isArray(specificSession.courtIds) 
+            ? specificSession.courtIds 
+            : [specificSession.courtIds];
+            
+          if (!sessionCourtIds.includes(courtId)) continue;
+          
+          // Convertir horarios de la sesión específica a minutos
+          const sessionStartMinutes = this.timeToMinutes(specificSession.startTime);
+          const sessionEndMinutes = this.timeToMinutes(specificSession.endTime);
+          
+          // Verificar solapamiento
+          const overlap = !(slotEndMinutes <= sessionStartMinutes || slotStartMinutes >= sessionEndMinutes);
+          
+          if (overlap) {
+            console.log('AvailabilityService - Slot ocupado por sesión específica:', {
+              slot: { start: startTime, end: endTime },
+              class: { name: classItem.name, start: specificSession.startTime, end: specificSession.endTime }
+            });
+            return true; // El slot está ocupado por una sesión específica
+          }
         }
       }
     }
@@ -255,7 +331,7 @@ class AvailabilityService {
     });
 
     // Verificar si el slot está ocupado por una clase
-    const isOccupiedByClass = this.isTimeSlotOccupiedByClass(startTime, endTime, classSchedules, courtId);
+    const isOccupiedByClass = this.isTimeSlotOccupiedByClass(startTime, endTime, classSchedules, courtId, date);
 
     return !hasOverlap && !isOccupiedByClass;
   }
@@ -674,6 +750,7 @@ class AvailabilityService {
     const sortedBookings = [...bookings]
       .filter(booking => booking.date === format(date, 'yyyy-MM-dd'))
       .sort((a, b) => {
+        // Convertir los horarios de las reservas a la zona horaria local
         const aStart = this.timeToMinutes(a.start_time);
         const bStart = this.timeToMinutes(b.start_time);
         return aStart - bStart;

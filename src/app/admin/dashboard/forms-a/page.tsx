@@ -326,11 +326,9 @@ export default function FormsPage() {
                               className="space-y-4"
                             >
                               {/* Título y subtítulo de la página */}
-                              <div className="mb-5">
-                                <h1 className="text-lg font-medium text-gray-900">Enlaces de Reservas y Clases</h1>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Gestiona y personaliza los enlaces para reservas y clases de tu negocio
-                                </p>
+                              <div className="mb-6">
+                                <h3 className="text-md font-medium text-gray-800">Enlaces de Reservas y Clases</h3>
+                                <p className="text-sm text-gray-600">Gestiona y personaliza los enlaces para reservas y clases de tu negocio</p>
                               </div>
 
                               {/* Secciones de Links - Una debajo de la otra */}

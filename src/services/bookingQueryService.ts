@@ -1,5 +1,5 @@
 import { createSupabaseClient } from '@/lib/supabase'
-import { type SelectedBooking, type PaymentStatusEnum, type PaymentTypeEnum, type PaymentMethodEnum } from '@/types/bookings'
+import { type SelectedBooking, type PaymentStatusEnum, type PaymentTypeEnum, type PaymentMethodEnum, type ReservationTypeEnum } from '@/types/bookings'
 import { DateTime } from 'luxon'
 
 interface ServiceResponse<T> {
@@ -68,6 +68,11 @@ interface PaymentDB {
   stripe_payment_method_id?: string
 }
 
+interface TransformedBookingData extends BookingDB {
+  branch_timezone?: string;
+  courts?: CourtDB;
+}
+
 // Crear una instancia de Supabase memoizada
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null
 
@@ -77,6 +82,26 @@ const getSupabaseInstance = () => {
   }
   return supabaseInstance
 }
+
+// Función helper para convertir horarios UTC a la zona horaria local
+const convertUTCToLocalTime = (
+  utcTime: string,
+  date: string,
+  timezone: string = 'UTC'
+): string => {
+  // Crear un objeto DateTime de Luxon en UTC con la fecha y hora
+  const utcDateTime = DateTime.fromFormat(
+    `${date}T${utcTime}`,
+    "yyyy-MM-dd'T'HH:mm:ss",
+    { zone: 'UTC' }
+  );
+
+  // Convertir a la zona horaria local de la sede
+  const localDateTime = utcDateTime.setZone(timezone);
+
+  // Retornar solo el tiempo en formato HH:mm:ss
+  return localDateTime.toFormat('HH:mm:ss');
+};
 
 // Funciones helper para transformación de datos
 const transformParticipant = (participant: ParticipantDB) => {
@@ -98,44 +123,39 @@ const transformRentalItem = (rental: RentalItemDB) => ({
 })
 
 const transformBooking = (booking: unknown): SelectedBooking => {
-  const bookingData = booking as BookingDB
-  const participants = bookingData.booking_participants?.map(transformParticipant) || []
-  const rentedItems = bookingData.booking_rentals?.map(transformRentalItem) || []
-
+  // Casting para acceder a las propiedades
+  const bookingData = booking as TransformedBookingData;
+  
   return {
     id: bookingData.id,
     courtId: bookingData.court_id,
     court: bookingData.courts?.name || '',
     date: bookingData.date,
-    startTime: bookingData.start_time,
-    endTime: bookingData.end_time,
+    startTime: convertUTCToLocalTime(bookingData.start_time, bookingData.date, bookingData.branch_timezone || 'UTC'),
+    endTime: convertUTCToLocalTime(bookingData.end_time, bookingData.date, bookingData.branch_timezone || 'UTC'),
     totalAmount: bookingData.total_price || 0,
     depositAmount: bookingData.deposit_amount || 0,
     courtPrice: bookingData.court_price || 0,
     rentalItemsPrice: bookingData.rental_items_price || 0,
-    paymentStatus: bookingData.payment_status,
-    paymentMethod: bookingData.payment_method,
-    paymentType: bookingData.payment_type,
+    paymentStatus: bookingData.payment_status || 'pending',
+    paymentMethod: bookingData.payment_method || 'cash',
+    paymentType: bookingData.payment_type || 'booking',
     title: bookingData.title || '',
     description: bookingData.description || '',
-    participants,
-    rentedItems,
-    reservation_type: bookingData.reservation_type,
+    participants: bookingData.booking_participants?.map(transformParticipant) || [],
+    rentedItems: bookingData.booking_rentals?.map(transformRentalItem) || [],
+    reservation_type: (bookingData.reservation_type || 'booking') as ReservationTypeEnum,
     class_id: bookingData.class_id,
     class_session_price: bookingData.class_session_price
-  }
-}
+  };
+};
 
 export const bookingQueryService = {
   async getBookingById(id: string): Promise<SelectedBooking> {
     try {
-      console.log('🔍 BookingQueryService - Consultando reserva:', { 
-        id,
-        timestamp: new Date().toISOString()
-      })
-      
+      console.log('🔍 BookingQueryService - Consultando reserva por ID:', id)
+
       const supabase = getSupabaseInstance()
-      
       const { data: booking, error } = await supabase
         .from('bookings')
         .select(`
@@ -155,7 +175,8 @@ export const bookingQueryService = {
           description,
           courts (
             id,
-            name
+            name,
+            branch_id
           ),
           booking_participants (
             id,
@@ -181,20 +202,42 @@ export const bookingQueryService = {
         .eq('id', id)
         .single()
 
-      if (error) throw error
-      if (!booking) throw new Error('Reserva no encontrada')
+      if (error) {
+        console.error('❌ Error al consultar reserva:', error)
+        throw error
+      }
 
-      const transformedBooking = transformBooking(booking)
+      if (!booking) {
+        console.error('❌ No se encontró la reserva:', id)
+        throw new Error(`No se encontró la reserva con ID: ${id}`)
+      }
 
-      console.log('✅ Datos transformados:', {
-        id: transformedBooking.id,
-        paymentType: transformedBooking.paymentType,
-        isGuarantee: transformedBooking.paymentType === 'guarantee'
-      })
+      // Obtener la zona horaria de la sede
+      let branchTimezone = 'UTC';
+      if (booking.courts && booking.courts.branch_id) {
+        const { data: branch, error: branchError } = await supabase
+          .from('sedes')
+          .select('timezone')
+          .eq('id', booking.courts.branch_id)
+          .single();
+          
+        if (!branchError && branch?.timezone) {
+          branchTimezone = branch.timezone;
+          console.log(`📍 Zona horaria de la sede: ${branchTimezone}`);
+        } else {
+          console.warn('⚠️ No se pudo obtener la zona horaria de la sede, usando UTC por defecto');
+        }
+      }
 
-      return transformedBooking
+      // Añadir la zona horaria a la reserva antes de transformarla
+      const bookingWithTimezone = {
+        ...booking,
+        branch_timezone: branchTimezone
+      };
+
+      return transformBooking(bookingWithTimezone)
     } catch (error) {
-      console.error('❌ Error en getBookingById:', error)
+      console.error('❌ Error general en getBookingById:', error)
       throw error
     }
   },
@@ -208,6 +251,25 @@ export const bookingQueryService = {
       })
 
       const supabase = getSupabaseInstance()
+      
+      // Primero, obtener la zona horaria de la sede
+      let branchTimezone = 'UTC';
+      if (branchId) {
+        const { data: branch, error: branchError } = await supabase
+          .from('sedes')
+          .select('timezone')
+          .eq('id', branchId)
+          .single();
+          
+        if (!branchError && branch?.timezone) {
+          branchTimezone = branch.timezone;
+          console.log(`📍 Zona horaria de la sede: ${branchTimezone}`);
+        } else {
+          console.warn('⚠️ No se pudo obtener la zona horaria de la sede, usando UTC por defecto');
+        }
+      }
+
+      // Consultar las reservas
       let query = supabase
         .from('bookings')
         .select(`
@@ -263,7 +325,13 @@ export const bookingQueryService = {
       if (error) throw error
       if (!bookings) return []
 
-      const transformedBookings = bookings.map(booking => transformBooking(booking))
+      // Añadir la zona horaria a cada reserva antes de transformarla
+      const bookingsWithTimezone = bookings.map(booking => ({
+        ...booking,
+        branch_timezone: branchTimezone
+      }));
+
+      const transformedBookings = bookingsWithTimezone.map(booking => transformBooking(booking))
 
       return transformedBookings
     } catch (error) {
@@ -285,6 +353,7 @@ export const bookingQueryService = {
       })
 
       const supabase = getSupabaseInstance()
+      
       const { data: booking, error: fetchError } = await supabase
         .from('bookings')
         .update({

@@ -102,9 +102,23 @@ async function fetchClasses({
       const now = new Date()
       
       // Verificar si la clase única ha expirado
-      const isExpired = !classItem.is_recurring && 
-        classItem.start_date && 
-        new Date(classItem.start_date) < now
+      let isExpired = false;
+      
+      if (!classItem.is_recurring && classItem.start_date) {
+        // Para clases no recurrentes, usamos la fecha de inicio
+        const expirationDate = new Date(classItem.start_date);
+        // Establecer la fecha al final del día (23:59:59.999)
+        expirationDate.setHours(23, 59, 59, 999);
+        // Solo está vencida si ya pasó el final del día completo
+        isExpired = expirationDate < now;
+      } else if (classItem.is_recurring && classItem.end_date) {
+        // Para clases recurrentes, usamos la fecha de fin
+        const expirationDate = new Date(classItem.end_date);
+        // Establecer la fecha al final del día (23:59:59.999)
+        expirationDate.setHours(23, 59, 59, 999);
+        // Solo está vencida si ya pasó el final del día completo
+        isExpired = expirationDate < now;
+      }
 
       return {
         ...classItem,
