@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { format } from 'date-fns';
 import type { ClassSession } from '../../../types/models';
 import type { FormattedSessionDate } from './types';
 

@@ -633,15 +633,15 @@ export class ClassService {
         .lte('start_date', today)
         // Si tienen fecha de fin, solo mostrar las que aún no vencen
         .or(`end_date.is.null,end_date.gte.${today}`)
-        // Para clases no recurrentes, solo mostrar las del día actual
+        // Para clases no recurrentes, solo mostrar las del día actual y futuras
         .not('is_recurring', 'eq', false, { foreignTable: null })
         .order('created_at', { ascending: false })
 
-      // Añadir consulta adicional para las clases no recurrentes del día actual
+      // Añadir consulta adicional para las clases no recurrentes del día actual y futuras
       const { data: classesData, error } = await query;
 
-      // Tratar el caso especial de clases no recurrentes para el día actual
-      const { data: singleClassesToday, error: singleClassesError } = await this.supabase
+      // Tratar el caso especial de clases no recurrentes para el día actual y futuras
+      const { data: singleClasses, error: singleClassesError } = await this.supabase
         .from('classes')
         .select(`
           id,
@@ -672,8 +672,7 @@ export class ClassService {
         .eq('visibility', 'public')
         .eq('status', 'active')
         .eq('is_recurring', false)
-        .eq('start_date', today) // Solo clases únicas de hoy
-        .or(`end_date.is.null,end_date.gte.${today}`)
+        .gte('start_date', today) // Incluir clases únicas de hoy y futuras
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -682,13 +681,13 @@ export class ClassService {
       }
 
       if (singleClassesError) {
-        console.error('Error al obtener las clases únicas de hoy:', singleClassesError);
+        console.error('Error al obtener las clases únicas de hoy y futuras:', singleClassesError);
       }
 
       // Combinar los resultados de ambas consultas
       const combinedClasses = [
         ...((classesData || []) as ClassFromDB[]),
-        ...((singleClassesToday || []) as ClassFromDB[])
+        ...((singleClasses || []) as ClassFromDB[])
       ];
 
       // Eliminar duplicados por ID si los hubiera
@@ -857,7 +856,7 @@ export class ClassService {
         .eq('status', 'active')
         .lte('start_date', new Date().toISOString().split('T')[0]) // Solo clases que ya han comenzado
         .ilike('name', `%${searchTerm}%`) // Buscar en el nombre
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error al buscar clases por nombre:', error)

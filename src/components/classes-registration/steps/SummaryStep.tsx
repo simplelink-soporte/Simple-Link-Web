@@ -169,13 +169,24 @@ export function SummaryStep() {
   const handlePaymentTypeSelection = useCallback((type: PaymentTypeEnum | null) => {
     console.log('📢 Tipo de pago seleccionado:', type)
     setSelectedPaymentType(type)
-  }, [])
+    
+    // Cerrar la lista de tarjetas si está abierta
+    if (showCardMethodsList) {
+      setShowCardMethodsList(false)
+    }
+  }, [showCardMethodsList])
 
   // Mostrar la lista de métodos de pago
   const handleShowPaymentMethods = useCallback(() => {
     console.log('📢 Mostrando métodos de pago')
     setShowCardMethodsList(true)
-  }, [])
+    
+    // Cerrar la selección de tipo de pago si está abierta
+    if (selectedPaymentType !== null) {
+      // No cerramos el tipo de pago completamente, solo ocultamos su lista desplegable
+      // Esto se maneja dentro del componente PaymentTypeSection
+    }
+  }, [selectedPaymentType])
 
   // Actualizar el método de pago seleccionado
   const handleUpdatePaymentMethod = useCallback(async (method: CardPaymentMethod) => {
@@ -707,47 +718,9 @@ export function SummaryStep() {
             </div>
           </div>
         </div>
-
-        {/* Información del paquete */}
-        {activePackage && activePackage.sessions_left > 0 && isPackageValidForClass && (
-          <div className="flex items-start gap-3">
-            <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-md bg-blue-100">
-              <IconCash className="h-4 w-4 text-blue-600" />
-            </div>
-            <div className="flex-1 space-y-1">
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-blue-800">
-                  Paquete: {(activePackage as any).package?.name || 'Paquete activo'}
-                </p>
-                <p className="text-sm text-blue-600">
-                  Se descontará 1 sesión de tu paquete
-                </p>
-                <p className="text-xs text-blue-500">
-                  Te quedarán {activePackage.sessions_left - 1} {activePackage.sessions_left - 1 === 1 ? 'sesión' : 'sesiones'} disponibles
-                </p>
-                <p className="text-xs text-blue-500">
-                  Válido hasta {format(new Date(activePackage.expires_at), 'd MMMM yyyy', { locale: es })}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {activePackage && !isPackageValidForClass && (
-          <div className="flex items-start gap-3">
-            <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-md bg-yellow-100">
-              <IconCash className="h-4 w-4 text-yellow-600" />
-            </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-xs text-yellow-600">
-                Tu paquete activo no es válido para esta sede
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
-  ), [selectedClass, selectedSession, activePackage, isPackageValidForClass, dayName, dayNumber, month]);
+  ), [selectedClass, selectedSession, dayName, dayNumber, month]);
 
   // Sección de tipo de pago
   const PaymentTypesSection = useCallback(() => (
@@ -795,12 +768,6 @@ export function SummaryStep() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
       className="w-full max-w-6xl mx-auto rounded-xl overflow-hidden shadow-lg"
-      style={{
-        willChange: 'opacity',
-        backfaceVisibility: 'hidden',
-        transform: 'translateZ(0)',
-        WebkitFontSmoothing: 'subpixel-antialiased'
-      }}
     >
       {children}
     </motion.div>
@@ -812,19 +779,14 @@ export function SummaryStep() {
       <AnimatePresence>
         {showOverlay && (
           <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)", scale: 0.95 }}
-            animate={{ opacity: 1, backdropFilter: "blur(4px)", scale: 1 }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)", scale: 0.95 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ 
               duration: 0.5, 
-              ease: [0.22, 1, 0.36, 1], // Curva de bezier más elegante (basada en cubic-bezier)
-              scale: {
-                type: "spring",
-                damping: 20,
-                stiffness: 300
-              }
+              ease: "easeInOut"
             }}
-            className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70"
+            className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70 backdrop-blur-sm"
           >
             <motion.div 
               initial={{ opacity: 0 }}
@@ -886,9 +848,9 @@ export function SummaryStep() {
                   {mobileView === 'details' ? (
                     <motion.div
                       key="details"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
                       <TotalPriceDisplay />
@@ -897,9 +859,9 @@ export function SummaryStep() {
                   ) : (
                     <motion.div
                       key="payment"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
                       <TotalPriceDisplay />

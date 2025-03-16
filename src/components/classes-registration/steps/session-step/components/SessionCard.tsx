@@ -34,6 +34,11 @@ export function SessionCard({
 
   // Renderizar indicador de disponibilidad
   const renderAvailability = () => {
+    // En modo móvil no mostramos la disponibilidad para mejorar la eficiencia
+    if (isMobile) {
+      return null;
+    }
+    
     if (session.spotsLeft === undefined || session.spotsLeft === null) {
       return (
         <div className="flex items-center space-x-1.5">
@@ -43,13 +48,11 @@ export function SessionCard({
       );
     }
     
-    // Mostrar la disponibilidad real
+    // Mostrar la disponibilidad real con solo tres colores
     const spotsLeft = session.spotsLeft;
-    const isFewSpots = spotsLeft <= 3 && spotsLeft > 0;
-    const isNoSpots = spotsLeft === 0;
-    const isGoodAvailability = spotsLeft > 5;
     
-    if (isNoSpots) {
+    // Sin disponibilidad (rojo)
+    if (spotsLeft === 0) {
       return (
         <span className="text-xs font-medium text-red-600 whitespace-nowrap">
           No disponible
@@ -57,13 +60,18 @@ export function SessionCard({
       );
     }
     
+    // Poca disponibilidad (naranja/amber)
+    if (spotsLeft <= 5) {
+      return (
+        <span className="text-xs font-medium text-amber-600 whitespace-nowrap">
+          {spotsLeft} {spotsLeft === 1 ? 'lugar' : 'lugares'}
+        </span>
+      );
+    }
+    
+    // Buena disponibilidad (gris)
     return (
-      <span className={cn(
-        "text-xs font-medium whitespace-nowrap",
-        isGoodAvailability ? "text-green-600" : 
-        isFewSpots ? "text-amber-600" : 
-        "text-gray-600"
-      )}>
+      <span className="text-xs font-medium text-gray-600 whitespace-nowrap">
         {spotsLeft} {spotsLeft === 1 ? 'lugar' : 'lugares'}
       </span>
     );
@@ -154,10 +162,12 @@ export function SessionCard({
             {renderAvailability()}
           </div>
         </div>
-        {/* Información de disponibilidad - Visible solo en móvil */}
-        <div className="w-full sm:hidden mt-2">
-          {renderAvailability()}
-        </div>
+        {/* Información de disponibilidad - Visible solo en móvil si NO estamos en modo móvil */}
+        {!isMobile && (
+          <div className="w-full sm:hidden mt-2">
+            {renderAvailability()}
+          </div>
+        )}
       </div>
     </button>
   );

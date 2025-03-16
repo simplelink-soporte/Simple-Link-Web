@@ -1,8 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { useClassRegistration } from '../../../context/ClassRegistrationContext';
-import { useUserPackages } from '../../../hooks/useUserPackages';
-import { ActivePackageInfo } from '../../../shared/ActivePackageInfo';
 import { useDeviceDetection } from '../hooks/useDeviceDetection';
 
 interface SessionHeaderProps {
@@ -34,14 +32,10 @@ export function SessionHeader({
 }: SessionHeaderProps) {
   // Contexto y hooks necesarios
   const { state } = useClassRegistration();
-  const { activePackage } = useUserPackages();
   const isMobile = useDeviceDetection();
-  
-  // Comprobar si el paquete es válido para esta clase
-  const packagesAreValid = true; // Simplificado para este componente
 
   return (
-    <div className="space-y-6 flex-none">
+    <div className="space-y-6 sm:space-y-6 md:space-y-6 flex-none mb-4 sm:mb-4">
       {/* Imagen decorativa */}
       <div className="flex justify-start">
         <div className="relative w-24 h-24">
@@ -55,7 +49,7 @@ export function SessionHeader({
         </div>
       </div>
 
-      {/* Encabezado con Pack Activo alineado a la derecha en desktop */}
+      {/* Encabezado simplificado sin Pack Activo */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold text-gray-900">
@@ -71,18 +65,6 @@ export function SessionHeader({
             )}
           </p>
         </div>
-        
-        {/* Pack activo en desktop - Alineado en la misma fila que el subtítulo */}
-        {!isMobile && activePackage && (
-          <div className="flex ml-auto">
-            <ActivePackageInfo 
-              activePackage={activePackage} 
-              packagesAreValid={packagesAreValid} 
-              branchName={branchName}
-              variant="desktop"
-            />
-          </div>
-        )}
       </div>
 
       {/* Descripción de la clase con la información integrada - Solo en desktop */}
@@ -92,11 +74,11 @@ export function SessionHeader({
             {description}
           </p>
           
-          {/* Botón "Ver más" ahora arriba de los datos dinámicos */}
+          {/* Botón "Ver más" con color negro en lugar de azul */}
           {isLongDescription && (
             <button
               onClick={onToggleDescription}
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-gray-800 hover:text-black"
             >
               {showFullDescription ? 'Ver menos' : 'Ver más'}
             </button>
@@ -107,18 +89,6 @@ export function SessionHeader({
             {title} • {state.selectedClass?.is_recurring ? 'Recurrente' : 'Única'}
             {branchName && ` • ${branchName}`}
           </p>
-        </div>
-      )}
-
-      {/* Información paquete activo - Solo visible en móvil y alineado a la derecha */}
-      {isMobile && activePackage && (
-        <div className="flex mb-4 justify-end">
-          <ActivePackageInfo 
-            activePackage={activePackage} 
-            packagesAreValid={packagesAreValid} 
-            branchName={branchName}
-            variant="mobile"
-          />
         </div>
       )}
     </div>

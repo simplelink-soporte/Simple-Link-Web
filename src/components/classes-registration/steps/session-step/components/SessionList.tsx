@@ -49,18 +49,15 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
       className="space-y-4 overflow-y-auto pr-0 sm:pr-2 pb-12 relative flex-1"
       style={{ 
         height: 'auto',
-        maxHeight: isMobile ? 'calc(100vh - 320px)' : '450px',
-        minHeight: isMobile ? '450px' : '450px',
+        maxHeight: isMobile ? 'calc(100vh - 230px)' : '450px',
+        minHeight: isMobile ? 'calc(100vh - 230px)' : '450px',
         overflowY: 'auto',
         scrollbarWidth: 'none', 
         msOverflowStyle: 'none',
         WebkitOverflowScrolling: 'touch',
-        marginBottom: isMobile ? '60px' : '20px'
+        marginBottom: isMobile ? '0px' : '20px'
       }}
     >
-      {/* Degradado sutil en la parte superior del contenedor */}
-      <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
-      
       <div className="space-y-4 pb-10 pt-3">
         {/* Grid responsive para las tarjetas */}
         <div className={`space-y-4`}>
@@ -100,9 +97,6 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
           <span className="text-sm text-gray-500">Has llegado al final de las sesiones disponibles</span>
         </div>
       )}
-      
-      {/* Degradado sutil en la parte inferior del contenedor */}
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
     </div>
   );
 });

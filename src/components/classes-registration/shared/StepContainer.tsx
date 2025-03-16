@@ -51,7 +51,7 @@ export function StepContainer({
         "sm:px-[var(--padding-container-tablet)]",
         "lg:px-[var(--padding-container-desktop)]",
         // Padding inferior para la navegación y superior para el UserBadge
-        "pb-20", // Ajustados para dar espacio al UserBadge y navegación
+        "pb-15", // Ajustados para dar espacio al UserBadge y navegación
         className
       )}
     >

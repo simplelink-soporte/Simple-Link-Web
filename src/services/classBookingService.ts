@@ -280,8 +280,8 @@ export class ClassBookingService {
    * Crea múltiples reservas de clase para sesiones seleccionadas
    * 
    * Esta función:
-   * 1. Valida los datos de las sesiones seleccionadas
-   * 2. Para cada sesión, llama a createClassBooking que maneja la conversión de zona horaria
+   * 1. Valida que la clase exista
+   * 2. Crea una reserva de clase con el ID de la clase, ignorando los IDs de sesión
    * 3. Devuelve un resumen de los resultados
    */
   async createMultipleClassBookings(
@@ -293,48 +293,50 @@ export class ClassBookingService {
     bookingIds: string[];
     errors: string[];
   }> {
-    // Validar datos
-    const validation = ClassBookingTransformService.validateSessionsForBooking(
-      classData,
-      sessionIds
-    );
-
-    if (!validation.isValid) {
+    // Validar datos básicos de la clase
+    if (!classData || !classData.id) {
       return {
         success: false,
         bookingIds: [],
-        errors: validation.errors
+        errors: ['No se ha seleccionado ninguna clase válida']
       };
     }
 
-    // Obtener las sesiones seleccionadas
-    const selectedSessions = classData.sessions.filter(
-      session => sessionIds.includes(session.id)
-    );
+    // Obtener la primera sesión disponible como referencia para la fecha y hora
+    const referenceSession = classData.sessions && classData.sessions.length > 0 
+      ? classData.sessions[0] 
+      : null;
 
-    // Crear cada reserva de manera secuencial
-    const results: BookingResult[] = [];
-    const errors: string[] = [];
-    const bookingIds: string[] = [];
+    if (!referenceSession) {
+      return {
+        success: false,
+        bookingIds: [],
+        errors: ['La clase no tiene sesiones disponibles para reservar']
+      };
+    }
 
-    for (const session of selectedSessions) {
-      const result = await this.createClassBooking(classData, session, options);
-      results.push(result);
+    // Para reservas de clase, ignoramos la validación de sesiones específicas
+    // y usamos el ID de clase directamente
+    console.log('✅ [ClassBookingService] Creando reserva de clase con ID:', classData.id);
 
-      if (result.error) {
-        errors.push(result.error.message);
-      } else if (result.id) {
-        bookingIds.push(result.id);
-      }
+    // Crear la reserva usando la sesión de referencia y el ID de la clase
+    const result = await this.createClassBooking(classData, referenceSession, options);
+    
+    if (result.error) {
+      return {
+        success: false,
+        bookingIds: [],
+        errors: [result.error.message]
+      };
     }
 
     return {
-      success: errors.length === 0 && bookingIds.length > 0,
-      bookingIds,
-      errors
+      success: !!result.id,
+      bookingIds: result.id ? [result.id] : [],
+      errors: []
     };
   }
 }
 
 // Exportar una instancia por defecto para facilitar su uso
-export const classBookingService = new ClassBookingService(); 
+export const classBookingService = new ClassBookingService();

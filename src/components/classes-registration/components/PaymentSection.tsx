@@ -1,14 +1,16 @@
 "use client"
 
-import { X, CreditCard, ChevronDown } from "lucide-react"
+import { X, CreditCard, ChevronDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { CardList } from "./CardList"
+import { CardListModal } from "./CardListModal"
 import { useStoredCards } from "@/hooks/useStoredCards"
 import { StripeProvider } from "@/contexts/StripeContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { CardBrandIcon } from "./CardBrandIcon"
+import { useStripe } from '@/contexts/StripeContext'
 
 // Definimos la interfaz para un método de pago
 export interface PaymentMethod {
@@ -43,13 +45,27 @@ export function PaymentSection({
   viewType = "desktop",
   stripeAccountId,
   expandCardList = false,
-  className
+  className = "",
+  theme = 'light'
 }: PaymentSectionProps) {
-  const [localMethod, setLocalMethod] = useState<PaymentMethod | null>(null)
-  const [isListExpanded, setIsListExpanded] = useState(false)
+  const { user } = useAuth()
+  const [isListExpanded, setIsListExpanded] = useState(expandCardList)
+  const [showCardForm, setShowCardForm] = useState(false)
+  const [localMethod, setLocalMethod] = useState<PaymentMethod | null>(selectedMethod)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [showCardModal, setShowCardModal] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   
-  const [originalOnShowMethods] = useState(() => onShowMethods)
+  // Context de Stripe
+  let stripeContext = null;
+  let isStripeAvailable = true;
+
+  try {
+    stripeContext = useStripe();
+  } catch (error) {
+    isStripeAvailable = false;
+    console.log('Stripe no está disponible:', error);
+  }
   
   // Hook para cargar las tarjetas guardadas
   const { cards = [], isLoading: isCardsLoading, error: cardsError, deleteCard } = useStoredCards(refreshTrigger, {
@@ -118,6 +134,7 @@ export function PaymentSection({
   }, [onUpdateMethod])
 
   // Abrir modal de métodos de pago
+  const originalOnShowMethods = onShowMethods;
   const openPaymentMethodModal = useCallback(() => {
     console.log('Abriendo modal de métodos de pago')
     originalOnShowMethods()
@@ -134,29 +151,70 @@ export function PaymentSection({
       console.log('[PaymentSection] Ignorando selección - ya hay una selección en proceso')
       return;
     }
-    
-    // Activar el bloqueo
+
+    // Marcar que estamos procesando
     isProcessingRef.current = true;
     
-    // Cerrar inmediatamente la lista
-    setIsListExpanded(false);
+    // Cerrar modal si estamos en móvil
+    if (viewType === 'mobile') {
+      setShowCardModal(false)
+    }
     
-    // Procesar la selección después de un pequeño retraso
+    // Cerrar la lista desplegable
+    setIsListExpanded(false)
+    
+    // Procesar la selección
+    const result = processCardSelection(card);
+    
+    // Desmarcar el procesamiento cuando termine
     setTimeout(() => {
-      processCardSelection(card);
-      
-      // Liberar el bloqueo después de procesar
-      setTimeout(() => {
-        isProcessingRef.current = false;
-      }, 300);
-    }, 50);
-  }, [processCardSelection]);
+      isProcessingRef.current = false;
+    }, 300);
+    
+  }, [processCardSelection, viewType])
 
   // Manejar la adición de una tarjeta
   const handleAddCard = () => {
-    console.log('Abriendo modal para agregar tarjeta')
-    openPaymentMethodModal()
+    if (!isStripeAvailable) {
+      console.error('El sistema de pagos no está disponible');
+      return;
+    }
+
+    if (!stripeContext?.isConnected) {
+      console.error('La cuenta de Stripe no está configurada correctamente');
+      return;
+    }
+
+    setShowCardForm(true);
+    setIsListExpanded(false);
   }
+
+  // Manejar el éxito al guardar una tarjeta
+  const handleCardSetupSuccess = async (paymentMethodId: string) => {
+    try {
+      setShowCardForm(false);
+      setRefreshTrigger(prev => prev + 1);
+      
+      // Esperar a que las tarjetas se recarguen
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Buscar la nueva tarjeta y seleccionarla
+      const newCard = cards.find(card => card.id === paymentMethodId);
+      if (newCard) {
+        processCardSelection(newCard);
+      }
+      
+      console.log('Tarjeta agregada correctamente');
+    } catch (error) {
+      console.error('Error al configurar la tarjeta:', error);
+    }
+  };
+
+  // Manejar error al guardar una tarjeta
+  const handleCardSetupError = (error: any) => {
+    console.error('Error al configurar la tarjeta:', error.message || error);
+    setShowCardForm(false);
+  };
 
   // Manejar la eliminación del método de pago
   const handleRemoveMethod = useCallback((e?: React.MouseEvent) => {
@@ -184,6 +242,9 @@ export function PaymentSection({
 
   // Manejar el clic en el componente principal
   const handleComponentClick = useCallback(() => {
+    // No hacer nada si el formulario de tarjeta está visible
+    if (showCardForm) return;
+    
     // Si hay tarjetas disponibles o estamos cargando, mostrar/ocultar la lista
     if (viewType === 'desktop') {
       if (!isCardsLoading || cards.length > 0 || isCardsLoading) {
@@ -196,6 +257,11 @@ export function PaymentSection({
         openPaymentMethodModal()
       }
     } 
+    // Comportamiento para móvil: mostrar el modal
+    else if (viewType === 'mobile') {
+      console.log('[PaymentSection] Versión móvil: abriendo modal de tarjetas')
+      setShowCardModal(true)
+    }
     // Comportamiento para otras vistas
     else {
       if (!isCardsLoading && cards.length > 0) {
@@ -204,44 +270,47 @@ export function PaymentSection({
         openPaymentMethodModal()
       }
     }
-  }, [isCardsLoading, cards.length, isListExpanded, viewType, openPaymentMethodModal])
+  }, [isCardsLoading, cards.length, viewType, isListExpanded, showCardForm, openPaymentMethodModal])
 
-  // Función para obtener el mensaje de error de forma segura
-  const getErrorMessage = (error: unknown): string => {
-    if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
-      return error.message
-    }
-    return 'Intente nuevamente.'
-  }
+  // Función para manejar el botón "Volver" en el formulario de tarjeta
+  const handleCardSetupBack = () => {
+    setShowCardForm(false);
+  };
 
-  const hasError = cardsError !== null && cardsError !== undefined
+  const getErrorMessage = (error: any): string => {
+    if (!error) return '';
+    if (typeof error === 'string') return error;
+    return error.message || 'Error desconocido';
+  };
+
+  const hasError = cardsError && cardsError.message;
 
   return (
-    <motion.div
+    <motion.div 
+      className={cn("relative", className)}
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}
-      className={cn("space-y-3", className)}
     >
       <div
         onClick={handleComponentClick}
         className={cn(
-          "w-full rounded-lg cursor-pointer",
-          "transition-all duration-200",
+          "w-full rounded-lg cursor-pointer transition-all duration-200",
           methodToDisplay
-            ? "p-3 border border-gray-200"
-            : "h-[52px] border border-gray-200",
-          "bg-white",
-          "hover:border-gray-300",
+            ? "p-3 border border-gray-100 dark:border-neutral-800"
+            : "h-[52px] border border-gray-200 dark:border-neutral-800",
+          "bg-white dark:bg-neutral-900",
+          "hover:border-gray-300 dark:hover:border-neutral-700",
           "shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)]",
+          "dark:shadow-[0_1px_4px_-2px_rgba(0,0,0,0.3)]",
           !methodToDisplay && "flex items-center justify-between"
         )}
       >
         {!methodToDisplay ? (
           <>
             <div className="flex items-center gap-3 px-4 h-full">
-              <CreditCard className="h-[18px] w-[18px] text-gray-500" />
-              <span className="text-[15px] font-medium text-gray-500">
+              <CreditCard className="h-[18px] w-[18px] text-gray-500 dark:text-gray-400" />
+              <span className="text-[15px] font-medium text-gray-500 dark:text-gray-400">
                 Método de Pago
               </span>
             </div>
@@ -249,41 +318,49 @@ export function PaymentSection({
               <ChevronDown className={cn(
                 "h-[18px] w-[18px] transition-transform duration-300",
                 isListExpanded && "transform rotate-180",
-                "text-gray-500"
+                "text-gray-500 dark:text-gray-400"
               )} />
             </div>
           </>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-gray-100 p-2 rounded-md flex items-center justify-center">
+              <div className="p-1.5 rounded-md bg-gray-50 dark:bg-neutral-800">
                 <CardBrandIcon 
-                  brand={methodToDisplay.brand} 
-                  theme="light"
-                  className="h-6 w-10"
+                  brand={methodToDisplay.brand}
+                  theme={theme}
+                  className="text-gray-600 dark:text-gray-400" 
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                   {methodToDisplay.name}
                 </span>
-                <span className="text-xs mt-1 text-gray-500">
+                <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
                   {methodToDisplay.description}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <ChevronDown className={cn(
-                "h-4 w-4 transition-transform duration-300",
-                isListExpanded && "transform rotate-180",
-                "text-gray-500"
-              )} />
+              <div className={cn(
+                "p-1.5 rounded-md",
+                isListExpanded 
+                  ? "bg-gray-100 dark:bg-neutral-700" 
+                  : "hover:bg-gray-100 dark:hover:bg-neutral-800",
+              )}>
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform duration-300",
+                  isListExpanded && "transform rotate-180",
+                  "text-gray-500 dark:text-gray-400"
+                )} />
+              </div>
               <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleRemoveMethod()
-                }}
-                className="p-1.5 rounded-lg transition-colors duration-200 text-gray-400 hover:bg-gray-50"
+                onClick={(e) => handleRemoveMethod(e)}
+                className={cn(
+                  "p-1.5 rounded-md",
+                  "hover:bg-gray-100 dark:hover:bg-neutral-800",
+                  "text-gray-500 dark:text-gray-400"
+                )}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -292,7 +369,7 @@ export function PaymentSection({
         )}
       </div>
 
-      <CardList
+      <CardList 
         cards={cards}
         selectedCardId={methodToDisplay?.id}
         onSelect={handleCardSelect}
@@ -300,12 +377,41 @@ export function PaymentSection({
         onDeleteCard={deleteCard}
         isExpanded={isListExpanded}
         isLoading={isCardsLoading}
+        showCardForm={showCardForm}
+        onCardSetupSuccess={handleCardSetupSuccess}
+        onCardSetupError={handleCardSetupError}
+        onCardSetupBack={handleCardSetupBack}
+        theme={theme}
+        stripeAccountId={stripeAccountId}
       />
 
       {hasError && (
-        <div className="text-xs p-2 rounded-md text-center mt-1 text-red-500 bg-red-50">
+        <div className={cn(
+          "text-xs p-2 rounded-md text-center mt-1",
+          theme === 'dark' ? "text-red-400 bg-red-900/20" : "text-red-500 bg-red-50"
+        )}>
           Error al cargar los métodos de pago. {getErrorMessage(cardsError)}
         </div>
+      )}
+      
+      {/* Modal para la versión móvil */}
+      {viewType === 'mobile' && (
+        <CardListModal
+          isOpen={showCardModal}
+          onClose={() => setShowCardModal(false)}
+          cards={cards}
+          selectedCardId={methodToDisplay?.id}
+          onSelect={handleCardSelect}
+          onAddCard={handleAddCard}
+          onDeleteCard={deleteCard}
+          isLoading={isCardsLoading}
+          showCardForm={showCardForm}
+          onCardSetupSuccess={handleCardSetupSuccess}
+          onCardSetupError={handleCardSetupError}
+          onCardSetupBack={handleCardSetupBack}
+          theme={theme}
+          stripeAccountId={stripeAccountId}
+        />
       )}
     </motion.div>
   )
@@ -313,61 +419,6 @@ export function PaymentSection({
 
 // Componente wrapper que proporciona el StripeProvider
 export function PaymentSectionWithStripe(props: PaymentSectionProps) {
-  // Estado local para gestionar errores
-  const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Validar que tenemos un ID de cuenta Stripe válido
-  const isValidStripeId = props.stripeAccountId && 
-                         props.stripeAccountId.startsWith('acct_') && 
-                         props.stripeAccountId.length > 10;
-  
-  // Validar que tenemos un usuario
-  const isValidUser = Boolean(user && user.id);
-  
-  // Efecto para logging y control de carga
-  useEffect(() => {
-    // Solo considerar cargado después de un tiempo razonable
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    console.log('[PaymentSectionWithStripe] Estado:', {
-      stripeAccountId: props.stripeAccountId,
-      isValidStripeId,
-      isValidUser,
-      userId: user?.id,
-      userEmail: user?.email,
-      isLoading
-    });
-    
-    if (!isLoading) {
-      if (!isValidStripeId) {
-        setError('ID de cuenta Stripe inválido');
-      } else if (!isValidUser) {
-        setError('Usuario no disponible');
-      } else {
-        setError(null);
-      }
-    }
-    
-    return () => clearTimeout(timer);
-  }, [props.stripeAccountId, isValidStripeId, isValidUser, user, isLoading]);
-  
-  if (error && !isLoading) {
-    console.error(`[PaymentSectionWithStripe] Error: ${error}`, {
-      stripeAccountId: props.stripeAccountId,
-      userId: user?.id
-    });
-    // En caso de error, mostrar un mensaje o un componente alternativo
-    return (
-      <div className="p-4 border border-red-200 rounded-lg bg-red-50 text-red-700 text-sm">
-        No se puede cargar la información de pago. {error}
-      </div>
-    );
-  }
-  
   return (
     <StripeProvider 
       empresaId={props.stripeAccountId || null}
@@ -378,5 +429,5 @@ export function PaymentSectionWithStripe(props: PaymentSectionProps) {
     >
       <PaymentSection {...props} />
     </StripeProvider>
-  )
+  );
 }

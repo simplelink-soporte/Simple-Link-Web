@@ -22,7 +22,6 @@ import { EmptySessionState } from './components/EmptySessionState';
 
 // Importar tipos
 import { ClassSession } from '../../types/models';
-import { UpdateAvailabilityOptions } from './utils/types';
 
 /**
  * Componente principal para la selección de sesiones de clase
@@ -41,7 +40,7 @@ export function SessionStep() {
    * 2. Verificación de disponibilidad optimizada:
    *    - Verificamos disponibilidad solo cuando es necesario
    *    - Primero mostramos las sesiones y luego verificamos su disponibilidad
-   */
+ */
 
   // Estado general
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
@@ -98,7 +97,8 @@ export function SessionStep() {
     selectedClass: state.selectedClass,
     currentPage,
     pageSize: 10,
-    dispatch
+    dispatch,
+    isMobile: isMobile // Pasar el flag isMobile para controlar la validación de disponibilidad
   });
 
   // Integración del hook de filtrado de sesiones
@@ -164,6 +164,12 @@ export function SessionStep() {
     
     // Solo actualizamos disponibilidad si las sesiones ya fueron cargadas
     if (!sessionsLoaded) return;
+    
+    // En modo móvil, omitimos la validación por lotes para optimizar rendimiento
+    if (isMobile) {
+      console.log('📱 Modo móvil: Omitiendo verificación de disponibilidad por lotes');
+      return;
+    }
 
     // Limpiar cualquier timeout anterior si existe
     if (mountTimeoutRef.current) {
@@ -204,7 +210,7 @@ export function SessionStep() {
       };
       
       // Iniciamos verificación de disponibilidad solo para las sesiones visibles actuales
-      console.log(' Verificando disponibilidad para el primer lote de sesiones');
+      console.log('✅ Verificando disponibilidad para el primer lote de sesiones');
       fetchAvailability();
     }, 100); // 100ms es suficiente para que el DOM se actualice
     
@@ -214,13 +220,19 @@ export function SessionStep() {
         clearTimeout(mountTimeoutRef.current);
       }
     };
-  }, [sessionsLoaded, toast, setIsLoadingAvailability, updateAvailabilityInfo]);
+  }, [sessionsLoaded, toast, setIsLoadingAvailability, updateAvailabilityInfo, isMobile]);
 
   // Verificación para nuevas sesiones cargadas
   useEffect(() => {
     // Solo ejecutar este efecto cuando cambia la página o se cargan nuevas sesiones
     if (currentPage > 0 && checkAvailabilityForNewlyLoadedSessions && state.selectedClass?.sessions?.length) {
-      console.log(` Activando verificación de disponibilidad para sesiones en página ${currentPage}`);
+      // En modo móvil, omitimos la validación por lotes para optimizar rendimiento
+      if (isMobile) {
+        console.log(`📱 Modo móvil: Omitiendo verificación de disponibilidad para sesiones en página ${currentPage}`);
+        return;
+      }
+      
+      console.log(`✅ Activando verificación de disponibilidad para sesiones en página ${currentPage}`);
       
       // Pequeño retraso para asegurar que el estado se ha actualizado completamente
       const timeout = setTimeout(() => {
@@ -231,7 +243,7 @@ export function SessionStep() {
       
       return () => clearTimeout(timeout);
     }
-  }, [currentPage, checkAvailabilityForNewlyLoadedSessions, state.selectedClass?.sessions?.length]);
+  }, [currentPage, checkAvailabilityForNewlyLoadedSessions, state.selectedClass?.sessions?.length, isMobile]);
 
   // === Manejadores de eventos ===
   const handleSessionClick = useCallback((session: ClassSession) => {
@@ -314,7 +326,7 @@ export function SessionStep() {
   }
 
   // Validación de paquetes
-  if (packagesAreValid === false) {
+  if (packagesAreValid === false && !isValidating) {
     return (
       <StepContainer stepId="invalid-package" centered>
         <div className="pt-8 text-center space-y-4">

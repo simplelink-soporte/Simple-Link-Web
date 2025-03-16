@@ -222,8 +222,10 @@ function ClientSideProvider({ children, empresaId }: ClassRegistrationProviderPr
       if (user) {
         // Si es PRO o tiene créditos disponibles, permitimos el acceso
         if (isPro || remainingBookings > 0) {
-          // Iniciamos en el paso de paquetes por defecto
-          dispatch({ type: 'SET_STEP', payload: 'package' })
+          // Iniciamos directamente en el paso de clases en lugar de paquetes
+          dispatch({ type: 'SET_STEP', payload: 'class' })
+          // Establecemos skipPackageSelection en true para evitar redirecciones
+          dispatch({ type: 'SET_SKIP_PACKAGE', payload: true })
         } else {
           // Solo mostramos noCredits si NO es PRO y NO tiene créditos
           dispatch({ type: 'SET_STEP', payload: 'noCredits' })
@@ -252,9 +254,9 @@ function ClientSideProvider({ children, empresaId }: ClassRegistrationProviderPr
   // Agregamos un efecto para manejar cambios en el estado PRO o créditos
   useEffect(() => {
     if (hasInitialized && organization && !isLoadingBookingCount) {
-      // Si la empresa se convierte en PRO o recupera créditos, salimos del paso noCredits
+      // Si la empresa se convierte en PRO o recupera créditos, salimos del paso noCredits directamente a class
       if ((isPro || remainingBookings > 0) && state.step === 'noCredits') {
-        dispatch({ type: 'SET_STEP', payload: 'package' })
+        dispatch({ type: 'SET_STEP', payload: 'class' })
       }
     }
   }, [isPro, remainingBookings, hasInitialized, organization, state.step, isLoadingBookingCount])

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useClassesRegistrationStore } from '@/components/classes-registration/providers/ClassesRegistrationProvider';
+import { useClassRegistration } from '@/components/classes-registration/context/ClassRegistrationContext';
 import { stockValidationService } from '../../../services/stockValidationService';
 import { ClassService } from '../../../services/classService';
 import type { ClassSession } from '../../../types/models';
@@ -15,12 +15,16 @@ export function useSessionAvailability({
   selectedClass,
   currentPage,
   pageSize,
-  dispatch
+  dispatch,
+  isMobile = false, // Añadir parámetro para controlar si es vista móvil
+  forceCheck = false // Parámetro para forzar la comprobación independientemente de si es móvil o no
 }: {
   selectedClass: any | null;
   currentPage: number;
   pageSize: number;
   dispatch: (action: any) => void;
+  isMobile?: boolean; // Es vista móvil
+  forceCheck?: boolean; // Forzar la comprobación incluso en móvil
 }) {
   // Estados para controlar la verificación de disponibilidad
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
@@ -334,6 +338,65 @@ export function useSessionAvailability({
       isUpdatingRef.current = false;
     }
   }, [selectedClass, currentPage, pageSize, updateAvailabilityInfo]);
+
+  // Al cambiar de clase, actualizar la disponibilidad automáticamente
+  useEffect(() => {
+    // Skip the effect if this is the initial render
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Si no hay clase seleccionada o no tiene ID, salir temprano
+    if (!selectedClass?.id) return;
+    
+    // Si la clase seleccionada es la misma que ya verificamos, no repetir
+    if (lastVerifiedClassIdRef.current === selectedClass.id) {
+      console.log('🔍 La clase seleccionada ya ha sido verificada, saltando la verificación automática');
+      return;
+    }
+    
+    // Actualizar el ID de la última clase verificada
+    lastVerifiedClassIdRef.current = selectedClass.id;
+    
+    // En modo móvil, no ejecutamos la verificación automáticamente a menos que se fuerce
+    if (isMobile && !forceCheck) {
+      console.log('📱 Modo móvil: Omitiendo verificación automática de disponibilidad');
+      return;
+    }
+    
+    // Verificar disponibilidad con ligero retraso para que la UI se actualice primero
+    const timeoutId = setTimeout(() => {
+      console.log('🔄 Actualizando disponibilidad automáticamente después de cambio de clase');
+      updateAvailabilityInfo();
+    }, 300);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [selectedClass?.id, updateAvailabilityInfo, isMobile, forceCheck]);
+  
+  // Al cambiar de página, actualizar la disponibilidad automáticamente
+  useEffect(() => {
+    // Skip the effect on initial render
+    if (isInitialMount.current) {
+      return;
+    }
+    
+    // No ejecutar para la página 1 (ya se maneja en el efecto del cambio de clase)
+    if (currentPage <= 1) {
+      return;
+    }
+    
+    // En modo móvil, no ejecutamos la verificación automáticamente a menos que se fuerce
+    if (isMobile && !forceCheck) {
+      console.log('📱 Modo móvil: Omitiendo verificación automática de disponibilidad para página', currentPage);
+      return;
+    }
+    
+    console.log(`🔄 Actualizando disponibilidad automáticamente para la página ${currentPage}`);
+    updateAvailabilityInfo();
+  }, [currentPage, updateAvailabilityInfo, isMobile, forceCheck]);
 
   return {
     isLoadingAvailability,

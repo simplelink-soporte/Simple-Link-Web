@@ -22,7 +22,7 @@ interface Filters {
 
 export function ClassSelectionStep() {
   const router = useRouter()
-  const { state, selectClass, organization, goToStep } = useClassRegistration()
+  const { state, selectClass, organization, goToStep, dispatch } = useClassRegistration()
   const { classes = [], isLoading, error } = useClasses(organization?.id || '')
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilters, setShowFilters] = useState(false)
@@ -35,6 +35,77 @@ export function ClassSelectionStep() {
   const skipPackageRef = useRef(false)
   const linkService = new LinkService()
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set())
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Refs para el contenedor y los degradados
+  const classesContainerRef = useRef<HTMLDivElement>(null)
+  const topGradientRef = useRef<HTMLDivElement>(null)
+  const bottomGradientRef = useRef<HTMLDivElement>(null)
+
+  // Actualizar estado de isMobile
+  useEffect(() => {
+    const checkIfMobile = () => setIsMobile(window.innerWidth < 640);
+    
+    // Verificar inicialmente
+    checkIfMobile();
+    
+    // Escuchar cambios de tamaño
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Efecto para posicionar los degradados 
+  useEffect(() => {
+    if (isMobile) {
+      // En móvil usamos posición fija para los gradientes directamente con CSS
+      return;
+    }
+
+    // Solo para desktop, calculamos posiciones dinámicas
+    const updateGradientPositions = () => {
+      if (!classesContainerRef.current || !topGradientRef.current || !bottomGradientRef.current) return;
+      
+      const containerRect = classesContainerRef.current.getBoundingClientRect();
+      
+      // Configurar degradado superior - solo para desktop
+      const topGradient = topGradientRef.current;
+      topGradient.style.position = 'fixed';
+      topGradient.style.top = `${containerRect.top}px`;
+      topGradient.style.left = `${containerRect.left}px`;
+      topGradient.style.width = `${containerRect.width}px`;
+      topGradient.style.zIndex = '10';
+      
+      // Configurar degradado inferior - solo para desktop
+      const bottomGradient = bottomGradientRef.current;
+      bottomGradient.style.position = 'fixed';
+      bottomGradient.style.bottom = `${window.innerHeight - containerRect.bottom}px`;
+      bottomGradient.style.left = `${containerRect.left}px`;
+      bottomGradient.style.width = `${containerRect.width}px`;
+      bottomGradient.style.zIndex = '10';
+    };
+    
+    // Actualizar las posiciones inicialmente
+    updateGradientPositions();
+    
+    // Configurar el observador para detectar cambios de tamaño
+    const resizeObserver = new ResizeObserver(updateGradientPositions);
+    if (classesContainerRef.current) {
+      resizeObserver.observe(classesContainerRef.current);
+    }
+    
+    // Escuchar el evento de scroll para actualizar posiciones
+    const handleScroll = () => {
+      requestAnimationFrame(updateGradientPositions);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateGradientPositions);
+    
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateGradientPositions);
+    };
+  }, [isMobile]);
 
   // Efecto para obtener el slug de la empresa
   useEffect(() => {
@@ -96,17 +167,14 @@ export function ClassSelectionStep() {
     });
   }, [classes, searchQuery, filters]);
 
-  // Efecto para redirigir si no hay paquete seleccionado
+  // Efecto para redirigir si no hay paquete seleccionado - ahora desactivado
   useEffect(() => {
-    // Solo redirigir si:
-    // - No hay paquete seleccionado
-    // - No es usuario invitado
-    // - No ha decidido explícitamente saltar la selección de paquete
-    if (!state.selectedPackage && !state.isGuest && !state.skipPackageSelection) {
-      // La redirección ahora se maneja a través de la navegación principal
-      return
+    // Este efecto ya no redirecciona a la selección de paquetes
+    // Establecemos skipPackageSelection en true para evitar cualquier otra redirección
+    if (!state.skipPackageSelection) {
+      dispatch({ type: 'SET_SKIP_PACKAGE', payload: true });
     }
-  }, [state.selectedPackage, state.isGuest, state.skipPackageSelection])
+  }, [state.skipPackageSelection, dispatch]);
 
   // Hook para capturar y redirigir todos los eventos de scroll
   useEffect(() => {
@@ -282,9 +350,9 @@ export function ClassSelectionStep() {
   return (
     <StepContainer stepId="class-selection" centered={false} className="px-4 sm:px-[var(--padding-container-tablet)] lg:px-[var(--padding-container-desktop)]">
       <div className="w-full max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
-        <div className="space-y-6 flex-none">
+        <div className="space-y-6 flex-none pt-20 sm:pt-8 px-2 sm:px-0">
           {/* Encabezado */}
-          <div className="text-left space-y-1.5">
+          <div className="text-left space-y-1.5 px-2 sm:px-0">
             <h2 className="text-2xl font-semibold text-gray-900">
               Elige tu clase
             </h2>
@@ -436,20 +504,46 @@ export function ClassSelectionStep() {
           <div 
             className="space-y-4 overflow-y-auto pr-0 sm:pr-2 pb-12 relative flex-1" 
             id="classes-container"
+            ref={classesContainerRef}
             style={{
               height: 'auto',
               maxHeight: 'calc(80vh - 80px)', // Reducimos 80px para dejar margen inferior
-              minHeight: '550px',
+              minHeight: isMobile ? '450px' : '550px', // Altura menor en móvil
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
-              marginBottom: '80px' // Margen inferior explícito
+              marginBottom: isMobile ? '120px' : '100px', // Más margen en móvil
+              padding: isMobile ? '0 10px 30px 10px' : '0' // Más padding inferior en móvil
             }}
           >
-            {/* Degradado sutil en la parte superior del contenedor */}
-            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
+            {/* Gradientes para escritorio controlados por JavaScript */}
+            {!isMobile && (
+              <>
+                <div 
+                  ref={topGradientRef}
+                  className="h-8 bg-gradient-to-b from-white to-transparent pointer-events-none">
+                </div>
+                
+                <div 
+                  ref={bottomGradientRef}
+                  className="h-8 bg-gradient-to-t from-white to-transparent pointer-events-none">
+                </div>
+              </>
+            )}
             
-            {/* Degradado sutil en la parte inferior del contenedor */}
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
+            {/* Gradientes para móvil con CSS fijo */}
+            {isMobile && (
+              <>
+                <div 
+                  className="fixed top-[120px] left-0 right-0 h-16 bg-gradient-to-b from-white via-white to-transparent pointer-events-none z-30"
+                  style={{ opacity: 0.98 }}
+                ></div>
+                
+                <div 
+                  className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white to-transparent pointer-events-none z-30"
+                  style={{ opacity: 0.98 }}
+                ></div>
+              </>
+            )}
             
             {filteredClasses.length === 0 ? (
               <div className="text-center py-8">
@@ -473,7 +567,7 @@ export function ClassSelectionStep() {
                         : "border-gray-200 hover:border-gray-300",
                       "transition-all duration-200",
                       "relative overflow-hidden",
-                      "sm:h-[250px]",
+                      "sm:h-[180px] md:h-[200px]", // Altura reducida para desktop
                       "cursor-pointer", // Añadir cursor pointer para indicar que es clickable
                       "bg-transparent" // Sin fondo
                     )}
@@ -481,7 +575,7 @@ export function ClassSelectionStep() {
                   >
                     <div className="flex flex-col sm:flex-row h-full">
                       {/* Contenido con padding consistente */}
-                      <div className="flex-1 min-w-0 p-3 sm:p-5 md:p-6 flex flex-col justify-between">
+                      <div className="flex-1 min-w-0 p-4 sm:p-4 md:p-5 flex flex-col justify-between">
                         <div className="space-y-3 sm:space-y-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="space-y-1 flex-1">

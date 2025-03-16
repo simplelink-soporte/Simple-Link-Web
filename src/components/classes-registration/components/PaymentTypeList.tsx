@@ -38,8 +38,7 @@ function PaymentTypeItem({ type, isSelected, onClick }: PaymentTypeItemProps) {
         "p-3 rounded-lg cursor-pointer",
         "flex items-center justify-between mb-1 mx-1",
         "transition-all duration-200 ease-in-out",
-        "hover:shadow-sm",
-        // Estilos según selección
+        // Eliminamos la sombra y ajustamos el hover
         isSelected 
           ? "bg-gray-100 border border-gray-200" 
           : "hover:bg-gray-50"
@@ -48,7 +47,7 @@ function PaymentTypeItem({ type, isSelected, onClick }: PaymentTypeItemProps) {
       <div className="flex items-center gap-3">
         <div className={cn(
           "p-2 rounded-md",
-          isSelected ? "bg-white shadow-sm" : "bg-gray-50",
+          isSelected ? "bg-white" : "bg-gray-50", // Eliminamos shadow-sm
           "transition-colors duration-200"
         )}>
           <Icon className={cn(
@@ -75,7 +74,7 @@ function PaymentTypeItem({ type, isSelected, onClick }: PaymentTypeItemProps) {
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="flex items-center justify-center"
+          className="flex items-center justify-center ml-2"
         >
           <Check className="h-4 w-4 text-green-500" />
         </motion.div>
@@ -90,6 +89,7 @@ interface PaymentTypeListProps {
   paymentTypes?: PaymentType[]
   isExpanded?: boolean
   noContainer?: boolean
+  viewType?: 'mobile' | 'desktop'
 }
 
 export function PaymentTypeList({
@@ -97,7 +97,8 @@ export function PaymentTypeList({
   onSelect,
   paymentTypes = PAYMENT_TYPES,
   isExpanded = false,
-  noContainer = false
+  noContainer = false,
+  viewType = 'desktop'
 }: PaymentTypeListProps) {
   // Filtrar las opciones de pago
   const filteredPaymentTypes = useMemo(() => {
@@ -125,7 +126,7 @@ export function PaymentTypeList({
   
   // Contenido de los elementos de la lista
   const listContent = (
-    <div className="py-3 px-2">
+    <div className="space-y-1">
       <AnimatePresence>
         {filteredPaymentTypes.map((type) => (
           <PaymentTypeItem
@@ -144,26 +145,29 @@ export function PaymentTypeList({
     return listContent
   }
   
-  // Caso normal: devolver con el contenedor
+  // Implementación similar a CardList
+  if (!isExpanded) {
+    return null
+  }
+  
   return (
-    <div
-      className={cn(
-        "relative",
-        "p-3",
-        isExpanded ? "max-h-none overflow-visible" : "max-h-[300px] overflow-y-auto scrollbar-hide",
-        "rounded-lg border shadow-sm border-gray-100 bg-white"
+    <AnimatePresence>
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            "mt-3", // Agregamos el mismo margen superior que en CardList
+            noContainer 
+              ? "space-y-1" 
+              : "p-3 space-y-1 rounded-lg border border-gray-100 bg-white"
+          )}
+        >
+          {listContent}
+        </motion.div>
       )}
-    >
-      <div className="space-y-1">
-        {filteredPaymentTypes.map((type) => (
-          <PaymentTypeItem
-            key={`${type.id}-${type.name}`}
-            type={type}
-            isSelected={selectedType === type.id}
-            onClick={() => handleTypeSelect(type.id)}
-          />
-        ))}
-      </div>
-    </div>
+    </AnimatePresence>
   )
 }

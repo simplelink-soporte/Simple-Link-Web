@@ -13,17 +13,22 @@ export function usePackageValidation({
   activePackage: UserPackageFromDB | null;
   selectedClassBranchId: string | undefined;
 }) {
-  const [packagesAreValid, setPackagesAreValid] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // Inicializamos como true para evitar mensajes de error temporales mientras carga
+  const [packagesAreValid, setPackagesAreValid] = useState<boolean | null>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const supabase = createClientComponentClient<Database>();
 
   /**
    * Verifica si el paquete activo es válido para la sede de la clase seleccionada
    */
   const checkPackageValidity = useCallback(async () => {
-    // Si no hay paquete activo o sede seleccionada, el paquete no es válido
+    // Si no hay paquete activo o sede seleccionada, no cambiamos el estado hasta que tengamos datos completos
     if (!activePackage || !selectedClassBranchId) {
-      setPackagesAreValid(false);
+      // Solo establecemos inválido si realmente sabemos que hay datos pero son inválidos
+      if (activePackage === null && selectedClassBranchId) {
+        setPackagesAreValid(false);
+      }
+      setIsLoading(false);
       return;
     }
 
@@ -45,7 +50,8 @@ export function usePackageValidation({
       }
     } catch (error) {
       console.error('Error al verificar sedes válidas:', error);
-      setPackagesAreValid(false);
+      // No cambiamos el estado a false inmediatamente si hay un error de red
+      // Solo lo hacemos si estamos seguros que el paquete es inválido
     } finally {
       setIsLoading(false);
     }

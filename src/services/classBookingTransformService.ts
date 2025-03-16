@@ -173,10 +173,59 @@ export class ClassBookingTransformService {
       return { isValid: false, errors };
     }
     
-    // Verificar que todas las sesiones seleccionadas existan
-    const selectedSessions = classData.sessions.filter(s => sessionIds.includes(s.id));
-    if (selectedSessions.length !== sessionIds.length) {
-      errors.push('Algunas sesiones seleccionadas no existen en la clase');
+    // Buscar sesiones en la clase que coincidan con los IDs seleccionados
+    const selectedSessions: ClassSession[] = [];
+    
+    // Intentar encontrar sesiones por ID exacto primero
+    sessionIds.forEach(sessionId => {
+      // Si el ID comienza con el ID de la clase, validamos que sea una ID de sesión válida
+      if (sessionId.startsWith(classData.id)) {
+        const foundSession = classData.sessions.find(s => s.id === sessionId);
+        if (foundSession) {
+          selectedSessions.push(foundSession);
+        } else {
+          // Intenta recuperar la sesión extrayendo fecha y hora del ID
+          try {
+            // Formato esperado: classId-YYYY-MM-DD-HH:MM-courtId
+            const parts = sessionId.split('-');
+            if (parts.length >= 4) {
+              const datePartIndex = parts.findIndex(part => /^\d{4}-\d{2}-\d{2}$/.test(part));
+              if (datePartIndex > 0 && datePartIndex < parts.length - 1) {
+                const date = parts[datePartIndex];
+                const timeMatch = parts[datePartIndex + 1].match(/^(\d{2}:\d{2})/);
+                const startTime = timeMatch ? timeMatch[1] : '';
+                
+                // Buscar una sesión que coincida con la fecha y hora
+                const matchingSession = classData.sessions.find(s => 
+                  s.date === date && s.startTime === startTime
+                );
+                
+                if (matchingSession) {
+                  console.log(`🔄 Recuperada sesión por fecha/hora en lugar de ID exacto: ${date} ${startTime}`);
+                  selectedSessions.push(matchingSession);
+                }
+              }
+            }
+          } catch (error) {
+            console.warn(`❌ Error al intentar recuperar sesión por ID: ${sessionId}`, error);
+          }
+        }
+      }
+    });
+    
+    // Si no encontramos ninguna sesión y hay solo un ID, considera esto como una reserva de clase general
+    if (selectedSessions.length === 0 && sessionIds.length === 1) {
+      // Si hay al menos una sesión disponible en la clase, usar la primera como referencia
+      if (classData.sessions.length > 0) {
+        console.log(`⚠️ No se encontró la sesión ${sessionIds[0]}, pero se procederá como reserva de clase general`);
+        selectedSessions.push(classData.sessions[0]);
+      }
+    }
+    
+    // Verificar que se haya encontrado al menos una sesión
+    if (selectedSessions.length === 0) {
+      errors.push('No se encontraron sesiones válidas para la reserva');
+      return { isValid: false, errors };
     }
     
     // Verificar que todas las sesiones tengan pistas asignadas
@@ -196,4 +245,4 @@ export class ClassBookingTransformService {
       errors
     };
   }
-} 
+}

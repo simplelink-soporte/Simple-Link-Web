@@ -55,7 +55,8 @@ export function StepRenderer() {
         {/* Contenedor del contenido del paso */}
         <AnimatePresence mode="wait">
           {state.step === 'noCredits' && <NoCreditsClass />}
-          {state.step === 'package' && <PackageSelectionStep organization={organization} />}
+          {/* Redireccionar a ClassSelectionStep en lugar de mostrar PackageSelectionStep */}
+          {state.step === 'package' && <ClassSelectionStep />}
           {state.step === 'class' && <ClassSelectionStep />}
           {state.step === 'session' && <SessionStep />}
           {state.step === 'summary' && <SummaryStep />}

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 import { PaymentTypeList } from "./PaymentTypeList"
 import { PaymentTypeEnum, PAYMENT_TYPES } from "./payment-types"
+import { PaymentTypeModal } from "./PaymentTypeModal"
 
 // Filtrar tipos de pago específicos si es necesario
 const FILTERED_PAYMENT_TYPES = PAYMENT_TYPES.filter(type => 
@@ -26,33 +27,43 @@ export function PaymentTypeSection({
   const selectedTypeData = selectedType ? PAYMENT_TYPES.find(t => t.id === selectedType) : null
   const [showList, setShowList] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  
+  // Estado para controlar la visibilidad del modal en móvil
+  const [showModal, setShowModal] = useState(false)
 
   // Manejar clics fuera del componente para cerrar la lista
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowList(false)
       }
     }
 
-    if (showList) {
-      document.addEventListener("mousedown", handleClickOutside)
-    }
-
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [showList])
+  }, [])
 
-  // Función para manejar la selección directa de un tipo de pago
+  // Función para alternar la visualización de la lista
+  const toggleList = () => {
+    if (viewType === 'mobile') {
+      setShowModal(true)
+    } else {
+      setShowList(!showList)
+    }
+  }
+
+  // Función para manejar la selección de un tipo de pago
   const handleSelectPaymentType = (type: PaymentTypeEnum) => {
     onSelect(type)
     setShowList(false)
+    setShowModal(false)
   }
 
   // Manejar el clic en el selector
   const handleSelectorClick = () => {
-    setShowList(!showList)
+    toggleList()
   }
 
   // Manejar la eliminación del tipo seleccionado
@@ -155,9 +166,9 @@ export function PaymentTypeSection({
             transition={{ duration: 0.2 }}
             className={cn(
               "fixed inset-x-4 sm:static sm:w-full z-[100] mt-2 origin-top",
-              "rounded-lg shadow-lg",
+              "rounded-lg",
               "overflow-hidden bg-white",
-              "border border-gray-200"
+              "border border-gray-100"
             )}
           >
             <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
@@ -172,6 +183,17 @@ export function PaymentTypeSection({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modal para la versión móvil */}
+      {viewType === 'mobile' && (
+        <PaymentTypeModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          selectedType={selectedType}
+          onSelect={handleSelectPaymentType}
+          paymentTypes={FILTERED_PAYMENT_TYPES}
+        />
+      )}
     </motion.div>
   )
 }
