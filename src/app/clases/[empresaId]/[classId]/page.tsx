@@ -53,7 +53,7 @@ export default function ClassRegistrationPage({ params }: Props) {
       "bg-white",
       "flex flex-col",
       "py-12",
-      "overflow-hidden"
+      "overflow-y-auto"
     )}>
       <ClassRegistrationProvider empresaId={empresaId}>
         <ClassRegistrationForm selectedClassId={classId} />

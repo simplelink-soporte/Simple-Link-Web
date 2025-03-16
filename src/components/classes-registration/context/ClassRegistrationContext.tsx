@@ -272,44 +272,22 @@ function ClientSideProvider({ children, empresaId }: ClassRegistrationProviderPr
     dispatch({ type: 'SET_STEP', payload: step })
   }, [])
 
-  const selectClass = useCallback((classData: PublicClass) => {
-    console.log('Datos de la clase recibidos:', classData)
+  const selectClass = useCallback(async (classData: PublicClass) => {
+    console.log('Datos de la clase recibidos:', classData.id)
     
-    // Usar las sesiones generadas por el servicio
+    // Comprobamos si la clase ya tiene sesiones o si necesitamos cargarlas
     if (classData.sessions && classData.sessions.length > 0) {
+      // Si la clase ya viene con sesiones (ej: desde un servicio que no usa paginación),
+      // asignamos esas sesiones directamente pero advertimos en la consola
+      console.log('⚠️ La clase ya tiene sesiones pre-cargadas:', classData.sessions.length)
       dispatch({ type: 'SET_SELECTED_CLASS', payload: classData })
       return
     }
 
-    // Si no hay sesiones, generarlas (este es el caso de fallback)
-    const sessions: ClassSession[] = []
-    const { days, timeSlots } = classData.schedule
-
-    days.forEach(day => {
-      timeSlots.forEach(slot => {
-        const session: ClassSession = {
-          id: `${classData.id}-${day}-${slot.startTime}`,
-          date: classData.schedule.startDate,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          spotsLeft: slot.spotsLeft,
-          totalSpots: slot.capacity,
-          courts: classData.courts.filter(court => slot.courtIds.includes(court.id)),
-          instructor: slot.instructors[0] || classData.instructor || 'Sin instructor',
-          price: slot.price,
-          selected: false
-        }
-        sessions.push(session)
-      })
-    })
-
-    const classWithSessions: PublicClass = {
-      ...classData,
-      sessions
-    }
-
-    console.log('Clase con sesiones generadas:', classWithSessions)
-    dispatch({ type: 'SET_SELECTED_CLASS', payload: classWithSessions })
+    // Si no hay sesiones, solo guardamos la clase básica SIN generar sesiones
+    // Las sesiones se generarán paginadas en el componente SessionStep
+    console.log('👍 Guardando clase básica sin sesiones, se cargarán paginadas en SessionStep')
+    dispatch({ type: 'SET_SELECTED_CLASS', payload: classData })
   }, [])
 
   const selectSession = useCallback((sessionId: string) => {

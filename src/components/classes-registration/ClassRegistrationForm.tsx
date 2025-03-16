@@ -14,6 +14,7 @@ import { LinkService } from './services/linkService'
 import { cn } from '@/lib/utils'
 import { NoCreditsClass } from './steps/noCreditsClass'
 import { StepNavigation } from './shared/StepNavigation'
+import { createClassRegistrationError } from './types/error'
 
 const linkService = new LinkService()
 
@@ -75,18 +76,43 @@ export function ClassRegistrationForm({ selectedClassId }: ClassRegistrationForm
   useEffect(() => {
     const initializeWithClass = async () => {
       if (selectedClassId && classes.length > 0) {
-        const selectedClass = classes.find(c => c.id === selectedClassId)
+        // Indicamos que estamos cargando usando el estado local del componente
+        // en lugar de un estado global que no existe en el reducer
+        const selectedClass = classes.find(c => c.id === selectedClassId);
+        
         if (selectedClass) {
-          // Solo activamos skipPackage si accedemos directamente a una clase
-          dispatch({ type: 'SET_SKIP_PACKAGE', payload: true })
-          await selectClass(selectedClass)
-          // Modificar para ir al paso de sesiones directamente
-          dispatch({ type: 'SET_STEP', payload: 'session' as Step })
+          try {
+            // Solo activamos skipPackage si accedemos directamente a una clase
+            dispatch({ type: 'SET_SKIP_PACKAGE', payload: true });
+            
+            // Creamos una versión básica de la clase sin sesiones para que
+            // luego SessionStep pueda cargarlas paginadas
+            const classWithoutSessions = {
+              ...selectedClass,
+              sessions: [] // Inicializamos con array vacío para forzar la carga paginada
+            };
+            
+            // Seleccionar la clase (esto cargará la información básica sin generar sesiones)
+            await selectClass(classWithoutSessions);
+            
+            // Modificar para ir al paso de sesiones directamente
+            dispatch({ type: 'SET_STEP', payload: 'session' as Step });
+          } catch (error) {
+            console.error('Error al inicializar con la clase seleccionada:', error);
+            // Mostrar un error si algo sale mal
+            dispatch({ 
+              type: 'SET_ERROR', 
+              payload: createClassRegistrationError(
+                'LOAD_ERROR',
+                'No pudimos cargar la clase seleccionada. Por favor, intenta de nuevo.'
+              )
+            });
+          }
         }
       }
-    }
+    };
 
-    initializeWithClass()
+    initializeWithClass();
   }, [selectedClassId, classes, selectClass, dispatch])
 
   // Modificamos este efecto para ser más específico

@@ -1,0 +1,5882 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏭️ Omitiendo generación de sesiones para optimizar rendimiento"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Se cargaron 6 clases correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Iniciando búsqueda de paquetes una sola vez"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando paquetes para empresa:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Datos de la clase recibidos:",
+      {
+        "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "title": "Clase de Prueba A",
+        "description": "",
+        "is_active": true,
+        "created_at": "2025-03-15T19:25:56.79502+00:00",
+        "updated_at": "2025-03-15T19:25:56.79502+00:00",
+        "schedule": {
+          "days": [
+            6,
+            5,
+            4,
+            3,
+            2,
+            0
+          ],
+          "timeSlots": [
+            {
+              "startTime": "09:00",
+              "endTime": "10:00",
+              "capacity": 4,
+              "spotsLeft": 4,
+              "instructors": [
+                "Matt"
+              ],
+              "courtIds": [
+                "8f69eb96-fde1-4085-8577-61da097e4f99"
+              ],
+              "price": 10
+            }
+          ],
+          "daysOfWeek": [
+            "sábado",
+            "viernes",
+            "jueves",
+            "miércoles",
+            "martes",
+            "domingo"
+          ],
+          "startDate": "2025-03-15",
+          "endDate": null
+        },
+        "availablePaymentMethods": [
+          "cash"
+        ],
+        "visibility": "public",
+        "is_recurring": true,
+        "instructor": "Matt",
+        "sessions": [],
+        "branchInfo": {
+          "id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "name": "Sede 2",
+          "address": "Dirección de la sede 2",
+          "phone": "xc"
+        },
+        "courts": [
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "description": "crystal - covered"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Clase con sesiones generadas:",
+      {
+        "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "title": "Clase de Prueba A",
+        "description": "",
+        "is_active": true,
+        "created_at": "2025-03-15T19:25:56.79502+00:00",
+        "updated_at": "2025-03-15T19:25:56.79502+00:00",
+        "schedule": {
+          "days": [
+            6,
+            5,
+            4,
+            3,
+            2,
+            0
+          ],
+          "timeSlots": [
+            {
+              "startTime": "09:00",
+              "endTime": "10:00",
+              "capacity": 4,
+              "spotsLeft": 4,
+              "instructors": [
+                "Matt"
+              ],
+              "courtIds": [
+                "8f69eb96-fde1-4085-8577-61da097e4f99"
+              ],
+              "price": 10
+            }
+          ],
+          "daysOfWeek": [
+            "sábado",
+            "viernes",
+            "jueves",
+            "miércoles",
+            "martes",
+            "domingo"
+          ],
+          "startDate": "2025-03-15",
+          "endDate": null
+        },
+        "availablePaymentMethods": [
+          "cash"
+        ],
+        "visibility": "public",
+        "is_recurring": true,
+        "instructor": "Matt",
+        "sessions": [
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-6-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          },
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-5-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          },
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-4-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          },
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-3-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          },
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          },
+          {
+            "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-0-09:00",
+            "date": "2025-03-15",
+            "startTime": "09:00",
+            "endTime": "10:00",
+            "spotsLeft": 4,
+            "totalSpots": 4,
+            "courts": [
+              {
+                "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+                "name": "Pista 1",
+                "description": "crystal - covered"
+              }
+            ],
+            "instructor": "Matt",
+            "price": 10,
+            "selected": false
+          }
+        ],
+        "branchInfo": {
+          "id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "name": "Sede 2",
+          "address": "Dirección de la sede 2",
+          "phone": "xc"
+        },
+        "courts": [
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "description": "crystal - covered"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-6-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-5-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-4-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-3-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-0-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-6-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-5-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-4-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-3-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-0-09:00",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10,
+          "selected": false
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando sesiones para la clase seleccionada..."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Image with src \"/images/Miroodles - Sticker 5.png\" has \"fill\" but is missing \"sizes\" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesiones con rango de fechas:",
+      {
+        "today": "2025-03-15",
+        "thirtyDaysFromNow": "2025-04-14",
+        "diasEnRango": 30
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 6 (sábado)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 6: 2025-03-15"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-15 (día 6)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-15 (sáb) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-22 (día 6)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-22 (sáb) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-03-29 (día 6)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-29 (sáb) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-05 (día 6)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-05 (sáb) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #5 para 2025-04-12 (día 6)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-12 (sáb) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 5 (viernes)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 5: 2025-03-21"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-21 (día 5)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-21 (vie) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-28 (día 5)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-28 (vie) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-04-04 (día 5)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-04 (vie) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-11 (día 5)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-11 (vie) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 4 (jueves)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 4: 2025-03-20"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-20 (día 4)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-20 (jue) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-27 (día 4)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-27 (jue) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-04-03 (día 4)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-03 (jue) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-10 (día 4)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-10 (jue) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 3 (miércoles)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 3: 2025-03-19"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-19 (día 3)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-19 (mié) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-26 (día 3)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-26 (mié) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-04-02 (día 3)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-02 (mié) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-09 (día 3)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-09 (mié) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 2 (martes)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 2: 2025-03-18"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-18 (día 2)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-18 (mar) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-25 (día 2)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-25 (mar) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-04-01 (día 2)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-01 (mar) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-08 (día 2)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-08 (mar) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando día de la semana: 0 (domingo)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Primera fecha para día 0: 2025-03-16"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #1 para 2025-03-16 (día 0)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-16 (dom) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #2 para 2025-03-23 (día 0)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-23 (dom) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #3 para 2025-03-30 (día 0)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-03-30 (dom) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #4 para 2025-04-06 (día 0)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-06 (dom) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Generando sesión #5 para 2025-04-13 (día 0)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesión generada: 2025-04-13 (dom) 09:00-10:00 - Pista 1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Total de sesiones generadas: 26, rango: 2025-03-15 a 2025-04-13"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando disponibilidad para clase: c3d785ff-abc2-4fb4-91e2-f90918593b4f"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-15",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✨ Proceso completado en 298.40ms"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Total paquetes: 3"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando link de empresa con slug:",
+      "default"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-15",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-15T09:00:00.000+01:00",
+          "localEnd": "2025-03-15T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-15",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-15T08:00:00.000Z",
+          "fullEndUTC": "2025-03-15T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-15",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-16",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-16",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-16T09:00:00.000+01:00",
+          "localEnd": "2025-03-16T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-16",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-16T08:00:00.000Z",
+          "fullEndUTC": "2025-03-16T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-16",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-18",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-18",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-18T09:00:00.000+01:00",
+          "localEnd": "2025-03-18T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-18",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-18T08:00:00.000Z",
+          "fullEndUTC": "2025-03-18T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-18",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-19",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-19",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-19T09:00:00.000+01:00",
+          "localEnd": "2025-03-19T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-19",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-19T08:00:00.000Z",
+          "fullEndUTC": "2025-03-19T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-19",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-20",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-20",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-20T09:00:00.000+01:00",
+          "localEnd": "2025-03-20T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-20",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-20T08:00:00.000Z",
+          "fullEndUTC": "2025-03-20T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-20",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-21",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-21",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-21T09:00:00.000+01:00",
+          "localEnd": "2025-03-21T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-21",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-21T08:00:00.000Z",
+          "fullEndUTC": "2025-03-21T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-21",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-22",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando link de empresa con slug:",
+      "default"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-22",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-22T09:00:00.000+01:00",
+          "localEnd": "2025-03-22T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-22",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-22T08:00:00.000Z",
+          "fullEndUTC": "2025-03-22T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-22",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-23",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-23",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-23T09:00:00.000+01:00",
+          "localEnd": "2025-03-23T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-23",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-23T08:00:00.000Z",
+          "fullEndUTC": "2025-03-23T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-23",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-25",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-25",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-25T09:00:00.000+01:00",
+          "localEnd": "2025-03-25T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-25",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-25T08:00:00.000Z",
+          "fullEndUTC": "2025-03-25T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-25",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-26",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-26",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-26T09:00:00.000+01:00",
+          "localEnd": "2025-03-26T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-26",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-26T08:00:00.000Z",
+          "fullEndUTC": "2025-03-26T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-26",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-27",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-27",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-27T09:00:00.000+01:00",
+          "localEnd": "2025-03-27T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-27",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-27T08:00:00.000Z",
+          "fullEndUTC": "2025-03-27T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-27",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-28",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-28",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-28T09:00:00.000+01:00",
+          "localEnd": "2025-03-28T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-28",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-28T08:00:00.000Z",
+          "fullEndUTC": "2025-03-28T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-28",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-29",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-29",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-29T09:00:00.000+01:00",
+          "localEnd": "2025-03-29T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-29",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-29T08:00:00.000Z",
+          "fullEndUTC": "2025-03-29T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-29",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-30",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-30",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-30T09:00:00.000+02:00",
+          "localEnd": "2025-03-30T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-03-30",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-03-30T07:00:00.000Z",
+          "fullEndUTC": "2025-03-30T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-30",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-01",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-01",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-01T09:00:00.000+02:00",
+          "localEnd": "2025-04-01T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-01",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-01T07:00:00.000Z",
+          "fullEndUTC": "2025-04-01T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-01",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-02",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-02",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-02T09:00:00.000+02:00",
+          "localEnd": "2025-04-02T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-02",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-02T07:00:00.000Z",
+          "fullEndUTC": "2025-04-02T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-02",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-03T09:00:00.000+02:00",
+          "localEnd": "2025-04-03T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-03T07:00:00.000Z",
+          "fullEndUTC": "2025-04-03T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-04",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-04",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-04T09:00:00.000+02:00",
+          "localEnd": "2025-04-04T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-04",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-04T07:00:00.000Z",
+          "fullEndUTC": "2025-04-04T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-04",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-05",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-05",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-05T09:00:00.000+02:00",
+          "localEnd": "2025-04-05T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-05",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-05T07:00:00.000Z",
+          "fullEndUTC": "2025-04-05T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-05",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-06",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-06",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-06T09:00:00.000+02:00",
+          "localEnd": "2025-04-06T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-06",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-06T07:00:00.000Z",
+          "fullEndUTC": "2025-04-06T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-06",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-08",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-08",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-08T09:00:00.000+02:00",
+          "localEnd": "2025-04-08T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-08",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-08T07:00:00.000Z",
+          "fullEndUTC": "2025-04-08T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-08",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-09",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-09",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-09T09:00:00.000+02:00",
+          "localEnd": "2025-04-09T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-09",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-09T07:00:00.000Z",
+          "fullEndUTC": "2025-04-09T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-09",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-10",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-10",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-10T09:00:00.000+02:00",
+          "localEnd": "2025-04-10T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-10",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-10T07:00:00.000Z",
+          "fullEndUTC": "2025-04-10T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-10",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-11",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-11",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-11T09:00:00.000+02:00",
+          "localEnd": "2025-04-11T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-11",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-11T07:00:00.000Z",
+          "fullEndUTC": "2025-04-11T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-11",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-12",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-12",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-12T09:00:00.000+02:00",
+          "localEnd": "2025-04-12T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-12",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-12T07:00:00.000Z",
+          "fullEndUTC": "2025-04-12T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-12",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-13",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-13",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-13T09:00:00.000+02:00",
+          "localEnd": "2025-04-13T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-13",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-13T07:00:00.000Z",
+          "fullEndUTC": "2025-04-13T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-13",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Sesiones cargadas correctamente:",
+      26
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-15-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-16-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-16",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-18-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-18",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-19-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-19",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-20-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-20",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-21-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-21",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-22-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-22",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-23-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-23",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-25-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-25",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-26-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-26",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-27-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-27",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-28-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-28",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-29-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-29",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-30-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-30",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-01-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-01",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-02-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-02",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-03-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-03",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-04-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-04",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-05-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-05",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-06-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-06",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-08-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-08",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-09-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-09",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-10-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-10",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-11-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-11",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-12-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-12",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-13-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-13",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-15-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-16-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-16",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-18-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-18",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-19-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-19",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-20-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-20",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-21-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-21",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-22-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-22",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-23-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-23",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-25-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-25",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-26-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-26",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-27-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-27",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-28-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-28",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-29-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-29",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-30-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-30",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-01-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-01",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-02-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-02",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-03-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-03",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-04-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-04",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-05-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-05",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-06-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-06",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-08-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-08",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-09-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-09",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-10-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-10",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-11-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-11",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-12-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-12",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-13-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-13",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 Iniciando verificación de disponibilidad después del renderizado de sesiones"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Actualizando disponibilidad (forzado) - 11:06:44 PM"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Forzando actualización de disponibilidad para clase:",
+      "c3d785ff-abc2-4fb4-91e2-f90918593b4f"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando disponibilidad para clase: c3d785ff-abc2-4fb4-91e2-f90918593b4f"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-15",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "In HTML, %s cannot be a descendant of <%s>.\nThis will cause a hydration error.%s",
+      "<div>",
+      "p",
+      "\n\n  ...\n    <div className=\"w-full h-f...\">\n      <div className=\"w-full fle...\">\n        <AnimatePresence mode=\"wait\">\n          <PresenceChild isPresent={true} initial={undefined} custom={undefined} presenceAffectsLayout={true} mode=\"wait\" ...>\n            <SessionStep>\n              <StepContainer stepId=\"session-se...\" centered={false} className=\"px-4 sm:px...\">\n                <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} ...>\n                  <div className=\"w-full min...\" style={{opacity:0}} ref={function}>\n                    <div className=\"w-full h-f...\">\n                      <div className=\"w-full max...\">\n                        <div className=\"space-y-6 ...\">\n                          <div>\n                          <div className=\"flex flex-...\">\n                            <div className=\"space-y-1\">\n                              <h2>\n>                             <p className=\"text-sm text-gray-500\">\n                                <span className=\"ml-2 text-...\">\n>                                 <div\n>                                   className=\"w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate...\"\n>                                 >\n                                  ...\n                            ...\n                          ...\n"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "<%s> cannot contain a nested %s.\nSee this log for the ancestor stack trace.",
+      "p",
+      "<div>"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-15",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-15T09:00:00.000+01:00",
+          "localEnd": "2025-03-15T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-15",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-15T08:00:00.000Z",
+          "fullEndUTC": "2025-03-15T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-15",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-16",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-16",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-16T09:00:00.000+01:00",
+          "localEnd": "2025-03-16T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-16",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-16T08:00:00.000Z",
+          "fullEndUTC": "2025-03-16T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-16",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-18",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-18",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-18T09:00:00.000+01:00",
+          "localEnd": "2025-03-18T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-18",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-18T08:00:00.000Z",
+          "fullEndUTC": "2025-03-18T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-18",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-19",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-19",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-19T09:00:00.000+01:00",
+          "localEnd": "2025-03-19T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-19",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-19T08:00:00.000Z",
+          "fullEndUTC": "2025-03-19T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-19",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-20",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-20",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-20T09:00:00.000+01:00",
+          "localEnd": "2025-03-20T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-20",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-20T08:00:00.000Z",
+          "fullEndUTC": "2025-03-20T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-20",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-21",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-21",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-21T09:00:00.000+01:00",
+          "localEnd": "2025-03-21T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-21",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-21T08:00:00.000Z",
+          "fullEndUTC": "2025-03-21T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-21",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-22",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-22",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-22T09:00:00.000+01:00",
+          "localEnd": "2025-03-22T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-22",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-22T08:00:00.000Z",
+          "fullEndUTC": "2025-03-22T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-22",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-23",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-23",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-23T09:00:00.000+01:00",
+          "localEnd": "2025-03-23T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-23",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-23T08:00:00.000Z",
+          "fullEndUTC": "2025-03-23T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-23",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-25",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-25",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-25T09:00:00.000+01:00",
+          "localEnd": "2025-03-25T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-25",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-25T08:00:00.000Z",
+          "fullEndUTC": "2025-03-25T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-25",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-26",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-26",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-26T09:00:00.000+01:00",
+          "localEnd": "2025-03-26T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-26",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-26T08:00:00.000Z",
+          "fullEndUTC": "2025-03-26T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-26",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-27",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-27",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-27T09:00:00.000+01:00",
+          "localEnd": "2025-03-27T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-27",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-27T08:00:00.000Z",
+          "fullEndUTC": "2025-03-27T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-27",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-28",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-28",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-28T09:00:00.000+01:00",
+          "localEnd": "2025-03-28T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-28",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-28T08:00:00.000Z",
+          "fullEndUTC": "2025-03-28T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-28",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-29",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-29",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-29T09:00:00.000+01:00",
+          "localEnd": "2025-03-29T10:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-29",
+          "start": "08:00:00",
+          "end": "09:00:00",
+          "fullStartUTC": "2025-03-29T08:00:00.000Z",
+          "fullEndUTC": "2025-03-29T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-29",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-30",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-03-30",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-30T09:00:00.000+02:00",
+          "localEnd": "2025-03-30T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-03-30",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-03-30T07:00:00.000Z",
+          "fullEndUTC": "2025-03-30T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-03-30",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-01",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-01",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-01T09:00:00.000+02:00",
+          "localEnd": "2025-04-01T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-01",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-01T07:00:00.000Z",
+          "fullEndUTC": "2025-04-01T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-01",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-02",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-02",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-02T09:00:00.000+02:00",
+          "localEnd": "2025-04-02T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-02",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-02T07:00:00.000Z",
+          "fullEndUTC": "2025-04-02T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-02",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-03T09:00:00.000+02:00",
+          "localEnd": "2025-04-03T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-03T07:00:00.000Z",
+          "fullEndUTC": "2025-04-03T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-04",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-04",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-04T09:00:00.000+02:00",
+          "localEnd": "2025-04-04T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-04",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-04T07:00:00.000Z",
+          "fullEndUTC": "2025-04-04T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-04",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-05",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-05",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-05T09:00:00.000+02:00",
+          "localEnd": "2025-04-05T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-05",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-05T07:00:00.000Z",
+          "fullEndUTC": "2025-04-05T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-05",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-06",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-06",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-06T09:00:00.000+02:00",
+          "localEnd": "2025-04-06T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-06",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-06T07:00:00.000Z",
+          "fullEndUTC": "2025-04-06T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-06",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-08",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-08",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-08T09:00:00.000+02:00",
+          "localEnd": "2025-04-08T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-08",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-08T07:00:00.000Z",
+          "fullEndUTC": "2025-04-08T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-08",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-09",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-09",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-09T09:00:00.000+02:00",
+          "localEnd": "2025-04-09T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-09",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-09T07:00:00.000Z",
+          "fullEndUTC": "2025-04-09T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-09",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-10",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-10",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-10T09:00:00.000+02:00",
+          "localEnd": "2025-04-10T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-10",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-10T07:00:00.000Z",
+          "fullEndUTC": "2025-04-10T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-10",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-11",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-11",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-11T09:00:00.000+02:00",
+          "localEnd": "2025-04-11T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-11",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-11T07:00:00.000Z",
+          "fullEndUTC": "2025-04-11T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-11",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-12",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-12",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-12T09:00:00.000+02:00",
+          "localEnd": "2025-04-12T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-12",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-12T07:00:00.000Z",
+          "fullEndUTC": "2025-04-12T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-12",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-13",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios para verificación de disponibilidad:",
+      {
+        "local": {
+          "date": "2025-04-13",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-13T09:00:00.000+02:00",
+          "localEnd": "2025-04-13T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-13",
+          "start": "07:00:00",
+          "end": "08:00:00",
+          "fullStartUTC": "2025-04-13T07:00:00.000Z",
+          "fullEndUTC": "2025-04-13T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de sesión:",
+      {
+        "classId": "c3d785ff-abc2-4fb4-91e2-f90918593b4f",
+        "sessionDate": "2025-04-13",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "totalCapacity": 4,
+        "bookedSpots": 0,
+        "availableSpots": 4,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad actualizada con éxito - 11:06:55 PM"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-15-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-16-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-16",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-18-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-18",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-19-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-19",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-20-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-20",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-21-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-21",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-22-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-22",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-23-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-23",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-25-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-25",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-26-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-26",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-27-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-27",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-28-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-28",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-29-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-29",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-30-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-30",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-01-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-01",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-02-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-02",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-03-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-03",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-04-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-04",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-05-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-05",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-06-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-06",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-08-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-08",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-09-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-09",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-10-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-10",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-11-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-11",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-12-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-12",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-13-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-13",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sessions en state:",
+      [
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-15-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-15",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-16-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-16",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-18-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-18",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-19-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-19",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-20-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-20",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-21-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-21",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-22-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-22",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-23-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-23",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-25-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-25",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-26-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-26",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-27-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-27",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-28-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-28",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-29-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-29",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-03-30-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-03-30",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-01-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-01",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-02-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-02",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-03-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-03",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-04-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-04",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-05-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-05",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-06-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-06",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-08-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-08",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-09-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-09",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-10-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-10",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-11-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-11",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-12-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-12",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        },
+        {
+          "id": "c3d785ff-abc2-4fb4-91e2-f90918593b4f-2025-04-13-09:00-8f69eb96-fde1-4085-8577-61da097e4f99",
+          "date": "2025-04-13",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "spotsLeft": 4,
+          "totalSpots": 4,
+          "courts": [
+            {
+              "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+              "name": "Pista 1",
+              "description": "crystal - covered"
+            }
+          ],
+          "instructor": "Matt",
+          "price": 10
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 Iniciando verificación de disponibilidad después del renderizado de sesiones"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Actualizando disponibilidad (normal) - 11:06:55 PM"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 Evitando actualización de disponibilidad (muy reciente: 206ms < 5000ms)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ No hay cambios en disponibilidad - 11:06:55 PM"
+    ]
+  }
+]

@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion'
 import { IconChevronRight } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { useClassRegistration } from '../context/ClassRegistrationContext'
 import type { Step } from '../context/ClassRegistrationContext'
+import { motion } from 'framer-motion'
 
 interface StepNavigationProps {
   onNext?: () => Promise<void> | void
@@ -134,14 +134,24 @@ export function StepNavigation({
   }
 
   return (
-    <div className={cn(
-      "fixed bottom-0 left-0 right-0",
-      "bg-white",
-      "py-6 px-4 sm:px-6 lg:px-8",
-      "z-10"
-    )}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        "fixed bottom-0 left-0 right-0",
+        "bg-white",
+        "py-6 px-4 sm:px-6 lg:px-8",
+        "z-10"
+      )}
+    >
       <div className="w-full max-w-[var(--container-default)] mx-auto">
-        <div className="flex flex-col items-center gap-3 max-w-sm mx-auto">
+        <div className={cn(
+          "flex flex-col items-center gap-3", 
+          // Aplicar un máximo ancho más pequeño cuando sólo se muestra el botón volver
+          isSessionStep ? "max-w-[160px]" : "max-w-sm",
+          "mx-auto"
+        )}>
           {shouldShowNext && (
             <motion.button
               onClick={handleNext}
@@ -192,6 +202,6 @@ export function StepNavigation({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
