@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Check, Clock, Calendar, AlertCircle } from 'lucide-react';
+import { X, Check, Clock, Calendar, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import { Sheet, SheetContent, SheetClose } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -24,124 +24,135 @@ export function SessionMobileDrawer({
   onClose,
   session,
   isSelected,
-  onSelect
+  onSelect,
 }: SessionMobileDrawerProps) {
-  // Si no hay sesión, no mostrar nada
-  if (!session) return null;
+  const isAvailable = session ? isSessionAvailable(session) : false;
+  const isValidatingAvailability = session?.spotsLeft === undefined || session?.spotsLeft === null;
   
-  // Formatear la fecha para mostrarla en un formato legible
-  const formattedDate = formatSessionDate(session.date);
-  
-  // Verificar si la sesión está disponible
-  const isAvailable = isSessionAvailable(session);
-  
-  // Función para manejar la selección y cerrar el drawer
+  if (!session) {
+    return null;
+  }
+
   const handleSelect = () => {
-    if (isAvailable) {
+    if (session) {
       onSelect(session);
-      onClose();
     }
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="px-4 py-4">
-        <DrawerHeader className="p-0 flex items-center justify-between">
-          <DrawerTitle className="text-lg font-medium">Detalles de la sesión</DrawerTitle>
-          <DrawerClose asChild>
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent className="px-4 py-6">
+        {/* Custom header */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium">Detalles de la sesión</h2>
+          <SheetClose asChild>
             <Button variant="ghost" size="icon">
               <X className="h-4 w-4" />
             </Button>
-          </DrawerClose>
-        </DrawerHeader>
+          </SheetClose>
+        </div>
         
         <div className="mt-4 space-y-6">
           {/* Información de fecha */}
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Calendar className="h-5 w-5 mr-3 text-gray-600" />
-              <div>
-                <div className="font-medium">{formattedDate.dayName}</div>
-                <div className="text-sm text-gray-600">
-                  {formattedDate.dayNumber} {formattedDate.monthName}
-                </div>
-              </div>
-            </div>
-            
-            {/* Información de hora */}
-            <div className="flex items-center">
-              <Clock className="h-5 w-5 mr-3 text-gray-600" />
-              <div>
-                <div className="font-medium">Horario</div>
-                <div className="text-sm text-gray-600">
-                  {session.startTime} - {session.endTime}
-                </div>
-              </div>
+          <div className="flex items-start gap-3">
+            <Calendar className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-gray-900">Fecha</h3>
+              <p className="text-sm text-gray-500">
+                {formatSessionDate(session.date)}
+              </p>
             </div>
           </div>
-          
-          {/* Estado de disponibilidad */}
-          <div className="p-4 border border-gray-200 rounded-lg">
-            <h3 className="font-medium mb-2">Disponibilidad</h3>
-            
-            {session.spotsLeft === null || session.spotsLeft === undefined ? (
-              <Skeleton className="h-4 w-32" />
-            ) : (
-              <div className="flex items-center">
-                {isAvailable ? (
-                  <>
-                    <div className="h-3 w-3 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-sm">
-                      {session.spotsLeft} plazas disponibles de {session.totalSpots}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                    <span className="text-sm text-red-500">
-                      No hay plazas disponibles
-                    </span>
-                  </>
-                )}
-              </div>
-            )}
+
+          {/* Información de horario */}
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-gray-900">Horario</h3>
+              <p className="text-sm text-gray-500">
+                {session.startTime} - {session.endTime}
+              </p>
+            </div>
           </div>
-          
-          {/* Información adicional */}
-          {session.teacher && (
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="font-medium mb-1">Instructor</h3>
-              <p className="text-sm text-gray-700">{session.teacher}</p>
+
+          {/* Información de instructor */}
+          {session.instructor && (
+            <div className="flex items-start gap-3">
+              <div className="h-5 w-5 text-primary shrink-0 mt-0.5 flex items-center justify-center">
+                <span className="text-xs font-medium">👤</span>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">Instructor</h3>
+                <p className="text-sm text-gray-500">
+                  {session.instructor}
+                </p>
+              </div>
             </div>
           )}
-          
-          {/* Estado actual y acciones */}
-          <div className="space-y-3">
-            {isSelected && (
-              <Badge 
-                variant="outline" 
-                className="w-full flex items-center justify-center py-2 bg-primary/5 text-primary border-primary"
-              >
-                <Check className="h-3 w-3 mr-1" />
-                Sesión seleccionada
-              </Badge>
+
+          {/* Información de disponibilidad */}
+          <div className="flex items-start gap-3">
+            {isValidatingAvailability ? (
+              <div className="h-5 w-5 shrink-0 mt-0.5 relative">
+                <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+              </div>
+            ) : (
+              <AlertCircle className={cn(
+                "h-5 w-5 shrink-0 mt-0.5",
+                isAvailable ? "text-green-500" : "text-red-500"
+              )} />
             )}
-            
-            <Button
-              onClick={handleSelect}
-              disabled={!isAvailable || isSelected}
+            <div>
+              <h3 className="font-medium text-gray-900">Disponibilidad</h3>
+              {isValidatingAvailability ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-2 w-2 bg-blue-200 rounded-full animate-pulse"></div>
+                    <div className="h-2 w-2 bg-blue-300 rounded-full animate-pulse delay-150"></div>
+                    <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+                    <span className="text-xs text-gray-500 ml-1">Verificando...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={isAvailable ? "success" : "destructive"} className="uppercase text-xs font-semibold">
+                    {isAvailable ? 'Disponible' : 'No disponible'}
+                  </Badge>
+                  {session.spotsLeft !== undefined && session.totalSpots !== undefined && (
+                    <span className="text-xs text-gray-500">
+                      {session.spotsLeft} / {session.totalSpots} lugares
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Botón de selección */}
+          <div className="pt-4">
+            <Button 
               className="w-full"
               variant={isSelected ? "outline" : "default"}
+              onClick={handleSelect}
+              disabled={!isAvailable || isValidatingAvailability}
             >
-              {isSelected 
-                ? 'Sesión ya seleccionada' 
-                : isAvailable 
-                  ? 'Seleccionar esta sesión' 
-                  : 'No disponible'}
+              {isSelected ? (
+                <span className="flex items-center gap-2">
+                  <Check className="h-4 w-4" />
+                  Seleccionada
+                </span>
+              ) : isValidatingAvailability ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Verificando disponibilidad...
+                </span>
+              ) : (
+                'Seleccionar'
+              )}
             </Button>
           </div>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 }

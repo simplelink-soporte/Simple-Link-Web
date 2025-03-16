@@ -8,7 +8,14 @@ interface SessionListProps {
   selectedSessions: string[];
   onSessionSelect: (session: ClassSession) => void;
   isLoadingMoreSessions: boolean;
+  hasMoreSessions?: boolean;
   isMobile: boolean;
+  containerRef?: React.RefObject<HTMLDivElement>;
+  // Propiedades adicionales para compatibilidad con el código existente
+  searchQuery?: string;
+  onClearFilter?: () => void;
+  onSearchChange?: (value: string) => void;
+  hasActiveFilter?: boolean;
 }
 
 /**
@@ -21,7 +28,12 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
     selectedSessions, 
     onSessionSelect, 
     isLoadingMoreSessions,
-    isMobile 
+    hasMoreSessions,
+    isMobile,
+    searchQuery,
+    onClearFilter,
+    onSearchChange,
+    hasActiveFilter
   }, 
   ref
 ) => {
@@ -34,21 +46,24 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
     <div 
       id="sessions-container"
       ref={ref}
-      className="flex-1 overflow-y-auto px-1 pb-4 session-container"
+      className="space-y-4 overflow-y-auto pr-0 sm:pr-2 pb-12 relative flex-1"
       style={{ 
-        scrollbarWidth: 'none',
+        height: 'auto',
+        maxHeight: isMobile ? 'calc(100vh - 320px)' : '450px',
+        minHeight: isMobile ? '450px' : '450px',
+        overflowY: 'auto',
+        scrollbarWidth: 'none', 
         msOverflowStyle: 'none',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        marginBottom: isMobile ? '60px' : '20px'
       }}
     >
-      <div className="space-y-4">
-        {/* Título de sección */}
-        <h2 className="text-lg font-medium text-gray-900 mb-2 sticky top-0 bg-white z-10 py-2 shadow-sm">
-          Sesiones disponibles
-        </h2>
-
+      {/* Degradado sutil en la parte superior del contenedor */}
+      <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
+      
+      <div className="space-y-4 pb-10 pt-3">
         {/* Grid responsive para las tarjetas */}
-        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+        <div className={`space-y-4`}>
           {/* Renderizar cada sesión como una tarjeta */}
           {sessions.map((session) => (
             <SessionCard
@@ -63,7 +78,7 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
           {/* Estado de carga para más sesiones */}
           {isLoadingMoreSessions && (
             <>
-              {[...Array(isMobile ? 2 : 6)].map((_, index) => (
+              {[...Array(isMobile ? 2 : 3)].map((_, index) => (
                 <SessionCardSkeleton key={`skeleton-${index}`} />
               ))}
             </>
@@ -73,10 +88,21 @@ export const SessionList = forwardRef<HTMLDivElement, SessionListProps>((
       
       {/* Indicador de carga al final de la lista */}
       {isLoadingMoreSessions && (
-        <div className="flex justify-center items-center py-4">
-          <span className="text-sm text-gray-500">Cargando más sesiones...</span>
+        <div className="w-full py-4 flex items-center justify-center text-sm text-gray-600">
+          <div className="w-4 h-4 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-2"></div>
+          <span>Cargando más sesiones...</span>
         </div>
       )}
+
+      {/* Mensaje cuando no hay más sesiones */}
+      {!isLoadingMoreSessions && sessions.length > 0 && !hasMoreSessions && (
+        <div className="flex justify-center items-center py-4">
+          <span className="text-sm text-gray-500">Has llegado al final de las sesiones disponibles</span>
+        </div>
+      )}
+      
+      {/* Degradado sutil en la parte inferior del contenedor */}
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
     </div>
   );
 });

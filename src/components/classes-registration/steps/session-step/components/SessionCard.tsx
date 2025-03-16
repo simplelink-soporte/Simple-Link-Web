@@ -1,8 +1,5 @@
 import React from 'react';
-import { Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { ClassSession } from '../../../types/models';
 import { formatSessionDate } from '../utils/helpers';
 import { isSessionAvailable } from '../utils/helpers';
@@ -16,6 +13,7 @@ interface SessionCardProps {
 
 /**
  * Componente que renderiza una tarjeta individual para una sesión
+ * Replicas exactamente el estilo y estructura del archivo original
  */
 export function SessionCard({ 
   session, 
@@ -24,102 +22,173 @@ export function SessionCard({
   isMobile = false 
 }: SessionCardProps) {
   // Formatear la fecha para mostrarla en un formato legible
-  const formattedDate = formatSessionDate(session.date);
+  const { dayName, dayNumber, monthName } = formatSessionDate(session.date);
   
   // Verificar si la sesión está disponible
   const isAvailable = isSessionAvailable(session);
   
   // Función para manejar el clic en la tarjeta
   const handleClick = () => {
-    if (isAvailable) {
-      onSelect(session);
-    }
+    onSelect(session);
   };
 
-  // Determinar las clases CSS basadas en los estados
-  const cardClasses = cn(
-    'border rounded-lg p-4 transition-all relative flex flex-col',
-    'hover:shadow-md cursor-pointer',
-    {
-      'border-primary bg-primary/5': isSelected,
-      'border-gray-200': !isSelected,
-      'opacity-50 hover:shadow-none cursor-not-allowed': !isAvailable,
-      'h-full': true
+  // Renderizar indicador de disponibilidad
+  const renderAvailability = () => {
+    if (session.spotsLeft === undefined || session.spotsLeft === null) {
+      return (
+        <div className="flex items-center space-x-1.5">
+          <div className="h-3 w-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <span className="text-xs text-gray-500 animate-pulse whitespace-nowrap">Verificando...</span>
+        </div>
+      );
     }
-  );
-
-  // Renderizar la tarjeta
-  return (
-    <div 
-      className={cardClasses} 
-      onClick={handleClick}
-      aria-disabled={!isAvailable}
-    >
-      {/* Indicador de selección */}
-      {isSelected && (
-        <div className="absolute -right-1 -top-1 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-      )}
-
-      {/* Fecha */}
-      <div className="flex items-center mb-2">
-        <Calendar className="h-4 w-4 mr-2 text-gray-600" />
-        <div className="text-sm">
-          <span className="font-medium">{formattedDate.dayName}</span>
-          <span className="text-gray-600 ml-1">
-            {formattedDate.dayNumber} {formattedDate.monthName}
-          </span>
-        </div>
-      </div>
-
-      {/* Hora */}
-      <div className="flex items-center mb-3">
-        <Clock className="h-4 w-4 mr-2 text-gray-600" />
-        <span className="text-sm text-gray-700">
-          {session.startTime} - {session.endTime}
+    
+    // Mostrar la disponibilidad real
+    const spotsLeft = session.spotsLeft;
+    const isFewSpots = spotsLeft <= 3 && spotsLeft > 0;
+    const isNoSpots = spotsLeft === 0;
+    const isGoodAvailability = spotsLeft > 5;
+    
+    if (isNoSpots) {
+      return (
+        <span className="text-xs font-medium text-red-600 whitespace-nowrap">
+          No disponible
         </span>
-      </div>
+      );
+    }
+    
+    return (
+      <span className={cn(
+        "text-xs font-medium whitespace-nowrap",
+        isGoodAvailability ? "text-green-600" : 
+        isFewSpots ? "text-amber-600" : 
+        "text-gray-600"
+      )}>
+        {spotsLeft} {spotsLeft === 1 ? 'lugar' : 'lugares'}
+      </span>
+    );
+  };
 
-      {/* Estado de disponibilidad */}
-      <div className="mt-auto">
-        {session.spotsLeft === null || session.spotsLeft === undefined ? (
-          <Skeleton className="h-4 w-24" />
-        ) : (
-          <Badge 
-            variant={isAvailable ? 'outline' : 'destructive'} 
-            className={cn(
-              'font-normal text-xs',
-              isAvailable ? 'bg-green-50 text-green-700 hover:bg-green-50' : ''
-            )}
-          >
-            {isAvailable 
-              ? `${session.spotsLeft} plazas disponibles` 
-              : 'No disponible'}
-          </Badge>
-        )}
+  return (
+    <button
+      onClick={handleClick}
+      className={cn(
+        // Estilos base del contenedor
+        "w-full rounded-xl",
+        // Usar mismo grosor de borde para evitar movimiento al seleccionar
+        "border border-solid box-border",
+        isSelected 
+          ? "border-black" // Borde negro para elemento seleccionado
+          : "border-gray-100 hover:border-gray-200 bg-white",
+        // Quitar cualquier transición para evitar movimiento
+        "transition-none",
+        "relative overflow-hidden",
+        // Accesibilidad - quitar anillo azul al seleccionar
+        "focus:outline-none focus:ring-0"
+      )}
+      aria-pressed={isSelected}
+      title={isSelected ? "Sesión seleccionada" : "Seleccionar sesión"}
+    >
+      <div className="px-4 py-3 sm:p-4">
+        <div className="flex flex-row sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+          {/* Contenedor principal para móvil que agrupa fecha/hora y precio */}
+          <div className="flex flex-1 justify-between items-start sm:items-center gap-2">
+            {/* Fecha y hora - Visible en todos los dispositivos */}
+            <div className="min-w-0">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {dayName}, {dayNumber} de {monthName}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {session.startTime} - {session.endTime}
+                </p>
+              </div>
+            </div>
+
+            {/* Precio en móvil */}
+            <div className="sm:hidden flex-shrink-0">
+              <p className="text-sm font-medium text-gray-900">
+                {typeof session.price === 'number' 
+                  ? session.price.toLocaleString('es-AR', {
+                      style: 'currency',
+                      currency: 'ARS',
+                    })
+                  : 'Precio no disponible'
+                }
+              </p>
+            </div>
+          </div>
+
+          {/* Instructor y cancha - Solo visible en desktop */}
+          <div className="hidden sm:block flex-shrink-0">
+            <div className="flex items-center gap-3 text-sm text-gray-600">
+              {session.instructor && (
+                <p className="flex items-center gap-1">
+                  <span className="font-medium">Instructor:</span>
+                  <span className="truncate">{session.instructor}</span>
+                </p>
+              )}
+              {session.courts && session.courts.length > 0 && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <p className="flex items-center gap-1">
+                    <span className="font-medium">Cancha:</span>
+                    <span className="truncate">{session.courts[0].name}</span>
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Precio y cupos - Solo visible en desktop */}
+          <div className="hidden sm:flex flex-shrink-0 items-center gap-4">
+            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
+              {typeof session.price === 'number' 
+                ? session.price.toLocaleString('es-AR', {
+                    style: 'currency',
+                    currency: 'ARS',
+                  })
+                : 'Precio no disponible'
+              }
+            </p>
+            {renderAvailability()}
+          </div>
+        </div>
+        {/* Información de disponibilidad - Visible solo en móvil */}
+        <div className="w-full sm:hidden mt-2">
+          {renderAvailability()}
+        </div>
       </div>
-    </div>
+    </button>
   );
 }
 
 /**
- * Componente para estados de carga de la tarjeta de sesión
+ * Componente para mostrar un esqueleto de carga para una tarjeta de sesión
  */
 export function SessionCardSkeleton() {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 animate-pulse">
-      <div className="flex items-center mb-2">
-        <Skeleton className="h-4 w-4 mr-2 rounded-full" />
-        <Skeleton className="h-4 w-24" />
+    <div className="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 sm:p-4 animate-pulse">
+      <div className="flex flex-row sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+        <div className="flex flex-1 justify-between items-start sm:items-center gap-2">
+          <div className="min-w-0">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div className="h-3 bg-gray-200 rounded w-24"></div>
+            </div>
+          </div>
+          <div className="sm:hidden flex-shrink-0">
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+          </div>
+        </div>
+        <div className="hidden sm:block flex-shrink-0">
+          <div className="h-4 bg-gray-200 rounded w-48"></div>
+        </div>
+        <div className="hidden sm:flex flex-shrink-0 items-center gap-2">
+          <div className="h-4 bg-gray-200 rounded w-16"></div>
+          <div className="h-3 bg-gray-200 rounded w-24"></div>
+        </div>
       </div>
-      <div className="flex items-center mb-3">
-        <Skeleton className="h-4 w-4 mr-2 rounded-full" />
-        <Skeleton className="h-4 w-32" />
-      </div>
-      <Skeleton className="h-4 w-20 mt-auto" />
     </div>
   );
 }

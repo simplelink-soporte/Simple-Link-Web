@@ -5,7 +5,7 @@ import { useClassRegistration } from '../context/ClassRegistrationContext'
 import { PackageSelectionStep } from './PackageSelectionStep'
 import { ClassSelectionStep } from './ClassSelectionStep'
 import { ClassDetailStep } from './ClassDetailStep'
-import { SessionStep } from './SessionStep'
+import { SessionStep } from './session-step'
 import { SummaryStep } from './SummaryStep'
 // PaymentStep eliminado del flujo
 import { ConfirmationStep } from './ConfirmationStep'

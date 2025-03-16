@@ -121,6 +121,7 @@ export interface ClassSession {
   spotsLeft: number
   totalSpots: number
   selected?: boolean
+  stockStatus?: 'verified' | 'verifying' | 'error' | 'verified-out-of-stock' | 'pending' // Estado de verificación del stock
   courts: Array<{
     id: string
     name: string

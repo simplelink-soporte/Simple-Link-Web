@@ -1,6 +1,9 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronDown, ChevronUp, Building } from 'lucide-react';
+import Image from 'next/image';
+import { useClassRegistration } from '../../../context/ClassRegistrationContext';
+import { useUserPackages } from '../../../hooks/useUserPackages';
+import { ActivePackageInfo } from '../../../shared/ActivePackageInfo';
+import { useDeviceDetection } from '../hooks/useDeviceDetection';
 
 interface SessionHeaderProps {
   title: string;
@@ -9,11 +12,14 @@ interface SessionHeaderProps {
   isLongDescription: boolean;
   showFullDescription: boolean;
   onToggleDescription: () => void;
-  onBackClick: () => void;
+  onBackClick?: () => void;
+  isLoadingAvailability?: boolean;
+  sessionsMountedInUI?: boolean;
 }
 
 /**
  * Componente para mostrar el encabezado con información de la clase y controles
+ * Replica exactamente el diseño del archivo original
  */
 export function SessionHeader({
   title,
@@ -22,55 +28,99 @@ export function SessionHeader({
   isLongDescription,
   showFullDescription,
   onToggleDescription,
-  onBackClick
+  onBackClick,
+  isLoadingAvailability = false,
+  sessionsMountedInUI = false
 }: SessionHeaderProps) {
-  // Renderizar el texto correcto para el botón de descripción
-  const descriptionToggleText = showFullDescription ? 'Ver menos' : 'Ver más';
-  const DescriptionToggleIcon = showFullDescription ? ChevronUp : ChevronDown;
+  // Contexto y hooks necesarios
+  const { state } = useClassRegistration();
+  const { activePackage } = useUserPackages();
+  const isMobile = useDeviceDetection();
+  
+  // Comprobar si el paquete es válido para esta clase
+  const packagesAreValid = true; // Simplificado para este componente
 
   return (
-    <div className="mb-6 space-y-4">
-      {/* Botón de regreso y título */}
-      <div className="flex items-center mb-4">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="mr-2 text-gray-600 hover:text-gray-900" 
-          onClick={onBackClick}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          <span>Atrás</span>
-        </Button>
-        <h1 className="text-xl font-semibold flex-1 line-clamp-1">{title}</h1>
+    <div className="space-y-6 flex-none">
+      {/* Imagen decorativa */}
+      <div className="flex justify-start">
+        <div className="relative w-24 h-24">
+          <Image
+            src="/images/Miroodles - Sticker 5.png"
+            alt="Decorative sticker"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
       </div>
 
-      {/* Nombre de la sede si está disponible */}
-      {branchName && (
-        <div className="flex items-center text-sm text-gray-600 mb-2">
-          <Building className="h-4 w-4 mr-1" />
-          <span>{branchName}</span>
+      {/* Encabezado con Pack Activo alineado a la derecha en desktop */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Elige tus sesiones
+          </h2>
+          <p className="text-sm text-gray-500">
+            Selecciona las sesiones a las que deseas asistir
+            {isLoadingAvailability && sessionsMountedInUI && (
+              <span className="ml-2 text-xs italic flex items-center">
+                <div className="w-3 h-3 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin mr-1" />
+                verificando disponibilidad...
+              </span>
+            )}
+          </p>
+        </div>
+        
+        {/* Pack activo en desktop - Alineado en la misma fila que el subtítulo */}
+        {!isMobile && activePackage && (
+          <div className="flex ml-auto">
+            <ActivePackageInfo 
+              activePackage={activePackage} 
+              packagesAreValid={packagesAreValid} 
+              branchName={branchName}
+              variant="desktop"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Descripción de la clase con la información integrada - Solo en desktop */}
+      {!isMobile && (
+        <div className="space-y-2">
+          <p className="text-sm text-gray-600">
+            {description}
+          </p>
+          
+          {/* Botón "Ver más" ahora arriba de los datos dinámicos */}
+          {isLongDescription && (
+            <button
+              onClick={onToggleDescription}
+              className="text-xs text-blue-600 hover:text-blue-800"
+            >
+              {showFullDescription ? 'Ver menos' : 'Ver más'}
+            </button>
+          )}
+          
+          {/* Información simplificada de la clase */}
+          <p className="text-xs text-gray-500 mt-2">
+            {title} • {state.selectedClass?.is_recurring ? 'Recurrente' : 'Única'}
+            {branchName && ` • ${branchName}`}
+          </p>
         </div>
       )}
 
-      {/* Descripción con expansión/contracción */}
-      <div className="bg-gray-50 rounded-lg p-4">
-        <p className="text-sm text-gray-700 whitespace-pre-line">
-          {description}
-        </p>
-        
-        {/* Botón de expandir/contraer sólo si la descripción es larga */}
-        {isLongDescription && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-2 text-sm text-gray-600 hover:text-gray-900"
-            onClick={onToggleDescription}
-          >
-            {descriptionToggleText}
-            <DescriptionToggleIcon className="ml-1 h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      {/* Información paquete activo - Solo visible en móvil y alineado a la derecha */}
+      {isMobile && activePackage && (
+        <div className="flex mb-4 justify-end">
+          <ActivePackageInfo 
+            activePackage={activePackage} 
+            packagesAreValid={packagesAreValid} 
+            branchName={branchName}
+            variant="mobile"
+          />
+        </div>
+      )}
     </div>
   );
 }

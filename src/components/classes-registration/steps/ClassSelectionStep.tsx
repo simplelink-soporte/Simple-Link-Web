@@ -62,28 +62,39 @@ export function ClassSelectionStep() {
 
   // Filtrar clases
   const filteredClasses = useMemo(() => {
+    // Fecha actual para comparar con endDate
+    const currentDate = new Date();
+    
     return classes.filter(classItem => {
       // Primero filtramos por visibilidad pública
-      const isPublic = classItem.visibility === 'public'
-      if (!isPublic) return false
+      const isPublic = classItem.visibility === 'public';
+      if (!isPublic) return false;
+
+      // Verificamos si la clase ha vencido (tiene endDate y ya pasó)
+      const isExpired = classItem.schedule.endDate 
+        ? new Date(classItem.schedule.endDate) < currentDate 
+        : false;
+      
+      // No mostrar clases vencidas
+      if (isExpired) return false;
 
       // Luego aplicamos los demás filtros
       const matchesSearch = searchQuery === '' || 
         classItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        classItem.description.toLowerCase().includes(searchQuery.toLowerCase())
+        classItem.description.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Filtrar por tipo de clase
       const matchesType = filters.type === 'all' || 
         (filters.type === 'single' && !classItem.is_recurring) ||
-        (filters.type === 'recurring' && classItem.is_recurring)
+        (filters.type === 'recurring' && classItem.is_recurring);
 
       // Filtrar por sede
       const matchesBranch = !filters.branchId || 
-        classItem.branchInfo?.id === filters.branchId
+        classItem.branchInfo?.id === filters.branchId;
 
-      return matchesSearch && matchesType && matchesBranch
-    })
-  }, [classes, searchQuery, filters])
+      return matchesSearch && matchesType && matchesBranch;
+    });
+  }, [classes, searchQuery, filters]);
 
   // Efecto para redirigir si no hay paquete seleccionado
   useEffect(() => {

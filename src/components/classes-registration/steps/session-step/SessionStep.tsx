@@ -11,18 +11,22 @@ import { useDeviceDetection } from './hooks/useDeviceDetection';
 import { usePackageValidation } from './hooks/usePackageValidation';
 import { useSessionAvailability } from './hooks/useSessionAvailability';
 import { useSessionPagination } from './hooks/useSessionPagination';
+import { useSessionFiltering } from './hooks/useSessionFiltering';
 
 // Importar componentes
 import { SessionHeader } from './components/SessionHeader';
 import { SessionList } from './components/SessionList';
 import { SessionMobileDrawer } from './components/SessionMobileDrawer';
 import { SessionLoadingState } from './components/SessionLoadingState';
+import { EmptySessionState } from './components/EmptySessionState';
+
+// Importar tipos
+import { ClassSession } from '../../types/models';
+import { UpdateAvailabilityOptions } from './utils/types';
 
 /**
- * SessionStep - Componente para seleccionar sesiones de una clase
- * 
- * Este componente implementa la estrategia de optimización de carga de sesiones donde
- * primero se muestran las sesiones y luego se verifica su disponibilidad
+ * Componente principal para la selección de sesiones de clase
+ * Versión refactorizada con mejor separación de responsabilidades
  */
 export function SessionStep() {
   /**
@@ -40,15 +44,15 @@ export function SessionStep() {
    */
 
   // Estado general
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [selectedSessionForMobile, setSelectedSessionForMobile] = useState(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
+  const [selectedSessionForMobile, setSelectedSessionForMobile] = useState<ClassSession | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
   // Referencias
-  const sessionsMountedInUI = useRef(false);
-  const mountTimeoutRef = useRef(null);
-  const isInitialMount = useRef(true);
+  const sessionsMountedInUI = useRef<boolean>(false);
+  const mountTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMount = useRef<boolean>(true);
   
   // Contexto y servicios
   const { state, selectSession, deselectSession, goToStep, dispatch } = useClassRegistration();
@@ -77,15 +81,16 @@ export function SessionStep() {
     pageSize: 10,
     dispatch,
     onNewSessionsLoaded: () => {
-      // Cuando se cargan nuevas sesiones, verificamos su disponibilidad
-      if (updateAvailabilityInfo) {
-        updateAvailabilityInfo({ forceUpdate: false });
-      }
+      // Las sesiones recién cargadas se verificarán cuando cambie currentPage
+      // No necesitamos llamar a updateAvailabilityInfo aquí para evitar ciclos
+      console.log('Nuevas sesiones cargadas, se verificarán cuando cambie la página');
     }
   });
   
   const {
     isLoadingAvailability,
+    setIsLoadingAvailability,
+    sessionAvailability,
     updateAvailabilityInfo,
     isInitialMount: isInitialAvailabilityMount,
     checkAvailabilityForNewlyLoadedSessions
@@ -94,6 +99,13 @@ export function SessionStep() {
     currentPage,
     pageSize: 10,
     dispatch
+  });
+
+  // Integración del hook de filtrado de sesiones
+  const {
+    filteredSessions,
+  } = useSessionFiltering({
+    sessions: state.selectedClass?.sessions || []
   });
 
   // === Inicialización ===
@@ -106,8 +118,13 @@ export function SessionStep() {
 
       // Solo verificar disponibilidad durante la inicialización inicial
       if (isInitializing && state.selectedClass) {
-        // Forzar actualización durante la inicialización, pero solo para sesiones visibles
-        await updateAvailabilityInfo({ forceUpdate: true, visibleSessionsOnly: true });
+        try {
+          // Forzar actualización durante la inicialización, pero solo para sesiones visibles
+          await updateAvailabilityInfo(true);
+        } catch (error) {
+          console.error('Error al inicializar la disponibilidad:', error);
+          // No mostramos toast aquí para evitar sobrecargar al usuario
+        }
       }
 
       setIsInitializing(false);
@@ -129,14 +146,21 @@ export function SessionStep() {
 
     // Solo cargar sesiones si no se han cargado ya
     if (!sessionsLoaded) {
-      fetchInitialSessions();
+      fetchInitialSessions().catch(error => {
+        console.error('Error al cargar sesiones iniciales:', error);
+        toast({
+          title: "Error al cargar sesiones",
+          description: "No pudimos cargar las sesiones disponibles. Intenta de nuevo.",
+          variant: "destructive",
+        });
+      });
     }
-  }, [state.selectedClass, isInitializing, sessionsLoaded, fetchInitialSessions]);
+  }, [state.selectedClass, isInitializing, sessionsLoaded, fetchInitialSessions, toast]);
 
   // === Verificación de disponibilidad ===
   useEffect(() => {
     // Verificar que state.selectedClass no sea null y que ya tengamos sesiones
-    if (!state.selectedClass || !state.selectedClass.sessions.length) return;
+    if (!state.selectedClass || !state.selectedClass.sessions?.length) return;
     
     // Solo actualizamos disponibilidad si las sesiones ya fueron cargadas
     if (!sessionsLoaded) return;
@@ -151,6 +175,7 @@ export function SessionStep() {
     mountTimeoutRef.current = setTimeout(() => {
       // Marcar que ahora estamos verificando la disponibilidad
       sessionsMountedInUI.current = true;
+      setIsLoadingAvailability(true);
       
       const fetchAvailability = async () => {
         try {
@@ -158,10 +183,10 @@ export function SessionStep() {
           if (!state.selectedClass) return;
           
           // Usar la función del servicio para actualizar la disponibilidad
-          const forceUpdate = isInitialMount.current ? true : false;
+          const forceUpdate = isInitialMount.current;
           
           // Aquí usamos updateAvailabilityInfo en vez de acceder directamente al servicio
-          await updateAvailabilityInfo({ forceUpdate, visibleSessionsOnly: true });
+          await updateAvailabilityInfo(forceUpdate);
           
         } catch (error) {
           console.error('Error al cargar disponibilidad de sesiones:', error);
@@ -171,6 +196,7 @@ export function SessionStep() {
             variant: 'destructive'
           });
         } finally {
+          setIsLoadingAvailability(false);
           if (isInitialMount.current) {
             isInitialMount.current = false;
           }
@@ -178,7 +204,7 @@ export function SessionStep() {
       };
       
       // Iniciamos verificación de disponibilidad solo para las sesiones visibles actuales
-      console.log('🚀 Verificando disponibilidad para el primer lote de sesiones');
+      console.log(' Verificando disponibilidad para el primer lote de sesiones');
       fetchAvailability();
     }, 100); // 100ms es suficiente para que el DOM se actualice
     
@@ -188,16 +214,27 @@ export function SessionStep() {
         clearTimeout(mountTimeoutRef.current);
       }
     };
-  }, [state.selectedClass, updateAvailabilityInfo, sessionsLoaded]);
+  }, [sessionsLoaded, toast, setIsLoadingAvailability, updateAvailabilityInfo]);
 
   // Verificación para nuevas sesiones cargadas
   useEffect(() => {
-    // Verificar disponibilidad para nuevas sesiones cargadas
-    checkAvailabilityForNewlyLoadedSessions();
-  }, [currentPage, checkAvailabilityForNewlyLoadedSessions]);
+    // Solo ejecutar este efecto cuando cambia la página o se cargan nuevas sesiones
+    if (currentPage > 0 && checkAvailabilityForNewlyLoadedSessions && state.selectedClass?.sessions?.length) {
+      console.log(` Activando verificación de disponibilidad para sesiones en página ${currentPage}`);
+      
+      // Pequeño retraso para asegurar que el estado se ha actualizado completamente
+      const timeout = setTimeout(() => {
+        checkAvailabilityForNewlyLoadedSessions().catch(error => {
+          console.error('Error al verificar disponibilidad de nuevas sesiones:', error);
+        });
+      }, 200);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [currentPage, checkAvailabilityForNewlyLoadedSessions, state.selectedClass?.sessions?.length]);
 
   // === Manejadores de eventos ===
-  const handleSessionClick = useCallback((session) => {
+  const handleSessionClick = useCallback((session: ClassSession) => {
     if (isMobile) {
       // En móvil, abrimos el drawer
       setSelectedSessionForMobile(session);
@@ -208,7 +245,7 @@ export function SessionStep() {
         deselectSession(session.id);
       } else {
         // Verificar disponibilidad primero
-        if (session.spotsLeft <= 0) {
+        if (session.spotsLeft !== undefined && session.spotsLeft <= 0) {
           toast({
             title: "Sesión no disponible",
             description: `Esta sesión está completa (0 plazas disponibles)`,
@@ -231,7 +268,7 @@ export function SessionStep() {
         // Mostrar mensaje informativo
         toast({
           title: "Sesión seleccionada",
-          description: `Plazas disponibles: ${session.spotsLeft}/${session.totalSpots}`,
+          description: `Plazas disponibles: ${session.spotsLeft ?? '?'}/${session.totalSpots ?? '?'}`,
         });
         
         // Avanzar al siguiente paso después de un breve retraso
@@ -246,11 +283,6 @@ export function SessionStep() {
   const handleToggleDescription = useCallback(() => {
     setShowFullDescription(prev => !prev);
   }, []);
-
-  // Manejar el botón de volver
-  const handleBack = useCallback(() => {
-    goToStep('package');
-  }, [goToStep]);
 
   // === Renderizado condicional ===
   if (isInitializing || isLoadingPackage) {
@@ -300,11 +332,17 @@ export function SessionStep() {
     );
   }
 
+  // Verificación de sesiones disponibles
+  const hasSessions = state.selectedClass.sessions && state.selectedClass.sessions.length > 0;
+  
   // === Variables calculadas para la UI ===
   const isLongDescription = (state.selectedClass?.description?.length ?? 0) > 150;
   const displayDescription = showFullDescription 
     ? state.selectedClass?.description 
-    : state.selectedClass?.description?.slice(0, 150) + '...';
+    : state.selectedClass?.description?.slice(0, 150) + (isLongDescription ? '...' : '');
+
+  // Sesiones que se mostrarán (todas)
+  const sessionsToDisplay = state.selectedClass?.sessions || [];
 
   // === Render principal ===
   return (
@@ -318,25 +356,29 @@ export function SessionStep() {
           isLongDescription={isLongDescription}
           showFullDescription={showFullDescription}
           onToggleDescription={handleToggleDescription}
-          onBackClick={handleBack}
+          isLoadingAvailability={isLoadingAvailability}
+          sessionsMountedInUI={sessionsMountedInUI.current}
         />
         
         {/* Lista de sesiones con scroll infinito */}
         {isLoading ? (
           <SessionLoadingState />
-        ) : (
+        ) : hasSessions ? (
           <SessionList 
-            ref={sessionsContainerRef}
-            sessions={state.selectedClass.sessions || []}
+            sessions={sessionsToDisplay}
             selectedSessions={state.selectedSessions}
             onSessionSelect={handleSessionClick}
             isLoadingMoreSessions={isLoadingMoreSessions}
+            hasMoreSessions={hasMoreSessions}
+            ref={sessionsContainerRef}
             isMobile={isMobile}
           />
+        ) : (
+          <EmptySessionState />
         )}
         
         {/* Drawer para móvil cuando se selecciona una sesión */}
-        {isMobile && (
+        {isMobile && selectedSessionForMobile && (
           <SessionMobileDrawer 
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}

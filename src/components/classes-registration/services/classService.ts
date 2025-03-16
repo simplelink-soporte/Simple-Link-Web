@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * Servicio de clases
  * 
@@ -73,7 +71,7 @@ interface ClassFromDB {
 }
 
 // Importamos los tipos necesarios del servicio de validación de stock
-import type { 
+import { 
   SessionAvailabilityResponse, 
   SessionAvailabilityOptions 
 } from './stockValidationService'
@@ -93,6 +91,61 @@ interface GenerateSessionsOptions {
 
 export class ClassService {
   private supabase = createSupabaseClient()
+
+  // NUEVO: Sistema persistente para mantener valores validados de stock
+  // Estas sesiones ya fueron validadas y sus valores no deben ser sobrescritos
+  // con valores por defecto o placeholders
+  private static validatedSessionsMap = new Map<string, Map<string, number>>();
+
+  /**
+   * NUEVO: Registra una sesión como validada para proteger su valor de stock
+   * @param classId ID de la clase
+   * @param sessionId ID de la sesión
+   * @param spotsLeft Número de plazas disponibles verificado
+   */
+  public registerValidatedSessionStock(classId: string, sessionId: string, spotsLeft: number): void {
+    if (!ClassService.validatedSessionsMap.has(classId)) {
+      ClassService.validatedSessionsMap.set(classId, new Map<string, number>());
+    }
+    
+    const sessionMap = ClassService.validatedSessionsMap.get(classId);
+    // CORRECCIÓN: verificar explicitamente si spotsLeft es 0 o mayor
+    // Para garantizar que el valor 0 (agotado) también se considere como un valor válido
+    if (sessionMap && sessionId && spotsLeft !== undefined && spotsLeft !== null) {
+      // Tratamos explicitamente el caso de stock cero (sesión agotada)
+      if (spotsLeft === 0) {
+        console.log(`🔒 Registrando sesión ${sessionId} como AGOTADA (stock=0)`);
+      } else {
+        console.log(`🔒 Registrando sesión ${sessionId} con stock validado: ${spotsLeft}`);
+      }
+      sessionMap.set(sessionId, spotsLeft);
+    }
+  }
+  
+  /**
+   * NUEVO: Verifica si una sesión tiene un valor de stock validado
+   * @param classId ID de la clase
+   * @param sessionId ID de la sesión
+   * @returns Valor de stock validado o null si no existe
+   */
+  public getValidatedSessionStock(classId: string, sessionId: string): number | null {
+    const sessionMap = ClassService.validatedSessionsMap.get(classId);
+    if (sessionMap && sessionMap.has(sessionId)) {
+      return sessionMap.get(sessionId) || null;
+    }
+    return null;
+  }
+  
+  /**
+   * NUEVO: Verifica si una sesión ya tiene stock validado
+   * @param classId ID de la clase
+   * @param sessionId ID de la sesión
+   * @returns true si la sesión ya tiene stock validado
+   */
+  public hasValidatedStock(classId: string, sessionId: string): boolean {
+    const sessionMap = ClassService.validatedSessionsMap.get(classId);
+    return !!sessionMap && sessionMap.has(sessionId);
+  }
 
   /**
    * Convierte los horarios locales a UTC según la zona horaria de la sede
@@ -269,12 +322,6 @@ export class ClassService {
       // Avanzar o retroceder para llegar al día de la semana deseado
       const daysToAdd = (dayNumber - baseDate.getDay() + 7) % 7;
       baseDate.setDate(baseDate.getDate() + daysToAdd);
-      
-      // Si la fecha calculada es hoy pero ya ha pasado la hora, usar la fecha
-      if (daysToAdd === 0 && baseDate.getDate() === today.getDate()) {
-        // Asegurarnos de que sea la fecha actual
-        baseDate.setDate(today.getDate());
-      }
       
       console.log(`Primera fecha para día ${dayNumber}: ${baseDate.toISOString().split('T')[0]}`);
       
@@ -548,7 +595,11 @@ export class ClassService {
 
   async getPublicClasses(empresaId: string): Promise<PublicClass[]> {
     try {
-      const { data: classesData, error } = await this.supabase
+      // Fecha actual para comparaciones
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Consulta base
+      let query = this.supabase
         .from('classes')
         .select(`
           id,
@@ -578,37 +629,97 @@ export class ClassService {
         .eq('empresa_id', empresaId)
         .eq('visibility', 'public')
         .eq('status', 'active')
-        .lte('start_date', new Date().toISOString().split('T')[0]) // Solo clases que ya han comenzado
+        // Solo clases que ya han comenzado
+        .lte('start_date', today)
+        // Si tienen fecha de fin, solo mostrar las que aún no vencen
+        .or(`end_date.is.null,end_date.gte.${today}`)
+        // Para clases no recurrentes, solo mostrar las del día actual
+        .not('is_recurring', 'eq', false, { foreignTable: null })
         .order('created_at', { ascending: false })
 
+      // Añadir consulta adicional para las clases no recurrentes del día actual
+      const { data: classesData, error } = await query;
+
+      // Tratar el caso especial de clases no recurrentes para el día actual
+      const { data: singleClassesToday, error: singleClassesError } = await this.supabase
+        .from('classes')
+        .select(`
+          id,
+          empresa_id,
+          created_at,
+          updated_at,
+          name,
+          description,
+          visibility,
+          start_date,
+          end_date,
+          is_recurring,
+          schedule_config,
+          available_payment_methods,
+          payment_config,
+          status,
+          created_by,
+          min_students,
+          branch_id,
+          branch:sedes (
+            id,
+            name,
+            address,
+            phone
+          )
+        `)
+        .eq('empresa_id', empresaId)
+        .eq('visibility', 'public')
+        .eq('status', 'active')
+        .eq('is_recurring', false)
+        .eq('start_date', today) // Solo clases únicas de hoy
+        .or(`end_date.is.null,end_date.gte.${today}`)
+        .order('created_at', { ascending: false });
+
       if (error) {
-        console.error('Error al obtener las clases públicas:', error)
-        return []
+        console.error('Error al obtener las clases públicas:', error);
+        return [];
       }
 
-      if (!classesData || classesData.length === 0) {
-        return []
+      if (singleClassesError) {
+        console.error('Error al obtener las clases únicas de hoy:', singleClassesError);
+      }
+
+      // Combinar los resultados de ambas consultas
+      const combinedClasses = [
+        ...((classesData || []) as ClassFromDB[]),
+        ...((singleClassesToday || []) as ClassFromDB[])
+      ];
+
+      // Eliminar duplicados por ID si los hubiera
+      const uniqueClasses = Array.from(
+        new Map(combinedClasses.map(item => [item.id, item])).values()
+      );
+
+      if (uniqueClasses.length === 0) {
+        return [];
       }
 
       // Convertir a formato público y calcular disponibilidad
       const publicClasses = await Promise.all(
-        classesData.map(async dbClass => {
+        uniqueClasses.map(async dbClass => {
           // Al listar clases, omitimos la generación de sesiones para optimizar
           // rendimiento, ya que no son necesarias en los pasos de selección de clase
           // o paquete, solo en el paso de selección de sesión
           const publicClass = await this.transformClassFromDB(dbClass as ClassFromDB, {
             skipSessionGeneration: true
-          })
+          });
           
           // Actualizar disponibilidad de las sesiones (no genera sesiones, solo actualiza timeSlots)
-          return this.updateSessionsAvailability(publicClass)
+          return this.updateSessionsAvailability(publicClass);
         })
-      )
+      );
 
-      return publicClasses
+      console.log(`u2728 Encontradas ${publicClasses.length} clases disponibles y vigentes`);
+      return publicClasses;
     } catch (error) {
-      console.error('Error inesperado al obtener las clases públicas:', error)
-      return []
+      console.error('Error inesperado al obtener las clases públicas:', error);
+      return [];
     }
   }
 

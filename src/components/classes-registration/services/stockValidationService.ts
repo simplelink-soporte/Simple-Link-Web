@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * Servicio de Validación de Stock
  * 
@@ -24,6 +22,7 @@
 import { createSupabaseClient } from '@/lib/supabase'
 import { DateTime } from 'luxon'
 import type { PublicClass, ClassSession } from '../types/models'
+import { ClassService } from './classService'  // Corregir la importación
 
 // Tipo para el schedule_config
 interface ScheduleConfig {
@@ -40,7 +39,7 @@ interface ScheduleConfig {
 }
 
 // Respuesta de disponibilidad de sesión
-interface SessionAvailabilityResponse {
+export interface SessionAvailabilityResponse {
   available: boolean;
   totalCapacity: number;
   bookedSpots: number;
@@ -49,7 +48,7 @@ interface SessionAvailabilityResponse {
     message: string;
     code: string;
     details?: string;
-  };
+  }
 }
 
 // Caché de disponibilidad para reducir consultas duplicadas
@@ -59,7 +58,7 @@ interface SessionAvailabilityCache {
 }
 
 // Opciones para la verificación de disponibilidad
-interface SessionAvailabilityOptions {
+export interface SessionAvailabilityOptions {
   forceUpdate?: boolean; // Forzar actualización incluso si hay datos en caché
   throttleThreshold?: number; // Tiempo mínimo entre actualizaciones (ms)
 }
@@ -419,6 +418,9 @@ export class StockValidationService {
       
       console.log(`🔍 Verificando disponibilidad para ${sessions.length} sesiones de clase ${classId}`);
       
+      // NUEVO: Instanciar ClassService para acceder al sistema de protección de stock
+      const classService = new ClassService();
+      
       // 1. Obtener información de la clase
       const { data: classData, error: classError } = await this.supabase
         .from('classes')
@@ -483,13 +485,15 @@ export class StockValidationService {
         return `and(date.eq.${session.dateUTC},start_time.eq.${session.startTimeUTC},end_time.eq.${session.endTimeUTC})`;
       });
       
+      // CORRECCIÓN: Modificar la consulta para no usar funciones de agregación incorrectamente
+      // Opción 1: Seleccionar solo los campos individuales sin usar 'count'
       const query = this.supabase
         .from('bookings')
-        .select('date, start_time, end_time, count')
+        .select('id, date, start_time, end_time') // Removemos 'count' y agregamos 'id' para contar registros
         .eq('class_id', classId)
         .eq('reservation_type', 'class')
         .is('cancelled_at', null)
-        .or(dateTimeConditions.join(','));  // Unimos las condiciones con coma para obtener un string
+        .or(dateTimeConditions.join(','));
       
       const { data: bookings, error: bookingsError } = await query;
       
@@ -555,6 +559,9 @@ export class StockValidationService {
         const availableSpots = Math.max(0, totalCapacity - bookedSpots);
         const isAvailable = availableSpots > 0;
         
+        // NUEVO: Registrar esta sesión con stock validado en el sistema centralizado
+        classService.registerValidatedSessionStock(classId, session.id, availableSpots);
+        
         results.set(session.id, {
           available: isAvailable,
           totalCapacity,
@@ -603,74 +610,62 @@ export class StockValidationService {
   /**
    * Actualiza la información de plazas disponibles para una clase
    */
-  async updateSessionsAvailability(
+  public async updateSessionsAvailability(
     classData: PublicClass, 
     options: SessionAvailabilityOptions = {}
   ): Promise<PublicClass> {
+    console.log('ud83dudce5 Actualizando disponibilidad para todas las sesiones de la clase', classData.id);
+    
+    if (!classData.sessions || classData.sessions.length === 0) {
+      console.log('u26a0ufe0f No hay sesiones para verificar disponibilidad');
+      return classData;
+    }
+
+    // Si no debemos actualizar la disponibilidad, devolver los datos sin cambios
+    if (!this.shouldUpdateAvailability(classData.id, options)) {
+      console.log('ud83dudee1 Omitiendo actualizaciu00f3n de disponibilidad (throttle/cachu00e9)');
+      return classData;
+    }
+
+    // Creamos una nueva instancia del servicio de clases
+    const classService = new ClassService();
+
     try {
-      if (!classData.sessions || classData.sessions.length === 0) {
-        return classData;
-      }
-
-      // Verificar si se debe actualizar
-      if (!this.shouldUpdateAvailability(classData.id, options)) {
-        return classData; // No actualizar si no es necesario
-      }
-
-      console.log(`🔄 Actualizando disponibilidad para clase: ${classData.id}`);
-
-      // Filtrar solo sesiones futuras
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      // Verificar la disponibilidad de todas las sesiones en una sola operaciu00f3n
+      const availabilityMap = await this.checkMultipleSessionsAvailability(classData.id, classData.sessions);
       
-      const futureSessions = classData.sessions.filter(session => {
-        const sessionDate = new Date(session.date);
-        return sessionDate >= today;
+      // Actualizar la informaciu00f3n de disponibilidad en las sesiones
+      classData.sessions = classData.sessions.map(session => {
+        const sessionId = session.id;
+        const availability = availabilityMap.get(sessionId);
+        
+        if (availability) {
+          // Actualizar los spots disponibles
+          session.spotsLeft = availability.availableSpots;
+          
+          // IMPORTANTE: Marcar explícitamente sesiones agotadas verificadas
+          if (availability.availableSpots === 0) {
+            console.log(`ud83dudce6 [VERIFIED] Marcando sesiu00f3n ${sessionId} como AGOTADA (spots=0)`);
+            session.stockStatus = 'verified-out-of-stock';
+          } else {
+            session.stockStatus = 'verified';
+          }
+          
+          // Registrar la sesiu00f3n como validada en el sistema centralizado
+          classService.registerValidatedSessionStock(classData.id, sessionId, availability.availableSpots);
+        }
+        
+        return session;
       });
       
-      if (futureSessions.length === 0) {
-        return classData;
-      }
-
-      // Crear una copia de la clase para no modificar el objeto original
-      const updatedClass = { ...classData };
-      const updatedSessions = [...updatedClass.sessions];
-
-      // Verificar cada sesión
-      for (let i = 0; i < updatedSessions.length; i++) {
-        const session = updatedSessions[i];
-        
-        // Solo verificar sesiones futuras (fecha >= hoy)
-        const sessionDate = new Date(session.date);
-        
-        if (sessionDate >= today) {
-          const availability = await this.checkSessionAvailability(
-            classData.id,
-            session.date,
-            session.startTime,
-            session.endTime,
-            options
-          );
-          
-          // Actualizar información de disponibilidad
-          updatedSessions[i] = {
-            ...session,
-            spotsLeft: availability.availableSpots,
-            totalSpots: availability.totalCapacity
-          };
-        }
-      }
-      
-      // Actualizar el objeto de clase
-      updatedClass.sessions = updatedSessions;
-      
-      // Actualizar el timestamp de última actualización
+      // Actualizar el timestamp de u00faltima actualizaciu00f3n
       this.lastClassUpdateTimestamp[classData.id] = Date.now();
       
-      return updatedClass;
+      console.log('u2705 Disponibilidad actualizada para', classData.sessions.length, 'sesiones');
+      return classData;
+      
     } catch (error) {
-      console.error('❌ Error al actualizar disponibilidad de sesiones:', error);
-      // En caso de error, devolver la clase sin modificar
+      console.error('u274c Error al actualizar disponibilidad:', error);
       return classData;
     }
   }
