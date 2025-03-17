@@ -12,6 +12,7 @@ export interface BookingDetails {
   deposit_amount: number
   payment_status: string
   payment_method: string
+  payment_type?: string  // Tipo de pago (normal, guarantee)
   court_price: number
   rental_items_price: number
   class_session_price: number
@@ -185,6 +186,7 @@ export class ClassParticipantService {
           class_session_price,
           payment_status,
           payment_method,
+          payment_type,
           reservation_type,
           cancelled_at,
           cancellation_reason
@@ -278,6 +280,7 @@ export class ClassParticipantService {
           deposit_amount: booking.deposit_amount,
           payment_status: booking.payment_status,
           payment_method: booking.payment_method,
+          payment_type: booking.payment_type, // Agregamos payment_type
           court_price: booking.court_price,
           rental_items_price: booking.rental_items_price,
           class_session_price: booking.class_session_price,
