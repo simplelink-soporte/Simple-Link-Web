@@ -138,6 +138,16 @@ export function EnrolledParticipantsSection({
     }
   };
 
+  // Función para verificar si una reserva tiene garantía
+  const hasGuarantee = (bookingDetails?: any) => {
+    return bookingDetails?.payment_type === 'guarantee';
+  };
+
+  // Función para obtener el texto de garantía
+  const getGuaranteeText = () => {
+    return 'Con garantía';
+  };
+
   // Limpiar el campo de búsqueda
   const handleClearSearch = () => {
     setSearchTerm('');
@@ -256,9 +266,18 @@ export function EnrolledParticipantsSection({
                         
                         {/* Estado del pago como texto gris y más pequeño */}
                         {participant.bookingDetails && (
-                          <span className="text-[10px] text-gray-500 mt-0.5 block">
-                            {getPaymentStatusText(participant.bookingDetails.payment_status)}
-                          </span>
+                          <div className="flex flex-wrap gap-1 items-center mt-0.5">
+                            <span className="text-[10px] text-gray-500 block">
+                              {getPaymentStatusText(participant.bookingDetails.payment_status)}
+                            </span>
+                            
+                            {/* Indicador de garantía */}
+                            {hasGuarantee(participant.bookingDetails) && (
+                              <span className="text-[10px] bg-purple-50 text-purple-800 px-1.5 py-0.5 rounded-full border border-purple-200">
+                                {getGuaranteeText()}
+                              </span>
+                            )}
+                          </div>
                         )}
                         
                         {participant.email && (
@@ -280,4 +299,4 @@ export function EnrolledParticipantsSection({
       )}
     </div>
   )
-} 
+}
