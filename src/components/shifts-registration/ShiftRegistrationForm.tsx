@@ -1,0 +1,169 @@
+'use client';
+
+import React, { useCallback, useState, useEffect } from 'react';
+import { useShiftForm } from './context/ShiftFormContext';
+import { PublishedForm } from '@/types/forms/publish';
+import { AlertCircle } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { StepNavigation } from './shared/StepNavigation';
+import { StepRenderer } from './steps/StepRenderer';
+
+// Tipos para los pasos
+type StepComponentProps = {
+  onNext: () => void;
+  onPrevious: () => void;
+  isLastStep: boolean;
+  isFirstStep: boolean;
+  progress: number;
+};
+
+// Componente temporal para los pasos (se reemplazará con componentes reales)
+const StepPlaceholder: React.FC<StepComponentProps & { title: string }> = ({
+  title,
+  onNext,
+  onPrevious,
+  isLastStep,
+  isFirstStep,
+}) => {
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      <p className="text-gray-600 mb-6">
+        Este es un componente temporal para el paso {title}.
+      </p>
+      <div className="mt-8 text-center">
+        <p className="text-sm text-gray-500">Utilice los botones de navegación para continuar.</p>
+      </div>
+    </div>
+  );
+};
+
+// Componente principal del formulario
+export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form }) => {
+  const { state, nextStep, prevStep } = useShiftForm();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Detectar si es dispositivo móvil
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const mobileBreakpoint = 768; // Punto de quiebre para dispositivos móviles
+      setIsMobile(window.innerWidth < mobileBreakpoint);
+    };
+
+    // Verificar inicialmente
+    checkIfMobile();
+
+    // Añadir listener para cambios de tamaño
+    window.addEventListener('resize', checkIfMobile);
+
+    // Limpiar listener al desmontar
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Determinar el paso actual y el total de pasos
+  const totalSteps = 8; // Actualizado para incluir el nuevo paso de Items
+  const progress = Math.round(((state.currentStep + 1) / totalSteps) * 100);
+
+  // Handlers para navegación
+  const handleNext = useCallback(async () => {
+    // Ejemplo de cómo podríamos manejar validación o procesamiento
+    if (state.currentStep === 7) { // Si estamos en el paso de confirmación
+      setIsProcessing(true);
+      
+      try {
+        // Aquí iría la lógica para enviar la reserva
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulación
+        nextStep();
+      } catch (error) {
+        console.error('Error al procesar la reserva:', error);
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
+      nextStep();
+    }
+  }, [nextStep, state.currentStep]);
+
+  const handlePrevious = useCallback(() => {
+    prevStep();
+  }, [prevStep]);
+
+  // Obtener el título actual del paso
+  const getStepTitle = useCallback(() => {
+    switch (state.currentStep) {
+      case 0:
+        return 'Seleccionar Ubicación';
+      case 1:
+        return 'Seleccionar Turno';
+      case 2:
+        return 'Seleccionar Artículos';
+      case 3:
+        return 'Seleccionar Servicio';
+      case 4:
+        return 'Seleccionar Fecha';
+      case 5:
+        return 'Seleccionar Hora';
+      case 6:
+        return 'Confirmar Detalles';
+      case 7:
+        return 'Confirmar Reserva';
+      default:
+        return 'Formulario de Turnos';
+    }
+  }, [state.currentStep]);
+
+  // Renderizar el paso actual
+  const renderCurrentStep = () => {
+    return <StepRenderer onNext={handleNext} onPrevious={handlePrevious} />;
+  };
+
+  // Si hay un error en el estado del formulario
+  if (state.error) {
+    return (
+      <div className="container mx-auto p-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{state.error.message}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Determinar el label del botón según el paso
+  const getNextButtonLabel = () => {
+    switch (state.currentStep) {
+      case 7:
+        return 'Confirmar turno';
+      default:
+        return 'Continuar';
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4 pb-32">
+      {/* Contenido del paso actual */}
+      {state.bookingStatus === 'submitting' ? (
+        <div className="p-8 flex flex-col items-center justify-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Procesando su reserva...</p>
+        </div>
+      ) : (
+        renderCurrentStep()
+      )}
+
+      {/* Navegación entre pasos */}
+      <StepNavigation
+        onNext={handleNext}
+        onBack={handlePrevious}
+        nextLabel={getNextButtonLabel()}
+        isNextDisabled={isNextDisabled}
+        isProcessing={isProcessing || state.bookingStatus === 'submitting'}
+        isFixedToBottom={true}
+      />
+    </div>
+  );
+};

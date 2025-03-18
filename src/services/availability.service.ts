@@ -87,176 +87,6 @@ class AvailabilityService {
     return bookings;
   }
 
-  // Nuevo método para obtener clases programadas para una fecha y canchas específicas
-  private async getClassSchedules(date: Date, courtIds: string[], branchId: string) {
-    console.log('AvailabilityService - getClassSchedules - params:', { date, courtIds, branchId });
-    
-    // Obtener el día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
-    const dayOfWeek = date.getDay();
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    
-    const { data: classes, error } = await supabase
-      .from('classes')
-      .select('*')
-      .eq('branch_id', branchId)
-      .eq('status', 'active')
-      .lte('start_date', formattedDate);
-    
-    console.log('AvailabilityService - getClassSchedules - classes raw:', classes);
-    
-    if (error) {
-      console.error('AvailabilityService - getClassSchedules - error:', error);
-      return [];
-    }
-    
-    if (!classes || classes.length === 0) {
-      return [];
-    }
-    
-    // Filtrar las clases relevantes (con sesiones regulares o específicas para esta fecha)
-    const relevantClasses = classes.filter(classItem => {
-      // Verificar si tiene sesiones específicas para esta fecha
-      const hasSpecificSessions = classItem.schedule_config?.specificSessions?.some((session: any) => {
-        if (session.date !== formattedDate) return false;
-        
-        // Verificar si la sesión específica usa alguna de las canchas especificadas
-        const sessionCourtIds = Array.isArray(session.courtIds) 
-          ? session.courtIds 
-          : [session.courtIds];
-          
-        return sessionCourtIds.some((id: string) => courtIds.includes(id));
-      });
-      
-      // Si tiene sesiones específicas para esta fecha, incluirla
-      if (hasSpecificSessions) {
-        console.log('AvailabilityService - Clase incluida por sesiones específicas:', {
-          classId: classItem.id,
-          className: classItem.name,
-          date: formattedDate
-        });
-        return true;
-      }
-      
-      // Si no tiene configuración de horarios regulares, no incluirla
-      if (!classItem.schedule_config || !classItem.schedule_config.days) {
-        return false;
-      }
-      
-      // Verificar si la clase está programada para este día de la semana
-      if (!classItem.schedule_config.days.includes(dayOfWeek)) {
-        return false;
-      }
-      
-      // Verificar si la clase termina en alguna fecha (si existe end_date)
-      if (classItem.end_date && new Date(classItem.end_date) < date) {
-        return false;
-      }
-      
-      // Verificar si la clase usa alguna de las canchas especificadas
-      const hasRelevantCourt = classItem.schedule_config.timeSlots?.some((slot: any) => 
-        slot.courtIds?.some((id: string) => courtIds.includes(id))
-      );
-      
-      return hasRelevantCourt;
-    });
-    
-    console.log('AvailabilityService - getClassSchedules - relevantClasses:', relevantClasses);
-    return relevantClasses;
-  }
-
-  // Nuevo método para verificar si un slot de tiempo está ocupado por una clase
-  private isTimeSlotOccupiedByClass(
-    startTime: string,
-    endTime: string,
-    classSchedules: any[],
-    courtId: string,
-    date: Date
-  ): boolean {
-    // Convertir los tiempos del slot a minutos para comparación
-    const slotStartMinutes = this.timeToMinutes(startTime);
-    const slotEndMinutes = this.timeToMinutes(endTime);
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    
-    // Revisar si alguna clase ocupa este horario y cancha
-    for (const classItem of classSchedules) {
-      // Verificar sesiones regulares (timeSlots)
-      if (classItem.schedule_config?.timeSlots) {
-        for (const timeSlot of classItem.schedule_config.timeSlots) {
-          // Verificar si esta clase usa esta cancha
-          if (!timeSlot.courtIds?.includes(courtId)) continue;
-          
-          // Verificar si esta sesión está suspendida para la fecha actual
-          const isSuspended = classItem.schedule_config?.suspendedSessions?.some(
-            (suspendedSession: any) => 
-              suspendedSession.date === formattedDate &&
-              suspendedSession.courtId === courtId &&
-              suspendedSession.startTime === timeSlot.startTime &&
-              suspendedSession.endTime === timeSlot.endTime
-          );
-          
-          // Si la sesión está suspendida, no bloquea el horario
-          if (isSuspended) {
-            console.log('AvailabilityService - Sesión suspendida, no bloquea horario:', {
-              date: formattedDate,
-              slot: { start: timeSlot.startTime, end: timeSlot.endTime },
-              class: { name: classItem.name }
-            });
-            continue;
-          }
-          
-          // Convertir horarios de la clase a minutos
-          const classStartMinutes = this.timeToMinutes(timeSlot.startTime);
-          const classEndMinutes = this.timeToMinutes(timeSlot.endTime);
-          
-          // Verificar si hay superposición (solapamiento) entre horarios
-          // Un solapamiento ocurre cuando no es verdad que uno termina antes de que comience el otro
-          const overlap = !(slotEndMinutes <= classStartMinutes || slotStartMinutes >= classEndMinutes);
-          
-          if (overlap) {
-            console.log('AvailabilityService - Slot ocupado por clase regular:', {
-              slot: { start: startTime, end: endTime },
-              class: { name: classItem.name, start: timeSlot.startTime, end: timeSlot.endTime }
-            });
-            return true; // El slot está ocupado por una clase regular
-          }
-        }
-      }
-      
-      // Verificar sesiones específicas para esta fecha
-      if (classItem.schedule_config?.specificSessions) {
-        for (const specificSession of classItem.schedule_config.specificSessions) {
-          // Verificar si la sesión específica es para la fecha actual
-          if (specificSession.date !== formattedDate) continue;
-          
-          // Verificar si la sesión específica usa esta cancha
-          // Nota: specificSessions puede tener courtIds como string o array
-          const sessionCourtIds = Array.isArray(specificSession.courtIds) 
-            ? specificSession.courtIds 
-            : [specificSession.courtIds];
-            
-          if (!sessionCourtIds.includes(courtId)) continue;
-          
-          // Convertir horarios de la sesión específica a minutos
-          const sessionStartMinutes = this.timeToMinutes(specificSession.startTime);
-          const sessionEndMinutes = this.timeToMinutes(specificSession.endTime);
-          
-          // Verificar solapamiento
-          const overlap = !(slotEndMinutes <= sessionStartMinutes || slotStartMinutes >= sessionEndMinutes);
-          
-          if (overlap) {
-            console.log('AvailabilityService - Slot ocupado por sesión específica:', {
-              slot: { start: startTime, end: endTime },
-              class: { name: classItem.name, start: specificSession.startTime, end: specificSession.endTime }
-            });
-            return true; // El slot está ocupado por una sesión específica
-          }
-        }
-      }
-    }
-    
-    return false; // El slot no está ocupado por clases
-  }
-
   private isTimeSlotAvailable(
     startTime: string,
     endTime: string,
@@ -264,8 +94,7 @@ class AvailabilityService {
     date: Date,
     courtId: string,
     timezone: string = 'UTC',
-    timeRanges: { openTime: string; closeTime: string; }[] = [],
-    classSchedules: any[] = []
+    timeRanges: { openTime: string; closeTime: string; }[] = []
   ): boolean {
     const slotStartMinutes = this.timeToMinutes(startTime);
     const slotEndMinutes = this.timeToMinutes(endTime);
@@ -330,10 +159,7 @@ class AvailabilityService {
       return overlaps;
     });
 
-    // Verificar si el slot está ocupado por una clase
-    const isOccupiedByClass = this.isTimeSlotOccupiedByClass(startTime, endTime, classSchedules, courtId, date);
-
-    return !hasOverlap && !isOccupiedByClass;
+    return !hasOverlap;
   }
 
   private calculatePrice(court: any, durationInMinutes: number, startTime: string, date: Date): number | null {
@@ -614,23 +440,60 @@ class AvailabilityService {
     court: any,
     bookings: any[] = [],
     date: Date,
-    timezone: string = 'UTC',
-    classSchedules: any[] = []
+    timezone: string = 'UTC'
   ): TimeSlot[] {
+    // La duración ya viene en minutos, no necesitamos multiplicar por 60
+    const durationInMinutes = Math.round(durationInHours);
+    
+    // Verificar si la duración está disponible con una tolerancia de 1 minuto
+    const isDurationAvailable = court.available_durations?.some(
+      (duration: number) => Math.abs(duration - durationInMinutes) <= 1
+    );
+
+    if (!isDurationAvailable) {
+      console.log(`AvailabilityService - Duración ${durationInMinutes}min no disponible para ${court.name}`, {
+        availableDurations: court.available_durations,
+        requestedDuration: durationInMinutes,
+        courtName: court.name
+      });
+      return [];
+    }
+
     const slots: TimeSlot[] = [];
-    const SLOT_INTERVAL = 15; // Intervalo de slots en minutos
-    const durationInMinutes = durationInHours;
+    const SLOT_INTERVAL = 30;
 
-    // Filtrar solo las reservas de la pista actual
-    const filteredBookings = bookings.filter(booking => booking.court_id === court.id);
-    console.log(`AvailabilityService - generateTimeSlots - booking filtradas para ${court.name}:`, filteredBookings);
+    // Filtrar reservas una sola vez
+    const filteredBookings = bookings.filter(booking => 
+      booking.court_id === court.id && 
+      booking.date === format(date, 'yyyy-MM-dd')
+    );
 
-    // Procesar cada rango de horario
-    for (const range of timeRanges) {
-      const startMinutes = this.timeToMinutes(range.openTime);
-      const endMinutes = this.timeToMinutes(range.closeTime);
+    // Obtener rangos disponibles
+    const availableRanges = this.findAvailableRanges(timeRanges, filteredBookings, date, timezone);
 
-      // Generar slots en intervalos regulares
+    console.log(`AvailabilityService - Rangos disponibles para ${court.name}:`, {
+      ranges: availableRanges,
+      durationInMinutes,
+      courtName: court.name
+    });
+
+    // Generar slots para cada rango disponible
+    availableRanges.forEach(range => {
+      const startMinutes = this.timeToMinutes(range.start);
+      const endMinutes = this.timeToMinutes(range.end);
+      
+      // Verificación más precisa del tamaño del rango
+      const rangeSize = endMinutes - startMinutes;
+      if (rangeSize < durationInMinutes) {
+        console.log(`AvailabilityService - Rango demasiado pequeño:`, {
+          range,
+          rangeSize,
+          durationInMinutes
+        });
+        return;
+      }
+
+      // Generar slots con verificación de solapamiento
       for (let currentMinutes = startMinutes; currentMinutes + durationInMinutes <= endMinutes; currentMinutes += SLOT_INTERVAL) {
         const slotEndMinutes = currentMinutes + durationInMinutes;
         const startTime = this.minutesToTime(currentMinutes);
@@ -644,8 +507,7 @@ class AvailabilityService {
           date, 
           court.id, 
           timezone,
-          timeRanges,
-          classSchedules
+          timeRanges
         );
         
         if (isAvailable) {
@@ -666,7 +528,7 @@ class AvailabilityService {
           });
         }
       }
-    }
+    });
 
     console.log(`AvailabilityService - Total slots generados para ${court.name}:`, {
       totalSlots: slots.length,
@@ -750,7 +612,6 @@ class AvailabilityService {
     const sortedBookings = [...bookings]
       .filter(booking => booking.date === format(date, 'yyyy-MM-dd'))
       .sort((a, b) => {
-        // Convertir los horarios de las reservas a la zona horaria local
         const aStart = this.timeToMinutes(a.start_time);
         const bStart = this.timeToMinutes(b.start_time);
         return aStart - bStart;
@@ -850,11 +711,6 @@ class AvailabilityService {
 
       const courtIds = courts.map(court => court.id);
       const bookings = await this.getBookings(params.date, courtIds);
-      
-      // Obtener las clases programadas para este día y estas canchas
-      const classSchedules = await this.getClassSchedules(params.date, courtIds, params.branchId);
-      console.log('AvailabilityService - Clases programadas:', classSchedules);
-      
       const availableSlots: AvailabilitySlot[] = [];
 
       // Procesar cada pista por separado
@@ -863,29 +719,12 @@ class AvailabilityService {
         const durationInMinutes = params.duration * 60;
         
         // Los slots ya se generan con horarios en la zona horaria de la sede
-        const slots = this.generateTimeSlots(
-          schedule.timeRanges, 
-          durationInMinutes, 
-          court, 
-          bookings, 
-          params.date, 
-          timezone,
-          classSchedules
-        );
+        const slots = this.generateTimeSlots(schedule.timeRanges, durationInMinutes, court, bookings, params.date, timezone);
         console.log(`AvailabilityService - Slots generados para ${court.name}:`, slots);
 
         // Procesar cada slot generado para esta pista
         for (const timeSlot of slots) {
-          if (this.isTimeSlotAvailable(
-            timeSlot.start, 
-            timeSlot.end, 
-            bookings, 
-            params.date, 
-            court.id, 
-            timezone, 
-            undefined,
-            classSchedules
-          )) {
+          if (this.isTimeSlotAvailable(timeSlot.start, timeSlot.end, bookings, params.date, court.id, timezone)) {
             // Ya no necesitamos convertir los horarios, ya están en la zona horaria correcta
             const slotId = this.generateSlotId(court.id, format(params.date, 'yyyy-MM-dd'), timeSlot.start);
             
