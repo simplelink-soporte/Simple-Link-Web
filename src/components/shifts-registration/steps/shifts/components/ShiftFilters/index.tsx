@@ -73,7 +73,7 @@ export function ShiftFilters({
 
   return (
     <div className={cn(
-      "w-full p-4"
+      "w-full"
     )}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 max-w-[200px] pl-3">

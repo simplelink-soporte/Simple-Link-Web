@@ -29,7 +29,7 @@ const demoServices: Service[] = [
     price: 50,
     imageUrl: '/images/services/general.jpg',
   },
-  {
+  { 
     id: 'service-2',
     name: 'Especialidad',
     description: 'Atención con especialistas en diversas áreas médicas.',

@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
-interface StepNavigationProps {
+export interface StepNavigationProps {
   onNext?: () => Promise<void> | void;
   onBack?: () => void;
   nextLabel?: string;
@@ -17,6 +17,7 @@ interface StepNavigationProps {
   isNextDisabled?: boolean;
   isProcessing?: boolean;
   isFixedToBottom?: boolean;
+  className?: string;
 }
 
 // Configuración de los pasos y su navegación
@@ -36,7 +37,8 @@ export function StepNavigation({
   showNext = true,
   isNextDisabled = false,
   isProcessing = false,
-  isFixedToBottom = true
+  isFixedToBottom = true,
+  className,
 }: StepNavigationProps) {
   const { state, nextStep: goToNextStep, prevStep: goToPrevStep } = useShiftForm();
   const currentStep = state.currentStep;
@@ -66,7 +68,10 @@ export function StepNavigation({
   };
 
   const handleNext = async () => {
-    if (isProcessing || isNextDisabled) return;
+    if (isProcessing || isNextDisabled) {
+      console.log('StepNavigation: Botón Next deshabilitado', { isProcessing, isNextDisabled });
+      return;
+    }
     
     try {
       // Evento personalizado para permitir que otros componentes intercepten
@@ -125,32 +130,36 @@ export function StepNavigation({
       className={cn(
         isFixedToBottom ? "fixed bottom-0 left-0 right-0" : "relative mt-6",
         "bg-white",
-        "py-4 px-4 sm:py-6 sm:px-6",
-        "border-t border-gray-100",
+        isFixedToBottom ? "py-6 pt-4" : "py-4 px-4 sm:py-6 sm:px-6", 
         "z-10",
-        isFixedToBottom && "shadow-[0_-4px_10px_rgba(0,0,0,0.05)]"
+        className
       )}
     >
-      <div className="w-full max-w-[var(--container-default)] mx-auto">
+      <div className={cn(
+        "w-full max-w-[var(--container-default)] mx-auto",
+        isFixedToBottom && "px-6" 
+      )}>
         <div className={cn(
-          "flex flex-col sm:flex-row sm:items-center sm:justify-between",
+          "flex flex-col sm:flex-row sm:items-center sm:justify-center",
           "gap-3"
         )}>
           {/* Botones para móvil (apilados) y desktop (en línea) */}
           <div className={cn(
             "flex flex-col-reverse sm:flex-row",
-            "items-center justify-center sm:justify-start",
+            "items-center justify-center",
             "gap-3 w-full sm:w-auto"
           )}>
+            {/* En dispositivos móviles, ocultamos el botón Volver completamente */}
             {showBack && config?.backStep !== undefined && (
               <Button
                 variant="outline"
                 onClick={handleBack}
                 disabled={isProcessing}
                 className={cn(
+                  "hidden sm:flex", 
                   "w-full sm:w-auto",
                   "px-6 py-3 rounded-xl",
-                  "flex items-center justify-center gap-2",
+                  "items-center justify-center gap-2",
                   "text-sm font-medium",
                   "transition-all duration-200",
                   isProcessing && "opacity-50 cursor-not-allowed"
@@ -166,23 +175,37 @@ export function StepNavigation({
                 onClick={handleNext}
                 disabled={isNextDisabled || isProcessing}
                 className={cn(
-                  "w-full sm:w-auto",
-                  "px-6 py-3 rounded-xl",
+                  "w-full",
+                  // Estilos específicos para móvil (sm:)
+                  "sm:w-auto sm:px-6 sm:py-3 sm:rounded-xl sm:text-sm",
+                  // Estilos específicos para desktop (<sm)
+                  "rounded-lg py-6 text-base font-normal",
+                  "shadow-lg backdrop-blur-sm",
+                  // Condicionales
+                  isNextDisabled || isProcessing
+                    ? "!bg-[#A7A4A7] !text-[#dcdcdc] cursor-not-allowed hover:!bg-[#A6A3A6]" 
+                    : "!bg-black/90 !text-white hover:!bg-black/80",
+                  "disabled:opacity-100",
+                  "sm:shadow-none sm:backdrop-blur-none",
+                  "sm:bg-black sm:text-white sm:hover:bg-black/90",
+                  "sm:disabled:opacity-70",
                   "flex items-center justify-center gap-2",
-                  "text-sm font-medium",
                   "transition-all duration-200",
-                  (isNextDisabled || isProcessing) && "opacity-70 cursor-not-allowed"
+                  // Reforzar estilos de deshabilitado
+                  (isNextDisabled || isProcessing) && "pointer-events-none opacity-60"
                 )}
+                style={{
+                  transform: 'translate3d(0, 0, 0)',
+                  willChange: 'transform',
+                }}
               >
                 <span>{getNextButtonLabel()}</span>
-                <ChevronRight size={16} className="text-white/80" />
+                {/* Mostrar la flecha solo en modo desktop */}
+                <span className="hidden sm:inline">
+                  <ChevronRight size={16} className="text-white/80" />
+                </span>
               </Button>
             )}
-          </div>
-          
-          {/* Indicador de paso (solo visible en desktop) */}
-          <div className="hidden sm:block text-sm text-gray-500">
-            Paso {currentStep + 1} de {Object.keys(STEP_CONFIG).length}
           </div>
         </div>
       </div>

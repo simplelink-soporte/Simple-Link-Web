@@ -16,6 +16,7 @@ import { DateSelector } from './components/DateSelector';
 import { ShiftFilters } from './components/ShiftFilters';
 import { ShiftsList } from './components/ShiftsList';
 import { StepNavigation } from '../../shared/StepNavigation';
+import { MobileLayout } from '../../shared/MobileLayout';
 
 // Importar el hook de disponibilidad
 import { useAvailability } from '@/hooks/useAvailability';
@@ -41,10 +42,29 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   
   // Referencia al contenedor de la lista de turnos para scrolling
   const shiftsContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Estado para determinar si es móvil o desktop
+  const [viewType, setViewType] = useState<'mobile' | 'desktop'>('desktop');
+  
+  // Efecto para detectar si es móvil
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setViewType(window.innerWidth < 768 ? 'mobile' : 'desktop');
+    };
+
+    // Verificar inicialmente
+    checkIfMobile();
+
+    // Añadir listener para cambios de tamaño
+    window.addEventListener('resize', checkIfMobile);
+
+    // Limpiar listener al desmontar
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Implementar el scroll confinado al contenedor de turnos
-  useShiftsScroll(shiftsContainerRef, {
-    enabled: true,
+  useShiftsScroll(shiftsContainerRef as React.RefObject<HTMLDivElement>, {
+    enabled: viewType === 'desktop',
     scrollSpeed: 1.2,
     initialPadding: 10
   });
@@ -73,23 +93,6 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   const [selectedTime, setSelectedTime] = useState<TimeOfDay | null>(null);
   const [courtFilter, setCourtFilter] = useState<CourtType>('all');
   const [selectedShiftId, setSelectedShiftId] = useState<string | null>(state.selectedShift);
-  const [viewType, setViewType] = useState<'mobile' | 'desktop'>('desktop');
-
-  // Efecto para detectar si es móvil
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setViewType(window.innerWidth < 768 ? 'mobile' : 'desktop');
-    };
-
-    // Verificar inicialmente
-    checkIfMobile();
-
-    // Añadir listener para cambios de tamaño
-    window.addEventListener('resize', checkIfMobile);
-
-    // Limpiar listener al desmontar
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
 
   // Efecto para sincronizar con el estado global
   useEffect(() => {
@@ -139,10 +142,13 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
 
   // Manejador para avanzar al siguiente paso
   const handleNext = useCallback(() => {
-    if (selectedShiftId) {
-      console.log('[ShiftsStep] Avanzando al siguiente paso con el turno:', selectedShiftId);
-      onNext();
+    if (!selectedShiftId) {
+      console.log('[ShiftsStep] No se puede avanzar: No hay turno seleccionado');
+      return;
     }
+    
+    console.log('[ShiftsStep] Avanzando al siguiente paso con el turno:', selectedShiftId);
+    onNext();
   }, [selectedShiftId, onNext]);
   
   // Manejador para cambiar la fecha
@@ -225,81 +231,160 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   }, [selectShift, setShiftDetails]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.4 }}
-      className="flex flex-col h-full p-4 md:p-6"
-    >
-      {/* Encabezado */}
-      <PageHeader 
-        title="Selecciona tu turno"
-        description="Elige el día y horario que prefieras para tu reserva"
-        theme="light"
-      />
-      
-      {/* Selector de Fecha */}
-      <div className="mt-6">
-        <DateSelector 
-          selectedDate={selectedDate}
-          onDateSelect={handleDateChange}
-          viewType={viewType}
-          theme="light"
-        />
-      </div>
-      
-      {/* Filtros */}
-      <div className="mt-6">
-        <ShiftFilters 
-          duration={duration}
-          onDurationChange={handleDurationChange}
-          selectedTime={selectedTime}
-          onTimeChange={handleTimeChange}
-          courtFilter={courtFilter}
-          onCourtFilterChange={handleCourtFilterChange}
-          viewType={viewType}
-          theme="light"
-        />
-      </div>
-      
-      {/* Lista de Turnos - Contenedor con altura máxima para scroll interno */}
-      <div className="mt-6 flex-1 overflow-hidden flex flex-col">
-        <div className="flex-1 relative">
-          <ShiftsList 
-            shifts={slots.map(slot => ({
-              id: slot.id,
-              time: slot.startTime,
-              endTime: slot.endTime,
-              type: 'Turno Regular',
-              courtNumber: slot.courtName,
-              courtType: slot.courtType,
-              basePrice: slot.price || 0,
-              status: slot.status
-            }))}
-            selectedShift={selectedShiftId}
-            onShiftSelect={(shift) => {
-              // Encontrar el slot original basado en el ID del shift seleccionado
-              const slot = slots.find(s => s.id === shift.id);
-              if (slot) {
-                handleShiftSelection(slot);
-              }
-            }}
-            loading={loading}
-            viewType={viewType}
-            theme="light"
-            containerRef={shiftsContainerRef as React.RefObject<HTMLDivElement>}
-          />
-        </div>
-      </div>
-      
-      {/* Navegación */}
-      <StepNavigation 
+    viewType === 'mobile' ? (
+      // Layout móvil con header y footer de navegación
+      <MobileLayout
         onNext={handleNext}
         onBack={onPrevious}
         isNextDisabled={!selectedShiftId}
-      />
-    </motion.div>
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col h-full"
+        >
+          {/* Encabezado */}
+          <PageHeader 
+            title="Selecciona tu turno"
+            description="Elige el día y horario que prefieras para tu reserva"
+            theme="light"
+          />
+          
+          {/* Selector de Fecha */}
+          <div className="mt-6">
+            <DateSelector 
+              selectedDate={selectedDate}
+              onDateSelect={handleDateChange}
+              viewType={viewType}
+              theme="light"
+            />
+          </div>
+          
+          {/* Filtros */}
+          <div className="mt-6">
+            <ShiftFilters 
+              duration={duration}
+              onDurationChange={handleDurationChange}
+              selectedTime={selectedTime}
+              onTimeChange={handleTimeChange}
+              courtFilter={courtFilter}
+              onCourtFilterChange={handleCourtFilterChange}
+              viewType={viewType}
+              theme="light"
+            />
+          </div>
+          
+          {/* Lista de Turnos - Contenedor con altura máxima para scroll interno */}
+          <div className="mt-6 flex-1 overflow-hidden flex flex-col">
+            <div className="flex-1 relative">
+              <ShiftsList 
+                shifts={slots.map(slot => ({
+                  id: slot.id,
+                  time: slot.startTime,
+                  endTime: slot.endTime,
+                  type: 'Turno Regular',
+                  courtNumber: slot.courtName,
+                  courtType: slot.courtType,
+                  basePrice: slot.price || 0,
+                  status: slot.status
+                }))}
+                selectedShift={selectedShiftId}
+                onShiftSelect={(shift) => {
+                  // Encontrar el slot original basado en el ID del shift seleccionado
+                  const slot = slots.find(s => s.id === shift.id);
+                  if (slot) {
+                    handleShiftSelection(slot);
+                  }
+                }}
+                loading={loading}
+                viewType={viewType}
+                theme="light"
+                containerRef={shiftsContainerRef as React.RefObject<HTMLDivElement>}
+              />
+            </div>
+          </div>
+        </motion.div>
+      </MobileLayout>
+    ) : (
+      // Layout desktop con encabezado y navegación en el footer
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col h-full p-4 md:p-6"
+      >
+        {/* Encabezado */}
+        <PageHeader 
+          title="Selecciona tu turno"
+          description="Elige el día y horario que prefieras para tu reserva"
+          theme="light"
+        />
+        
+        {/* Selector de Fecha */}
+        <div className="mt-6">
+          <DateSelector 
+            selectedDate={selectedDate}
+            onDateSelect={handleDateChange}
+            viewType={viewType}
+            theme="light"
+          />
+        </div>
+        
+        {/* Filtros */}
+        <div className="mt-6">
+          <ShiftFilters 
+            duration={duration}
+            onDurationChange={handleDurationChange}
+            selectedTime={selectedTime}
+            onTimeChange={handleTimeChange}
+            courtFilter={courtFilter}
+            onCourtFilterChange={handleCourtFilterChange}
+            viewType={viewType}
+            theme="light"
+          />
+        </div>
+        
+        {/* Lista de Turnos - Contenedor con altura máxima para scroll interno */}
+        <div className="mt-6 flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 relative">
+            <ShiftsList 
+              shifts={slots.map(slot => ({
+                id: slot.id,
+                time: slot.startTime,
+                endTime: slot.endTime,
+                type: 'Turno Regular',
+                courtNumber: slot.courtName,
+                courtType: slot.courtType,
+                basePrice: slot.price || 0,
+                status: slot.status
+              }))}
+              selectedShift={selectedShiftId}
+              onShiftSelect={(shift) => {
+                // Encontrar el slot original basado en el ID del shift seleccionado
+                const slot = slots.find(s => s.id === shift.id);
+                if (slot) {
+                  handleShiftSelection(slot);
+                }
+              }}
+              loading={loading}
+              viewType={viewType}
+              theme="light"
+              containerRef={shiftsContainerRef as React.RefObject<HTMLDivElement>}
+            />
+          </div>
+        </div>
+        
+        {/* Navegación */}
+        <StepNavigation 
+          onNext={handleNext}
+          onBack={onPrevious}
+          isNextDisabled={!selectedShiftId}
+        />
+      </motion.div>
+    )
   );
 };
 

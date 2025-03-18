@@ -1,8 +1,9 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useShiftForm } from '../context/ShiftFormContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { MobileLayout } from '../shared/MobileLayout';
 
 // Importación de los componentes de pasos
 const ServiceStep = React.lazy(() => import('./ServiceStep'));
@@ -20,6 +21,7 @@ export type StepComponentProps = {
   isLastStep: boolean;
   isFirstStep: boolean;
   progress: number;
+  viewType: 'mobile' | 'desktop';
 };
 
 export const StepRenderer: React.FC<{
@@ -28,6 +30,25 @@ export const StepRenderer: React.FC<{
 }> = ({ onNext, onPrevious }) => {
   const { state } = useShiftForm();
   const totalSteps = 8; // Actualizado para incluir el nuevo paso de Items
+  
+  // Estado para detectar si es móvil o desktop
+  const [viewType, setViewType] = useState<'mobile' | 'desktop'>('desktop');
+  
+  // Efecto para detectar si es móvil
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setViewType(window.innerWidth < 768 ? 'mobile' : 'desktop');
+    };
+
+    // Verificar inicialmente
+    checkIfMobile();
+
+    // Añadir listener para cambios de tamaño
+    window.addEventListener('resize', checkIfMobile);
+
+    // Limpiar listener al desmontar
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
   
   // Calcular propiedades comunes para todos los pasos
   const isFirstStep = state.currentStep === 0;
@@ -41,30 +62,57 @@ export const StepRenderer: React.FC<{
     isFirstStep,
     isLastStep,
     progress,
+    viewType,
   };
 
   // Renderizar el paso correspondiente según el estado actual
   const renderStep = () => {
+    let currentStep;
+    
     switch (state.currentStep) {
       case 0:
-        return <LocationStep {...stepProps} />;
+        currentStep = <LocationStep {...stepProps} />;
+        break;
       case 1:
+        // ShiftsStep ya tiene su propia lógica para manejar la vista móvil
         return <ShiftsStep {...stepProps} />;
       case 2:
-        return <ItemsStep {...stepProps} />;
+        currentStep = <ItemsStep {...stepProps} />;
+        break;
       case 3:
-        return <ServiceStep {...stepProps} />;
+        currentStep = <ServiceStep {...stepProps} />;
+        break;
       case 4:
-        return <DateStep {...stepProps} />;
+        currentStep = <DateStep {...stepProps} />;
+        break;
       case 5:
-        return <TimeStep {...stepProps} />;
+        currentStep = <TimeStep {...stepProps} />;
+        break;
       case 6:
-        return <SummaryStep {...stepProps} />;
+        currentStep = <SummaryStep {...stepProps} />;
+        break;
       case 7:
-        return <ConfirmationStep {...stepProps} />;
+        currentStep = <ConfirmationStep {...stepProps} />;
+        break;
       default:
-        return <LocationStep {...stepProps} />;
+        currentStep = <div>Paso no encontrado</div>;
     }
+    
+    // Para todos los pasos (excepto ShiftsStep) en modo móvil, aplicamos automáticamente el MobileLayout
+    if (viewType === 'mobile') {
+      return (
+        <MobileLayout
+          onNext={onNext}
+          onBack={onPrevious}
+          showBackButton={!isFirstStep}
+        >
+          {currentStep}
+        </MobileLayout>
+      );
+    }
+    
+    // En modo desktop, retornamos el paso sin envolver
+    return currentStep;
   };
 
   return (

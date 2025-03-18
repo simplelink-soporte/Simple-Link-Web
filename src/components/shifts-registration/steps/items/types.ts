@@ -1,7 +1,8 @@
 import { Item, ItemType } from '@/types/items';
 
-// Extendemos de básico, pero proporcionamos defaults para todas las propiedades
+// Define la interfaz de un ítem con información de stock
 export interface ItemWithStock {
+  // Campos obligatorios
   id: string;
   name: string;
   type: ItemType;
@@ -10,19 +11,24 @@ export interface ItemWithStock {
   reservedUnits: number;
   duration_pricing: Record<string, number>;
   
-  // Propiedades requeridas por el tipo Item
+  // Campos opcionales provenientes de Item
   default_duration?: number;
   stock?: number;
   requires_deposit?: boolean;
-  deposit_amount?: number;
+  deposit_amount?: number | null;
   color?: string;
   image_url?: string;
   description?: string;
   category?: string;
-  product_id?: string;
   is_active?: boolean;
+  product_id?: string;
+  empresa_id?: string;
+  sede_id?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
+// Estado de ítems seleccionados
 export interface SelectedItemsState {
   [itemId: string]: number;
 }

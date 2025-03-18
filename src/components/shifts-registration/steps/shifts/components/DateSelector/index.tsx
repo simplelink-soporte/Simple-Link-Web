@@ -7,16 +7,11 @@ import { cn } from '@/lib/utils';
 interface DateSelectorProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
-  theme?: 'light' | 'dark';
-  viewType?: 'mobile' | 'desktop';
+  theme: 'light' | 'dark';
+  viewType: 'mobile' | 'desktop';
 }
 
-export function DateSelector({ 
-  selectedDate, 
-  onDateSelect, 
-  theme = 'light', 
-  viewType = 'desktop' 
-}: DateSelectorProps) {
+export function DateSelector({ selectedDate, onDateSelect, theme, viewType }: DateSelectorProps) {
   const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(selectedDate));
   const containerRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
@@ -146,7 +141,7 @@ export function DateSelector({
       containerRef.current.style.userSelect = 'none';
     }
   }, [viewType]);
-  
+    
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging.current || !containerRef.current) return;
     
@@ -321,5 +316,3 @@ export function DateSelector({
     </div>
   );
 }
-
-DateSelector.displayName = 'DateSelector';

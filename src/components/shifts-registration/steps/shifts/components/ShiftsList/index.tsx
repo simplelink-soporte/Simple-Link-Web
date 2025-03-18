@@ -140,15 +140,6 @@ const ShiftCard = memo(({
               {getStatusLabel(shift.status)}
             </p>
           )}
-          
-          {isSelected && (
-            <div className={cn(
-              "flex items-center gap-1 text-[10px] font-medium",
-              theme === 'dark' ? "text-gray-400" : "text-gray-500"
-            )}>
-              <span>Seleccionado</span>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -268,7 +259,7 @@ export function ShiftsList({
         <div 
           ref={actualRef}
           className={cn(
-            "space-y-2 overflow-y-auto px-4",
+            "space-y-2 overflow-y-auto",
             viewType === 'desktop' 
               ? "max-h-[calc(100vh-460px)] min-h-[300px] relative py-4" 
               : "max-h-[calc(100vh-460px)] min-h-[300px]",
