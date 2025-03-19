@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { formPublishService } from '@/lib/services/forms/publish-service';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -10,6 +10,7 @@ import { PublishedForm } from '@/types/forms/publish';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { ShiftFormProvider } from '@/components/shifts-registration/context/ShiftFormContext';
 import { ShiftRegistrationForm } from '@/components/shifts-registration/ShiftRegistrationForm';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * Página principal para el formulario público de turnos (versión refactorizada)
@@ -17,10 +18,30 @@ import { ShiftRegistrationForm } from '@/components/shifts-registration/ShiftReg
  */
 export default function ShiftFormPageNew() {
   const params = useParams();
+  const router = useRouter();
   const [form, setForm] = useState<PublishedForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setOrganization } = useOrganization();
+  const { user, isLoading: authLoading } = useAuth();
+  
+  // Verificar autenticación a nivel de página
+  useEffect(() => {
+    // Solo ejecutar cuando haya terminado la carga de autenticación
+    if (!authLoading) {
+      if (!user) {
+        // Si no hay usuario autenticado, redirigir a login
+        const currentUrl = window.location.href;
+        const encodedRedirectUrl = encodeURIComponent(currentUrl);
+        const loginUrl = `/login?redirectTo=${encodedRedirectUrl}`;
+        
+        console.log('Página de turnos: Usuario no autenticado, redirigiendo a:', loginUrl);
+        router.replace(loginUrl); // Usar replace en lugar de push para evitar volver atrás
+      } else {
+        console.log('Página de turnos: Usuario autenticado, cargando formulario');
+      }
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     const loadForm = async () => {
@@ -108,7 +129,7 @@ export default function ShiftFormPageNew() {
   }
 
   return (
-    <ShiftFormProvider formData={form}>
+    <ShiftFormProvider formData={form} empresaId={form.empresa_id || ''}>
       <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-3xl mx-auto">

@@ -10,10 +10,6 @@ const ServiceStep = React.lazy(() => import('./ServiceStep'));
 const LocationStep = React.lazy(() => import('./location/LocationStep'));
 const ShiftsStep = React.lazy(() => import('./shifts/ShiftsStep'));
 const ItemsStep = React.lazy(() => import('./items/ItemsStep'));
-const DateStep = React.lazy(() => import('./DateStep'));
-const TimeStep = React.lazy(() => import('./TimeStep'));
-const SummaryStep = React.lazy(() => import('./SummaryStep'));
-const ConfirmationStep = React.lazy(() => import('./ConfirmationStep'));
 
 export type StepComponentProps = {
   onNext: () => void;
@@ -63,8 +59,8 @@ export const StepRenderer: React.FC<{
   onNext: () => void;
   onPrevious: () => void;
 }> = ({ onNext, onPrevious }) => {
-  const { state } = useShiftForm();
-  const totalSteps = 8; // Actualizado para incluir el nuevo paso de Items
+  const { state, goToStep } = useShiftForm();
+  const totalSteps = 5; 
   const [viewType, setViewType] = useState<'desktop' | 'mobile'>('desktop');
   const [navigatingBackward, setNavigatingBackward] = useState(false);
   const [skipToStepValue, setSkipToStepValue] = useState<number | null>(null);
@@ -86,6 +82,14 @@ export const StepRenderer: React.FC<{
       window.removeEventListener('resize', checkViewType);
     };
   }, []);
+
+  // Verificar autenticación al iniciar
+  useEffect(() => {
+    // Si el paso es 'auth' y el usuario está autenticado, automáticamente ir al paso de ubicación
+    if (state.step === 'auth' && state.isAuthenticated) {
+      goToStep('location');
+    }
+  }, [state.step, state.isAuthenticated, goToStep]);
 
   // Detectar navegación hacia atrás desde ServiceStep (paso 3) si skipItemsStep es true
   useEffect(() => {
@@ -129,9 +133,9 @@ export const StepRenderer: React.FC<{
   }, [state.currentStep, state.skipItemsStep, setSkipToStepValue]);
 
   // Parámetros comunes para todos los pasos
-  const isLastStep = state.currentStep === 7;
+  const isLastStep = state.currentStep === 4; 
   const isFirstStep = state.currentStep === 0;
-  const progress = ((state.currentStep + 1) / 8) * 100;
+  const progress = ((state.currentStep + 1) / totalSteps) * 100;
   
   const stepProps: StepComponentProps = {
     onNext,
@@ -201,66 +205,43 @@ export const StepRenderer: React.FC<{
         currentStep = <LocationStep {...stepProps} />;
         break;
       case 2:
-        // ItemsStep se encargará de saltar al siguiente paso si no hay ítems disponibles
         currentStep = <ItemsStep {...stepProps} />;
         break;
       case 3:
         currentStep = <ServiceStep {...stepProps} />;
         break;
-      case 4:
-        currentStep = <DateStep {...stepProps} />;
-        break;
-      case 5:
-        currentStep = <TimeStep {...stepProps} />;
-        break;
-      case 6:
-        currentStep = <SummaryStep {...stepProps} />;
-        break;
-      case 7:
-        currentStep = <ConfirmationStep {...stepProps} />;
-        break;
       default:
-        currentStep = <div>Paso no encontrado</div>;
+        // Si por alguna razón nos encontramos fuera del rango, ir al paso inicial
+        console.error('StepRenderer: Paso no válido:', state.currentStep);
+        return <LocationStep {...stepProps} />;
     }
     
-    // Para todos los pasos (excepto ShiftsStep) en modo móvil, aplicamos automáticamente el MobileLayout
-    if (viewType === 'mobile') {
-      // Identificar si el paso actual necesita deshabilitar el botón Next
-      // Esto depende de la implementación interna de cada componente de paso
-      let isStepNextDisabled = false;
-      
-      // Para pasos conocidos que requieren validación específica, podemos establecer esto manualmente
-      if (state.currentStep === 1 && !state.selectedShift) {
-        console.log('StepRenderer: Paso de turnos detectado - botón Next deshabilitado debido a que no hay turno seleccionado');
-        isStepNextDisabled = true;
-      }
-      
-      return (
-        <MobileLayout
-          onNext={onNext}
-          onBack={onPrevious}
-          showBackButton={!isFirstStep}
-          isNextDisabled={isStepNextDisabled}
-        >
-          {currentStep}
-        </MobileLayout>
-      );
-    }
-    
-    // En modo desktop, retornamos el paso sin envolver
     return currentStep;
   };
 
   return (
-    <Suspense
-      fallback={
+    <>
+      <Suspense fallback={
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">Cargando...</p>
         </div>
-      }
-    >
-      {renderStep()}
-    </Suspense>
+      }>
+        {viewType === 'mobile' ? (
+          <MobileLayout 
+            onNext={onNext}
+            onBack={onPrevious}
+            showBackButton={!isFirstStep}
+            nextLabel={isLastStep ? 'Finalizar' : 'Siguiente'}
+            isNextDisabled={false}
+            isProcessing={false}
+          >
+            {renderStep()}
+          </MobileLayout>
+        ) : (
+          renderStep()
+        )}
+      </Suspense>
+    </>
   );
 };

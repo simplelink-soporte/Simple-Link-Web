@@ -73,10 +73,11 @@ function LoginFormContent({ onLoginSuccess }: LoginFormProps) {
         const decodedUrl = decodeURIComponent(redirectTo);
         console.log('🔍 URL decodificada:', decodedUrl);
         
-        // Buscar patrones en la URL: /clases/{slug}, /form/{slug} o /f/{slug}
+        // Buscar patrones en la URL: /clases/{slug}, /form/{slug}, /f/{slug} o /shifts/{slug}
         const classesMatch = decodedUrl.match(/\/clases\/([^\/]+)/);
         const formMatch = decodedUrl.match(/\/form\/([^\/]+)/);
         const fMatch = decodedUrl.match(/\/f\/([^\/]+)/);
+        const shiftsMatch = decodedUrl.match(/\/shifts\/([^\/]+)/);
         
         if (classesMatch && classesMatch[1]) {
           slug = classesMatch[1];
@@ -87,6 +88,9 @@ function LoginFormContent({ onLoginSuccess }: LoginFormProps) {
         } else if (fMatch && fMatch[1]) {
           slug = fMatch[1];
           console.log('📝 Slug extraído de patrón /f/:', slug);
+        } else if (shiftsMatch && shiftsMatch[1]) {
+          slug = shiftsMatch[1];
+          console.log('📝 Slug extraído de patrón /shifts/:', slug);
         }
         
         console.log('🔑 Slug extraído final:', slug || 'No se encontró slug');

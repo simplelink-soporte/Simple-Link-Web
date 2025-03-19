@@ -194,7 +194,7 @@ export function StepNavigation({
                 disabled={isProcessing}
                 className={cn(
                   "hidden sm:flex", 
-                  "w-full sm:w-auto",
+                  "w-full sm:w-auto sm:min-w-[150px]", 
                   "px-6 py-3 rounded-xl",
                   "items-center justify-center gap-2",
                   "text-sm font-medium",
@@ -202,7 +202,6 @@ export function StepNavigation({
                   isProcessing && "opacity-50 cursor-not-allowed"
                 )}
               >
-                <ChevronLeft size={16} className="text-gray-500" />
                 <span>{backLabel}</span>
               </Button>
             )}
@@ -214,7 +213,7 @@ export function StepNavigation({
                 className={cn(
                   "w-full",
                   // Estilos específicos para móvil (sm:)
-                  "sm:w-auto sm:px-6 sm:py-3 sm:rounded-xl sm:text-sm",
+                  "sm:w-auto sm:min-w-[150px] sm:px-6 sm:py-3 sm:rounded-xl sm:text-sm", 
                   // Estilos específicos para desktop (<sm)
                   "rounded-lg py-6 text-base font-normal",
                   "shadow-lg backdrop-blur-sm",
@@ -236,11 +235,8 @@ export function StepNavigation({
                   willChange: 'transform',
                 }}
               >
-                <span>{getNextButtonLabel()}</span>
-                {/* Mostrar la flecha solo en modo desktop */}
-                <span className="hidden sm:inline">
-                  <ChevronRight size={16} className="text-white/80" />
-                </span>
+                {/* Mostrar "Continuar" en todas las vistas */}
+                <span>Continuar</span>
               </Button>
             )}
           </div>

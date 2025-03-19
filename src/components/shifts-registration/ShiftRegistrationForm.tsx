@@ -7,6 +7,7 @@ import { AlertCircle } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StepRenderer } from './steps/StepRenderer';
+import { useShiftRegistrationAuth } from './hooks/useAuth';
 
 // Tipos para los pasos
 type StepComponentProps = {
@@ -40,10 +41,32 @@ const StepPlaceholder: React.FC<StepComponentProps & { title: string }> = ({
 
 // Componente principal del formulario
 export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form }) => {
-  const { state, nextStep, prevStep } = useShiftForm();
+  const { state, nextStep, prevStep, checkAuthAndRedirect } = useShiftForm();
+  const { user, isLoading: authLoading } = useShiftRegistrationAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Verificar autenticación cuando se carga el componente
+  useEffect(() => {
+    // Ejecutamos la verificación de autenticación inmediatamente
+    // No usamos condiciones restrictivas que puedan impedir la verificación
+    console.log("ShiftRegistrationForm: Ejecutando verificación de autenticación");
+    checkAuthAndRedirect();
+    
+    // También podemos añadir una verificación adicional cuando cambia el estado de autenticación
+    const handleAuthChange = () => {
+      console.log("ShiftRegistrationForm: Cambio detectado en estado de autenticación");
+      checkAuthAndRedirect();
+    };
+    
+    // Suscribirse a cambios de autenticación (opcional, si implementas un sistema de eventos)
+    document.addEventListener('auth-state-changed', handleAuthChange);
+    
+    return () => {
+      document.removeEventListener('auth-state-changed', handleAuthChange);
+    };
+  }, [checkAuthAndRedirect]);
 
   // Detectar si es dispositivo móvil
   useEffect(() => {
@@ -63,7 +86,7 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   }, []);
 
   // Determinar el paso actual y el total de pasos
-  const totalSteps = 8; // Actualizado para incluir el nuevo paso de Items
+  const totalSteps = 9; // Actualizado para incluir el paso de autenticación
   const progress = Math.round(((state.currentStep + 1) / totalSteps) * 100);
 
   // Handlers para navegación
@@ -90,34 +113,22 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
     prevStep();
   }, [prevStep]);
 
-  // Obtener el título actual del paso
-  const getStepTitle = useCallback(() => {
-    switch (state.currentStep) {
-      case 0:
-        return 'Seleccionar Ubicación';
-      case 1:
-        return 'Seleccionar Turno';
-      case 2:
-        return 'Seleccionar Artículos';
-      case 3:
-        return 'Seleccionar Servicio';
-      case 4:
-        return 'Seleccionar Fecha';
-      case 5:
-        return 'Seleccionar Hora';
-      case 6:
-        return 'Confirmar Detalles';
-      case 7:
-        return 'Confirmar Reserva';
-      default:
-        return 'Formulario de Turnos';
-    }
-  }, [state.currentStep]);
-
   // Renderizar el paso actual
   const renderCurrentStep = () => {
     return <StepRenderer onNext={handleNext} onPrevious={handlePrevious} />;
   };
+
+  // Mostrar un loader mientras se verifica la autenticación
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="p-8 flex flex-col items-center justify-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Si hay un error en el estado del formulario
   if (state.error) {
@@ -151,7 +162,10 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
           <p className="mt-4 text-gray-600">Procesando su reserva...</p>
         </div>
       ) : (
-        renderCurrentStep()
+        // Añadimos la clase para asegurar que los componentes internos puedan tener scroll individual
+        <div className={isMobile ? "h-full mobile-content-container" : ""}>
+          {renderCurrentStep()}
+        </div>
       )}
 
       {/* Navegación entre pasos */}
