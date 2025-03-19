@@ -108,9 +108,13 @@ const convertLocalToUTC = async (
     );
     
     // Convertir a UTC
-    const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
-    const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
-    const dateUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd');
+    const utcStartDateTime = localStartDateTime.toUTC();
+    const utcEndDateTime = localEndDateTime.toUTC();
+    
+    // Formato timestamp completo para la consulta (YYYY-MM-DD HH:MM:SS)
+    const startTimeUTC = utcStartDateTime.toSQL({ includeOffset: false });
+    const endTimeUTC = utcEndDateTime.toSQL({ includeOffset: false });
+    const dateUTC = utcStartDateTime.toFormat('yyyy-MM-dd');
     
     console.log('🕒 ClassQueryService - Conversión de horarios:', {
       local: {
@@ -125,8 +129,8 @@ const convertLocalToUTC = async (
         date: dateUTC,
         start: startTimeUTC,
         end: endTimeUTC,
-        fullStartUTC: localStartDateTime.toUTC().toISO(),
-        fullEndUTC: localEndDateTime.toUTC().toISO()
+        fullStartUTC: utcStartDateTime.toISO(),
+        fullEndUTC: utcEndDateTime.toISO()
       }
     });
     

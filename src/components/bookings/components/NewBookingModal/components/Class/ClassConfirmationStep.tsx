@@ -22,9 +22,10 @@ interface ClassConfirmationStepProps {
 }
 
 const paymentMethodLabels: Record<string, string> = {
-  cash: 'Pagar en la sede',
-  card: 'Mercado Pago',
-  transfer: 'Transferencia'
+  pay_at_club: 'Pagar en el club',
+  full_payment: 'Pago Completo',
+  partial_payment: 'Pago con Seña',
+  guarantee: 'Garantía'
 }
 
 export function ClassConfirmationStep({
@@ -122,6 +123,12 @@ export function ClassConfirmationStep({
               <IconCheck className="w-4 h-4 text-green-500" />
               <span className="text-sm text-gray-600">
                 {paymentMethodLabels[method] || method}
+                {method === 'guarantee' && paymentConfig.guaranteePercentage && 
+                  ` (${paymentConfig.guaranteePercentage}%)`
+                }
+                {method === 'partial_payment' && paymentConfig.partialPaymentPercentage && 
+                  ` (${paymentConfig.partialPaymentPercentage}%)`
+                }
               </span>
             </div>
           ))}

@@ -142,6 +142,8 @@ export function BookingsTable() {
     
     // Ya no necesitamos convertir los horarios aquí, ya que ahora vienen 
     // convertidos desde el servicio de consulta bookingQueryService
+    // y además, los campos start_time y end_time ahora son timestamp without time zone
+    // en lugar de time without time zone, lo que facilita el manejo de reservas nocturnas
     
   }, [bookings]);
 

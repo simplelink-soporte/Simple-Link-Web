@@ -35,6 +35,24 @@ interface ScheduleConfig {
     courtIds: string[]
     spotsLeft?: number
   }>
+  specificSessions?: Array<{
+    date: string
+    price: number
+    endTime: string
+    capacity: number
+    courtIds: string | string[]
+    createdAt: string
+    startTime: string
+    instructors: string[]
+  }>
+  suspendedSessions?: Array<{
+    date: string
+    reason: string
+    courtId: string
+    endTime: string
+    startTime: string
+    suspendedAt: string
+  }>
 }
 
 // Tipo para el payment_config
@@ -269,6 +287,17 @@ export class ClassService {
     const scheduleConfig = dbClass.schedule_config || { days: [], timeSlots: [] }
     const days = Array.isArray(scheduleConfig.days) ? scheduleConfig.days : []
     const timeSlots = Array.isArray(scheduleConfig.timeSlots) ? scheduleConfig.timeSlots : []
+    const specificSessions = Array.isArray(scheduleConfig.specificSessions) ? scheduleConfig.specificSessions : []
+    const suspendedSessions = Array.isArray(scheduleConfig.suspendedSessions) ? scheduleConfig.suspendedSessions : []
+    
+    // Crear un mapa de sesiones suspendidas para verificación rápida
+    const suspendedSessionsMap = new Map<string, boolean>();
+    
+    suspendedSessions.forEach(session => {
+      const key = `${session.date}-${session.startTime}-${session.endTime}-${session.courtId}`;
+      suspendedSessionsMap.set(key, true);
+      console.log(`🚫 Marcando sesión suspendida: ${key}`);
+    });
     
     // Mapear los IDs de las pistas a sus detalles
     const courtsMap = new Map(courts.map(court => [court.id, court]))
@@ -367,6 +396,13 @@ export class ClassService {
             
             const formattedDate = sessionDate.toISOString().split('T')[0];
             
+            // Verificar si esta sesión está suspendida
+            const suspendedSessionKey = `${formattedDate}-${slot.startTime}-${slot.endTime}-${court.id}`;
+            if (suspendedSessionsMap.has(suspendedSessionKey)) {
+              console.log(`🚫 Sesión suspendida, no se genera: ${suspendedSessionKey}`);
+              return;
+            }
+            
             const session: ClassSession = {
               // Incluir la fecha específica en el ID para garantizar unicidad
               id: `${dbClass.id}-${formattedDate}-${slot.startTime || ''}-${court.id}`,
@@ -394,6 +430,58 @@ export class ClassService {
         currentDate.setDate(currentDate.getDate() + 7)
       }
     })
+    
+    // Añadir sesiones específicas
+    specificSessions.forEach(specificSession => {
+      // Verificar que la fecha está en el rango permitido
+      const sessionDate = new Date(specificSession.date);
+      if (sessionDate < today || sessionDate > thirtyDaysFromNow) {
+        console.log(`Fecha de sesión específica fuera de rango (${specificSession.date}), no se genera`);
+        return;
+      }
+      
+      // Obtener las canchas para esta sesión específica
+      const courtIdsList = Array.isArray(specificSession.courtIds) 
+        ? specificSession.courtIds 
+        : [specificSession.courtIds];
+      
+      courtIdsList.forEach(courtId => {
+        const court = courtsMap.get(courtId);
+        
+        // Si no se encuentra la cancha, omitir esta sesión
+        if (!court) {
+          console.log(`Cancha no encontrada para sesión específica: ${courtId}`);
+          return;
+        }
+        
+        // Verificar si esta sesión específica está suspendida
+        const suspendedSessionKey = `${specificSession.date}-${specificSession.startTime}-${specificSession.endTime}-${courtId}`;
+        if (suspendedSessionsMap.has(suspendedSessionKey)) {
+          console.log(`🚫 Sesión específica suspendida, no se genera: ${suspendedSessionKey}`);
+          return;
+        }
+        
+        // Crear la sesión específica
+        const session: ClassSession = {
+          id: `${dbClass.id}-specific-${specificSession.date}-${specificSession.startTime}-${courtId}`,
+          date: specificSession.date,
+          startTime: specificSession.startTime,
+          endTime: specificSession.endTime,
+          spotsLeft: specificSession.capacity,
+          totalSpots: specificSession.capacity,
+          courts: [court],
+          instructor: Array.isArray(specificSession.instructors) && specificSession.instructors.length > 0
+            ? specificSession.instructors[0]
+            : 'Sin instructor',
+          price: specificSession.price
+        };
+        
+        console.log(`✨ Sesión específica generada: ${specificSession.date} ${specificSession.startTime}-${specificSession.endTime} - ${court.name}`);
+        
+        // Añadir a la lista temporal
+        tempSessions.push(session);
+      });
+    });
 
     // Ordenar las sesiones por fecha y hora para mostrarlas cronológicamente
     tempSessions.sort((a, b) => {
@@ -423,6 +511,8 @@ export class ClassService {
     const scheduleConfig = dbClass.schedule_config || { days: [], timeSlots: [] }
     const timeSlots = Array.isArray(scheduleConfig.timeSlots) ? scheduleConfig.timeSlots : []
     const days = Array.isArray(scheduleConfig.days) ? scheduleConfig.days : []
+    const specificSessions = Array.isArray(scheduleConfig.specificSessions) ? scheduleConfig.specificSessions : []
+    const suspendedSessions = Array.isArray(scheduleConfig.suspendedSessions) ? scheduleConfig.suspendedSessions : []
 
     // Obtener los IDs de todas las pistas de todos los time slots
     const courtIds = new Set<string>()
@@ -431,6 +521,24 @@ export class ClassService {
         slot.courtIds.forEach(id => courtIds.add(id))
       }
     })
+    
+    // Añadir los IDs de pistas de sesiones específicas
+    specificSessions.forEach(session => {
+      if (session.courtIds) {
+        if (Array.isArray(session.courtIds)) {
+          session.courtIds.forEach(id => courtIds.add(id));
+        } else {
+          courtIds.add(session.courtIds);
+        }
+      }
+    });
+    
+    // Añadir los IDs de pistas de sesiones suspendidas
+    suspendedSessions.forEach(session => {
+      if (session.courtId) {
+        courtIds.add(session.courtId);
+      }
+    });
 
     // Obtener los detalles de todas las pistas solo si hay IDs
     let courts: Array<{ id: string; name: string; description: string | null }> = []
@@ -471,7 +579,7 @@ export class ClassService {
     const sessions = skipSessionGeneration 
       ? [] // Array vacío si se omite la generación
       : await this.generateSessions(
-          { ...dbClass, schedule_config: { days, timeSlots } },
+          { ...dbClass, schedule_config: { days, timeSlots, specificSessions, suspendedSessions } },
           courts,
           paginationOptions // Pasar opciones de paginación
         );
@@ -506,7 +614,25 @@ export class ClassService {
           return date.toLocaleDateString('es-ES', { weekday: 'long' })
         }),
         startDate: dbClass.start_date,
-        endDate: dbClass.end_date
+        endDate: dbClass.end_date,
+        specificSessions: specificSessions.map(session => ({
+          date: session.date,
+          price: session.price,
+          endTime: session.endTime,
+          capacity: session.capacity,
+          courtIds: session.courtIds,
+          createdAt: session.createdAt,
+          startTime: session.startTime,
+          instructors: Array.isArray(session.instructors) ? session.instructors : []
+        })),
+        suspendedSessions: suspendedSessions.map(session => ({
+          date: session.date,
+          reason: session.reason,
+          courtId: session.courtId,
+          endTime: session.endTime,
+          startTime: session.startTime,
+          suspendedAt: session.suspendedAt
+        }))
       },
       availablePaymentMethods: Array.isArray(dbClass.available_payment_methods) 
         ? dbClass.available_payment_methods.map(method => method as 'cash' | 'card' | 'transfer')

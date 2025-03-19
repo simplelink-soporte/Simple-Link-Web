@@ -46,9 +46,8 @@ export function useBookingState(config?: UseBookingStateConfig) {
     selectedCourts: [],
     timeSelection: undefined,
     classPaymentConfig: {
-      pricePerSession: 0,
+      paymentMethods: [],
       currency: 'EUR',
-      paymentMethod: 'cash',
       paymentStatus: 'pending'
     }
   }).current

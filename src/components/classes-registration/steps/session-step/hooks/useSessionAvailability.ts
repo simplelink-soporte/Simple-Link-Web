@@ -339,6 +339,70 @@ export function useSessionAvailability({
     }
   }, [selectedClass, currentPage, pageSize, updateAvailabilityInfo]);
 
+  /**
+   * Verifica la disponibilidad para una sesión específica seleccionada por el usuario
+   * Útil para verificar solo la sesión seleccionada en lugar de todas
+   */
+  const checkSingleSessionAvailability = useCallback(async (session: ClassSession): Promise<boolean> => {
+    if (!selectedClass?.id || !session?.id) {
+      console.warn('Falta información necesaria para verificar disponibilidad de la sesión');
+      return false;
+    }
+
+    setIsLoadingAvailability(true);
+
+    try {
+      // Crear un servicio para la verificación
+      const classService = new ClassService();
+      
+      // Verificar disponibilidad para esta sesión específica usando el método existente
+      const result = await classService.checkSessionAvailability(
+        selectedClass.id,
+        session.date,
+        session.startTime,
+        session.endTime
+      );
+      
+      if (result && result.availableSpots > 0) {
+        // Actualizar la sesión con la información de disponibilidad
+        const updatedSessions = selectedClass.sessions.map((s: ClassSession) => {
+          if (s.id === session.id) {
+            return {
+              ...s,
+              spotsLeft: result.availableSpots
+            };
+          }
+          return s;
+        });
+        
+        // Actualizar en el estado
+        dispatch({
+          type: 'SET_SELECTED_CLASS',
+          payload: {
+            ...selectedClass,
+            sessions: updatedSessions
+          }
+        });
+        
+        // También registramos esta sesión como validada para proteger su valor
+        classService.registerValidatedSessionStock(
+          selectedClass.id,
+          session.id,
+          result.availableSpots
+        );
+        
+        return result.availableSpots > 0;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error al verificar disponibilidad de sesión seleccionada:', error);
+      return false;
+    } finally {
+      setIsLoadingAvailability(false);
+    }
+  }, [selectedClass, dispatch]);
+
   // Al cambiar de clase, actualizar la disponibilidad automáticamente
   useEffect(() => {
     // Skip the effect if this is the initial render
@@ -359,23 +423,10 @@ export function useSessionAvailability({
     // Actualizar el ID de la última clase verificada
     lastVerifiedClassIdRef.current = selectedClass.id;
     
-    // En modo móvil, no ejecutamos la verificación automáticamente a menos que se fuerce
-    if (isMobile && !forceCheck) {
-      console.log('📱 Modo móvil: Omitiendo verificación automática de disponibilidad');
-      return;
-    }
-    
-    // Verificar disponibilidad con ligero retraso para que la UI se actualice primero
-    const timeoutId = setTimeout(() => {
-      console.log('🔄 Actualizando disponibilidad automáticamente después de cambio de clase');
-      updateAvailabilityInfo();
-    }, 300);
-    
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [selectedClass?.id, updateAvailabilityInfo, isMobile, forceCheck]);
-  
+    // No ejecutamos la verificación automáticamente
+    return;
+  }, [selectedClass?.id]);
+
   // Al cambiar de página, actualizar la disponibilidad automáticamente
   useEffect(() => {
     // Skip the effect on initial render
@@ -388,22 +439,17 @@ export function useSessionAvailability({
       return;
     }
     
-    // En modo móvil, no ejecutamos la verificación automáticamente a menos que se fuerce
-    if (isMobile && !forceCheck) {
-      console.log('📱 Modo móvil: Omitiendo verificación automática de disponibilidad para página', currentPage);
-      return;
-    }
-    
-    console.log(`🔄 Actualizando disponibilidad automáticamente para la página ${currentPage}`);
-    updateAvailabilityInfo();
-  }, [currentPage, updateAvailabilityInfo, isMobile, forceCheck]);
+    // No ejecutamos la verificación automáticamente
+    return;
+  }, [currentPage]);
 
   return {
     isLoadingAvailability,
     setIsLoadingAvailability,
     sessionAvailability,
     updateAvailabilityInfo,
+    isInitialMount: isInitialMount.current,
     checkAvailabilityForNewlyLoadedSessions,
-    isInitialMount
+    checkSingleSessionAvailability // Agregamos la nueva función al retorno
   };
 }

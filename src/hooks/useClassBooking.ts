@@ -107,6 +107,23 @@ export function useClassBooking() {
       }
       
       // Utilizar el nuevo servicio para crear las reservas
+      console.log('📌 [useClassBooking] Iniciando creación de reserva con sessionIds:', state.selectedSessions);
+      
+      // Obtener la sesión seleccionada para mejor trazabilidad
+      const selectedSessionId = state.selectedSessions[0];
+      const selectedSession = state.selectedClass?.sessions?.find(
+        session => session.id === selectedSessionId
+      );
+      
+      if (selectedSession) {
+        console.log('📌 [useClassBooking] Detalles de la sesión seleccionada:', {
+          id: selectedSession.id,
+          date: selectedSession.date,
+          horario: `${selectedSession.startTime} - ${selectedSession.endTime}`,
+          pistas: selectedSession.courts?.map(c => c.id) || []
+        });
+      }
+      
       const result = await classBookingService.createMultipleClassBookings(
         state.selectedClass,
         state.selectedSessions,
@@ -133,7 +150,7 @@ export function useClassBooking() {
           toast({
             title: 'Advertencia',
             description: 'Algunas sesiones no pudieron reservarse',
-            variant: 'warning'
+            variant: 'default'
           });
           
           updateState({ 

@@ -34,8 +34,8 @@ export function SessionCard({
 
   // Renderizar indicador de disponibilidad
   const renderAvailability = () => {
-    // En modo móvil no mostramos la disponibilidad para mejorar la eficiencia
-    if (isMobile) {
+    // En modo desktop no mostramos la disponibilidad según el nuevo requerimiento
+    if (!isMobile) {
       return null;
     }
     
@@ -149,7 +149,7 @@ export function SessionCard({
           </div>
 
           {/* Precio y cupos - Solo visible en desktop */}
-          <div className="hidden sm:flex flex-shrink-0 items-center gap-4">
+          <div className="hidden sm:flex flex-shrink-0 items-center">
             <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
               {typeof session.price === 'number' 
                 ? session.price.toLocaleString('es-AR', {
@@ -159,7 +159,7 @@ export function SessionCard({
                 : 'Precio no disponible'
               }
             </p>
-            {renderAvailability()}
+            {/* Ya no mostramos la disponibilidad en desktop */}
           </div>
         </div>
         {/* Información de disponibilidad - Visible solo en móvil si NO estamos en modo móvil */}

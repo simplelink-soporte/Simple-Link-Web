@@ -1,0 +1,172 @@
+CREATE OR REPLACE FUNCTION create_booking_v2(
+  p_court_id UUID,
+  p_date DATE,
+  p_start_time TIMESTAMP,
+  p_end_time TIMESTAMP,
+  p_total_price NUMERIC,
+  p_payment_status TEXT,
+  p_payment_method TEXT,
+  p_deposit_amount NUMERIC,
+  p_title TEXT DEFAULT NULL,
+  p_description TEXT DEFAULT NULL,
+  p_participants JSONB DEFAULT '[]',
+  p_rental_items JSONB DEFAULT '[]'
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$ 
+DECLARE
+  new_booking_id UUID;
+  v_payment_status payment_status_enum;
+  v_payment_method payment_method_enum;
+  participant_record RECORD;
+  rental_record RECORD;
+  v_participants JSONB;
+  v_rental_items JSONB;
+BEGIN
+  -- Asegurar que los arrays JSON sean válidos
+  v_participants := COALESCE(p_participants, '[]'::jsonb);
+  v_rental_items := COALESCE(p_rental_items, '[]'::jsonb);
+
+  -- Validar que sean arrays
+  IF jsonb_typeof(v_participants) != 'array' THEN
+    RAISE EXCEPTION 'participants debe ser un array JSON';
+  END IF;
+
+  IF jsonb_typeof(v_rental_items) != 'array' THEN
+    RAISE EXCEPTION 'rental_items debe ser un array JSON';
+  END IF;
+
+  -- Convertir y validar los enums
+  BEGIN
+    -- Validar y convertir payment_status
+    IF p_payment_status NOT IN ('pending', 'partial', 'completed') THEN
+      RAISE EXCEPTION 'Invalid payment_status: %. Must be one of: pending, partial, completed', p_payment_status;
+    END IF;
+    v_payment_status := p_payment_status::payment_status_enum;
+
+    -- Validar y convertir payment_method
+    IF p_payment_method NOT IN ('cash', 'stripe', 'transfer') THEN
+      RAISE EXCEPTION 'Invalid payment_method: %. Must be one of: cash, stripe, transfer', p_payment_method;
+    END IF;
+    v_payment_method := p_payment_method::payment_method_enum;
+  EXCEPTION 
+    WHEN invalid_text_representation THEN
+      RAISE EXCEPTION 'Invalid enum conversion: payment_status=%, payment_method=%', p_payment_status, p_payment_method;
+  END;
+
+  -- Insertar la reserva
+  INSERT INTO bookings (
+    court_id,
+    date,
+    start_time,
+    end_time,
+    title,
+    description,
+    total_price,
+    payment_status,
+    payment_method,
+    deposit_amount
+  )
+  VALUES (
+    p_court_id,
+    p_date,
+    p_start_time,
+    p_end_time,
+    p_title,
+    p_description,
+    p_total_price,
+    v_payment_status,
+    v_payment_method,
+    p_deposit_amount
+  )
+  RETURNING id INTO new_booking_id;
+
+  -- Insertar participantes si existen
+  IF jsonb_array_length(v_participants) > 0 THEN
+    FOR participant_record IN 
+      SELECT * FROM jsonb_to_recordset(v_participants) 
+      AS x(member_id UUID, role TEXT)
+    LOOP
+      INSERT INTO booking_participants (
+        booking_id,
+        member_id,
+        role
+      ) VALUES (
+        new_booking_id,
+        participant_record.member_id,
+        COALESCE(participant_record.role, 'player')::participant_role_enum
+      );
+    END LOOP;
+  END IF;
+
+  -- Insertar items rentados si existen
+  IF jsonb_array_length(v_rental_items) > 0 THEN
+    FOR rental_record IN 
+      SELECT * FROM jsonb_to_recordset(v_rental_items) 
+      AS x(item_id UUID, quantity INT, price_per_unit NUMERIC)
+    LOOP
+      INSERT INTO booking_rentals (
+        booking_id,
+        item_id,
+        quantity,
+        price_per_unit,
+        total_price
+      ) VALUES (
+        new_booking_id,
+        rental_record.item_id,
+        rental_record.quantity,
+        rental_record.price_per_unit,
+        rental_record.quantity * rental_record.price_per_unit
+      );
+    END LOOP;
+  END IF;
+
+  -- Retornar los datos completos
+  RETURN (
+    SELECT jsonb_build_object(
+      'id', b.id,
+      'court_id', b.court_id,
+      'date', b.date,
+      'start_time', b.start_time,
+      'end_time', b.end_time,
+      'title', b.title,
+      'description', b.description,
+      'total_price', b.total_price,
+      'payment_status', b.payment_status,
+      'payment_method', b.payment_method,
+      'deposit_amount', b.deposit_amount,
+      'created_at', b.created_at,
+      'updated_at', b.updated_at,
+      'participants', COALESCE(
+        (
+          SELECT jsonb_agg(jsonb_build_object(
+            'id', bp.id,
+            'member_id', bp.member_id,
+            'role', bp.role
+          ))
+          FROM booking_participants bp
+          WHERE bp.booking_id = b.id
+        ),
+        '[]'::jsonb
+      ),
+      'rental_items', COALESCE(
+        (
+          SELECT jsonb_agg(jsonb_build_object(
+            'id', br.id,
+            'item_id', br.item_id,
+            'quantity', br.quantity,
+            'price_per_unit', br.price_per_unit,
+            'total_price', br.total_price
+          ))
+          FROM booking_rentals br
+          WHERE br.booking_id = b.id
+        ),
+        '[]'::jsonb
+      )
+    )
+    FROM bookings b
+    WHERE b.id = new_booking_id
+  );
+END;
+$$;

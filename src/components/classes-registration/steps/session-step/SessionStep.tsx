@@ -6,6 +6,10 @@ import { useUserPackages } from '../../hooks/useUserPackages';
 import { StepContainer } from '../../shared/StepContainer';
 import { toast } from '@/components/ui/use-toast';
 
+// Importar componentes de diálogo
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+
 // Importar custom hooks
 import { useDeviceDetection } from './hooks/useDeviceDetection';
 import { usePackageValidation } from './hooks/usePackageValidation';
@@ -92,7 +96,8 @@ export function SessionStep() {
     sessionAvailability,
     updateAvailabilityInfo,
     isInitialMount: isInitialAvailabilityMount,
-    checkAvailabilityForNewlyLoadedSessions
+    checkAvailabilityForNewlyLoadedSessions,
+    checkSingleSessionAvailability
   } = useSessionAvailability({
     selectedClass: state.selectedClass,
     currentPage,
@@ -107,6 +112,10 @@ export function SessionStep() {
   } = useSessionFiltering({
     sessions: state.selectedClass?.sessions || []
   });
+
+  // Estado para el diálogo de no disponibilidad
+  const [noAvailabilityDialogOpen, setNoAvailabilityDialogOpen] = useState<boolean>(false);
+  const [selectedSessionWithNoAvailability, setSelectedSessionWithNoAvailability] = useState<ClassSession | null>(null);
 
   // === Inicialización ===
   useEffect(() => {
@@ -159,137 +168,62 @@ export function SessionStep() {
 
   // === Verificación de disponibilidad ===
   useEffect(() => {
-    // Verificar que state.selectedClass no sea null y que ya tengamos sesiones
+    // Ya no necesitamos esta lógica condicional, ya que la verificación ahora
+    // se hará solo cuando el usuario seleccione una sesión específica
+    // independientemente de si es móvil o desktop
     if (!state.selectedClass || !state.selectedClass.sessions?.length) return;
     
-    // Solo actualizamos disponibilidad si las sesiones ya fueron cargadas
-    if (!sessionsLoaded) return;
-    
-    // En modo móvil, omitimos la validación por lotes para optimizar rendimiento
-    if (isMobile) {
-      console.log('📱 Modo móvil: Omitiendo verificación de disponibilidad por lotes');
-      return;
-    }
-
-    // Limpiar cualquier timeout anterior si existe
-    if (mountTimeoutRef.current) {
-      clearTimeout(mountTimeoutRef.current);
-    }
-    
-    // Damos un pequeño tiempo para que las sesiones se monten en la UI
-    // antes de verificar la disponibilidad
-    mountTimeoutRef.current = setTimeout(() => {
-      // Marcar que ahora estamos verificando la disponibilidad
-      sessionsMountedInUI.current = true;
-      setIsLoadingAvailability(true);
-      
-      const fetchAvailability = async () => {
-        try {
-          // Comprobación de seguridad adicional
-          if (!state.selectedClass) return;
-          
-          // Usar la función del servicio para actualizar la disponibilidad
-          const forceUpdate = isInitialMount.current;
-          
-          // Aquí usamos updateAvailabilityInfo en vez de acceder directamente al servicio
-          await updateAvailabilityInfo(forceUpdate);
-          
-        } catch (error) {
-          console.error('Error al cargar disponibilidad de sesiones:', error);
-          toast({
-            title: 'Error',
-            description: 'No se pudo cargar la disponibilidad de las sesiones',
-            variant: 'destructive'
-          });
-        } finally {
-          setIsLoadingAvailability(false);
-          if (isInitialMount.current) {
-            isInitialMount.current = false;
-          }
-        }
-      };
-      
-      // Iniciamos verificación de disponibilidad solo para las sesiones visibles actuales
-      console.log('✅ Verificando disponibilidad para el primer lote de sesiones');
-      fetchAvailability();
-    }, 100); // 100ms es suficiente para que el DOM se actualice
-    
-    // Limpiar el timeout al desmontar
-    return () => {
-      if (mountTimeoutRef.current) {
-        clearTimeout(mountTimeoutRef.current);
-      }
-    };
-  }, [sessionsLoaded, toast, setIsLoadingAvailability, updateAvailabilityInfo, isMobile]);
-
-  // Verificación para nuevas sesiones cargadas
-  useEffect(() => {
-    // Solo ejecutar este efecto cuando cambia la página o se cargan nuevas sesiones
-    if (currentPage > 0 && checkAvailabilityForNewlyLoadedSessions && state.selectedClass?.sessions?.length) {
-      // En modo móvil, omitimos la validación por lotes para optimizar rendimiento
-      if (isMobile) {
-        console.log(`📱 Modo móvil: Omitiendo verificación de disponibilidad para sesiones en página ${currentPage}`);
-        return;
-      }
-      
-      console.log(`✅ Activando verificación de disponibilidad para sesiones en página ${currentPage}`);
-      
-      // Pequeño retraso para asegurar que el estado se ha actualizado completamente
-      const timeout = setTimeout(() => {
-        checkAvailabilityForNewlyLoadedSessions().catch(error => {
-          console.error('Error al verificar disponibilidad de nuevas sesiones:', error);
-        });
-      }, 200);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [currentPage, checkAvailabilityForNewlyLoadedSessions, state.selectedClass?.sessions?.length, isMobile]);
+    // Eliminamos la verificación en lote para Desktop
+    console.log('✅ Optimización aplicada: La disponibilidad se verificará individualmente al seleccionar cada sesión');
+  }, [state.selectedClass?.sessions]);
 
   // === Manejadores de eventos ===
-  const handleSessionClick = useCallback((session: ClassSession) => {
-    if (isMobile) {
-      // En móvil, abrimos el drawer
-      setSelectedSessionForMobile(session);
-      setIsMobileMenuOpen(true);
-    } else {
-      // En desktop, manejamos la selección/deselección
-      if (state.selectedSessions.includes(session.id)) {
-        deselectSession(session.id);
-      } else {
-        // Verificar disponibilidad primero
-        if (session.spotsLeft !== undefined && session.spotsLeft <= 0) {
-          toast({
-            title: "Sesión no disponible",
-            description: `Esta sesión está completa (0 plazas disponibles)`,
-            variant: "destructive"
-          });
-          return;
-        }
-        
-        // Deseleccionar sesiones previas
-        const currentlySelected = [...state.selectedSessions];
-        currentlySelected.forEach(id => {
-          if (id !== session.id) {
-            deselectSession(id);
-          }
-        });
-        
-        // Seleccionar la nueva sesión
+  const handleSessionSelect = useCallback(async (session: ClassSession) => {
+    if (!session) return;
+    
+    // Verificar disponibilidad de esta sesión específica
+    setIsLoadingAvailability(true);
+    try {
+      const hasAvailability = await checkSingleSessionAvailability(session);
+      
+      if (hasAvailability) {
+        // Solo seleccionamos la sesión si tiene disponibilidad
         selectSession(session.id);
         
-        // Mostrar mensaje informativo
-        toast({
-          title: "Sesión seleccionada",
-          description: `Plazas disponibles: ${session.spotsLeft ?? '?'}/${session.totalSpots ?? '?'}`,
-        });
-        
-        // Avanzar al siguiente paso después de un breve retraso
-        setTimeout(() => {
+        // En móvil, abrimos el drawer
+        if (isMobile) {
+          setSelectedSessionForMobile(session);
+          setIsMobileMenuOpen(true);
+        } else {
+          // En desktop, avanzamos al siguiente paso
           goToStep('summary');
-        }, 300);
+        }
+      } else {
+        // No hay disponibilidad
+        if (isMobile) {
+          // En móvil, mostramos un toast
+          toast({
+            title: "Sesión no disponible",
+            description: "Esta sesión ya no tiene plazas disponibles",
+            variant: "destructive",
+          });
+        } else {
+          // En desktop, mostramos un dialog
+          setNoAvailabilityDialogOpen(true);
+          setSelectedSessionWithNoAvailability(session);
+        }
       }
+    } catch (error) {
+      console.error('Error al verificar disponibilidad:', error);
+      toast({
+        title: "Error",
+        description: "No pudimos verificar la disponibilidad de esta sesión",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingAvailability(false);
     }
-  }, [isMobile, state.selectedSessions, deselectSession, selectSession, toast, goToStep]);
+  }, [checkSingleSessionAvailability, selectSession, isMobile, goToStep, toast]);
 
   // Manejar toggle de descripción
   const handleToggleDescription = useCallback(() => {
@@ -318,25 +252,6 @@ export function SessionStep() {
             </h2>
             <p className="text-sm text-yellow-700">
               Por favor, selecciona una clase antes de continuar.
-            </p>
-          </div>
-        </div>
-      </StepContainer>
-    );
-  }
-
-  // Validación de paquetes
-  if (packagesAreValid === false && !isValidating) {
-    return (
-      <StepContainer stepId="invalid-package" centered>
-        <div className="pt-8 text-center space-y-4">
-          <div className="bg-red-50 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-red-800 mb-2">
-              Paquete no válido
-            </h2>
-            <p className="text-sm text-red-700">
-              Tu paquete no es válido para esta sede. Por favor, selecciona otra clase
-              o contacta a soporte.
             </p>
           </div>
         </div>
@@ -379,7 +294,7 @@ export function SessionStep() {
           <SessionList 
             sessions={sessionsToDisplay}
             selectedSessions={state.selectedSessions}
-            onSessionSelect={handleSessionClick}
+            onSessionSelect={handleSessionSelect}
             isLoadingMoreSessions={isLoadingMoreSessions}
             hasMoreSessions={hasMoreSessions}
             ref={sessionsContainerRef}
@@ -396,9 +311,47 @@ export function SessionStep() {
             onClose={() => setIsMobileMenuOpen(false)}
             session={selectedSessionForMobile}
             isSelected={selectedSessionForMobile ? state.selectedSessions.includes(selectedSessionForMobile.id) : false}
-            onSelect={handleSessionClick}
+            onSelect={handleSessionSelect}
           />
         )}
+        
+        {/* Diálogo para sesión sin disponibilidad (solo en Desktop) */}
+        <Dialog open={noAvailabilityDialogOpen} onOpenChange={setNoAvailabilityDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Sesión no disponible</DialogTitle>
+              <DialogDescription>
+                {selectedSessionWithNoAvailability && (
+                  <div className="mt-4">
+                    <p className="text-gray-700 mb-4">
+                      Lo sentimos, la sesión seleccionada ya no tiene cupos disponibles. 
+                      Por favor, selecciona otra sesión para continuar.
+                    </p>
+                    <div className="p-3 bg-gray-50 rounded-md">
+                      <p className="text-sm font-medium">Detalles de la sesión:</p>
+                      <p className="text-sm mt-1">
+                        <span className="font-medium">Fecha:</span> {selectedSessionWithNoAvailability.date}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-medium">Horario:</span> {selectedSessionWithNoAvailability.startTime} - {selectedSessionWithNoAvailability.endTime}
+                      </p>
+                      {selectedSessionWithNoAvailability.instructor && (
+                        <p className="text-sm">
+                          <span className="font-medium">Instructor:</span> {selectedSessionWithNoAvailability.instructor}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setNoAvailabilityDialogOpen(false)}>
+                Entendido
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </StepContainer>
   );

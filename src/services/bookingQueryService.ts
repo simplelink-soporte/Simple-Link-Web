@@ -85,22 +85,40 @@ const getSupabaseInstance = () => {
 
 // Función helper para convertir horarios UTC a la zona horaria local
 const convertUTCToLocalTime = (
-  utcTime: string,
+  timestampStr: string,
   date: string,
   timezone: string = 'UTC'
 ): string => {
-  // Crear un objeto DateTime de Luxon en UTC con la fecha y hora
-  const utcDateTime = DateTime.fromFormat(
-    `${date}T${utcTime}`,
-    "yyyy-MM-dd'T'HH:mm:ss",
-    { zone: 'UTC' }
-  );
+  try {
+    // Verificar si ya tenemos un timestamp completo (el nuevo formato)
+    if (timestampStr.includes('T') || timestampStr.includes(' ')) {
+      // Es un timestamp completo, solo necesitamos extraer la parte de tiempo
+      const dateTime = DateTime.fromISO(timestampStr, { zone: 'UTC' }) || DateTime.fromSQL(timestampStr, { zone: 'UTC' });
+      
+      // Convertir a la zona horaria local de la sede
+      const localDateTime = dateTime.setZone(timezone);
+      
+      // Retornar solo el tiempo en formato HH:mm:ss
+      return localDateTime.toFormat('HH:mm:ss');
+    } else {
+      // Formato antiguo, mantener compatibilidad con registros existentes
+      // Crear un objeto DateTime de Luxon en UTC con la fecha y hora
+      const utcDateTime = DateTime.fromFormat(
+        `${date}T${timestampStr}`,
+        "yyyy-MM-dd'T'HH:mm:ss",
+        { zone: 'UTC' }
+      );
 
-  // Convertir a la zona horaria local de la sede
-  const localDateTime = utcDateTime.setZone(timezone);
+      // Convertir a la zona horaria local de la sede
+      const localDateTime = utcDateTime.setZone(timezone);
 
-  // Retornar solo el tiempo en formato HH:mm:ss
-  return localDateTime.toFormat('HH:mm:ss');
+      // Retornar solo el tiempo en formato HH:mm:ss
+      return localDateTime.toFormat('HH:mm:ss');
+    }
+  } catch (error) {
+    console.error('Error al convertir timestamp:', timestampStr, error);
+    return timestampStr; // Devolver el original en caso de error
+  }
 };
 
 // Funciones helper para transformación de datos

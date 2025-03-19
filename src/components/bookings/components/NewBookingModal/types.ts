@@ -2,7 +2,7 @@ import type { RentalSelection } from '@/types/items'
 
 export type BookingType = 'simple_shift' | 'class';
 
-export type PaymentMethodEnum = 'cash' | 'card' | 'transfer' | 'stripe';
+export type PaymentMethodEnum = 'pay_at_club' | 'full_payment' | 'partial_payment' | 'guarantee' | 'stripe';
 export type PaymentStatusEnum = 'completed' | 'partial' | 'pending' | 'cancelled';
 
 export interface PaymentDetails {
@@ -55,6 +55,8 @@ export interface ClassPaymentConfig {
   paymentMethods: string[]
   currency: string
   paymentStatus: string
+  guaranteePercentage?: number
+  partialPaymentPercentage?: number
 }
 
 export interface TimeSlot {

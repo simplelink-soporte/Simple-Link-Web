@@ -36,6 +36,12 @@ interface ScheduleConfig {
     courtIds: string[]
     spotsLeft?: number
   }>
+  specificSessions?: Array<{
+    date: string
+    startTime: string
+    endTime: string
+    capacity: number
+  }>
 }
 
 // Respuesta de disponibilidad de sesión
@@ -148,8 +154,12 @@ export class StockValidationService {
       );
       
       // Convertir a UTC
-      const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
-      const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
+      const utcStartDateTime = localStartDateTime.toUTC();
+      const utcEndDateTime = localEndDateTime.toUTC();
+      
+      // Formato completo para timestamp (YYYY-MM-DD HH:MM:SS)
+      const startTimeUTC = utcStartDateTime.toSQL({ includeOffset: false });
+      const endTimeUTC = utcEndDateTime.toSQL({ includeOffset: false });
       const dateUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd');
       
       console.log('🕒 Conversión de horarios para verificación de disponibilidad:', {
@@ -172,8 +182,8 @@ export class StockValidationService {
       
       return {
         dateUTC,
-        startTimeUTC,
-        endTimeUTC,
+        startTimeUTC: startTimeUTC || '',
+        endTimeUTC: endTimeUTC || '',
         timezone
       };
     } catch (error) {
@@ -181,8 +191,8 @@ export class StockValidationService {
       // En caso de error, devolvemos los valores originales
       return {
         dateUTC: date,
-        startTimeUTC: startTime,
-        endTimeUTC: endTime,
+        startTimeUTC: `${date} ${startTime}:00`,  // Formato timestamp completo
+        endTimeUTC: `${date} ${endTime}:00`,      // Formato timestamp completo
         timezone: 'UTC'
       };
     }
@@ -291,16 +301,36 @@ export class StockValidationService {
         .select('*', { count: 'exact', head: false })
         .eq('class_id', classId)
         .eq('date', dateUTC)              // Fecha en UTC
-        .eq('start_time', startTimeUTC)   // Hora de inicio en UTC
-        .eq('end_time', endTimeUTC)       // Hora de fin en UTC
+        .eq('start_time', startTimeUTC)   // Timestamp completo en UTC (YYYY-MM-DD HH:MM:SS)
+        .eq('end_time', endTimeUTC)       // Timestamp completo en UTC (YYYY-MM-DD HH:MM:SS)
         .eq('reservation_type', 'class')
         .is('cancelled_at', null);
+
+      // Logging para depuración
+      console.log('🔎 Consultando reservas existentes para clase con parámetros:', {
+        class_id: classId,
+        date: dateUTC,
+        start_time: startTimeUTC,
+        end_time: endTimeUTC,
+        error: countError ? JSON.stringify(countError) : null
+      });
 
       // Actualizar timestamp de última actualización para esta clase
       this.lastClassUpdateTimestamp[classId] = now;
 
       if (countError) {
         console.error('❌ Error al contar reservas existentes:', countError);
+        console.error('❌ Detalles del error:', {
+          mensaje: countError.message,
+          detalles: countError.details,
+          codigo: countError.code,
+          consulta: {
+            class_id: classId,
+            date: dateUTC,
+            start_time: startTimeUTC,
+            end_time: endTimeUTC
+          }
+        });
         return {
           available: false,
           totalCapacity: 0,
@@ -309,7 +339,7 @@ export class StockValidationService {
           error: {
             message: 'Error al contar reservas existentes',
             code: 'bookings_count_error',
-            details: countError.message
+            details: `${countError.message}. Verificar formato de timestamp.`
           }
         };
       }
@@ -330,6 +360,56 @@ export class StockValidationService {
 
       // 4. Encontrar la capacidad para este horario específico
       const scheduleConfig: ScheduleConfig = classData.schedule_config;
+      
+      // Primero verificar si es una sesión específica
+      const specificSession = Array.isArray(scheduleConfig.specificSessions) 
+        ? scheduleConfig.specificSessions.find(session => 
+            session.date === sessionDate && 
+            session.startTime === startTime && 
+            session.endTime === endTime
+          )
+        : undefined;
+      
+      // Si es una sesión específica, usar su capacidad
+      if (specificSession) {
+        console.log('📌 Sesión específica encontrada para:', {
+          date: sessionDate,
+          startTime,
+          endTime
+        });
+        
+        const totalCapacity = specificSession.capacity;
+        const availableSpots = Math.max(0, totalCapacity - (bookedSpots || 0));
+        const isAvailable = availableSpots > 0;
+        
+        // Guardar resultado en caché
+        const result = {
+          available: isAvailable,
+          totalCapacity,
+          bookedSpots: bookedSpots || 0,
+          availableSpots
+        };
+        
+        this.availabilityCache[cacheKey] = {
+          timestamp: now,
+          data: result
+        };
+        
+        console.log('✅ Disponibilidad de sesión específica:', {
+          classId,
+          sessionDate,
+          startTime,
+          endTime,
+          totalCapacity,
+          bookedSpots,
+          availableSpots,
+          isAvailable
+        });
+        
+        return result;
+      }
+      
+      // Si no es una sesión específica, buscar en los time slots regulares
       const timeSlot = scheduleConfig.timeSlots.find(slot => 
         slot.startTime === startTime && slot.endTime === endTime
       );
@@ -367,7 +447,7 @@ export class StockValidationService {
         data: result
       };
 
-      console.log('✅ Disponibilidad de sesión:', {
+      console.log('✅ Disponibilidad de sesión regular:', {
         classId,
         sessionDate,
         startTime,

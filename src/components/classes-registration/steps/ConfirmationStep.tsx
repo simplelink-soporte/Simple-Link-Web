@@ -52,40 +52,40 @@ export function ConfirmationStep() {
   }[state.selectedPayment] : 'No especificado'
 
   return (
-    <div className="w-full py-8 px-4">
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
-            <IconCheck className="w-10 h-10 text-emerald-600" strokeWidth={2} />
+    <div className="w-full py-6 px-4">
+      <div className="max-w-xl mx-auto">
+        <div className="flex justify-center mb-4">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+            <IconCheck className="w-6 h-6 text-gray-800" strokeWidth={2} />
           </div>
         </div>
         
-        <h1 className="text-2xl font-bold mb-2">¡Reserva completada!</h1>
+        <h1 className="text-xl font-semibold mb-2 text-center">¡Reserva completada!</h1>
         
-        <p className="text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground mb-5 text-center">
           {message}
         </p>
         
         {/* Detalles de la clase */}
         {state.selectedClass && (
-          <div className="bg-card border border-border rounded-lg p-6 mb-6 text-left">
-            <h2 className="text-lg font-semibold mb-4">{state.selectedClass.title}</h2>
+          <div className="bg-card border border-border rounded-lg p-4 mb-4">
+            <h2 className="text-md font-medium mb-3">{state.selectedClass.title}</h2>
             
             {/* Sesiones reservadas */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-2 mb-4">
               {state.selectedClass.sessions
                 .filter(session => state.selectedSessions.includes(session.id))
                 .map(session => {
                   const { dayName, dayNumber, monthName } = formatSessionDate(session.date)
                   
                   return (
-                    <div key={session.id} className="flex justify-between border-b border-border pb-3">
+                    <div key={session.id} className="flex justify-between border-b border-border pb-2">
                       <div>
-                        <p className="font-medium">{`${dayName} ${dayNumber} de ${monthName}`}</p>
-                        <p className="text-sm text-muted-foreground">{`${session.startTime} - ${session.endTime}`}</p>
+                        <p className="text-sm font-medium">{`${dayName} ${dayNumber} de ${monthName}`}</p>
+                        <p className="text-xs text-muted-foreground">{`${session.startTime} - ${session.endTime}`}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">{`$${session.price.toFixed(2)}`}</p>
+                        <p className="text-sm font-medium">{`$${session.price.toFixed(2)}`}</p>
                       </div>
                     </div>
                   )
@@ -93,44 +93,27 @@ export function ConfirmationStep() {
             </div>
             
             {/* Info del método de pago */}
-            <div className="bg-accent/30 p-4 rounded-md mb-4">
-              <p className="font-medium">Método de pago: {paymentMethod}</p>
+            <div className="bg-accent/20 p-3 rounded-md mb-3">
+              <p className="text-sm">Método de pago: <span className="font-medium">{paymentMethod}</span></p>
             </div>
             
             {/* IDs de reserva */}
-            <div className="bg-accent/10 p-4 rounded-md mt-4">
-              <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                <IconTicket size={16} />
-                <span className="text-sm font-medium">IDs de reserva:</span>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="flex items-center gap-1 mb-1 text-gray-700">
+                <IconTicket size={14} />
+                <span className="text-xs font-medium">IDs de reserva:</span>
               </div>
               <div className="space-y-1">
                 {state.bookingIds.map((id, index) => (
-                  <div key={id} className="text-xs font-mono bg-accent/20 p-2 rounded">
-                    Reserva {index + 1}: {id}
+                  <div key={id} className="text-xs font-mono bg-gray-100 p-1.5 rounded">
+                    {id}
                   </div>
                 ))}
               </div>
             </div>
           </div>
         )}
-        
-        {/* Botones */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <motion.button
-            onClick={() => goToStep('class')}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            className={cn(
-              "px-6 py-2.5 rounded-lg",
-              "bg-accent/50 hover:bg-accent",
-              "text-accent-foreground font-medium",
-              "transition-colors"
-            )}
-          >
-            Reservar más clases
-          </motion.button>
-        </div>
       </div>
     </div>
   )
-} 
+}

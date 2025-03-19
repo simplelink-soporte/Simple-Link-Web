@@ -107,8 +107,8 @@ function convertToUTC(timezone: string, date: string, startTime?: string, endTim
     
     // Verificar que la conversión sea válida
     if (localStartDateTime.isValid) {
-      // Convertir a UTC y formatear como hora
-      startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
+      // Convertir a UTC y formatear como timestamp completo en formato PostgreSQL
+      startTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
       console.log(`🕒 Hora de inicio convertida: ${startTime} (${timezone}) → ${startTimeUTC} (UTC)`);
     } else {
       console.error('❌ Error al convertir hora de inicio a UTC:', localStartDateTime.invalidReason);
@@ -125,8 +125,8 @@ function convertToUTC(timezone: string, date: string, startTime?: string, endTim
     
     // Verificar que la conversión sea válida
     if (localEndDateTime.isValid) {
-      // Convertir a UTC y formatear como hora
-      endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
+      // Convertir a UTC y formatear como timestamp completo en formato PostgreSQL
+      endTimeUTC = localEndDateTime.toUTC().toSQL({ includeOffset: false });
       console.log(`🕒 Hora de fin convertida: ${endTime} (${timezone}) → ${endTimeUTC} (UTC)`);
     } else {
       console.error('❌ Error al convertir hora de fin a UTC:', localEndDateTime.invalidReason);
@@ -235,6 +235,19 @@ export class ClassParticipantService {
         return [];
       }
 
+      // Agregar detalle de cada reserva encontrada para depuración
+      if (bookings && bookings.length > 0) {
+        console.log(`✅ Se encontraron ${bookings.length} reservas para la clase ${classId}:`);
+        bookings.forEach((booking, index) => {
+          console.log(`   Reserva ${index + 1}:`, {
+            id: booking.id,
+            date: booking.date,
+            startTime: booking.start_time,
+            endTime: booking.end_time
+          });
+        });
+      }
+
       if (!bookings || bookings.length === 0) {
         const filterDescription = options ? 
           `con filtros: ${options.date ? 'fecha=' + options.date + ', ' : ''}${options.startTime ? 'inicio=' + options.startTime + ', ' : ''}${options.endTime ? 'fin=' + options.endTime : ''}` : 
@@ -250,16 +263,19 @@ export class ClassParticipantService {
             .eq('class_id', classId)
             .eq('reservation_type', 'class')
             .is('cancelled_at', null);
-          
+            
           if (allBookings && allBookings.length > 0) {
-            console.log('📋 Reservas encontradas sin filtros de hora:', allBookings.map(b => ({
-              id: b.id,
-              date: b.date,
-              start_time: b.start_time,
-              end_time: b.end_time
-            })));
+            console.log(`🔍 Se encontraron ${allBookings.length} reservas para la clase ${classId} sin filtrar por hora:`);
+            allBookings.forEach((booking, index) => {
+              console.log(`   Reserva ${index + 1}:`, {
+                id: booking.id,
+                date: booking.date,
+                startTime: booking.start_time,
+                endTime: booking.end_time
+              });
+            });
           } else {
-            console.log('⚠️ No se encontraron reservas para esta clase, incluso sin filtros de hora');
+            console.log('🔍 No hay reservas para esta clase incluso sin filtrar por hora');
           }
         }
         

@@ -107,21 +107,98 @@ export class ManualClassBookingService {
         { zone: timezone }
       )
 
-      const localEndDateTime = DateTime.fromFormat(
-        `${date} ${endTime}`,
-        'yyyy-MM-dd HH:mm',
-        { zone: timezone }
-      )
+      // Verificar si el horario cruza la medianoche
+      const isOvernightBooking = parseInt(endTime.split(':')[0]) < parseInt(startTime.split(':')[0])
+      
+      // Si cruza la medianoche, ajustar la fecha del endDateTime para que sea el día siguiente
+      let localEndDateTime: DateTime
+      if (isOvernightBooking) {
+        // Tomar la fecha del día siguiente para la hora de fin
+        const nextDay = DateTime.fromFormat(date, 'yyyy-MM-dd').plus({ days: 1 }).toFormat('yyyy-MM-dd')
+        localEndDateTime = DateTime.fromFormat(
+          `${nextDay} ${endTime}`,
+          'yyyy-MM-dd HH:mm',
+          { zone: timezone }
+        )
+      } else {
+        localEndDateTime = DateTime.fromFormat(
+          `${date} ${endTime}`,
+          'yyyy-MM-dd HH:mm',
+          { zone: timezone }
+        )
+      }
 
       // Convertir a UTC
-      const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss')
-      const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss')
-      const bookingDateUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd')
+      const utcStartDateTime = localStartDateTime.toUTC();
+      const utcEndDateTime = localEndDateTime.toUTC();
+      
+      // Formato completo para timestamp (YYYY-MM-DD HH:MM:SS)
+      const startTimeUTC = utcStartDateTime.toSQL({ includeOffset: false });
+      const endTimeUTC = utcEndDateTime.toSQL({ includeOffset: false });
+      const bookingDateUTC = date; // Usar la fecha original seleccionada por el usuario
+
+      // Verificar si la hora de fin es 00:00:00 o si la hora de fin es menor que la hora de inicio
+      // Esto indica que la reserva cruza la medianoche en UTC
+      const isOvernightUTC = (endTimeUTC && endTimeUTC.includes('00:00:00')) || 
+        (startTimeUTC && endTimeUTC && 
+         parseInt(endTimeUTC.split(' ')[1]?.split(':')[0] || '0') < 
+         parseInt(startTimeUTC.split(' ')[1]?.split(':')[0] || '0'));
+      
+      // Ajustar la hora de fin si cruza la medianoche en UTC
+      let adjustedEndTimeUTC = endTimeUTC;
+      let bookingDateToUse = bookingDateUTC;
+      let startDateTimeUTC = startTimeUTC || '';
+      let endDateTimeUTC = endTimeUTC || '';
+      
+      // Si la reserva cruza la medianoche en UTC, necesitamos ajustar:
+      if (isOvernightUTC) {
+        if (endTimeUTC && endTimeUTC.includes('00:00:00')) {
+          // Caso especial para 00:00:00 - simplemente ajustar a un segundo antes
+          adjustedEndTimeUTC = utcStartDateTime.set({ hour: 23, minute: 59, second: 59 }).toSQL({ includeOffset: false });
+          
+          // Crear timestamps completos en UTC
+          startDateTimeUTC = startTimeUTC || '';
+          endDateTimeUTC = adjustedEndTimeUTC || '';
+        } else {
+          // Para otros casos donde la hora de fin es después de la medianoche (ej. 00:30:00)
+          
+          // Ya tenemos timestamps completos, no necesitamos hacer ajustes adicionales
+          startDateTimeUTC = startTimeUTC || '';
+          endDateTimeUTC = endTimeUTC || '';
+        }
+      } else {
+        // Caso normal - mismo día
+        startDateTimeUTC = startTimeUTC || '';
+        endDateTimeUTC = endTimeUTC || '';
+      }
+
+      // Log para verificar la conversión
+      console.log('🕒 Conversión de horarios en manualClassBookingService:', {
+        local: {
+          date,
+          startTime,
+          endTime,
+          isOvernightBooking,
+          timezone,
+          localStart: localStartDateTime.toISO(),
+          localEnd: localEndDateTime.toISO()
+        },
+        utc: {
+          originalDate: bookingDateUTC,
+          adjustedDate: bookingDateToUse,
+          startTime: startTimeUTC,
+          endTime: endTimeUTC,
+          adjustedEndTime: adjustedEndTimeUTC,
+          isOvernightUTC,
+          fullStartUTC: startDateTimeUTC,
+          fullEndUTC: endDateTimeUTC
+        }
+      })
 
       return {
-        bookingDateUTC,
-        startTimeUTC,
-        endTimeUTC,
+        bookingDateUTC: bookingDateUTC, // Usar siempre la fecha original
+        startTimeUTC: startDateTimeUTC, // Timestamp completo, asegurar que no sea null
+        endTimeUTC: endDateTimeUTC, // Timestamp completo, asegurar que no sea null
         timezone
       }
     } catch (err) {
@@ -299,19 +376,14 @@ export class ManualClassBookingService {
       });
 
       // Asegurarnos de que las fechas y horas estén en el formato correcto
-      // Para PostgreSQL, date debe ser 'YYYY-MM-DD' y time debe ser 'HH:MM:SS'
+      // Para PostgreSQL, date debe ser 'YYYY-MM-DD' y timestamp debe ser 'YYYY-MM-DD HH:MM:SS'
       // Verificamos que bookingDate tenga el formato correcto
       if (!bookingDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
         bookingDate = DateTime.fromISO(bookingDate).toFormat('yyyy-MM-dd');
       }
 
-      // Verificamos que las horas tengan el formato correcto (HH:MM:SS)
-      if (!startTimeUTC.match(/^\d{2}:\d{2}:\d{2}$/)) {
-        startTimeUTC = startTimeUTC.substring(0, 8);
-      }
-      if (!endTimeUTC.match(/^\d{2}:\d{2}:\d{2}$/)) {
-        endTimeUTC = endTimeUTC.substring(0, 8);
-      }
+      // Para los nuevos timestamps completos, ya no necesitamos estos ajustes
+      // porque startTimeUTC y endTimeUTC ya están en formato SQL completo
 
       // Preparar los participantes en el formato esperado por el RPC
       const participants = [{
@@ -670,4 +742,4 @@ export class ManualClassBookingService {
       };
     }
   }
-} 
+}

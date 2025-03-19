@@ -15,7 +15,9 @@ import { useClassBooking } from '@/hooks/useClassBooking'
 import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PaymentTypeSection } from '../components/PaymentTypeSection'
-import { PaymentMethodEnum, PaymentTypeEnum } from '@/types/bookings';
+import { PaymentMethodEnum } from '@/types/bookings';
+import { PaymentMethod } from '../types/models'
+import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from '../components/payment-types'
 import { PaymentMethod as CardPaymentMethod, PaymentSectionWithStripe } from '../components/PaymentSection'
 import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext'
 import { useStripeConfig } from '@/hooks/useStripeConfig'
@@ -27,7 +29,7 @@ import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 
 // Definición de los métodos de pago disponibles
-const PAYMENT_METHODS: Record<PaymentMethod, {
+const PAYMENT_METHODS: Record<PaymentMethodEnum, {
   icon: typeof IconCash
   label: string
   description: string
@@ -723,21 +725,39 @@ export function SummaryStep() {
   ), [selectedClass, selectedSession, dayName, dayNumber, month]);
 
   // Sección de tipo de pago
-  const PaymentTypesSection = useCallback(() => (
-    <div className="space-y-4">
-      <div className="mb-2">
-        <h3 className="text-sm font-medium text-gray-700">
-          Elige cómo deseas realizar el pago
-        </h3>
-      </div>
+  const PaymentTypesSection = useCallback(() => {
+    // Filtrar los tipos de pago basados en los métodos disponibles de la clase
+    const availablePaymentTypes = PAYMENT_TYPES.filter(type => {
+      // Mapeo entre PaymentTypeEnum y los valores de la tabla classes
+      const paymentTypeToMethodMap: Record<string, PaymentMethod> = {
+        'booking': 'pay_at_club',
+        'full': 'full_payment',
+        'deposit': 'partial_payment',
+        'guarantee': 'guarantee'
+      };
+      
+      // Verificar si el método de pago correspondiente está disponible en la clase
+      const methodToCheck = paymentTypeToMethodMap[type.id];
+      return state.selectedClass?.availablePaymentMethods?.includes(methodToCheck);
+    });
 
-      <PaymentTypeSection
-        selectedType={selectedPaymentType}
-        onSelect={handlePaymentTypeSelection}
-        viewType={isMobile ? 'mobile' : 'desktop'}
-      />
-    </div>
-  ), [selectedPaymentType, handlePaymentTypeSelection, isMobile]);
+    return (
+      <div className="space-y-4">
+        <div className="mb-2">
+          <h3 className="text-sm font-medium text-gray-700">
+            Elige cómo deseas realizar el pago
+          </h3>
+        </div>
+
+        <PaymentTypeSection
+          selectedType={selectedPaymentType}
+          onSelect={handlePaymentTypeSelection}
+          viewType={isMobile ? 'mobile' : 'desktop'}
+          paymentTypes={availablePaymentTypes}
+        />
+      </div>
+    );
+  }, [selectedPaymentType, handlePaymentTypeSelection, isMobile, state.selectedClass?.availablePaymentMethods]);
 
   // Sección de métodos de pago con tarjeta
   const CardPaymentSection = useCallback(() => (

@@ -29,12 +29,34 @@ export interface TimeSlot {
   price: number
 }
 
+export interface SpecificSession {
+  date: string
+  price: number
+  endTime: string
+  capacity: number
+  courtIds: string | string[]
+  createdAt: string
+  startTime: string
+  instructors: string[]
+}
+
+export interface SuspendedSession {
+  date: string
+  reason: string
+  courtId: string
+  endTime: string
+  startTime: string
+  suspendedAt: string
+}
+
 export interface Schedule {
   days: number[]
   timeSlots: TimeSlot[]
   daysOfWeek: string[]
   startDate: string
   endDate: string | null
+  specificSessions?: SpecificSession[]
+  suspendedSessions?: SuspendedSession[]
 }
 
 export interface PublicClass {
@@ -50,8 +72,10 @@ export interface PublicClass {
     daysOfWeek: string[]
     startDate: string
     endDate: string | null
+    specificSessions?: SpecificSession[]
+    suspendedSessions?: SuspendedSession[]
   }
-  availablePaymentMethods: ('cash' | 'card' | 'transfer')[]
+  availablePaymentMethods: PaymentMethod[]
   visibility: 'public' | 'private'
   is_recurring: boolean
   instructor: string
@@ -131,7 +155,7 @@ export interface ClassSession {
   price: number
 }
 
-export type PaymentMethod = 'cash' | 'card' | 'transfer'
+export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'pay_at_club' | 'full_payment' | 'partial_payment' | 'guarantee';
 
 export interface UserPackageFromDB {
   id: string

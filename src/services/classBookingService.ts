@@ -120,8 +120,12 @@ export class ClassBookingService {
       );
       
       // Convertir a UTC
-      const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
-      const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
+      const utcStartDateTime = localStartDateTime.toUTC();
+      const utcEndDateTime = localEndDateTime.toUTC();
+      
+      // Formato completo para timestamp (YYYY-MM-DD HH:MM:SS)
+      const startTimeUTC = utcStartDateTime.toSQL({ includeOffset: false });
+      const endTimeUTC = utcEndDateTime.toSQL({ includeOffset: false });
       const bookingDateUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd');
       
       console.log('🕒 Conversión de horarios:', {
@@ -137,15 +141,15 @@ export class ClassBookingService {
           date: bookingDateUTC,
           start: startTimeUTC,
           end: endTimeUTC,
-          fullStartUTC: localStartDateTime.toUTC().toISO(),
-          fullEndUTC: localEndDateTime.toUTC().toISO()
+          fullStartUTC: utcStartDateTime.toISO(),
+          fullEndUTC: utcEndDateTime.toISO()
         }
       });
       
       return {
         bookingDateUTC,
-        startTimeUTC,
-        endTimeUTC,
+        startTimeUTC: startTimeUTC || '',
+        endTimeUTC: endTimeUTC || '',
         timezone
       };
     } catch (error) {
@@ -255,10 +259,16 @@ export class ClassBookingService {
 
       if (error) {
         console.error('❌ [ClassBookingService] Error creating class booking:', error);
+        console.error('❌ [ClassBookingService] Detalles del error:', {
+          mensaje: error.message,
+          detalles: error.details,
+          codigo: error.code,
+          parametros: JSON.stringify(rpcParams, null, 2)
+        });
         return {
           error: {
             message: 'Error al crear la reserva de clase',
-            details: error.message,
+            details: `${error.message}. Verificar formato de timestamp.`,
             code: error.code
           }
         };
@@ -267,10 +277,21 @@ export class ClassBookingService {
       return { id: data };
     } catch (error: any) {
       console.error('❌ [ClassBookingService] Exception creating class booking:', error);
+      console.error('❌ [ClassBookingService] Detalles de la excepción:', {
+        mensaje: error?.message || 'Error desconocido',
+        stack: error?.stack,
+        parametros: JSON.stringify({
+          clase: classData?.id,
+          sesion: session?.id,
+          fecha: session?.date,
+          horario: `${session?.startTime} - ${session?.endTime}`
+        }, null, 2)
+      });
       return {
         error: {
           message: 'Error inesperado al crear la reserva de clase',
-          details: error.message
+          details: error?.message || 'Error desconocido. Verificar formato de timestamp.',
+          code: 'UNEXPECTED_ERROR'
         }
       };
     }
@@ -302,31 +323,32 @@ export class ClassBookingService {
       };
     }
 
-    // Obtener la primera sesión disponible como referencia para la fecha y hora
-    const referenceSession = classData.sessions && classData.sessions.length > 0 
-      ? classData.sessions[0] 
-      : null;
-
-    if (!referenceSession) {
+    // Buscar la sesión específica seleccionada por el usuario en lugar de usar la primera sesión
+    const selectedSessionId = sessionIds && sessionIds.length > 0 ? sessionIds[0] : null;
+    const selectedSession = selectedSessionId && classData.sessions ? 
+      classData.sessions.find(session => session.id === selectedSessionId) : null;
+    
+    if (!selectedSession) {
+      console.error('❌ [ClassBookingService] No se encontró la sesión seleccionada:', selectedSessionId);
       return {
         success: false,
         bookingIds: [],
-        errors: ['La clase no tiene sesiones disponibles para reservar']
+        errors: ['La sesión seleccionada no se encuentra entre las sesiones disponibles']
       };
     }
 
-    // Para reservas de clase, ignoramos la validación de sesiones específicas
-    // y usamos el ID de clase directamente
     console.log('✅ [ClassBookingService] Creando reserva de clase con ID:', classData.id);
+    console.log('✅ [ClassBookingService] Usando sesión específica:', selectedSession.date, selectedSession.startTime, '-', selectedSession.endTime);
 
-    // Crear la reserva usando la sesión de referencia y el ID de la clase
-    const result = await this.createClassBooking(classData, referenceSession, options);
+    // Crear la reserva usando la sesión específica seleccionada por el usuario
+    const result = await this.createClassBooking(classData, selectedSession, options);
     
     if (result.error) {
+      console.error('❌ [ClassBookingService] Error al crear múltiples reservas de clase:', result.error);
       return {
         success: false,
         bookingIds: [],
-        errors: [result.error.message]
+        errors: [`${result.error.message}. ${result.error.details || ''}`]
       };
     }
 

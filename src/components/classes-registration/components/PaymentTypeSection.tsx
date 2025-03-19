@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 import { PaymentTypeList } from "./PaymentTypeList"
-import { PaymentTypeEnum, PAYMENT_TYPES } from "./payment-types"
+import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from "./payment-types"
 import { PaymentTypeModal } from "./PaymentTypeModal"
 
 // Filtrar tipos de pago específicos si es necesario
@@ -17,12 +17,14 @@ interface PaymentTypeSectionProps {
   selectedType: PaymentTypeEnum | null
   onSelect: (type: PaymentTypeEnum | null) => void
   viewType?: 'mobile' | 'desktop'
+  paymentTypes?: PaymentType[]
 }
 
 export function PaymentTypeSection({
   selectedType,
   onSelect,
-  viewType = 'desktop'
+  viewType = 'desktop',
+  paymentTypes = FILTERED_PAYMENT_TYPES
 }: PaymentTypeSectionProps) {
   const selectedTypeData = selectedType ? PAYMENT_TYPES.find(t => t.id === selectedType) : null
   const [showList, setShowList] = useState(false)
@@ -175,7 +177,7 @@ export function PaymentTypeSection({
               <PaymentTypeList
                 selectedType={selectedType}
                 onSelect={handleSelectPaymentType}
-                paymentTypes={FILTERED_PAYMENT_TYPES}
+                paymentTypes={paymentTypes}
                 isExpanded={true}
                 noContainer={true}
               />
@@ -191,7 +193,7 @@ export function PaymentTypeSection({
           onClose={() => setShowModal(false)}
           selectedType={selectedType}
           onSelect={handleSelectPaymentType}
-          paymentTypes={FILTERED_PAYMENT_TYPES}
+          paymentTypes={paymentTypes}
         />
       )}
     </motion.div>
