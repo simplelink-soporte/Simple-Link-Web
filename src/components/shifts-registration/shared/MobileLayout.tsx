@@ -41,7 +41,7 @@ export function MobileLayout({
         onNext={onNext}
         onBack={onBack}
         nextLabel={nextLabel}
-        isNextDisabled={isNextDisabled}
+        isNextDisabled={isNextDisabled === undefined ? false : isNextDisabled}
         isProcessing={isProcessing}
         showBackButton={showBackButton}
       />

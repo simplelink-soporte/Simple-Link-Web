@@ -22,10 +22,14 @@ export interface StepNavigationProps {
 
 // Configuración de los pasos y su navegación
 const STEP_CONFIG: Record<number, { backStep?: number; nextStep?: number; skipNavigation?: boolean }> = {
-  0: { nextStep: 1 }, // Servicio -> Fecha
-  1: { backStep: 0, nextStep: 2 }, // Fecha -> Horario
-  2: { backStep: 1, nextStep: 3 }, // Horario -> Confirmación
-  3: { backStep: 2 } // Confirmación (paso final)
+  0: { nextStep: 1 }, // Ubicación -> Turnos
+  1: { backStep: 0, nextStep: 2 }, // Turnos -> Artículos
+  2: { backStep: 1, nextStep: 3 }, // Artículos -> Servicios
+  3: { backStep: 2, nextStep: 4 }, // Servicios -> Fecha
+  4: { backStep: 3, nextStep: 5 }, // Fecha -> Hora
+  5: { backStep: 4, nextStep: 6 }, // Hora -> Resumen
+  6: { backStep: 5, nextStep: 7 }, // Resumen -> Confirmación
+  7: { backStep: 6 } // Confirmación (paso final)
 };
 
 export function StepNavigation({
@@ -40,7 +44,12 @@ export function StepNavigation({
   isFixedToBottom = true,
   className,
 }: StepNavigationProps) {
-  const { state, nextStep: goToNextStep, prevStep: goToPrevStep } = useShiftForm();
+  const { 
+    state, 
+    nextStep: goToNextStep, 
+    prevStep: goToPrevStep,
+    goBackToStep 
+  } = useShiftForm();
   const currentStep = state.currentStep;
   const config = STEP_CONFIG[currentStep] || {};
 
@@ -55,12 +64,20 @@ export function StepNavigation({
 
     switch (currentStep) {
       case 0:
-        return 'Elegir fecha';
+        return 'Elegir turno';
       case 1:
-        return 'Elegir horario';
+        return 'Elegir artículos';
       case 2:
-        return 'Revisar y confirmar';
+        return 'Elegir servicios';
       case 3:
+        return 'Elegir fecha';
+      case 4:
+        return 'Elegir hora';
+      case 5:
+        return 'Revisar y confirmar';
+      case 6:
+        return 'Confirmar turno';
+      case 7:
         return 'Confirmar turno';
       default:
         return 'Continuar';
@@ -85,7 +102,7 @@ export function StepNavigation({
       
       // Lógica específica para cada paso
       // (Por ejemplo, crear la reserva en el último paso)
-      if (currentStep === 3) {
+      if (currentStep === 7) {
         const createBookingEvent = new CustomEvent('create-shift-booking');
         window.dispatchEvent(createBookingEvent);
       }
@@ -104,14 +121,34 @@ export function StepNavigation({
     if (isProcessing) return;
     
     try {
+      // Emitir un evento que puede ser cancelado para notificar a otros componentes
       const customEvent = new Event('shift-step-navigation-back', {
         bubbles: true,
         cancelable: true
       });
       
+      // Si el evento es cancelado por algún listener, detener la navegación
       const wasCancelled = !document.dispatchEvent(customEvent);
-      if (wasCancelled) return;
+      if (wasCancelled) {
+        console.log('StepNavigation: Navegación hacia atrás interceptada por otro componente');
+        return;
+      }
       
+      // Verificar si estamos en el paso 3 (ServiceStep) y el paso de artículos debe omitirse
+      if (currentStep === 3 && state.skipItemsStep) {
+        console.log('StepNavigation: Detectada navegación hacia atrás desde ServiceStep con skipItemsStep=true');
+        
+        // Emitir un evento personalizado para indicar que se debe saltar el paso 2 (ItemsStep)
+        const skipStepEvent = new CustomEvent('shift-skip-items-step-back', {
+          detail: { fromStep: 3, toStep: 1 }
+        });
+        document.dispatchEvent(skipStepEvent);
+        
+        // No continuar con la navegación normal, el evento se encargará de ello
+        return;
+      }
+      
+      // Navegación normal hacia atrás
       if (onBack) {
         onBack();
       } else if (config.backStep !== undefined) {

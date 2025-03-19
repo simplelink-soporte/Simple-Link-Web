@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { StepComponentProps } from '../StepRenderer';
 import { useShiftForm } from '../../context/ShiftFormContext';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { ItemWithStock } from './types';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SelectionSummaryToast } from './components/SelectionSummaryToast';
+import { StepNavigation } from '../../shared/StepNavigation';
 
 // Componente principal de items
 export function ItemsStep({
@@ -27,7 +28,9 @@ export function ItemsStep({
   const { 
     state,
     setSelectedItems,
-    setItemsTotalPrice
+    setItemsTotalPrice,
+    skipToStep,
+    setSkipItemsStep
   } = useShiftForm();
 
   // Extraer datos del estado global
@@ -36,7 +39,8 @@ export function ItemsStep({
     selectedDate, 
     selectedTimeSlot, 
     duration, 
-    shiftDetails 
+    shiftDetails,
+    skipItemsStep
   } = state;
 
   // Extraer startTime y endTime de los detalles del shift o del timeSlot
@@ -159,11 +163,154 @@ export function ItemsStep({
   const filteredItems = useMemo(() => {
     if (!itemsWithStock) return [];
     
-    // Filtrar por tipo y disponibilidad
-    return itemsWithStock.filter(item => 
-      item.availableStock > 0 || (localSelectedItems[item.id] || 0) > 0
-    );
-  }, [itemsWithStock, localSelectedItems]);
+    // Filtrar por tipo, disponibilidad y precio según duración
+    return itemsWithStock.filter(item => {
+      // Verificar si tiene stock disponible o ya está seleccionado
+      const hasAvailability = item.availableStock > 0 || (localSelectedItems[item.id] || 0) > 0;
+      
+      // Verificar si tiene precio configurado para la duración solicitada
+      const durationInMinutes = duration ? duration * 60 : 0;
+      const hasPriceForDuration = item.duration_pricing && 
+                                  item.duration_pricing[durationInMinutes.toString()] !== undefined &&
+                                  item.duration_pricing[durationInMinutes.toString()] !== null &&
+                                  item.duration_pricing[durationInMinutes.toString()] > 0;
+      
+      // Solo mostrar items que cumplan ambas condiciones
+      return hasAvailability && hasPriceForDuration;
+    });
+  }, [itemsWithStock, localSelectedItems, duration]);
+
+  // Referencia para almacenar en caché la verificación de ítems disponibles
+  const itemsAvailabilityCache = useRef<{
+    locationId: string | null;
+    duration: number;
+    hasAvailableItems: boolean;
+    timestamp: number;
+    itemCount: number;
+  } | null>(null);
+
+  // Tiempo de expiración de la caché en milisegundos (5 minutos)
+  const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
+
+  // Función para verificar si la caché es válida
+  const isCacheValid = useCallback(() => {
+    if (!itemsAvailabilityCache.current) return false;
+    
+    const now = Date.now();
+    const isExpired = now - itemsAvailabilityCache.current.timestamp > CACHE_EXPIRATION_TIME;
+    
+    // La caché es válida si no ha expirado y los parámetros clave coinciden
+    return !isExpired && 
+           itemsAvailabilityCache.current.locationId === locationId &&
+           itemsAvailabilityCache.current.duration === duration;
+  }, [locationId, duration]);
+
+  // Variable para rastrear si la duración cambió recientemente
+  const durationChangedRef = useRef<{
+    changed: boolean;
+    previousDuration: number | null;
+    timestamp: number;
+  }>({
+    changed: false,
+    previousDuration: null,
+    timestamp: 0
+  });
+  
+  // Efecto para detectar cambios en la duración
+  useEffect(() => {
+    if (durationChangedRef.current.previousDuration !== null && 
+        durationChangedRef.current.previousDuration !== duration) {
+      // Marcar que la duración cambió recientemente
+      durationChangedRef.current = {
+        changed: true,
+        previousDuration: duration,
+        timestamp: Date.now()
+      };
+      
+      // Invalidar la caché cuando cambia la duración
+      console.log(`🔄 Duración cambiada de ${durationChangedRef.current.previousDuration} a ${duration}. Invalidando caché.`);
+      itemsAvailabilityCache.current = null;
+      
+      // Resetear el estado de skipItemsStep para forzar una reconsideración
+      setSkipItemsStep(false);
+    } else if (durationChangedRef.current.previousDuration === null) {
+      // Inicialización
+      durationChangedRef.current.previousDuration = duration;
+    }
+  }, [duration, setSkipItemsStep]);
+
+  // Efecto para saltar el paso si no hay artículos disponibles después de la carga inicial
+  useEffect(() => {
+    // Si la duración cambió recientemente (en los últimos 2 segundos), no usar caché
+    const durationChangedRecently = durationChangedRef.current.changed && 
+                                    Date.now() - durationChangedRef.current.timestamp < 2000;
+    
+    if (durationChangedRecently) {
+      console.log("🔄 La duración cambió recientemente. No se utilizará la caché para determinar disponibilidad.");
+      // Resetear la bandera de cambio después de un tiempo
+      if (Date.now() - durationChangedRef.current.timestamp > 2000) {
+        durationChangedRef.current.changed = false;
+      }
+      
+      // No omitir este paso automáticamente, permitir que se evalúe normalmente
+      return;
+    }
+    
+    // Si ya sabemos que debemos omitir este paso (por caché), saltarlo inmediatamente
+    if (isCacheValid() && !itemsAvailabilityCache.current?.hasAvailableItems) {
+      console.log("🔄 Usando caché: No hay artículos disponibles para la duración seleccionada. Pasando al siguiente paso...");
+      console.log(`   Detalles de caché: locationId=${itemsAvailabilityCache.current?.locationId}, duración=${itemsAvailabilityCache.current?.duration}, itemCount=${itemsAvailabilityCache.current?.itemCount}`);
+      
+      // Aseguramos que estamos pasando datos vacíos al contexto
+      setSelectedItems({});
+      setItemsTotalPrice(0);
+      
+      // Marcar el paso para ser omitido
+      setSkipItemsStep(true);
+      
+      // Saltar al paso siguiente
+      skipToStep(3);
+      return;
+    }
+    
+    // Solo ejecutar si ya no está cargando y se han procesado los ítems
+    if (!itemsLoading && !isProcessingData && itemsWithStock.length > 0) {
+      const hasAvailableItems = filteredItems.length > 0;
+      
+      // Actualizar la caché
+      itemsAvailabilityCache.current = {
+        locationId,
+        duration,
+        hasAvailableItems,
+        timestamp: Date.now(),
+        itemCount: filteredItems.length
+      };
+      
+      console.log(`🔄 Actualizando caché: hay ${filteredItems.length} artículos disponibles para duración=${duration}`);
+      
+      // Si no hay artículos disponibles, saltar al siguiente paso
+      if (!hasAvailableItems) {
+        console.log("🔄 No hay artículos disponibles para la duración seleccionada. Pasando al siguiente paso...");
+        
+        // Aseguramos que estamos pasando datos vacíos al contexto
+        setSelectedItems({});
+        setItemsTotalPrice(0);
+        
+        // Marcar el paso para ser omitido
+        setSkipItemsStep(true);
+        
+        // Breve retraso para evitar problemas de renderizado
+        const skipTimer = setTimeout(() => {
+          skipToStep(3); // El paso siguiente de ItemsStep es el 3 (ServiceStep)
+        }, 50);
+        
+        return () => clearTimeout(skipTimer);
+      } else {
+        // Si hay artículos disponibles, asegurarse de que el paso no se omita
+        setSkipItemsStep(false);
+      }
+    }
+  }, [filteredItems, itemsLoading, isProcessingData, itemsWithStock.length, skipToStep, setSelectedItems, setItemsTotalPrice, setSkipItemsStep, locationId, duration, isCacheValid]);
 
   // Función para obtener el precio de un ítem basado en la duración
   const getItemPrice = useCallback((item: ItemWithStock) => {
@@ -286,10 +433,21 @@ export function ItemsStep({
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-neutral-900 rounded-lg">
-            <p className="text-gray-500">No se encontraron ítems disponibles.</p>
+            <p className="text-gray-500">
+              {itemsWithStock.length > 0 
+                ? "No se encontraron ítems con precio configurado para la duración solicitada."
+                : "No se encontraron ítems disponibles."}
+            </p>
           </div>
         )}
       </div>
+      
+      {/* Navegación entre pasos */}
+      <StepNavigation 
+        onNext={handleNext} 
+        onBack={onPrevious} 
+        isNextDisabled={totalItemsSelected === 0}
+      />
       
       {/* Toast de notificación */}
       <AnimatePresence>

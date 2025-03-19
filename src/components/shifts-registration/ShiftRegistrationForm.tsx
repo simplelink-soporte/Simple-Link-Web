@@ -6,7 +6,6 @@ import { PublishedForm } from '@/types/forms/publish';
 import { AlertCircle } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { StepNavigation } from './shared/StepNavigation';
 import { StepRenderer } from './steps/StepRenderer';
 
 // Tipos para los pasos
@@ -156,14 +155,7 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
       )}
 
       {/* Navegación entre pasos */}
-      <StepNavigation
-        onNext={handleNext}
-        onBack={handlePrevious}
-        nextLabel={getNextButtonLabel()}
-        isNextDisabled={isNextDisabled}
-        isProcessing={isProcessing || state.bookingStatus === 'submitting'}
-        isFixedToBottom={true}
-      />
+      {/* La navegación ya se maneja en cada paso individual, así que eliminamos esto para evitar duplicados */}
     </div>
   );
 };

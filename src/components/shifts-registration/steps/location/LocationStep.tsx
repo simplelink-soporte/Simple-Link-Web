@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Check, Loader2, Clock } from 'lucide-react';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useShiftLocationBranches } from '../../hooks';
+import { StepNavigation } from '../../shared/StepNavigation';
 
 // Componente memoizado para el título y descripción
 const PageHeader = memo(({ 
@@ -314,6 +315,11 @@ const LocationStep: React.FC<StepComponentProps> = ({
           );
         })}
       </div>
+      <StepNavigation 
+        onNext={handleNext} 
+        onBack={onPrevious} 
+        isNextDisabled={!selectedLocation}
+      />
     </div>
   );
 };

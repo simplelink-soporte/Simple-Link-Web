@@ -38,7 +38,14 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   progress,
 }) => {
   // Contexto del formulario
-  const { state, selectShift, setDuration: setShiftDuration, setShiftDetails, selectDate } = useShiftForm();
+  const { 
+    state, 
+    selectShift, 
+    setDuration: setShiftDuration, 
+    setShiftDetails, 
+    selectDate, 
+    setSkipItemsStep 
+  } = useShiftForm();
   
   // Referencia al contenedor de la lista de turnos para scrolling
   const shiftsContainerRef = useRef<HTMLDivElement>(null);
@@ -143,7 +150,8 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   // Manejador para avanzar al siguiente paso
   const handleNext = useCallback(() => {
     if (!selectedShiftId) {
-      console.log('[ShiftsStep] No se puede avanzar: No hay turno seleccionado');
+      console.error('[ShiftsStep] No se puede avanzar: No hay turno seleccionado');
+      // Mostrar alerta visual o notificación al usuario
       return;
     }
     
@@ -177,6 +185,11 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     // Actualizar estado local
     setDuration(value);
     
+    // Al cambiar la duración, forzar una re-evaluación de si hay items disponibles
+    // Resetear el flag de skipItemsStep para que el paso de artículos se evalúe nuevamente
+    console.log(`[ShiftsStep] Duración cambiada a ${value[0]} minutos. Reseteando skipItemsStep.`);
+    setSkipItemsStep(false);
+    
     // Limpiar la selección de turno al cambiar la duración
     setSelectedShiftId(null);
     selectShift('');
@@ -192,7 +205,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     
     // Actualizar duración en el contexto global
     setShiftDuration(value[0]);
-  }, [selectShift, setShiftDuration, setShiftDetails]);
+  }, [selectShift, setShiftDetails, setSkipItemsStep, setShiftDuration]);
   
   // Manejador para cambiar el filtro de tiempo
   const handleTimeChange = useCallback((value: TimeOfDay | null) => {

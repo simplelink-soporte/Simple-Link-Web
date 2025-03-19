@@ -74,8 +74,8 @@ export function MobileStepNavigation({
         // Personalizar con clases adicionales
         className="py-4 px-4 shadow-md"
         onBack={undefined} // Evitar duplicación de funcionalidad
-        // Asegurar explícitamente que isNextDisabled se pase correctamente
-        isNextDisabled={props.isNextDisabled}
+        // IMPORTANTE: Asegurar explícitamente que isNextDisabled se pase correctamente
+        isNextDisabled={props.isNextDisabled === undefined ? false : props.isNextDisabled}
       />
     </>
   );
