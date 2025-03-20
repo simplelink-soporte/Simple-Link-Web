@@ -2,17 +2,14 @@
 
 import React, { Suspense, useState, useEffect } from 'react';
 import { useShiftForm } from '../context/ShiftFormContext';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { MobileLayout } from '../shared/MobileLayout';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 // Importación de los componentes de pasos
-const ServiceStep = React.lazy(() => import('./ServiceStep'));
 const LocationStep = React.lazy(() => import('./location/LocationStep'));
 const ShiftsStep = React.lazy(() => import('./shifts/ShiftsStep'));
 const ItemsStep = React.lazy(() => import('./items/ItemsStep'));
-const DateStep = React.lazy(() => import('./DateStep'));
-const TimeStep = React.lazy(() => import('./TimeStep'));
-const SummaryStep = React.lazy(() => import('./SummaryStep'));
+const SummaryStep = React.lazy(() => import('./summary'));
 const ConfirmationStep = React.lazy(() => import('./ConfirmationStep'));
 
 export type StepComponentProps = {
@@ -63,8 +60,8 @@ export const StepRenderer: React.FC<{
   onNext: () => void;
   onPrevious: () => void;
 }> = ({ onNext, onPrevious }) => {
-  const { state } = useShiftForm();
-  const totalSteps = 8; // Actualizado para incluir el nuevo paso de Items
+  const { state, goToStep } = useShiftForm();
+  const totalSteps = 5; 
   const [viewType, setViewType] = useState<'desktop' | 'mobile'>('desktop');
   const [navigatingBackward, setNavigatingBackward] = useState(false);
   const [skipToStepValue, setSkipToStepValue] = useState<number | null>(null);
@@ -86,6 +83,14 @@ export const StepRenderer: React.FC<{
       window.removeEventListener('resize', checkViewType);
     };
   }, []);
+
+  // Verificar autenticación al iniciar
+  useEffect(() => {
+    // Si el paso es 'auth' y el usuario está autenticado, automáticamente ir al paso de ubicación
+    if (state.step === 'auth' && state.isAuthenticated) {
+      goToStep('location');
+    }
+  }, [state.step, state.isAuthenticated, goToStep]);
 
   // Detectar navegación hacia atrás desde ServiceStep (paso 3) si skipItemsStep es true
   useEffect(() => {
@@ -128,139 +133,251 @@ export const StepRenderer: React.FC<{
     };
   }, [state.currentStep, state.skipItemsStep, setSkipToStepValue]);
 
-  // Parámetros comunes para todos los pasos
-  const isLastStep = state.currentStep === 7;
-  const isFirstStep = state.currentStep === 0;
-  const progress = ((state.currentStep + 1) / 8) * 100;
-  
-  const stepProps: StepComponentProps = {
-    onNext,
-    onPrevious,
-    isLastStep,
-    isFirstStep,
-    progress,
-    viewType
-  };
-  
-  // Renderizar el paso correspondiente según el estado actual
+  const currentStep = state.currentStep;
+  const isLastStep = currentStep === totalSteps - 1;
+  const isFirstStep = currentStep === 0;
+
   const renderStep = () => {
-    let currentStep;
-    
-    // Si estamos en el paso 2 (items) y skipItemsStep es true, saltar al paso 3
-    // Pero SOLO si no estamos navegando hacia atrás
-    if (state.currentStep === 2 && state.skipItemsStep && !navigatingBackward) {
-      console.log('StepRenderer: Evaluando si omitir el paso de artículos (2)');
-      console.log(`   Estado actual: skipItemsStep=${state.skipItemsStep}, duración=${state.duration}`);
-      
-      // Comprobar si acabamos de cambiar la duración (última actualización en los últimos 5 segundos)
-      const durationUpdatedRecently = state.lastDurationChangeTimestamp && 
-                                    (Date.now() - state.lastDurationChangeTimestamp < 5000);
-      
-      if (durationUpdatedRecently) {
-        console.log('StepRenderer: La duración cambió recientemente. NO omitiendo el paso de artículos para permitir verificar disponibilidad con la nueva duración.');
-        // No omitir el paso si la duración cambió recientemente
-        return (
-          <ItemsStep {...stepProps} />
-        );
-      }
-      
-      console.log('StepRenderer: Omitiendo el paso de artículos (2) y redirigiendo al paso de servicios (3)');
-      return <Redirect to={3} {...stepProps} />;
-    }
-    
-    // Si estamos yendo hacia atrás desde el paso 3 al 2, y skipItemsStep es true, ir directamente al paso 1
-    if (state.currentStep === 2 && state.skipItemsStep && navigatingBackward) {
-      console.log('StepRenderer: Omitiendo el paso de artículos (2) al retroceder y redirigiendo al paso de turnos (1)');
-      return <Redirect to={1} {...stepProps} />;
-    }
-    
-    // Si se configuró un paso para saltar, redirigir a ese paso
-    if (skipToStepValue !== null) {
-      console.log('StepRenderer: Redirigiendo a paso configurado:', skipToStepValue);
-      const targetStep = skipToStepValue;
-      
-      // Resetear el valor para evitar redirecciones no deseadas en el futuro
-      setTimeout(() => {
-        console.log('StepRenderer: Reseteando skipToStepValue');
-        setSkipToStepValue(null);
-        setNavigatingBackward(false);
-      }, 100);
-      
-      return <Redirect to={targetStep} {...stepProps} />;
-    }
-    
-    // Si estamos en el paso 1, devolver ShiftsStep directamente ya que tiene su propia lógica de navegación
-    if (state.currentStep === 1) {
-      console.log('StepRenderer: Usando ShiftsStep con su propia navegación');
-      return <ShiftsStep {...stepProps} />;
-    }
-    
-    // Para todos los demás pasos que no implementan su propia navegación, aseguraremos que tengan la navegación adecuada
+    const stepProps: StepComponentProps = {
+      onNext,
+      onPrevious,
+      isLastStep,
+      isFirstStep,
+      progress: ((currentStep + 1) / totalSteps) * 100,
+      viewType
+    };
+
     switch (state.currentStep) {
       case 0:
-        currentStep = <LocationStep {...stepProps} />;
-        break;
+        return <LocationStep {...stepProps} />;
+      case 1:
+        return <ShiftsStep {...stepProps} />;
       case 2:
-        // ItemsStep se encargará de saltar al siguiente paso si no hay ítems disponibles
-        currentStep = <ItemsStep {...stepProps} />;
-        break;
+        return <ItemsStep {...stepProps} />;
       case 3:
-        currentStep = <ServiceStep {...stepProps} />;
-        break;
+        // Después de Items pasamos directamente a Summary (eliminamos el ServiceStep)
+        return (
+          <Suspense fallback={<div className="p-8 flex flex-col items-center justify-center">
+            <LoadingSpinner size="lg" />
+            <p className="mt-4 text-gray-600">Cargando...</p>
+          </div>}>
+            <SummaryStep {...stepProps} />
+          </Suspense>
+        );
       case 4:
-        currentStep = <DateStep {...stepProps} />;
-        break;
-      case 5:
-        currentStep = <TimeStep {...stepProps} />;
-        break;
-      case 6:
-        currentStep = <SummaryStep {...stepProps} />;
-        break;
-      case 7:
-        currentStep = <ConfirmationStep {...stepProps} />;
-        break;
+        return <ConfirmationStep {...stepProps} />;
       default:
-        currentStep = <div>Paso no encontrado</div>;
+        return <div>Paso no encontrado</div>;
     }
-    
-    // Para todos los pasos (excepto ShiftsStep) en modo móvil, aplicamos automáticamente el MobileLayout
-    if (viewType === 'mobile') {
-      // Identificar si el paso actual necesita deshabilitar el botón Next
-      // Esto depende de la implementación interna de cada componente de paso
-      let isStepNextDisabled = false;
-      
-      // Para pasos conocidos que requieren validación específica, podemos establecer esto manualmente
-      if (state.currentStep === 1 && !state.selectedShift) {
-        console.log('StepRenderer: Paso de turnos detectado - botón Next deshabilitado debido a que no hay turno seleccionado');
-        isStepNextDisabled = true;
+  };
+
+  // Forzar la actualización de las propiedades de navegación móvil
+  const [mobileNavProps, setMobileNavProps] = useState({
+    nextLabel: isLastStep ? 'Finalizar' : 'Siguiente',
+    isNextDisabled: false,
+    isProcessing: false,
+    customOnNext: undefined as (() => void) | undefined
+  });
+  
+  // Actualizar las propiedades de navegación en función del paso actual
+  useEffect(() => {
+    // Función para obtener las propiedades actualizadas
+    const getMobileNavProps = () => {
+      const defaultProps = {
+        nextLabel: isLastStep ? 'Finalizar' : 'Siguiente',
+        isNextDisabled: false,
+        isProcessing: false,
+        customOnNext: undefined as (() => void) | undefined
+      };
+
+      // Paso 0: LocationStep - Verificar si se ha seleccionado una ubicación
+      if (state.currentStep === 0) {
+        let locationData = { selectedLocation: null, isLoading: false };
+        
+        if (typeof window !== 'undefined' && (window as any).__locationStepData) {
+          locationData = (window as any).__locationStepData;
+        }
+        
+        return {
+          ...defaultProps,
+          isNextDisabled: !locationData.selectedLocation
+        };
       }
       
-      return (
-        <MobileLayout
-          onNext={onNext}
-          onBack={onPrevious}
-          showBackButton={!isFirstStep}
-          isNextDisabled={isStepNextDisabled}
-        >
-          {currentStep}
-        </MobileLayout>
-      );
+      // Paso 1: ShiftsStep - Verificar si se ha seleccionado un turno
+      if (state.currentStep === 1) {
+        let shiftsData = { selectedShiftId: null, isLoading: false };
+        
+        if (typeof window !== 'undefined' && (window as any).__shiftsStepData) {
+          shiftsData = (window as any).__shiftsStepData;
+        }
+        
+        return {
+          ...defaultProps,
+          isNextDisabled: !shiftsData.selectedShiftId
+        };
+      }
+      
+      // Paso 2: ItemsStep - La selección es opcional
+      if (state.currentStep === 2) {
+        let itemsData = { 
+          totalItemsSelected: 0, 
+          hasItems: false,
+          isLoading: false 
+        };
+        
+        if (typeof window !== 'undefined' && (window as any).__itemsStepData) {
+          itemsData = (window as any).__itemsStepData;
+        }
+        
+        // Nota: No configuramos isNextDisabled aquí porque la selección de items es opcional
+        return {
+          ...defaultProps
+        };
+      }
+
+      // Ajustes específicos para SummaryStep (paso 3)
+      if (state.currentStep === 3) {
+        let summaryData = { 
+          summarySubStep: 'details', 
+          selectedPaymentMethod: null,
+          isProcessing: false
+        };
+        
+        if (typeof window !== 'undefined' && (window as any).__summaryStepData) {
+          summaryData = (window as any).__summaryStepData;
+        }
+        
+        // Determinamos el texto del botón basado en el sub-paso actual
+        const buttonLabel = summaryData.summarySubStep === 'payment' ? 'Confirmar Reserva' : 'Continuar';
+        
+        // Determinamos si el botón debe estar deshabilitado
+        const isButtonDisabled = summaryData.summarySubStep === 'payment' && 
+                              !summaryData.selectedPaymentMethod;
+        
+        return {
+          nextLabel: buttonLabel,
+          isNextDisabled: isButtonDisabled,
+          isProcessing: summaryData.isProcessing || false,
+          // Función personalizada para el botón Next en SummaryStep
+          customOnNext: () => {
+            // Verificamos si podemos acceder a los handlers expuestos por SummaryStep
+            if (typeof window !== 'undefined' && (window as any).__summaryStepData) {
+              const data = (window as any).__summaryStepData;
+              
+              // Usamos la función de navegación de sub-pasos de SummaryStep
+              if (typeof data.handleNextSubStep === 'function') {
+                data.handleNextSubStep();
+                return; // Importante para evitar que se ejecute onNext del padre
+              }
+            }
+            
+            // Si no podemos acceder a los handlers específicos, usamos el comportamiento por defecto
+            onNext();
+          }
+        };
+      }
+
+      return defaultProps;
+    };
+
+    // Actualizar inmediatamente al cambiar el paso
+    setMobileNavProps(getMobileNavProps());
+    
+    // Escuchar eventos de actualización de los diferentes pasos
+    const handleSummaryStepUpdate = () => {
+      if (state.currentStep === 3 && viewType === 'mobile') {
+        setMobileNavProps(getMobileNavProps());
+      }
+    };
+    
+    const handleLocationStepUpdate = () => {
+      if (state.currentStep === 0 && viewType === 'mobile') {
+        setMobileNavProps(getMobileNavProps());
+      }
+    };
+    
+    const handleShiftsStepUpdate = () => {
+      if (state.currentStep === 1 && viewType === 'mobile') {
+        setMobileNavProps(getMobileNavProps());
+      }
+    };
+    
+    const handleItemsStepUpdate = () => {
+      if (state.currentStep === 2 && viewType === 'mobile') {
+        setMobileNavProps(getMobileNavProps());
+      }
+    };
+    
+    // Suscribirse a los eventos personalizados
+    window.addEventListener('summary-step-update', handleSummaryStepUpdate);
+    window.addEventListener('location-step-update', handleLocationStepUpdate);
+    window.addEventListener('shifts-step-update', handleShiftsStepUpdate);
+    window.addEventListener('items-step-update', handleItemsStepUpdate);
+    
+    // Sólo activamos el intervalo cuando estamos en vista móvil
+    let interval: NodeJS.Timeout | null = null;
+    if (viewType === 'mobile') {
+      interval = setInterval(() => {
+        setMobileNavProps(getMobileNavProps());
+      }, 200);
+    }
+      
+    return () => {
+      window.removeEventListener('summary-step-update', handleSummaryStepUpdate);
+      window.removeEventListener('location-step-update', handleLocationStepUpdate);
+      window.removeEventListener('shifts-step-update', handleShiftsStepUpdate);
+      window.removeEventListener('items-step-update', handleItemsStepUpdate);
+      if (interval) clearInterval(interval);
+    };
+  }, [state.currentStep, viewType, isLastStep, onNext]);
+
+  // Función personalizada para el botón "Volver" cuando estamos en SummaryStep
+  const getCustomOnBack = () => {
+    if (state.currentStep === 3 && viewType === 'mobile') {
+      return () => {
+        // Verificamos si podemos acceder a los handlers expuestos por SummaryStep
+        if (typeof window !== 'undefined' && (window as any).__summaryStepData) {
+          const data = (window as any).__summaryStepData;
+          
+          // Usamos la función de navegación entre sub-pasos de SummaryStep
+          if (typeof data.handlePreviousSubStep === 'function') {
+            data.handlePreviousSubStep();
+            return; // Importante para evitar que se ejecute onPrevious del padre
+          }
+        }
+        
+        // Si no podemos acceder a los handlers específicos, usamos el comportamiento por defecto
+        onPrevious();
+      };
     }
     
-    // En modo desktop, retornamos el paso sin envolver
-    return currentStep;
+    return onPrevious;
   };
 
   return (
-    <Suspense
-      fallback={
+    <>
+      <Suspense fallback={
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">Cargando...</p>
         </div>
-      }
-    >
-      {renderStep()}
-    </Suspense>
+      }>
+        {viewType === 'mobile' ? (
+          <MobileLayout 
+            onNext={mobileNavProps.customOnNext || onNext}
+            onBack={getCustomOnBack()}
+            showBackButton={!isFirstStep}
+            nextLabel={mobileNavProps.nextLabel}
+            isNextDisabled={mobileNavProps.isNextDisabled}
+            isProcessing={mobileNavProps.isProcessing}
+          >
+            {renderStep()}
+          </MobileLayout>
+        ) : (
+          renderStep()
+        )}
+      </Suspense>
+    </>
   );
 };

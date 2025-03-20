@@ -236,25 +236,23 @@ export function ShiftsList({
         "relative",
         viewType === 'desktop' && "overflow-hidden"
       )}>
-        {/* Efectos de desvanecimiento en los bordes (solo desktop) */}
-        {viewType === 'desktop' && (
-          <>
-            <div className={cn(
-              "absolute top-0 left-0 right-0 h-8 z-[5] pointer-events-none",
-              "bg-gradient-to-b opacity-75",
-              theme === 'dark' 
-                ? "from-[#121212] to-transparent" 
-                : "from-white to-transparent"
-            )} />
-            <div className={cn(
-              "absolute bottom-0 left-0 right-0 h-8 z-[5] pointer-events-none",
-              "bg-gradient-to-t opacity-75",
-              theme === 'dark' 
-                ? "from-[#121212] to-transparent" 
-                : "from-white to-transparent"
-            )} />
-          </>
-        )}
+        {/* Efectos de desvanecimiento en los bordes (para todas las vistas) */}
+        <>
+          <div className={cn(
+            "absolute top-0 left-0 right-0 h-8 z-[5] pointer-events-none",
+            "bg-gradient-to-b opacity-75",
+            theme === 'dark' 
+              ? "from-[#121212] to-transparent" 
+              : "from-white to-transparent"
+          )} />
+          <div className={cn(
+            "absolute bottom-0 left-0 right-0 h-8 z-[5] pointer-events-none",
+            "bg-gradient-to-t opacity-75",
+            theme === 'dark' 
+              ? "from-[#121212] to-transparent" 
+              : "from-white to-transparent"
+          )} />
+        </>
         
         <div 
           ref={actualRef}
