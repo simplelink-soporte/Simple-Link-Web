@@ -24,12 +24,9 @@ export interface StepNavigationProps {
 const STEP_CONFIG: Record<number, { backStep?: number; nextStep?: number; skipNavigation?: boolean }> = {
   0: { nextStep: 1 }, // Ubicación -> Turnos
   1: { backStep: 0, nextStep: 2 }, // Turnos -> Artículos
-  2: { backStep: 1, nextStep: 3 }, // Artículos -> Servicios
-  3: { backStep: 2, nextStep: 4 }, // Servicios -> Fecha
-  4: { backStep: 3, nextStep: 5 }, // Fecha -> Hora
-  5: { backStep: 4, nextStep: 6 }, // Hora -> Resumen
-  6: { backStep: 5, nextStep: 7 }, // Resumen -> Confirmación
-  7: { backStep: 6 } // Confirmación (paso final)
+  2: { backStep: 1, nextStep: 3 }, // Artículos -> Resumen (eliminado Servicios)
+  3: { backStep: 2, nextStep: 4 }, // Resumen -> Confirmación
+  4: { backStep: 3 } // Confirmación (paso final)
 };
 
 export function StepNavigation({
@@ -68,16 +65,10 @@ export function StepNavigation({
       case 1:
         return 'Elegir artículos';
       case 2:
-        return 'Elegir servicios';
-      case 3:
-        return 'Elegir fecha';
-      case 4:
-        return 'Elegir hora';
-      case 5:
         return 'Revisar y confirmar';
-      case 6:
+      case 3:
         return 'Confirmar turno';
-      case 7:
+      case 4:
         return 'Confirmar turno';
       default:
         return 'Continuar';
@@ -102,7 +93,7 @@ export function StepNavigation({
       
       // Lógica específica para cada paso
       // (Por ejemplo, crear la reserva en el último paso)
-      if (currentStep === 7) {
+      if (currentStep === 4) {
         const createBookingEvent = new CustomEvent('create-shift-booking');
         window.dispatchEvent(createBookingEvent);
       }

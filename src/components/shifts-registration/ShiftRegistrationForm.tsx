@@ -41,7 +41,7 @@ const StepPlaceholder: React.FC<StepComponentProps & { title: string }> = ({
 
 // Componente principal del formulario
 export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form }) => {
-  const { state, nextStep, prevStep, checkAuthAndRedirect } = useShiftForm();
+  const { state, nextStep, prevStep, checkAuthAndRedirect, dispatch } = useShiftForm();
   const { user, isLoading: authLoading } = useShiftRegistrationAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
@@ -86,28 +86,32 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   }, []);
 
   // Determinar el paso actual y el total de pasos
-  const totalSteps = 9; // Actualizado para incluir el paso de autenticación
+  const totalSteps = 5; // Actualizado: 1.Ubicación, 2.Turnos, 3.Artículos, 4.Resumen, 5.Confirmación
   const progress = Math.round(((state.currentStep + 1) / totalSteps) * 100);
 
   // Handlers para navegación
   const handleNext = useCallback(async () => {
     // Ejemplo de cómo podríamos manejar validación o procesamiento
-    if (state.currentStep === 7) { // Si estamos en el paso de confirmación
+    if (state.currentStep === 3) { // Si estamos en el paso de resumen
       setIsProcessing(true);
       
       try {
+        console.log('Enviando datos para crear reserva...');
         // Aquí iría la lógica para enviar la reserva
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulación
-        nextStep();
-      } catch (error) {
-        console.error('Error al procesar la reserva:', error);
-      } finally {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         setIsProcessing(false);
+        dispatch({ type: 'NEXT_STEP' }); // Avanzar al siguiente paso
+      } catch (error) {
+        console.error('Error:', error);
+        setIsProcessing(false);
+        // Manejar el error
       }
     } else {
-      nextStep();
+      // Simplemente avanzar al siguiente paso
+      dispatch({ type: 'NEXT_STEP' });
     }
-  }, [nextStep, state.currentStep]);
+  }, [state.currentStep, dispatch]);
 
   const handlePrevious = useCallback(() => {
     prevStep();
@@ -146,7 +150,7 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   // Determinar el label del botón según el paso
   const getNextButtonLabel = () => {
     switch (state.currentStep) {
-      case 7:
+      case 3: // Paso de resumen
         return 'Confirmar turno';
       default:
         return 'Continuar';

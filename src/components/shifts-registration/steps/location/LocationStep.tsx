@@ -9,6 +9,7 @@ import { MapPin, Check, Loader2, Clock } from 'lucide-react';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useShiftLocationBranches } from '../../hooks';
 import { StepNavigation } from '../../shared/StepNavigation';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 // Componente memoizado para el título y descripción
 const PageHeader = memo(({ 
@@ -162,10 +163,32 @@ const LocationStep: React.FC<StepComponentProps> = ({
 }) => {
   const { state, selectLocation } = useShiftForm();
   const { organization } = useOrganization();
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(state.selectedLocation);
-  
-  // Usar nuestro hook personalizado para cargar las sucursales
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const { branches, loading, error } = useShiftLocationBranches(organization?.id);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
+  // Exponer el estado de selección para que StepRenderer pueda acceder a él
+  useEffect(() => {
+    if (isMobile && typeof window !== 'undefined') {
+      (window as any).__locationStepData = {
+        selectedLocation,
+        isLoading: loading
+      };
+      
+      // Disparar un evento para notificar cambios
+      const event = new CustomEvent('location-step-update', {
+        detail: { selectedLocation, isLoading: loading }
+      });
+      window.dispatchEvent(event);
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).__locationStepData;
+      }
+    };
+  }, [selectedLocation, loading, isMobile]);
 
   // Efecto para sincronizar el estado local con el contexto
   useEffect(() => {
@@ -183,13 +206,18 @@ const LocationStep: React.FC<StepComponentProps> = ({
 
   // Manejador para avanzar al siguiente paso
   const handleNext = () => {
-    if (selectedLocation) {
-      console.log('[LocationStep] Avanzando al siguiente paso:', {
-        selectedLocation,
-        branchName: branches.find(b => b.id === selectedLocation)?.name
-      });
-      onNext();
+    console.log('[LocationStep] Intentando avanzar al siguiente paso, ubicación seleccionada:', selectedLocation);
+    
+    if (!selectedLocation) {
+      console.warn('[LocationStep] No se puede avanzar: No hay ubicación seleccionada');
+      return;
     }
+    
+    console.log('[LocationStep] Avanzando al siguiente paso:', {
+      selectedLocation,
+      branchName: branches.find(b => b.id === selectedLocation)?.name
+    });
+    onNext();
   };
 
   // Si está cargando
@@ -315,11 +343,14 @@ const LocationStep: React.FC<StepComponentProps> = ({
           );
         })}
       </div>
-      <StepNavigation 
-        onNext={handleNext} 
-        onBack={onPrevious} 
-        isNextDisabled={!selectedLocation}
-      />
+      {/* Solo mostrar StepNavigation cuando NO estamos en vista móvil para evitar duplicación */}
+      {!isMobile && (
+        <StepNavigation 
+          onNext={handleNext} 
+          onBack={onPrevious} 
+          isNextDisabled={!selectedLocation}
+        />
+      )}
     </div>
   );
 };

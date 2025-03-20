@@ -22,7 +22,7 @@ interface AuthUser {
 }
 
 // Tipos para el estado del formulario de turnos
-export type ShiftFormStep = 'auth' | 'location' | 'shifts' | 'service' | 'date' | 'time' | 'summary' | 'confirmation';
+export type ShiftFormStep = 'auth' | 'location' | 'shifts' | 'items' | 'summary' | 'confirmation';
 
 interface ShiftFormState {
   currentStep: number;
@@ -32,9 +32,6 @@ interface ShiftFormState {
   isGuest: boolean;
   selectedLocation: string | null;
   selectedShift: string | null;
-  selectedService: string | null;
-  selectedDate: string | null;
-  selectedTimeSlot: string | null;
   duration: number;
   lastDurationChangeTimestamp: number | null;
   // Información completa del turno seleccionado
@@ -44,6 +41,7 @@ interface ShiftFormState {
     courtId: string;
     courtName: string;
     price: number;
+    date: string; // Fecha del turno
   } | null;
   selectedItems: Record<string, number>;
   itemsTotalPrice: number;
@@ -61,46 +59,40 @@ interface ShiftFormState {
   authChecked: boolean; // Nueva bandera para verificar si la autenticación ya fue comprobada
 }
 
-// Acciones del reducer
+// Acciones que pueden ser despachadas al reducer
 type ShiftFormAction =
-  | { type: 'SET_STEP'; payload: ShiftFormStep }
-  | { type: 'SET_AUTH_VIEW'; payload: AuthView }
-  | { type: 'SET_AUTH_STATUS'; payload: { isAuthenticated: boolean; isGuest: boolean } }
-  | { type: 'SET_AUTH_CHECKED'; payload: boolean } 
-  | { type: 'SET_CURRENT_STEP'; payload: number }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
+  | { type: 'GO_TO_STEP'; payload: number }
+  | { type: 'SET_STEP'; payload: ShiftFormStep }
+  | { type: 'SET_IS_AUTHENTICATED'; payload: boolean }
+  | { type: 'SET_IS_GUEST'; payload: boolean }
+  | { type: 'SET_AUTH_VIEW'; payload: AuthView }
+  | { type: 'SET_CUSTOMER_INFO'; payload: ShiftFormState['customerInfo'] }
   | { type: 'SELECT_LOCATION'; payload: string }
   | { type: 'SELECT_SHIFT'; payload: string }
-  | { type: 'SELECT_SERVICE'; payload: string }
-  | { type: 'SELECT_DATE'; payload: string }
-  | { type: 'SELECT_TIME_SLOT'; payload: string }
   | { type: 'SET_DURATION'; payload: number }
   | { type: 'SET_DURATION_CHANGE_TIMESTAMP'; payload: number }
   | { type: 'SET_SHIFT_DETAILS'; payload: ShiftFormState['shiftDetails'] }
   | { type: 'SET_SELECTED_ITEMS'; payload: Record<string, number> }
   | { type: 'SET_ITEMS_TOTAL_PRICE'; payload: number }
   | { type: 'SET_SKIP_ITEMS_STEP'; payload: boolean }
-  | { type: 'SET_CUSTOMER_INFO'; payload: ShiftFormState['customerInfo'] }
   | { type: 'SET_BOOKING_ID'; payload: string }
+  | { type: 'SET_BOOKING_STATUS'; payload: ShiftFormState['bookingStatus'] }
   | { type: 'SET_ERROR'; payload: Error | null }
   | { type: 'SET_AUTH_ERROR'; payload: Error | null }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'SET_BOOKING_STATUS'; payload: ShiftFormState['bookingStatus'] }
+  | { type: 'SET_AUTH_CHECKED'; payload: boolean }
   | { type: 'RESET_FORM' };
 
-// Estado inicial
+// Estado inicial para el contexto
 const initialState: ShiftFormState = {
   currentStep: 0,
-  step: 'auth',
+  step: 'location', // Comenzar en el paso de ubicación
   authView: 'login',
   isAuthenticated: false,
   isGuest: false,
   selectedLocation: null,
   selectedShift: null,
-  selectedService: null,
-  selectedDate: null,
-  selectedTimeSlot: null,
   duration: 1,
   lastDurationChangeTimestamp: null,
   shiftDetails: null,
@@ -112,41 +104,32 @@ const initialState: ShiftFormState = {
   error: null,
   authError: null,
   bookingStatus: 'idle',
-  authChecked: false, 
+  authChecked: false
 };
 
-// Reducer para manejar las acciones
+// Reducer para gestionar el estado del formulario
 const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): ShiftFormState => {
   switch (action.type) {
-    case 'SET_STEP':
-      return { ...state, step: action.payload };
-    case 'SET_AUTH_VIEW':
-      return { ...state, authView: action.payload };
-    case 'SET_AUTH_STATUS':
-      return { 
-        ...state, 
-        isAuthenticated: action.payload.isAuthenticated,
-        isGuest: action.payload.isGuest,
-        step: action.payload.isAuthenticated ? 'location' : state.step
-      };
-    case 'SET_AUTH_CHECKED':
-      return { ...state, authChecked: action.payload };
-    case 'SET_CURRENT_STEP':
-      return { ...state, currentStep: action.payload };
     case 'NEXT_STEP':
       return { ...state, currentStep: state.currentStep + 1 };
     case 'PREV_STEP':
       return { ...state, currentStep: state.currentStep - 1 };
+    case 'GO_TO_STEP':
+      return { ...state, currentStep: action.payload };
+    case 'SET_STEP':
+      return { ...state, step: action.payload };
+    case 'SET_IS_AUTHENTICATED':
+      return { ...state, isAuthenticated: action.payload };
+    case 'SET_IS_GUEST':
+      return { ...state, isGuest: action.payload };
+    case 'SET_AUTH_VIEW':
+      return { ...state, authView: action.payload };
+    case 'SET_CUSTOMER_INFO':
+      return { ...state, customerInfo: action.payload };
     case 'SELECT_LOCATION':
       return { ...state, selectedLocation: action.payload };
     case 'SELECT_SHIFT':
       return { ...state, selectedShift: action.payload };
-    case 'SELECT_SERVICE':
-      return { ...state, selectedService: action.payload };
-    case 'SELECT_DATE':
-      return { ...state, selectedDate: action.payload };
-    case 'SELECT_TIME_SLOT':
-      return { ...state, selectedTimeSlot: action.payload };
     case 'SET_DURATION':
       return { ...state, duration: action.payload };
     case 'SET_DURATION_CHANGE_TIMESTAMP':
@@ -159,57 +142,61 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
       return { ...state, itemsTotalPrice: action.payload };
     case 'SET_SKIP_ITEMS_STEP':
       return { ...state, skipItemsStep: action.payload };
-    case 'SET_CUSTOMER_INFO':
-      return { ...state, customerInfo: action.payload };
     case 'SET_BOOKING_ID':
       return { ...state, bookingId: action.payload };
+    case 'SET_BOOKING_STATUS':
+      return { ...state, bookingStatus: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
     case 'SET_AUTH_ERROR':
       return { ...state, authError: action.payload };
-    case 'CLEAR_ERROR':
-      return { ...state, error: null, authError: null };
-    case 'SET_BOOKING_STATUS':
-      return { ...state, bookingStatus: action.payload };
+    case 'SET_AUTH_CHECKED':
+      return { ...state, authChecked: action.payload };
     case 'RESET_FORM':
-      return initialState;
+      return { ...initialState };
     default:
       return state;
   }
 };
 
-// Tipo para el contexto
-interface ShiftFormContextType {
+// Interfaz para el contexto
+interface ShiftFormContextProps {
   state: ShiftFormState;
   dispatch: React.Dispatch<ShiftFormAction>;
-  formData: PublishedForm | null;
   nextStep: () => void;
   prevStep: () => void;
-  skipToStep: (step: number) => void;
-  goBackToStep: (targetStep: number) => void;
+  goToStep: (step: number) => void;
+  setStep: (step: ShiftFormStep) => void;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setIsGuest: (isGuest: boolean) => void;
+  setAuthView: (view: AuthView) => void;
+  setCustomerInfo: (info: ShiftFormState['customerInfo']) => void;
   selectLocation: (locationId: string) => void;
   selectShift: (shiftId: string) => void;
-  selectService: (serviceId: string) => void;
-  selectDate: (date: string) => void;
-  selectTimeSlot: (timeSlotId: string) => void;
   setDuration: (duration: number) => void;
   setShiftDetails: (details: ShiftFormState['shiftDetails']) => void;
   setSelectedItems: (items: Record<string, number>) => void;
   setItemsTotalPrice: (price: number) => void;
   setSkipItemsStep: (skip: boolean) => void;
-  setCustomerInfo: (info: ShiftFormState['customerInfo']) => void;
+  setBookingId: (id: string) => void;
+  setBookingStatus: (status: ShiftFormState['bookingStatus']) => void;
+  setError: (error: Error | null) => void;
+  setAuthError: (error: Error | null) => void;
+  setAuthChecked: (checked: boolean) => void;
   resetForm: () => void;
-  organization: any | null;
-  isLoading: boolean;
-  setAuthView: (view: AuthView) => void;
-  goToStep: (step: ShiftFormStep) => void;
-  empresaId: string;
-  user: AuthUser | null;
-  checkAuthAndRedirect: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: {
+    name: string;
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+  }) => Promise<void>;
+  logout: () => Promise<void>;
+  continueAsGuest: () => void;
 }
 
 // Crear el contexto
-const ShiftFormContext = createContext<ShiftFormContextType | undefined>(undefined);
+const ShiftFormContext = createContext<ShiftFormContextProps | undefined>(undefined);
 
 // Props para el proveedor
 interface ShiftFormProviderProps {
@@ -303,133 +290,62 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
   // Acciones de navegación
   const nextStep = useCallback(() => {
     dispatch({ type: 'NEXT_STEP' });
-  }, []);
+  }, [dispatch]);
 
   const prevStep = useCallback(() => {
-    if (state.currentStep > 0) {
-      // Si estamos en el paso 3 (ServiceStep) y skipItemsStep es true,
-      // y vamos a ir al paso 2 (ItemsStep), deberíamos saltar al paso 1 (ShiftsStep)
-      if (state.currentStep === 3 && state.skipItemsStep) {
-        console.log('ShiftFormContext: Detectada navegación hacia atrás desde ServiceStep con skipItemsStep=true');
-        console.log('ShiftFormContext: Omitiendo el paso de artículos al retroceder');
-        
-        // Emitir un evento para notificar que estamos omitiendo un paso hacia atrás
-        const skipBackwardEvent = new CustomEvent('shift-skip-step-backward', {
-          detail: { fromStep: 3, skipStep: 2, toStep: 1 }
-        });
-        document.dispatchEvent(skipBackwardEvent);
-        
-        // Saltar directamente al paso 1
-        dispatch({ type: 'SET_CURRENT_STEP', payload: 1 });
-      } else {
-        // Comportamiento normal
-        dispatch({ type: 'PREV_STEP' });
-      }
-    }
-  }, [state.currentStep, state.skipItemsStep]);
+    dispatch({ type: 'PREV_STEP' });
+  }, [dispatch]);
 
-  // Función para saltar a un paso específico
-  const skipToStep = useCallback((step: number) => {
-    const currentStep = state.currentStep;
-    
-    // Si estamos omitiendo el paso de artículos al navegar hacia adelante
-    if (currentStep === 1 && step === 3 && state.skipItemsStep) {
-      console.log(`ShiftFormContext: Omitiendo el paso 2 (artículos) al navegar de ${currentStep} a ${step}`);
-      
-      // Emitir un evento para notificar que estamos omitiendo un paso hacia adelante
-      const skipForwardEvent = new CustomEvent('shift-skip-step-forward', {
-        detail: { fromStep: 1, skipStep: 2, toStep: 3 }
-      });
-      document.dispatchEvent(skipForwardEvent);
-    }
-    
-    dispatch({ type: 'SET_CURRENT_STEP', payload: step });
-  }, [state.currentStep, state.skipItemsStep]);
+  const goToStep = useCallback((step: number) => {
+    dispatch({ type: 'GO_TO_STEP', payload: step });
+  }, [dispatch]);
 
-  // Retroceder a un paso específico
-  const goBackToStep = useCallback((targetStep: number) => {
-    // Verificar si estamos omitiendo algún paso intermedio al retroceder
-    if (state.currentStep > targetStep) {
-      const skippedSteps = [];
-      
-      // Si estamos en el paso 3 y vamos a ir al paso 1, y skipItemsStep es true
-      // entonces estamos omitiendo el paso 2
-      if (state.currentStep === 3 && targetStep === 1 && state.skipItemsStep) {
-        skippedSteps.push(2);
-      }
-      
-      if (skippedSteps.length > 0) {
-        console.log(`ShiftFormContext: Omitiendo pasos ${skippedSteps.join(', ')} al retroceder de ${state.currentStep} a ${targetStep}`);
-        
-        // Emitir un evento detallando los pasos omitidos
-        const skipMultipleEvent = new CustomEvent('shift-skip-multiple-steps', {
-          detail: { fromStep: state.currentStep, toStep: targetStep, skippedSteps }
-        });
-        document.dispatchEvent(skipMultipleEvent);
-      }
-    }
-    
-    dispatch({ type: 'SET_CURRENT_STEP', payload: targetStep });
-  }, [state.currentStep, state.skipItemsStep]);
+  const setStep = useCallback((step: ShiftFormStep) => {
+    dispatch({ type: 'SET_STEP', payload: step });
+  }, [dispatch]);
 
   // Funciones para interactuar con el formulario
   const selectLocation = useCallback((locationId: string) => {
     dispatch({ type: 'SELECT_LOCATION', payload: locationId });
-  }, []);
+  }, [dispatch]);
 
   const selectShift = useCallback((shiftId: string) => {
     dispatch({ type: 'SELECT_SHIFT', payload: shiftId });
-  }, []);
-
-  const selectService = useCallback((serviceId: string) => {
-    dispatch({ type: 'SELECT_SERVICE', payload: serviceId });
-  }, []);
-
-  const selectDate = useCallback((date: string) => {
-    dispatch({ type: 'SELECT_DATE', payload: date });
-  }, []);
-
-  const selectTimeSlot = useCallback((timeSlotId: string) => {
-    dispatch({ type: 'SELECT_TIME_SLOT', payload: timeSlotId });
-  }, []);
+  }, [dispatch]);
 
   const setDuration = useCallback((duration: number) => {
     dispatch({ type: 'SET_DURATION', payload: duration });
     dispatch({ type: 'SET_DURATION_CHANGE_TIMESTAMP', payload: Date.now() });
-  }, []);
+  }, [dispatch]);
 
   const setShiftDetails = useCallback((details: ShiftFormState['shiftDetails']) => {
     dispatch({ type: 'SET_SHIFT_DETAILS', payload: details });
-  }, []);
+  }, [dispatch]);
 
   const setSelectedItems = useCallback((items: Record<string, number>) => {
     dispatch({ type: 'SET_SELECTED_ITEMS', payload: items });
-  }, []);
+  }, [dispatch]);
 
   const setItemsTotalPrice = useCallback((price: number) => {
     dispatch({ type: 'SET_ITEMS_TOTAL_PRICE', payload: price });
-  }, []);
+  }, [dispatch]);
 
   const setSkipItemsStep = useCallback((skip: boolean) => {
     dispatch({ type: 'SET_SKIP_ITEMS_STEP', payload: skip });
-  }, []);
+  }, [dispatch]);
 
   const setCustomerInfo = useCallback((info: ShiftFormState['customerInfo']) => {
     dispatch({ type: 'SET_CUSTOMER_INFO', payload: info });
-  }, []);
+  }, [dispatch]);
 
   const resetForm = useCallback(() => {
     dispatch({ type: 'RESET_FORM' });
-  }, []);
+  }, [dispatch]);
 
   // Funciones para la autenticación
   const setAuthView = useCallback((view: AuthView) => {
     dispatch({ type: 'SET_AUTH_VIEW', payload: view });
-  }, []);
-
-  const goToStep = useCallback((step: ShiftFormStep) => {
-    dispatch({ type: 'SET_STEP', payload: step });
-  }, []);
+  }, [dispatch]);
 
   const checkAuthAndRedirect = useCallback(() => {
     // Simplificamos la condición para que se ejecute siempre que tengamos información 
@@ -473,27 +389,45 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
   const value = {
     state,
     dispatch,
-    formData,
     nextStep,
     prevStep,
-    skipToStep,
-    goBackToStep,
+    goToStep,
+    setStep,
+    setIsAuthenticated: (isAuthenticated: boolean) => dispatch({ type: 'SET_IS_AUTHENTICATED', payload: isAuthenticated }),
+    setIsGuest: (isGuest: boolean) => dispatch({ type: 'SET_IS_GUEST', payload: isGuest }),
+    setAuthView,
+    setCustomerInfo,
     selectLocation,
     selectShift,
-    selectService,
-    selectDate,
-    selectTimeSlot,
     setDuration,
     setShiftDetails,
     setSelectedItems,
     setItemsTotalPrice,
     setSkipItemsStep,
-    setCustomerInfo,
+    setBookingId: (id: string) => dispatch({ type: 'SET_BOOKING_ID', payload: id }),
+    setBookingStatus: (status: ShiftFormState['bookingStatus']) => dispatch({ type: 'SET_BOOKING_STATUS', payload: status }),
+    setError: (error: Error | null) => dispatch({ type: 'SET_ERROR', payload: error }),
+    setAuthError: (error: Error | null) => dispatch({ type: 'SET_AUTH_ERROR', payload: error }),
+    setAuthChecked: (checked: boolean) => dispatch({ type: 'SET_AUTH_CHECKED', payload: checked }),
     resetForm,
-    organization,
+    login: async (email: string, password: string) => {
+      // Implementar la lógica de inicio de sesión aquí
+    },
+    register: async (userData: {
+      name: string;
+      email: string;
+      password: string;
+      passwordConfirmation: string;
+    }) => {
+      // Implementar la lógica de registro aquí
+    },
+    logout: async () => {
+      // Implementar la lógica de cierre de sesión aquí
+    },
+    continueAsGuest: () => {
+      // Implementar la lógica de continuar como invitado aquí
+    },
     isLoading: isLoadingValue,
-    setAuthView,
-    goToStep,
     empresaId,
     user,
     checkAuthAndRedirect

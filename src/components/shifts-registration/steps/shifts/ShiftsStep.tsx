@@ -243,6 +243,28 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     });
   }, [selectShift, setShiftDetails]);
 
+  // Exponer el estado de selección para que StepRenderer pueda acceder a él
+  useEffect(() => {
+    if (viewType === 'mobile' && typeof window !== 'undefined') {
+      (window as any).__shiftsStepData = {
+        selectedShiftId,
+        isLoading: loading
+      };
+      
+      // Disparar un evento para notificar cambios
+      const event = new CustomEvent('shifts-step-update', {
+        detail: { selectedShiftId, isLoading: loading }
+      });
+      window.dispatchEvent(event);
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).__shiftsStepData;
+      }
+    };
+  }, [selectedShiftId, loading, viewType]);
+
   return (
     viewType === 'mobile' ? (
       // Layout móvil con header y footer de navegación
@@ -391,11 +413,13 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
         </div>
         
         {/* Navegación */}
-        <StepNavigation 
-          onNext={handleNext}
-          onBack={onPrevious}
-          isNextDisabled={!selectedShiftId}
-        />
+        {viewType === 'desktop' && (
+          <StepNavigation 
+            onNext={handleNext}
+            onBack={onPrevious}
+            isNextDisabled={!selectedShiftId}
+          />
+        )}
       </motion.div>
     )
   );

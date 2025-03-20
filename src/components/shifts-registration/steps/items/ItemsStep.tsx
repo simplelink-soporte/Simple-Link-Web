@@ -312,6 +312,36 @@ export function ItemsStep({
     }
   }, [filteredItems, itemsLoading, isProcessingData, itemsWithStock.length, skipToStep, setSelectedItems, setItemsTotalPrice, setSkipItemsStep, locationId, duration, isCacheValid]);
 
+  // Calcular el número total de ítems seleccionados
+  const totalItemsSelected = useMemo(() => {
+    return Object.values(localSelectedItems).reduce((sum, quantity) => sum + quantity, 0);
+  }, [localSelectedItems]);
+
+  // Comprobar si hay ítems seleccionados
+  const hasItems = totalItemsSelected > 0;
+
+  // Exponer datos para el StepRenderer
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__itemsStepData = {
+        selectedItems: localSelectedItems,
+        totalItemsSelected,
+        hasItems,
+        isLoading: isLoading || isProcessingData
+      };
+
+      // Emitir evento para notificar cambios
+      const event = new Event('items-step-update');
+      window.dispatchEvent(event);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).__itemsStepData;
+      }
+    };
+  }, [localSelectedItems, totalItemsSelected, hasItems, isLoading, isProcessingData]);
+
   // Función para obtener el precio de un ítem basado en la duración
   const getItemPrice = useCallback((item: ItemWithStock) => {
     if (!duration) return 0;
@@ -327,14 +357,6 @@ export function ItemsStep({
       return acc + (getItemPrice(item) * quantity);
     }, 0);
   }, [localSelectedItems, itemsWithStock, getItemPrice]);
-
-  // Calcular el número total de ítems seleccionados
-  const totalItemsSelected = useMemo(() => {
-    return Object.values(localSelectedItems).reduce((sum, quantity) => sum + quantity, 0);
-  }, [localSelectedItems]);
-
-  // Comprobar si hay ítems seleccionados
-  const hasItems = totalItemsSelected > 0;
 
   // Manejar cambios en la selección de items
   const handleItemSelection = useCallback((itemId: string, quantity: number) => {
@@ -442,12 +464,14 @@ export function ItemsStep({
         )}
       </div>
       
-      {/* Navegación entre pasos */}
-      <StepNavigation 
-        onNext={handleNext} 
-        onBack={onPrevious} 
-        isNextDisabled={totalItemsSelected === 0}
-      />
+      {/* Navegación entre pasos - solo en desktop */}
+      {!isMobile && (
+        <StepNavigation 
+          onNext={handleNext} 
+          onBack={onPrevious} 
+          isNextDisabled={false} // La selección de ítems es opcional
+        />
+      )}
       
       {/* Toast de notificación */}
       <AnimatePresence>

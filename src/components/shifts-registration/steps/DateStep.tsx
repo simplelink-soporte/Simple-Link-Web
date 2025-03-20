@@ -9,6 +9,8 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-reac
 import { format, addDays, isBefore, isAfter, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { StepNavigation } from '../shared/StepNavigation';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 // Generar fechas disponibles de ejemplo (se reemplazará con datos reales)
 const generateAvailableDates = () => {
@@ -44,6 +46,7 @@ const DateStep: React.FC<StepComponentProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     state.selectedDate ? new Date(state.selectedDate) : undefined
   );
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Cargar fechas disponibles
   useEffect(() => {
@@ -155,18 +158,26 @@ const DateStep: React.FC<StepComponentProps> = ({
       )}
       
       {/* Botones de navegación */}
-      <div className="flex justify-between mt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center gap-2">
-          <ChevronLeft size={16} /> Anterior
-        </Button>
-        <Button 
-          onClick={handleNext} 
-          disabled={!selectedDate}
-          className="flex items-center gap-2"
-        >
-          Siguiente <ChevronRight size={16} />
-        </Button>
-      </div>
+      {!isMobile ? (
+        <StepNavigation 
+          onNext={handleNext} 
+          onBack={onPrevious} 
+          isNextDisabled={!selectedDate}
+        />
+      ) : (
+        <div className="flex justify-between mt-6">
+          <Button variant="outline" onClick={onPrevious} className="flex items-center gap-2">
+            <ChevronLeft size={16} /> Anterior
+          </Button>
+          <Button 
+            onClick={handleNext} 
+            disabled={!selectedDate}
+            className="flex items-center gap-2"
+          >
+            Siguiente <ChevronRight size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
