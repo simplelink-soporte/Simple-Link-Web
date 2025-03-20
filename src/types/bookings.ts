@@ -260,6 +260,7 @@ export interface SelectedBooking {
   reservation_type?: ReservationTypeEnum;
   class_id?: string;
   class_session_price?: number;
+  guarantee_percentage?: number;
 }
 
 export interface TimeSelection {

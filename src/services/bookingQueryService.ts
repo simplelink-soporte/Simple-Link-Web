@@ -44,6 +44,7 @@ interface BookingDB {
   reservation_type: string
   class_id: string
   class_session_price: number
+  guarantee_percentage: number
 }
 
 interface CourtDB {
@@ -164,7 +165,8 @@ const transformBooking = (booking: unknown): SelectedBooking => {
     rentedItems: bookingData.booking_rentals?.map(transformRentalItem) || [],
     reservation_type: (bookingData.reservation_type || 'booking') as ReservationTypeEnum,
     class_id: bookingData.class_id,
-    class_session_price: bookingData.class_session_price
+    class_session_price: bookingData.class_session_price,
+    guarantee_percentage: bookingData.guarantee_percentage
   };
 };
 
@@ -191,6 +193,7 @@ export const bookingQueryService = {
           payment_type,
           title,
           description,
+          guarantee_percentage,
           courts (
             id,
             name,
@@ -305,6 +308,7 @@ export const bookingQueryService = {
           payment_type,
           title,
           description,
+          guarantee_percentage,
           courts (
             id,
             name,

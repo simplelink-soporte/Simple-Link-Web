@@ -17,6 +17,7 @@ interface CancelBookingModalProps {
   onConfirm: (params: { reason?: string; shouldCharge?: boolean }) => void
   hasGuarantee?: boolean
   totalAmount?: number
+  guaranteePercentage?: number
   booking: {
     id: string
     stripe_payment_method_id?: string
@@ -29,6 +30,7 @@ export function CancelBookingModal({
   onConfirm,
   hasGuarantee = false,
   totalAmount = 0,
+  guaranteePercentage = 30,
   booking
 }: CancelBookingModalProps) {
   const { organization, stripeConnection, loadStripeConnection } = useOrganization();
@@ -134,8 +136,20 @@ export function CancelBookingModal({
     }
   }, [isOpen, hasGuarantee, isLoadingStripe, stripeEnabled]);
 
-  // Calcular el monto del cargo (30%)
-  const chargeAmount = totalAmount * 0.3
+  // Calcular el monto del cargo (usando el porcentaje de garantía o 30% por defecto)
+  const chargeAmount = totalAmount * ((guaranteePercentage || 30) / 100);
+  
+  // Logs para depuración
+  useEffect(() => {
+    if (isOpen && hasGuarantee) {
+      console.log('💰 Datos del cargo por garantía:', {
+        guaranteePercentage,
+        totalAmount,
+        chargeAmount,
+        canApplyCharge: hasGuarantee && stripeEnabled && chargeAmount > 0
+      });
+    }
+  }, [isOpen, hasGuarantee, guaranteePercentage, totalAmount, chargeAmount, stripeEnabled]);
 
   // Validar si se puede aplicar cargo
   const canApplyCharge = hasGuarantee && stripeEnabled && chargeAmount > 0
@@ -160,14 +174,14 @@ export function CancelBookingModal({
       if (shouldCharge && stripeEnabled) {
         console.log('💳 Procesando cargo por no-show:', {
           bookingId: booking.id,
-          amount: totalAmount * 0.3,
+          amount: totalAmount * ((guaranteePercentage || 30) / 100),
           timestamp: new Date().toISOString()
         });
 
         // Preparar los datos para la API incluyendo stripeData cuando estén disponibles
         const requestData = {
           bookingId: booking.id,
-          amount: totalAmount * 0.3,
+          amount: totalAmount * ((guaranteePercentage || 30) / 100),
           reason,
           empresaId: organization?.id
         };
@@ -327,7 +341,7 @@ export function CancelBookingModal({
                               Aplicar cargo por no presentarse
                             </label>
                             <p className="text-xs text-gray-500">
-                              Se cobrará el 30% del total ({new Intl.NumberFormat('es-ES', {
+                              Se cobrará el {guaranteePercentage}% del total ({new Intl.NumberFormat('es-ES', {
                                 style: 'currency',
                                 currency: 'EUR'
                               }).format(chargeAmount)})

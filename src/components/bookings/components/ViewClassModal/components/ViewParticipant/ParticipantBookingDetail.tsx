@@ -78,6 +78,10 @@ export function ParticipantBookingDetail({
 
   // Función para verificar si una reserva tiene garantía
   const hasGuarantee = () => {
+    console.log('Datos de garantía:', {
+      payment_type: participant.bookingDetails?.payment_type,
+      guarantee_percentage: participant.bookingDetails?.guarantee_percentage
+    });
     return participant.bookingDetails?.payment_type === 'guarantee';
   }
 
@@ -425,6 +429,7 @@ export function ParticipantBookingDetail({
           onConfirm={handleCancelBookingConfirm}
           hasGuarantee={hasGuarantee()}
           totalAmount={participant.bookingDetails.total_price}
+          guaranteePercentage={participant.bookingDetails.guarantee_percentage}
           booking={{
             id: participant.bookingDetails.id,
             stripe_payment_method_id: undefined // Este dato se obtiene en el modal

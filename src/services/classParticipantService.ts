@@ -20,6 +20,7 @@ export interface BookingDetails {
   cancellation_reason?: string
   title?: string
   description?: string
+  guarantee_percentage?: number  // Porcentaje de garantía para cobros por cancelación
 }
 
 // Definición del participante
@@ -189,7 +190,8 @@ export class ClassParticipantService {
           payment_type,
           reservation_type,
           cancelled_at,
-          cancellation_reason
+          cancellation_reason,
+          guarantee_percentage
         `)
         .eq('class_id', classId)
         .eq('reservation_type', 'class')
@@ -259,7 +261,7 @@ export class ClassParticipantService {
           console.log('🔍 Realizando consulta sin filtros de hora para debug...');
           const { data: allBookings } = await this.supabase
             .from('bookings')
-            .select('id, date, start_time, end_time')
+            .select('id, date, start_time, end_time, guarantee_percentage')
             .eq('class_id', classId)
             .eq('reservation_type', 'class')
             .is('cancelled_at', null);
@@ -303,7 +305,8 @@ export class ClassParticipantService {
           cancelled_at: booking.cancelled_at,
           cancellation_reason: booking.cancellation_reason,
           title: booking.title,
-          description: booking.description
+          description: booking.description,
+          guarantee_percentage: booking.guarantee_percentage
         });
       });
 
