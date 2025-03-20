@@ -43,6 +43,7 @@ interface BookingOptions {
   depositAmount?: number;
   paymentType?: PaymentTypeEnum;
   stripePaymentMethodId?: string;
+  guaranteePercentage?: number; // Nuevo campo para el porcentaje de garantía
 }
 
 /**
@@ -184,7 +185,8 @@ export class ClassBookingService {
         empresaId: options.empresaId,
         userId: options.userId,
         paymentType: options.paymentType,
-        stripePaymentMethodId: options.stripePaymentMethodId
+        stripePaymentMethodId: options.stripePaymentMethodId,
+        guaranteePercentage: options.guaranteePercentage // Agregar el porcentaje de garantía
       });
       
       console.log('📋 [ClassBookingService] Datos de reserva transformados:', JSON.stringify(bookingData, null, 2));
@@ -250,7 +252,8 @@ export class ClassBookingService {
         p_reservation_type: 'class',
         p_class_id: classData.id,
         p_class_session_price: session.price || 0,
-        p_stripe_payment_method_id: options.stripePaymentMethodId || bookingData.stripe_payment_method_id
+        p_stripe_payment_method_id: options.stripePaymentMethodId || bookingData.stripe_payment_method_id,
+        p_guarantee_percentage: bookingData.guaranteePercentage // Agregar el porcentaje de garantía
       };
       
       console.log('📋 [ClassBookingService] Parámetros enviados a RPC create_booking_v2:', JSON.stringify(rpcParams, null, 2));

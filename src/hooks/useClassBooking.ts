@@ -45,6 +45,7 @@ export function useClassBooking() {
     paymentMethod?: PaymentMethodEnum;
     paymentType?: PaymentTypeEnum;
     paymentMethodDetails?: { id: string; [key: string]: any };
+    guaranteePercentage?: number;
   } = {}) => {
     // Validar datos antes de proceder
     const validation = validateClassData();
@@ -135,7 +136,9 @@ export function useClassBooking() {
           depositAmount: depositAmount,
           paymentType: options.paymentType,
           // Añadir el ID del método de pago de Stripe si está presente
-          stripePaymentMethodId: options.paymentMethodDetails?.id
+          stripePaymentMethodId: options.paymentMethodDetails?.id,
+          // Añadir el porcentaje de garantía si está presente y el tipo de pago es garantía
+          guaranteePercentage: options.paymentType === 'guarantee' ? options.guaranteePercentage : undefined
         }
       );
       

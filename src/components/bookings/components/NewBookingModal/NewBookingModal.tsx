@@ -219,12 +219,8 @@ export function NewBookingModal({
         payment_config: {
           currency: classPaymentConfig.currency,
           status: classPaymentConfig.paymentStatus,
-          ...(classPaymentConfig.guaranteePercentage !== undefined && {
-            guaranteePercentage: classPaymentConfig.guaranteePercentage
-          }),
-          ...(classPaymentConfig.partialPaymentPercentage !== undefined && {
-            partialPaymentPercentage: classPaymentConfig.partialPaymentPercentage
-          })
+          guaranteePercentage: classPaymentConfig.guaranteePercentage || 30,
+          partialPaymentPercentage: classPaymentConfig.partialPaymentPercentage || 20
         },
         created_by: empresa.auth_user_id,
         min_students: 1,

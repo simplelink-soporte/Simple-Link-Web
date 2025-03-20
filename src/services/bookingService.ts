@@ -447,19 +447,35 @@ export const bookingService = {
         itemData
       })
 
+      // Crear fechas usando Luxon con zona horaria 'UTC' por defecto
+      const localStartDateTime = DateTime.fromFormat(
+        `${date} ${startTime}`,
+        'yyyy-MM-dd HH:mm',
+        { zone: 'UTC' }
+      );
+      const localEndDateTime = DateTime.fromFormat(
+        `${date} ${endTime}`,
+        'yyyy-MM-dd HH:mm',
+        { zone: 'UTC' }
+      );
+
+      // Convertir a timestamp completo en formato SQL
+      const startDateTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
+      const endDateTimeUTC = localEndDateTime.toUTC().toSQL({ includeOffset: false });
+
       console.log('🔄 Consultando get_available_stock con parámetros:', {
         p_item_id: itemId,
         p_booking_date: date,
-        p_start_time: startTime,
-        p_end_time: endTime
+        p_start_time: startDateTimeUTC, // Usar el timestamp completo
+        p_end_time: endDateTimeUTC // Usar el timestamp completo
       })
 
       const { data, error } = await supabase
         .rpc('get_available_stock', {
           p_item_id: itemId,
           p_booking_date: date,
-          p_start_time: startTime,
-          p_end_time: endTime
+          p_start_time: startDateTimeUTC, // Actualizado a timestamp
+          p_end_time: endDateTimeUTC // Actualizado a timestamp
         } as any)
 
       if (error) {
@@ -947,8 +963,8 @@ export const bookingService = {
       const bookingParams = {
         p_court_id: data.courtId,
         p_date: bookingDateUTC, // Usar siempre la fecha original seleccionada
-        p_start_time: startDateTimeUTC, // Timestamp completo
-        p_end_time: endDateTimeUTC, // Timestamp completo
+        p_start_time: startDateTimeUTC, // Volver a usar el timestamp completo
+        p_end_time: endDateTimeUTC, // Volver a usar el timestamp completo
         p_court_price: data.courtPrice,
         p_rental_items_price: data.rentalItemsPrice || 0,
         p_payment_method: data.paymentMethod,

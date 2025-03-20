@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react"
 import { PaymentTypeList } from "./PaymentTypeList"
 import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from "./payment-types"
 import { PaymentTypeModal } from "./PaymentTypeModal"
+import { GuaranteeConfirmationModal } from "./GuaranteeConfirmationModal"
 
 // Filtrar tipos de pago específicos si es necesario
 const FILTERED_PAYMENT_TYPES = PAYMENT_TYPES.filter(type => 
@@ -15,16 +16,23 @@ const FILTERED_PAYMENT_TYPES = PAYMENT_TYPES.filter(type =>
 
 interface PaymentTypeSectionProps {
   selectedType: PaymentTypeEnum | null
-  onSelect: (type: PaymentTypeEnum | null) => void
+  onSelect: (type: PaymentTypeEnum | null, guaranteePercentage?: number) => void
   viewType?: 'mobile' | 'desktop'
   paymentTypes?: PaymentType[]
+  paymentConfig?: {
+    status: string
+    currency: string
+    guaranteePercentage?: number
+    partialPaymentPercentage?: number
+  }
 }
 
 export function PaymentTypeSection({
   selectedType,
   onSelect,
   viewType = 'desktop',
-  paymentTypes = FILTERED_PAYMENT_TYPES
+  paymentTypes = FILTERED_PAYMENT_TYPES,
+  paymentConfig
 }: PaymentTypeSectionProps) {
   const selectedTypeData = selectedType ? PAYMENT_TYPES.find(t => t.id === selectedType) : null
   const [showList, setShowList] = useState(false)
@@ -32,6 +40,15 @@ export function PaymentTypeSection({
   
   // Estado para controlar la visibilidad del modal en móvil
   const [showModal, setShowModal] = useState(false)
+  
+  // Estado para controlar la visibilidad del modal de garantía
+  const [showGuaranteeModal, setShowGuaranteeModal] = useState(false)
+  
+  // Estado para almacenar temporalmente el tipo seleccionado antes de confirmar
+  const [pendingGuaranteeSelection, setPendingGuaranteeSelection] = useState<PaymentTypeEnum | null>(null)
+  
+  // Estado para almacenar el porcentaje de garantía
+  const [guaranteePercentage, setGuaranteePercentage] = useState<number>(paymentConfig?.guaranteePercentage || 30)
 
   // Manejar clics fuera del componente para cerrar la lista
   useEffect(() => {
@@ -58,10 +75,34 @@ export function PaymentTypeSection({
 
   // Función para manejar la selección de un tipo de pago
   const handleSelectPaymentType = (type: PaymentTypeEnum) => {
-    onSelect(type)
-    setShowList(false)
-    setShowModal(false)
-  }
+    if (type === 'guarantee') {
+      // Si es garantía, guardar la selección pendiente y mostrar el modal de confirmación
+      setPendingGuaranteeSelection(type);
+      setShowGuaranteeModal(true);
+      setShowList(false);
+      setShowModal(false);
+    } else {
+      // Para otros tipos de pago, seleccionar directamente
+      onSelect(type);
+      setShowList(false);
+      setShowModal(false);
+    }
+  };
+
+  // Función para confirmar la selección de garantía
+  const handleGuaranteeConfirm = () => {
+    if (pendingGuaranteeSelection) {
+      onSelect(pendingGuaranteeSelection, guaranteePercentage);
+      setPendingGuaranteeSelection(null);
+    }
+    setShowGuaranteeModal(false);
+  };
+
+  // Función para cancelar la selección de garantía
+  const handleGuaranteeCancel = () => {
+    setPendingGuaranteeSelection(null);
+    setShowGuaranteeModal(false);
+  };
 
   // Manejar el clic en el selector
   const handleSelectorClick = () => {
@@ -180,6 +221,7 @@ export function PaymentTypeSection({
                 paymentTypes={paymentTypes}
                 isExpanded={true}
                 noContainer={true}
+                paymentConfig={paymentConfig}
               />
             </div>
           </motion.div>
@@ -188,14 +230,30 @@ export function PaymentTypeSection({
 
       {/* Modal para la versión móvil */}
       {viewType === 'mobile' && (
-        <PaymentTypeModal
-          isOpen={showModal}
+        <PaymentTypeModal 
+          isOpen={showModal} 
           onClose={() => setShowModal(false)}
-          selectedType={selectedType}
-          onSelect={handleSelectPaymentType}
-          paymentTypes={paymentTypes}
-        />
+          title="Selecciona el tipo de pago"
+        >
+          <PaymentTypeList
+            selectedType={selectedType}
+            onSelect={handleSelectPaymentType}
+            noContainer={true}
+            paymentTypes={paymentTypes}
+            paymentConfig={paymentConfig}
+          />
+        </PaymentTypeModal>
       )}
+
+      {/* Modal de confirmación de garantía */}
+      <GuaranteeConfirmationModal
+        isOpen={showGuaranteeModal}
+        onClose={handleGuaranteeCancel}
+        onConfirm={handleGuaranteeConfirm}
+        onCancel={handleGuaranteeCancel}
+        guaranteePercentage={guaranteePercentage}
+        onPercentageChange={setGuaranteePercentage}
+      />
     </motion.div>
   )
 }

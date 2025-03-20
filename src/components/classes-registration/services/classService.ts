@@ -59,6 +59,8 @@ interface ScheduleConfig {
 interface PaymentConfig {
   status: string
   currency: string
+  guaranteePercentage?: number
+  partialPaymentPercentage?: number
 }
 
 // Tipo para la clase desde la base de datos
@@ -637,6 +639,10 @@ export class ClassService {
       availablePaymentMethods: Array.isArray(dbClass.available_payment_methods) 
         ? dbClass.available_payment_methods.map(method => method as 'cash' | 'card' | 'transfer')
         : [],
+      payment_config: dbClass.payment_config || {
+        status: 'pending',
+        currency: 'EUR'
+      },
       visibility: dbClass.visibility,
       is_recurring: dbClass.is_recurring,
       instructor: timeSlots[0]?.instructors?.[0] || 'Sin instructor',

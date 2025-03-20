@@ -53,6 +53,7 @@ export interface BookingCreationData {
   paymentStatus: PaymentStatusEnum;
   paymentType: PaymentTypeEnum;
   depositAmount?: number;
+  guaranteePercentage?: number;
   title?: string;
   description?: string;
   participants?: Array<{

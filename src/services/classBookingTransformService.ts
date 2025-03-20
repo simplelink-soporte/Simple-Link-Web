@@ -17,6 +17,7 @@ interface ClassBookingTransformOptions {
   empresaId?: string;
   userId?: string;
   stripePaymentMethodId?: string;
+  guaranteePercentage?: number; // Nuevo campo para el porcentaje de garantía
 }
 
 /**
@@ -99,12 +100,13 @@ export class ClassBookingTransformService {
       paymentStatus: options.paymentStatus || 'pending',
       paymentType: this.normalizePaymentType(options.paymentType || 'booking'),
       depositAmount: options.depositAmount || 0,
+      guaranteePercentage: options.guaranteePercentage || null, // Incluir el porcentaje de garantía
       
-      // Identificador de empresa
-      empresa_id: options.empresaId,
+      // ID de empresa (necesario para la relación en la base de datos)
+      empresaId: options.empresaId || '',
       
-      // ID del método de pago de Stripe
-      stripe_payment_method_id: options.stripePaymentMethodId
+      // ID del método de pago de Stripe (si aplica)
+      stripe_payment_method_id: options.stripePaymentMethodId || null
     };
   }
   

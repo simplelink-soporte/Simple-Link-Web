@@ -240,14 +240,12 @@ export function ClassSchedule({
                   onSelect={(date) => {
                     if (!date) return;
 
-                    // Convertir la fecha seleccionada a la zona horaria de la sede
-                    const localDate = toZonedTime(date, timezone);
-
-                    const dayOfWeek = localDate.getUTCDay();
+                    // Ya no convertimos la fecha a otra zona horaria para evitar el cambio de día
+                    const dayOfWeek = date.getUTCDay();
 
                     onChange({
                       ...config,
-                      startDate: localDate,
+                      startDate: date,
                       weekDays: !config.isRecurring ? [dayOfWeek] : config.weekDays,
                     });
                   }}

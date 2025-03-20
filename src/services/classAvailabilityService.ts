@@ -150,35 +150,31 @@ export async function checkClassAvailability(
           for (const booking of bookings) {
             console.log(`[DEBUG] Evaluando reserva ID: ${booking.id}, Horario: ${booking.start_time} - ${booking.end_time}`)
             
-            // Crear objetos DateTime para el inicio y fin de la reserva en UTC
-            const bookingStartDateTime = DateTime.fromFormat(
-              `${booking.date} ${booking.start_time}`, 
-              'yyyy-MM-dd HH:mm:ss', 
-              { zone: 'UTC' }
-            )
+            // Los campos start_time y end_time ahora son de tipo timestamp without time zone
+            // Intentamos crear DateTime directamente desde estos campos
+            const bookingStartDateTime = booking.start_time 
+              ? DateTime.fromSQL(booking.start_time, { zone: 'UTC' })
+              : null;
             
-            const bookingEndDateTime = DateTime.fromFormat(
-              `${booking.date} ${booking.end_time}`, 
-              'yyyy-MM-dd HH:mm:ss', 
-              { zone: 'UTC' }
-            )
-
-            console.log(`[DEBUG] Booking date: ${booking.date}, start_time: ${booking.start_time}, end_time: ${booking.end_time}`)
-            console.log(`[DEBUG] BookingStartDateTime: ${bookingStartDateTime.isValid ? bookingStartDateTime.toISO() : 'INVALID'}, BookingEndDateTime: ${bookingEndDateTime.isValid ? bookingEndDateTime.toISO() : 'INVALID'}`)
+            const bookingEndDateTime = booking.end_time 
+              ? DateTime.fromSQL(booking.end_time, { zone: 'UTC' })
+              : null;
             
-            // Si alguno de los objetos DateTime no es válido, intentar con otro formato
-            if (!bookingStartDateTime.isValid || !bookingEndDateTime.isValid) {
-              console.log(`[DEBUG] Intentando con formato alternativo de tiempo`)
+            console.log(`[DEBUG] BookingStartDateTime: ${bookingStartDateTime?.isValid ? bookingStartDateTime.toISO() : 'INVALID'}, BookingEndDateTime: ${bookingEndDateTime?.isValid ? bookingEndDateTime.toISO() : 'INVALID'}`)
+            
+            // Si alguno de los objetos DateTime no es válido, intentar con el enfoque anterior
+            if (!bookingStartDateTime?.isValid || !bookingEndDateTime?.isValid) {
+              console.log(`[DEBUG] Intentando con formato alternativo para los timestamps`)
               
-              // Intentar con formato HH:mm (sin segundos)
+              // Intentar crear DateTime combinando fecha y hora
               const altBookingStartDateTime = DateTime.fromFormat(
-                `${booking.date} ${booking.start_time.substring(0, 5)}`, 
+                `${booking.date} ${booking.start_time?.toString().substring(11, 16) || '00:00'}`, 
                 'yyyy-MM-dd HH:mm', 
                 { zone: 'UTC' }
               )
               
               const altBookingEndDateTime = DateTime.fromFormat(
-                `${booking.date} ${booking.end_time.substring(0, 5)}`, 
+                `${booking.date} ${booking.end_time?.toString().substring(11, 16) || '00:00'}`, 
                 'yyyy-MM-dd HH:mm', 
                 { zone: 'UTC' }
               )

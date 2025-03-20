@@ -76,6 +76,12 @@ export interface PublicClass {
     suspendedSessions?: SuspendedSession[]
   }
   availablePaymentMethods: PaymentMethod[]
+  payment_config?: {
+    status: string
+    currency: string
+    guaranteePercentage?: number
+    partialPaymentPercentage?: number
+  }
   visibility: 'public' | 'private'
   is_recurring: boolean
   instructor: string

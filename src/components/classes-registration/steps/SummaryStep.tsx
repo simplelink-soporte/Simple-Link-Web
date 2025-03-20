@@ -62,6 +62,7 @@ export function SummaryStep() {
   const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentTypeEnum | null>(null)
   const [selectedCardMethod, setSelectedCardMethod] = useState<CardPaymentMethod | null>(null)
   const [showCardMethodsList, setShowCardMethodsList] = useState(false)
+  const [guaranteePercentage, setGuaranteePercentage] = useState<number>(30) // Nuevo estado para el porcentaje de garantía
   // Estado para controlar la visibilidad del overlay
   const [showOverlay, setShowOverlay] = useState(false)
   // Estado para controlar la vista actual en dispositivos móviles
@@ -168,9 +169,15 @@ export function SummaryStep() {
   }, [state.selectedClass?.sessions, state.selectedSessions[0]])
 
   // Manejar la selección de tipo de pago
-  const handlePaymentTypeSelection = useCallback((type: PaymentTypeEnum | null) => {
-    console.log('📢 Tipo de pago seleccionado:', type)
+  const handlePaymentTypeSelection = useCallback((type: PaymentTypeEnum | null, percentage?: number) => {
+    console.log('📢 Tipo de pago seleccionado:', type, percentage ? `con porcentaje: ${percentage}%` : '')
     setSelectedPaymentType(type)
+    
+    // Si se proporciona un porcentaje y el tipo es garantía, actualizarlo
+    if (percentage !== undefined && type === 'guarantee') {
+      setGuaranteePercentage(percentage)
+      console.log('📢 Porcentaje de garantía actualizado:', percentage)
+    }
     
     // Cerrar la lista de tarjetas si está abierta
     if (showCardMethodsList) {
@@ -381,7 +388,8 @@ export function SummaryStep() {
         paymentType: selectedPaymentType || undefined,
         paymentMethodDetails: state.selectedPayment === 'card' && selectedCardMethod 
           ? selectedCardMethod as { id: string; [key: string]: any }
-          : undefined
+          : undefined,
+        guaranteePercentage: selectedPaymentType === 'guarantee' ? guaranteePercentage : undefined
       });
       
       if (result.error) {
@@ -579,16 +587,26 @@ export function SummaryStep() {
     // Si no hay sesión seleccionada, no renderizar
     if (!selectedSession) return null;
     
+    // Calcular el precio según el tipo de pago seleccionado
+    let price = selectedSession.price;
+    let priceLabel = "Precio Total";
+    
+    // Si el tipo de pago es "deposit" (seña) y hay configuración de pago con porcentaje de pago parcial
+    if (selectedPaymentType === 'deposit' && state.selectedClass?.payment_config?.partialPaymentPercentage) {
+      const percentage = state.selectedClass.payment_config.partialPaymentPercentage;
+      price = (price * percentage) / 100;
+      priceLabel = `Seña (${percentage}%)`;
+    }
+    
     // Formatear el precio
-    const price = selectedSession.price;
     const formatted = price.toFixed(2);
     const [integerPart, decimalPart] = formatted.split('.');
     
     return (
       <div className="flex flex-col items-center justify-center py-5 my-4">
-        {/* Título de Precio Total */}
+        {/* Título de Precio Total o Seña */}
         <p className="text-sm font-semibold mb-2 text-gray-500">
-          Precio Total
+          {priceLabel}
         </p>
 
         {/* Precio con decimales estilizados */}
@@ -605,7 +623,7 @@ export function SummaryStep() {
         </div>
       </div>
     );
-  }, [selectedSession]);
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config]);
 
   if (!selectedSession || !state.selectedClass) {
     return (
@@ -754,10 +772,11 @@ export function SummaryStep() {
           onSelect={handlePaymentTypeSelection}
           viewType={isMobile ? 'mobile' : 'desktop'}
           paymentTypes={availablePaymentTypes}
+          paymentConfig={state.selectedClass?.payment_config}
         />
       </div>
     );
-  }, [selectedPaymentType, handlePaymentTypeSelection, isMobile, state.selectedClass?.availablePaymentMethods]);
+  }, [selectedPaymentType, handlePaymentTypeSelection, isMobile, state.selectedClass?.availablePaymentMethods, state.selectedClass?.payment_config]);
 
   // Sección de métodos de pago con tarjeta
   const CardPaymentSection = useCallback(() => (

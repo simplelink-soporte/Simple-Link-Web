@@ -4,31 +4,20 @@ import React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { PaymentTypeList } from "./PaymentTypeList"
-import { PaymentTypeEnum, PaymentType } from "./payment-types"
 
 interface PaymentTypeModalProps {
   isOpen: boolean
   onClose: () => void
-  selectedType: PaymentTypeEnum | null
-  onSelect: (type: PaymentTypeEnum) => void
-  paymentTypes: PaymentType[]
+  title?: string
+  children: React.ReactNode
 }
 
 export function PaymentTypeModal({
   isOpen,
   onClose,
-  selectedType,
-  onSelect,
-  paymentTypes
+  title = "Seleccionar tipo de pago",
+  children
 }: PaymentTypeModalProps) {
-  // Función para manejar la selección del tipo de pago
-  const handleTypeSelect = (type: PaymentTypeEnum) => {
-    onSelect(type)
-    // Cerrar el modal después de seleccionar
-    onClose()
-  }
-
   // Manejador para evitar que los clics dentro del modal cierren el modal
   const handleModalClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -63,7 +52,7 @@ export function PaymentTypeModal({
               {/* Encabezado del modal */}
               <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <h3 className="text-lg font-medium text-gray-900">
-                  Seleccionar tipo de pago
+                  {title}
                 </h3>
                 <button
                   onClick={onClose}
@@ -75,14 +64,7 @@ export function PaymentTypeModal({
               
               {/* Contenido del modal */}
               <div className="max-h-[70vh] overflow-y-auto p-4">
-                <PaymentTypeList
-                  selectedType={selectedType}
-                  onSelect={handleTypeSelect}
-                  paymentTypes={paymentTypes}
-                  isExpanded={true}
-                  noContainer={true}
-                  viewType="mobile"
-                />
+                {children}
               </div>
             </motion.div>
           </motion.div>

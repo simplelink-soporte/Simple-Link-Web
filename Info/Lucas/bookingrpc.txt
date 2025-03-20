@@ -1,0 +1,148 @@
+
+DECLARE
+    v_booking_id uuid;
+    v_participant jsonb;
+    v_rental jsonb;
+    v_total_price numeric;
+BEGIN
+    -- Log inicio de operación
+    INSERT INTO trigger_logs (trigger_name, booking_data, error_message)
+    VALUES ('create_booking_v2', 
+        jsonb_build_object(
+            'court_id', p_court_id,
+            'date', p_date,
+            'court_price', p_court_price,
+            'rental_items_price', p_rental_items_price,
+            'payment_type', p_payment_type,
+            'empresa_id', p_empresa_id,
+            'stripe_payment_method_id', p_stripe_payment_method_id,
+            'reservation_type', p_reservation_type,
+            'class_id', p_class_id,
+            'class_session_price', p_class_session_price,
+            'guarantee_percentage', p_guarantee_percentage -- NUEVO: Añadir al log
+        ),
+        'Iniciando creación de reserva'
+    );
+
+    -- Calcular el precio total, incluyendo el precio de la sesión de clase si aplica
+    IF p_reservation_type = 'class' THEN
+        v_total_price := p_court_price + p_rental_items_price + p_class_session_price;
+    ELSE
+        v_total_price := p_court_price + p_rental_items_price;
+    END IF;
+
+    -- Insertar la reserva
+    INSERT INTO public.bookings (
+        court_id,
+        date,
+        start_time,
+        end_time,
+        court_price,
+        rental_items_price,
+        payment_method,
+        payment_status,
+        payment_type,
+        deposit_amount,
+        title,
+        description,
+        empresa_id,
+        total_price,
+        reservation_type,
+        class_id,
+        class_session_price,
+        guarantee_percentage -- NUEVO: Añadir guarantee_percentage
+    ) VALUES (
+        p_court_id,
+        p_date,
+        p_start_time,
+        p_end_time,
+        p_court_price,
+        p_rental_items_price,
+        p_payment_method,
+        p_payment_status,
+        p_payment_type,
+        COALESCE(p_deposit_amount, 0),
+        p_title,
+        p_description,
+        p_empresa_id,
+        v_total_price,
+        p_reservation_type,
+        p_class_id,
+        CASE WHEN p_reservation_type = 'class' THEN p_class_session_price ELSE 0 END,
+        CASE WHEN p_payment_type = 'guarantee' THEN p_guarantee_percentage ELSE NULL END -- NUEVO: Guardar el valor
+    )
+    RETURNING id INTO v_booking_id;
+
+    -- Insertar el pago inicial con el stripe_payment_method_id y class_session_price
+    INSERT INTO public.payments (
+        booking_id,
+        deposit_amount,
+        total_price,
+        payment_method,
+        payment_status,
+        notes,
+        stripe_payment_method_id,
+        class_session_price
+    ) VALUES (
+        v_booking_id,
+        COALESCE(p_deposit_amount, 0),
+        v_total_price,
+        p_payment_method,
+        p_payment_status,
+        'Pago inicial generado automáticamente',
+        CASE 
+            WHEN p_payment_type = 'guarantee' THEN p_stripe_payment_method_id
+            ELSE NULL
+        END,
+        CASE WHEN p_reservation_type = 'class' THEN p_class_session_price ELSE 0 END
+    );
+
+    -- Insertar participantes con la nueva columna user_id
+    FOR v_participant IN SELECT * FROM jsonb_array_elements(p_participants)
+    LOOP
+        INSERT INTO public.booking_participants (
+            booking_id,
+            user_id,
+            role
+        ) VALUES (
+            v_booking_id,
+            (v_participant->>'user_id')::uuid,
+            (COALESCE(v_participant->>'role', 'player'))::participant_role_enum
+        );
+    END LOOP;
+
+    -- Insertar items rentados
+    FOR v_rental IN SELECT * FROM jsonb_array_elements(p_rental_items)
+    LOOP
+        INSERT INTO public.booking_rentals (
+            booking_id,
+            item_id,
+            quantity,
+            price_per_unit
+        ) VALUES (
+            v_booking_id,
+            (v_rental->>'item_id')::uuid,
+            COALESCE((v_rental->>'quantity')::integer, 1),
+            COALESCE((v_rental->>'price_per_unit')::numeric, 0)
+        );
+    END LOOP;
+
+    RETURN v_booking_id;
+
+EXCEPTION WHEN OTHERS THEN
+    -- Log del error
+    INSERT INTO trigger_logs (trigger_name, booking_data, error_message)
+    VALUES ('create_booking_v2', 
+        jsonb_build_object(
+            'error_detail', SQLERRM,
+            'error_hint', SQLSTATE,
+            'court_id', p_court_id,
+            'payment_type', p_payment_type,
+            'empresa_id', p_empresa_id,
+            'stripe_payment_method_id', p_stripe_payment_method_id,
+            'guarantee_percentage', p_guarantee_percentage -- NUEVO: Añadir al log de errores
+        ),
+        'Error al crear la reserva: ' || SQLERRM
+    );
+    RAISE;
+END;
