@@ -447,35 +447,19 @@ export const bookingService = {
         itemData
       })
 
-      // Crear fechas usando Luxon con zona horaria 'UTC' por defecto
-      const localStartDateTime = DateTime.fromFormat(
-        `${date} ${startTime}`,
-        'yyyy-MM-dd HH:mm',
-        { zone: 'UTC' }
-      );
-      const localEndDateTime = DateTime.fromFormat(
-        `${date} ${endTime}`,
-        'yyyy-MM-dd HH:mm',
-        { zone: 'UTC' }
-      );
-
-      // Convertir a timestamp completo en formato SQL
-      const startDateTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
-      const endDateTimeUTC = localEndDateTime.toUTC().toSQL({ includeOffset: false });
-
       console.log('🔄 Consultando get_available_stock con parámetros:', {
         p_item_id: itemId,
         p_booking_date: date,
-        p_start_time: startDateTimeUTC, // Usar el timestamp completo
-        p_end_time: endDateTimeUTC // Usar el timestamp completo
+        p_start_time: startTime,
+        p_end_time: endTime
       })
 
       const { data, error } = await supabase
         .rpc('get_available_stock', {
           p_item_id: itemId,
           p_booking_date: date,
-          p_start_time: startDateTimeUTC, // Actualizado a timestamp
-          p_end_time: endDateTimeUTC // Actualizado a timestamp
+          p_start_time: startTime,
+          p_end_time: endTime
         } as any)
 
       if (error) {
@@ -880,43 +864,22 @@ export const bookingService = {
       let bookingDateToUse = bookingDateUTC;
       let startDateTimeUTC, endDateTimeUTC;
       
-      // Si la reserva cruza la medianoche en UTC, necesitamos ajustar:
+      // Crear timestamp completo para la hora de inicio
+      startDateTimeUTC = localStartDateTime.toUTC().toFormat('yyyy-MM-dd HH:mm:ss');
+      
+      // Para la hora de fin, depende de si la reserva cruza la medianoche
       if (isOvernightUTC) {
         if (endTimeUTC === '00:00:00') {
-          // Caso especial para 00:00:00 - simplemente ajustar a un segundo antes
-          adjustedEndTimeUTC = '23:59:59';
-          
-          // Crear timestamps completos en UTC
-          startDateTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
-          endDateTimeUTC = localStartDateTime.toUTC().set({ hour: 23, minute: 59, second: 59 }).toSQL({ includeOffset: false });
+          // Caso especial para 00:00:00 - ajustar a un segundo antes
+          const adjustedEndDateTime = localStartDateTime.toUTC().set({ hour: 23, minute: 59, second: 59 });
+          endDateTimeUTC = adjustedEndDateTime.toFormat('yyyy-MM-dd HH:mm:ss');
         } else {
-          // Para otros casos donde la hora de fin es después de la medianoche (ej. 00:30:00)
-          
-          // Convertir la fecha original a objeto Date para poder manipularla
-          const dateParts = bookingDateUTC.split('-');
-          const originalDate = new Date(
-            parseInt(dateParts[0]), 
-            parseInt(dateParts[1]) - 1, // Meses en JS son 0-indexados
-            parseInt(dateParts[2])
-          );
-          
-          // Calcular el siguiente día para la fecha de la reserva
-          const nextDay = new Date(originalDate);
-          nextDay.setDate(nextDay.getDate() + 1);
-          
-          // Formatear la nueva fecha como YYYY-MM-DD
-          bookingDateToUse = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')}`;
-          
-          // Crear timestamps completos en UTC
-          startDateTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
-          
-          // Para la hora de fin, usar el día siguiente
-          endDateTimeUTC = localEndDateTime.toUTC().toSQL({ includeOffset: false });
+          // Para reservas que cruzan la medianoche, ajustar la fecha a un día después
+          endDateTimeUTC = localEndDateTime.toUTC().plus({ days: 1 }).toFormat('yyyy-MM-dd HH:mm:ss');
         }
       } else {
         // Caso normal - mismo día
-        startDateTimeUTC = localStartDateTime.toUTC().toSQL({ includeOffset: false });
-        endDateTimeUTC = localEndDateTime.toUTC().toSQL({ includeOffset: false });
+        endDateTimeUTC = localEndDateTime.toUTC().toFormat('yyyy-MM-dd HH:mm:ss');
       }
 
       console.log('🕒 Conversión de horarios:', {
@@ -929,17 +892,12 @@ export const bookingService = {
           localEnd: localEndDateTime.toISO()
         },
         utc: {
-          originalDate: bookingDateUTC,
-          adjustedDate: bookingDateToUse,
-          start: startTimeUTC,
-          end: endTimeUTC,
-          adjustedEnd: adjustedEndTimeUTC,
-          isOvernightUTC,
-          fullStartUTC: startDateTimeUTC,
-          fullEndUTC: endDateTimeUTC
+          startDateTimeUTC,
+          endDateTimeUTC,
+          isOvernightUTC
         }
       });
-
+      
       // Transformar participantes
       const transformedParticipants = data.participants?.map(p => ({
         user_id: p.userId || p.id,
@@ -963,8 +921,8 @@ export const bookingService = {
       const bookingParams = {
         p_court_id: data.courtId,
         p_date: bookingDateUTC, // Usar siempre la fecha original seleccionada
-        p_start_time: startDateTimeUTC, // Volver a usar el timestamp completo
-        p_end_time: endDateTimeUTC, // Volver a usar el timestamp completo
+        p_start_time: startDateTimeUTC, // Timestamp completo en formato yyyy-MM-dd HH:mm:ss
+        p_end_time: endDateTimeUTC, // Timestamp completo en formato yyyy-MM-dd HH:mm:ss
         p_court_price: data.courtPrice,
         p_rental_items_price: data.rentalItemsPrice || 0,
         p_payment_method: data.paymentMethod,

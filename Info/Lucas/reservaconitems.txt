@@ -1,0 +1,155 @@
+:\Users\Equipo\Docu…okingService.ts:800 📝 Creando reserva con datos: 
+{courtId: '1ff82367-757c-4812-96b7-daee3238d6cd', date: '2025-03-20', startTime: '15:00', endTime: '16:00', courtPrice: 45, …}
+courtId
+: 
+"1ff82367-757c-4812-96b7-daee3238d6cd"
+courtPrice
+: 
+45
+date
+: 
+"2025-03-20"
+depositAmount
+: 
+57
+empresa_id
+: 
+"99f78081-24fa-4892-aae2-823816e7d132"
+endTime
+: 
+"16:00"
+participants
+: 
+[{…}]
+paymentMethod
+: 
+"cash"
+paymentStatus
+: 
+"completed"
+paymentType
+: 
+"booking"
+rentalItems
+: 
+[{…}]
+rentalItemsPrice
+: 
+12
+startTime
+: 
+"15:00"
+[[Prototype]]
+: 
+Object
+
+----
+
+
+C:\Users\Equipo\Docu…okingService.ts:838 ✅ Zona horaria de la sede: Europe/Madrid
+C:\Users\Equipo\Docu…okingService.ts:906 🕒 Conversión de horarios: 
+{local: {…}, utc: {…}}
+local
+: 
+{date: '2025-03-20', start: '15:00', end: '16:00', timezone: 'Europe/Madrid', localStart: '2025-03-20T15:00:00.000+01:00', …}
+utc
+: 
+{originalDate: '2025-03-20', adjustedDate: '2025-03-20', start: '14:00:00', end: '15:00:00', adjustedEnd: '15:00:00', …}
+[[Prototype]]
+: 
+Object
+
+----
+
+
+C:\Users\Equipo\Docu…okingService.ts:970 📦 Parámetros de la reserva: 
+{p_court_id: '1ff82367-757c-4812-96b7-daee3238d6cd', p_date: '2025-03-20', p_start_time: '2025-03-20 14:00:00.000', p_end_time: '2025-03-20 15:00:00.000', p_court_price: 45, …}
+p_class_id
+: 
+null
+p_class_session_price
+: 
+0
+p_court_id
+: 
+"1ff82367-757c-4812-96b7-daee3238d6cd"
+p_court_price
+: 
+45
+p_date
+: 
+"2025-03-20"
+p_deposit_amount
+: 
+57
+p_description
+: 
+null
+p_empresa_id
+: 
+"99f78081-24fa-4892-aae2-823816e7d132"
+p_end_time
+: 
+"2025-03-20 15:00:00.000"
+p_participants
+: 
+[{…}]
+p_payment_method
+: 
+"cash"
+p_payment_status
+: 
+"completed"
+p_payment_type
+: 
+"booking"
+p_rental_items
+: 
+[{…}]
+p_rental_items_price
+: 
+12
+p_reservation_type
+: 
+"booking"
+p_start_time
+: 
+"2025-03-20 14:00:00.000"
+p_stripe_payment_method_id
+: 
+undefined
+p_title
+: 
+null
+
+---
+
+
+__awaiter @ fetch.js:10
+eval @ fetch.js:41
+then @ PostgrestBuilder.js:65Understand this errorAI
+C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\services\bookingService.ts:979 ❌ Error al crear reserva: {code: '22007', details: null, hint: null, message: 'invalid input syntax for type timestamp: "2025-03-20 2025-03-20 14:00:00"'}code: "22007"details: nullhint: nullmessage: "invalid input syntax for type timestamp: \"2025-03-20 2025-03-20 14:00:00\""[[Prototype]]: Object
+error @ intercept-console-error.js:52
+createBooking @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\services\bookingService.ts:979
+await in createBooking
+SimpleShiftBookingModal.useCallback[handleConfirmBooking] @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\bookings\components\NewBookingModal\SimpleShiftBookingModal.tsx:259
+handleContinueAction @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\bookings\components\NewBookingModal\SimpleShiftBookingModal.tsx:350
+
+dispatchDiscreteEvent @ react-dom-client.development.js:20607
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:327
+_c @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\ui\button.tsx:45
+
+eval @ react-dom-client.development.js:16234
+<Button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:327
+ModalFooter @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\bookings\components\NewBookingModal\components\ModalFooter.tsx:46
+
+<ModalFooter>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:327
+SimpleShiftBookingModal @ C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\bookings\components\NewBookingModal\SimpleShiftBookingModal.tsx:446
+
+processRootScheduleInMicrotask @ react-dom-client.development.js:16100
+eval @ react-dom-client.development.js:16234Understand this errorAI
+C:\Users\Equipo\Documents\GitHub\Simple-Link-Web\src\components\bookings\components\NewBookingModal\SimpleShiftBookingModal.tsx:272 Error al crear la reserva: Error: Error al procesar la reserva en la base de datos
+    at SimpleShiftBookingModal.useCallback[handleConfirmBooking] (
