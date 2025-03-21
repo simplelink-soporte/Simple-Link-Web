@@ -195,18 +195,21 @@ export function PaymentTypeList({
     <AnimatePresence>
       {isExpanded && (
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: -5, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          exit={{ opacity: 0, y: -5, height: 0 }}
+          transition={{ duration: 0.2 }}
           className={cn(
-            "mt-3",
-            noContainer 
-              ? "space-y-1" 
-              : "p-3 space-y-1 rounded-lg border border-gray-100 bg-white"
+            "absolute left-0 right-0 z-[100] mt-2 w-full",
+            "rounded-lg",
+            "overflow-hidden bg-white",
+            "border border-gray-200",
+            "shadow-md"
           )}
         >
-          {listContent}
+          <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+            {listContent}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

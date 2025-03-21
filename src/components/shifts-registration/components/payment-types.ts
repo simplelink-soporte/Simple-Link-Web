@@ -27,13 +27,15 @@ export const PAYMENT_TYPES: PaymentType[] = [
     id: 'full',
     name: 'Pago Completo',
     description: 'Pagar el monto total de la reserva',
-    details: ['Realiza el pago completo ahora y asegura tu reserva inmediatamente']
+    details: ['Realiza el pago completo ahora y asegura tu reserva inmediatamente'],
+    requiresCard: true
   },
   {
     id: 'deposit',
     name: 'Pago con Seña',
     description: 'Pagar solo la seña ahora',
-    details: ['Paga una seña del 30% ahora y el resto al llegar al club']
+    details: ['Paga una seña del 30% ahora y el resto al llegar al club'],
+    requiresCard: true
   },
   {
     id: 'guarantee',

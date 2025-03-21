@@ -13,6 +13,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { PaymentTypeEnum } from '@/components/shifts-registration/components/payment-types';
 import { PaymentTypeSection } from '@/components/shifts-registration/components/PaymentTypeSection';
+import { PaymentSectionWithStripe, PaymentMethod } from '@/components/shifts-registration/components/PaymentSection';
 
 // Función para formatear la fecha en un formato legible
 const formatShiftDate = (dateString: string) => {
@@ -49,6 +50,8 @@ export function SummaryStep({
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentTypeEnum | null>(null);
+  const [selectedCardMethod, setSelectedCardMethod] = useState<PaymentMethod | null>(null);
+  const [showCardMethodModal, setShowCardMethodModal] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [summarySubStep, setSummarySubStep] = useState<'details' | 'payment'>('details');
   const [showPaymentList, setShowPaymentList] = useState(false);
@@ -124,6 +127,16 @@ export function SummaryStep({
       return;
     }
     
+    // Validar que hay una tarjeta seleccionada si el método de pago lo requiere
+    if ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) {
+      toast({
+        title: 'Tarjeta requerida',
+        description: 'Por favor, selecciona una tarjeta para continuar',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     setIsProcessing(true);
     setShowOverlay(true);
     
@@ -133,6 +146,7 @@ export function SummaryStep({
       
       // Aquí iría la lógica para enviar la reserva de turno
       console.log('Creando reserva con método de pago:', selectedPaymentMethod);
+      console.log('Método de tarjeta seleccionado:', selectedCardMethod);
       
       toast({
         title: 'Reserva creada',
@@ -152,7 +166,7 @@ export function SummaryStep({
       setIsProcessing(false);
       setShowOverlay(false);
     }
-  }, [isProcessing, selectedPaymentMethod, onNext, toast]);
+  }, [isProcessing, selectedPaymentMethod, selectedCardMethod, onNext, toast]);
 
   // Manejar la navegación entre sub-pasos
   const handleNextSubStep = useCallback(() => {
@@ -180,6 +194,7 @@ export function SummaryStep({
       summaryStepRef.current = {
         summarySubStep,
         selectedPaymentMethod,
+        selectedCardMethod,
         isProcessing,
         handleNextSubStep,
         handlePreviousSubStep
@@ -218,7 +233,8 @@ export function SummaryStep({
   }, [
     isMobile, 
     summarySubStep, 
-    selectedPaymentMethod, 
+    selectedPaymentMethod,
+    selectedCardMethod, 
     isProcessing, 
     handleNextSubStep, 
     handlePreviousSubStep
@@ -382,19 +398,56 @@ export function SummaryStep({
 
   // Componente para la sección de métodos de pago
   const PaymentMethodsSection = useCallback(() => {
+    // Determinar si el método de pago requiere tarjeta
+    const requiresCard = selectedPaymentMethod === 'guarantee' 
+      || selectedPaymentMethod === 'card' 
+      || selectedPaymentMethod === 'full' 
+      || selectedPaymentMethod === 'deposit';
+    
     return (
       <div className="space-y-4 rounded-lg border border-gray-200 bg-white/60 overflow-hidden">
         <div className="p-6 space-y-4" ref={containerRef}>
-          <h3 className="text-lg font-medium text-gray-900">Método de pago</h3>
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900">Finaliza tu reserva</h3>
+            <p className="text-sm text-gray-500 mt-1">Configura los detalles de pago para confirmar tu reserva</p>
+          </div>
           
           <PaymentTypeSection 
             selectedPaymentMethod={selectedPaymentMethod}
             setSelectedPaymentMethod={setSelectedPaymentMethod}
           />
+          
+          {/* Mostrar el selector de tarjeta sólo si el método seleccionado requiere tarjeta */}
+          {requiresCard && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">
+                {selectedPaymentMethod === 'guarantee' 
+                  ? 'Selecciona una tarjeta para garantía'
+                  : selectedPaymentMethod === 'full'
+                    ? 'Selecciona una tarjeta para el pago completo'
+                    : selectedPaymentMethod === 'deposit'
+                      ? 'Selecciona una tarjeta para el pago de la seña'
+                      : 'Selecciona una tarjeta para el pago'}
+              </p>
+              <PaymentSectionWithStripe
+                selectedMethod={selectedCardMethod}
+                onShowMethods={() => setShowCardMethodModal(true)}
+                onUpdateMethod={(method: PaymentMethod) => {
+                  console.log('Actualizando método de tarjeta:', method);
+                  setSelectedCardMethod(method);
+                  return Promise.resolve();
+                }}
+                onRemoveMethod={() => setSelectedCardMethod(null)}
+                theme="light"
+                viewType={isMobile ? "mobile" : "desktop"}
+                expandCardList={!selectedCardMethod}
+              />
+            </div>
+          )}
         </div>
       </div>
     );
-  }, [selectedPaymentMethod]);
+  }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef]);
 
   // Componente de Layout para Desktop
   const DesktopLayout = useCallback(({ children }: { children: React.ReactNode }) => (
@@ -545,7 +598,12 @@ export function SummaryStep({
           onNext={handleNextSubStep}
           onBack={handlePreviousSubStep}
           nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
-          isNextDisabled={summarySubStep === 'payment' && (!selectedPaymentMethod || isProcessing)}
+          isNextDisabled={
+            summarySubStep === 'payment' && 
+            (!selectedPaymentMethod || 
+            ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
+            isProcessing)
+          }
           isProcessing={isProcessing}
         />
       )}
