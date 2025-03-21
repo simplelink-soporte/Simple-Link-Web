@@ -6,6 +6,7 @@ import timeSlotService from './timeSlotService';
 import bookingTransformer from './bookingTransformerService';
 import holdReservationService from './holdReservationService';
 import pricingService from './pricingService';
+import classSessionService from './classSessionService';
 
 interface BranchSchedule {
   openingDays: Record<string, boolean>;
@@ -20,6 +21,7 @@ interface Booking {
   start_time: string;
   end_time: string;
   payment_status: string;
+  reservation_type?: string; // Añadimos este campo para identificar si es una reserva normal o una clase
 }
 
 class AvailabilityService {
@@ -110,7 +112,20 @@ class AvailabilityService {
         }))
       );
       
-      return bookings;
+      // NUEVO: Obtener sesiones de clases para esta fecha y canchas
+      const classSessions = await classSessionService.getClassSessions(date, courtIds);
+      
+      console.log(`AvailabilityService - Se encontraron ${classSessions.length} sesiones de clases para la fecha ${formattedDate}`);
+      
+      // Convertir las sesiones de clases al formato de reservas para poder usar la lógica existente
+      const classSessionsAsBookings = classSessionService.convertSessionsToBookingFormat(classSessions);
+      
+      // Combinar reservas normales y sesiones de clases
+      const allBookings = [...bookings, ...classSessionsAsBookings];
+      
+      console.log(`AvailabilityService - Total de bloques ocupados (reservas + clases): ${allBookings.length}`);
+      
+      return allBookings;
     } catch (error) {
       console.error('Error en getBookings:', error);
       return [];
@@ -177,7 +192,9 @@ class AvailabilityService {
           // Procesamos cada día
           Object.entries(originalSchedule).forEach(([day, value]) => {
             if (value && typeof value === 'object' && 'isOpen' in value && value.isOpen) {
-              const timeRanges = value.timeRanges || [];
+              // Usamos type assertion para ayudar a TypeScript a entender la estructura
+              const scheduleValue = value as { isOpen: boolean; timeRanges?: Array<{openTime: string, closeTime: string}> };
+              const timeRanges = scheduleValue.timeRanges || [];
               
               // Marcar el día como abierto si tiene isOpen=true, independientemente de los timeRanges
               openingDays[day] = true;
@@ -231,6 +248,10 @@ class AvailabilityService {
       booking.court_id === courtId && 
       booking.date === formattedDate
     );
+    
+    // Log adicional para verificar si las sesiones de clase están siendo consideradas
+    const classSessions = relevantBookings.filter(booking => booking.reservation_type === 'class');
+    console.log(`AvailabilityService - Sesiones de clase para la cancha ${courtId} en la fecha ${formattedDate}: ${classSessions.length}`);
     
     if (relevantBookings.length === 0) {
       // No hay reservas para esta cancha en esta fecha, por lo que el slot está disponible
@@ -474,9 +495,17 @@ class AvailabilityService {
               searchDate
             );
             
+            // Determinar el estado del slot (available, popular, lastCall)
+            const status = pricingService.determineStatus(
+              slot.startTime,
+              existingBookings,
+              searchDate
+            );
+            
             return {
               ...slot,
-              price
+              price,
+              status // Añadir el campo status requerido por AvailabilitySlot
             };
           });
           

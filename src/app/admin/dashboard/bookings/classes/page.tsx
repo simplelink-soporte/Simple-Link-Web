@@ -48,7 +48,12 @@ export default function ClassesPage() {
   
   // Estado para controlar la visualización del toast beta
   const [hasDismissedBetaNotice, setHasDismissedBetaNotice] = useLocalStorage<boolean>('dismissed-classes-beta-notice', false)
-  const [showBetaNotice, setShowBetaNotice] = useState(!hasDismissedBetaNotice)
+  const [showBetaNotice, setShowBetaNotice] = useState(false)
+  
+  // Actualizar showBetaNotice cuando hasDismissedBetaNotice cambie (después de cargar desde localStorage)
+  useEffect(() => {
+    setShowBetaNotice(!hasDismissedBetaNotice)
+  }, [hasDismissedBetaNotice])
   
   const isLoading = isLoadingAuth || isLoadingBranch
 

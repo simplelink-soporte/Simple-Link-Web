@@ -27,7 +27,7 @@ export function CustomSlugInputPopover({
   const [slug, setSlug] = useState(defaultSlug)
   const [isOpen, setIsOpen] = useState(false)
 
-  const basePath = linkType === 'classes' ? '/clases/' : '/f/'
+  const basePath = linkType === 'classes' ? '/clases/' : '/shifts/'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

@@ -180,8 +180,9 @@ export const sessionManagementService = {
       const startTimeLocal = DateTime.fromFormat(`${targetDate} ${startTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone })
       const endTimeLocal = DateTime.fromFormat(`${targetDate} ${endTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone })
       
-      const startTimeUTC = startTimeLocal.toUTC().toFormat('HH:mm:ss')
-      const endTimeUTC = endTimeLocal.toUTC().toFormat('HH:mm:ss')
+      // Creamos timestamps completos en vez de solo horarios
+      const startTimestamp = startTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
+      const endTimestamp = endTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
       const dateUTC = startTimeLocal.toUTC().toFormat('yyyy-MM-dd')
       
       console.log('🕒 Conversión de horarios para consulta:', {
@@ -193,8 +194,8 @@ export const sessionManagementService = {
         },
         utc: {
           dateUTC,
-          startTimeUTC,
-          endTimeUTC
+          startTimestamp,
+          endTimestamp
         }
       })
       
@@ -224,8 +225,8 @@ export const sessionManagementService = {
         .from('bookings')
         .select('id, date', { count: 'exact' })
         .eq('class_id', classId)
-        .eq('start_time', startTimeUTC)
-        .eq('end_time', endTimeUTC)
+        .eq('start_time', startTimestamp)
+        .eq('end_time', endTimestamp)
         .or(courtFilter)
         .is('cancelled_at', null);
       
@@ -538,8 +539,9 @@ export const sessionManagementService = {
       const startTimeLocal = DateTime.fromFormat(`${date} ${targetSlot.startTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone })
       const endTimeLocal = DateTime.fromFormat(`${date} ${targetSlot.endTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone })
       
-      const startTimeUTC = startTimeLocal.toUTC().toFormat('HH:mm:ss')
-      const endTimeUTC = endTimeLocal.toUTC().toFormat('HH:mm:ss')
+      // Creamos timestamps completos en vez de solo horarios
+      const startTimestamp = startTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
+      const endTimestamp = endTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
       const dateUTC = startTimeLocal.toUTC().toFormat('yyyy-MM-dd')
       
       console.log('🕒 Conversión de horarios para cancelación:', {
@@ -551,8 +553,8 @@ export const sessionManagementService = {
         },
         utc: {
           date: dateUTC,
-          startTime: startTimeUTC,
-          endTime: endTimeUTC
+          startTimestamp,
+          endTimestamp
         }
       })
       
@@ -573,8 +575,8 @@ export const sessionManagementService = {
         .select('*', { count: 'exact', head: true })
         .eq('class_id', classId)
         .eq('date', dateUTC)           // Ahora filtramos por fecha específica
-        .eq('start_time', startTimeUTC)
-        .eq('end_time', endTimeUTC)
+        .eq('start_time', startTimestamp)
+        .eq('end_time', endTimestamp)
         .or(courtFilter)
         .is('cancelled_at', null)
       
@@ -595,8 +597,8 @@ export const sessionManagementService = {
         })
         .eq('class_id', classId)
         .eq('date', dateUTC)           // Filtramos por fecha específica convertida a UTC
-        .eq('start_time', startTimeUTC)
-        .eq('end_time', endTimeUTC)
+        .eq('start_time', startTimestamp)
+        .eq('end_time', endTimestamp)
         .or(courtFilter)
         .is('cancelled_at', null)
       
@@ -926,16 +928,17 @@ export const sessionManagementService = {
       const sourceStartTimeLocal = DateTime.fromFormat(`${sourceDate} ${sourceStartTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone });
       const sourceEndTimeLocal = DateTime.fromFormat(`${sourceDate} ${sourceEndTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone });
       
-      const sourceStartTimeUTC = sourceStartTimeLocal.toUTC().toFormat('HH:mm:ss');
-      const sourceEndTimeUTC = sourceEndTimeLocal.toUTC().toFormat('HH:mm:ss');
+      // Creamos timestamps completos en vez de solo horarios
+      const sourceStartTimestamp = sourceStartTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
+      const sourceEndTimestamp = sourceEndTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
       const sourceDateUTC = sourceStartTimeLocal.toUTC().toFormat('yyyy-MM-dd');
       
       // Destino
       const targetStartTimeLocal = DateTime.fromFormat(`${targetDate} ${targetStartTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone });
       const targetEndTimeLocal = DateTime.fromFormat(`${targetDate} ${targetEndTime}`, 'yyyy-MM-dd HH:mm', { zone: timezone });
       
-      const targetStartTimeUTC = targetStartTimeLocal.toUTC().toFormat('HH:mm:ss');
-      const targetEndTimeUTC = targetEndTimeLocal.toUTC().toFormat('HH:mm:ss');
+      const targetStartTimestamp = targetStartTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
+      const targetEndTimestamp = targetEndTimeLocal.toUTC().toFormat('yyyy-MM-dd HH:mm:ss')
       const targetDateUTC = targetStartTimeLocal.toUTC().toFormat('yyyy-MM-dd');
       
       console.log('🕒 Conversión de horarios para actualización:', {
@@ -947,8 +950,8 @@ export const sessionManagementService = {
           },
           utc: {
             date: sourceDateUTC,
-            startTime: sourceStartTimeUTC,
-            endTime: sourceEndTimeUTC
+            startTimestamp: sourceStartTimestamp,
+            endTimestamp: sourceEndTimestamp
           }
         },
         destino: {
@@ -959,8 +962,8 @@ export const sessionManagementService = {
           },
           utc: {
             date: targetDateUTC,
-            startTime: targetStartTimeUTC,
-            endTime: targetEndTimeUTC
+            startTimestamp: targetStartTimestamp,
+            endTimestamp: targetEndTimestamp
           }
         }
       });
@@ -971,8 +974,8 @@ export const sessionManagementService = {
         .select('id, court_id')
         .eq('class_id', classId)
         .eq('date', sourceDateUTC)
-        .eq('start_time', sourceStartTimeUTC)
-        .eq('end_time', sourceEndTimeUTC)
+        .eq('start_time', sourceStartTimestamp)
+        .eq('end_time', sourceEndTimestamp)
         .is('cancelled_at', null);
       
       // Aplicar filtro de pista si se especificó
@@ -1011,8 +1014,8 @@ export const sessionManagementService = {
       const updatePromises = bookings.map(booking => {
         const updateData: any = {
           date: targetDateUTC,
-          start_time: targetStartTimeUTC,
-          end_time: targetEndTimeUTC,
+          start_time: targetStartTimestamp,
+          end_time: targetEndTimestamp,
           updated_at: new Date().toISOString()
         };
         
