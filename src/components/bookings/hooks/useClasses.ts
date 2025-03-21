@@ -105,12 +105,13 @@ async function fetchClasses({
       let isExpired = false;
       
       if (!classItem.is_recurring && classItem.start_date) {
-        // Para clases no recurrentes, usamos la fecha de inicio
-        const expirationDate = new Date(classItem.start_date);
-        // Establecer la fecha al final del día (23:59:59.999)
-        expirationDate.setHours(23, 59, 59, 999);
-        // Solo está vencida si ya pasó el final del día completo
-        isExpired = expirationDate < now;
+        // Para clases no recurrentes, comparamos solo las fechas sin considerar la hora
+        // Obtener la fecha actual en formato YYYY-MM-DD
+        const today = now.toISOString().split('T')[0];
+        
+        // Si la fecha de la clase es igual a hoy, la clase NO está vencida (se vence al final del día)
+        // Si la fecha de la clase es menor que hoy, entonces SÍ está vencida
+        isExpired = classItem.start_date < today;
       } else if (classItem.is_recurring && classItem.end_date) {
         // Para clases recurrentes, usamos la fecha de fin
         const expirationDate = new Date(classItem.end_date);

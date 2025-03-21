@@ -316,7 +316,8 @@ export class ClassService {
     console.log('Generando sesiones con rango de fechas:', {
       today: today.toISOString().split('T')[0],
       thirtyDaysFromNow: thirtyDaysFromNow.toISOString().split('T')[0],
-      diasEnRango: Math.ceil((thirtyDaysFromNow.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+      diasEnRango: Math.ceil((thirtyDaysFromNow.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
+      isRecurring: dbClass.is_recurring
     })
 
     // --- Parte nueva: Opciones de paginación ---
@@ -342,29 +343,17 @@ export class ClassService {
     // Generar sesiones temporalmente para paginación
     const tempSessions: ClassSession[] = [];
     
-    // Para cada día en el horario
-    days.forEach(dayNumber => {
-      console.log(`Procesando día de la semana: ${dayNumber} (${['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dayNumber]})`)
+    // === NUEVA LÓGICA: DIFERENCIAR ENTRE CLASES RECURRENTES Y NO RECURRENTES ===
+    if (!dbClass.is_recurring) {
+      // Para clases no recurrentes (únicas), solo generamos una sesión
+      // para la fecha específica indicada en start_date
+      console.log(`🔍 Clase no recurrente: Generando solo sesión para la fecha ${dbClass.start_date}`);
       
-      // Calcular la fecha actual más cercana para este día de la semana
-      // Crear una copia de la fecha actual para no modificar 'today'
-      const baseDate = new Date(today);
+      // Convertir start_date a objeto Date para comparaciones
+      const startDate = new Date(dbClass.start_date + "T00:00:00");
       
-      // Avanzar o retroceder para llegar al día de la semana deseado
-      const daysToAdd = (dayNumber - baseDate.getDay() + 7) % 7;
-      baseDate.setDate(baseDate.getDate() + daysToAdd);
-      
-      console.log(`Primera fecha para día ${dayNumber}: ${baseDate.toISOString().split('T')[0]}`);
-      
-      // Generar todas las sesiones para este día de la semana dentro del rango de 30 días
-      let currentDate = new Date(baseDate);
-      let iterationCount = 0;
-      const maxIterations = 10; // Límite de seguridad para evitar bucles infinitos
-      
-      while (currentDate <= thirtyDaysFromNow && iterationCount < maxIterations) {
-        iterationCount++;
-        console.log(`Generando sesión #${iterationCount} para ${currentDate.toISOString().split('T')[0]} (día ${dayNumber})`);
-        
+      // Verificar que la fecha está en el rango permitido
+      if (startDate >= today && startDate <= thirtyDaysFromNow) {
         // Para cada franja horaria
         timeSlots.forEach(slot => {
           // Validar que el slot tenga la estructura esperada
@@ -388,15 +377,7 @@ export class ClassService {
 
           // Crear una sesión por cada cancha en el slot
           slotCourts.forEach(court => {
-            const sessionDate = new Date(currentDate);
-            
-            // Verificar que la fecha está en el rango permitido (redundante pero seguro)
-            if (sessionDate < today || sessionDate > thirtyDaysFromNow) {
-              console.log(`Fecha fuera de rango (${sessionDate.toISOString().split('T')[0]}), no se genera sesión`);
-              return;
-            }
-            
-            const formattedDate = sessionDate.toISOString().split('T')[0];
+            const formattedDate = startDate.toISOString().split('T')[0];
             
             // Verificar si esta sesión está suspendida
             const suspendedSessionKey = `${formattedDate}-${slot.startTime}-${slot.endTime}-${court.id}`;
@@ -406,7 +387,6 @@ export class ClassService {
             }
             
             const session: ClassSession = {
-              // Incluir la fecha específica en el ID para garantizar unicidad
               id: `${dbClass.id}-${formattedDate}-${slot.startTime || ''}-${court.id}`,
               date: formattedDate,
               startTime: slot.startTime || '',
@@ -420,20 +400,110 @@ export class ClassService {
               price: typeof slot.price === 'number' ? slot.price : 0
             }
 
-            // Log detallado
-            console.log(` Sesión generada: ${formattedDate} (${['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][sessionDate.getDay()]}) ${slot.startTime}-${slot.endTime} - ${court.name}`);
+            console.log(` Sesión generada para clase ÚNICA: ${formattedDate} ${slot.startTime}-${slot.endTime} - ${court.name}`);
 
             // Añadir a lista temporal para posterior paginación
             tempSessions.push(session);
-          })
-        })
-        
-        // Avanzar al siguiente día de la semana (7 días más tarde)
-        currentDate.setDate(currentDate.getDate() + 7)
+          });
+        });
+      } else {
+        console.log(`Fecha de clase única fuera de rango (${dbClass.start_date}), no se genera sesión`);
       }
-    })
+    } else {
+      // === LÓGICA ORIGINAL PARA CLASES RECURRENTES ===
+      // Para cada día en el horario
+      days.forEach(dayNumber => {
+        console.log(`Procesando día de la semana: ${dayNumber} (${['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dayNumber]})`)
+        
+        // Calcular la fecha actual más cercana para este día de la semana
+        // Crear una copia de la fecha actual para no modificar 'today'
+        const baseDate = new Date(today);
+        
+        // Avanzar o retroceder para llegar al día de la semana deseado
+        const daysToAdd = (dayNumber - baseDate.getDay() + 7) % 7;
+        baseDate.setDate(baseDate.getDate() + daysToAdd);
+        
+        console.log(`Primera fecha para día ${dayNumber}: ${baseDate.toISOString().split('T')[0]}`);
+        
+        // Generar todas las sesiones para este día de la semana dentro del rango de 30 días
+        let currentDate = new Date(baseDate);
+        let iterationCount = 0;
+        const maxIterations = 10; // Límite de seguridad para evitar bucles infinitos
+        
+        while (currentDate <= thirtyDaysFromNow && iterationCount < maxIterations) {
+          iterationCount++;
+          console.log(`Generando sesión #${iterationCount} para ${currentDate.toISOString().split('T')[0]} (día ${dayNumber})`);
+          
+          // Para cada franja horaria
+          timeSlots.forEach(slot => {
+            // Validar que el slot tenga la estructura esperada
+            if (!slot || typeof slot !== 'object') {
+              console.warn('Slot inválido encontrado:', slot)
+              return
+            }
+
+            // Obtener las pistas para este horario
+            const slotCourts = Array.isArray(slot.courtIds)
+              ? slot.courtIds
+                  .map(id => courtsMap.get(id))
+                  .filter((court): court is NonNullable<typeof court> => court !== undefined)
+              : []
+
+            // Si no hay pistas disponibles, saltar este slot
+            if (slotCourts.length === 0) {
+              console.log(`No hay pistas disponibles para el slot ${slot.startTime}-${slot.endTime}`)
+              return
+            }
+
+            // Crear una sesión por cada cancha en el slot
+            slotCourts.forEach(court => {
+              const sessionDate = new Date(currentDate);
+              
+              // Verificar que la fecha está en el rango permitido (redundante pero seguro)
+              if (sessionDate < today || sessionDate > thirtyDaysFromNow) {
+                console.log(`Fecha fuera de rango (${sessionDate.toISOString().split('T')[0]}), no se genera sesión`);
+                return;
+              }
+              
+              const formattedDate = sessionDate.toISOString().split('T')[0];
+              
+              // Verificar si esta sesión está suspendida
+              const suspendedSessionKey = `${formattedDate}-${slot.startTime}-${slot.endTime}-${court.id}`;
+              if (suspendedSessionsMap.has(suspendedSessionKey)) {
+                console.log(`🚫 Sesión suspendida, no se genera: ${suspendedSessionKey}`);
+                return;
+              }
+              
+              const session: ClassSession = {
+                // Incluir la fecha específica en el ID para garantizar unicidad
+                id: `${dbClass.id}-${formattedDate}-${slot.startTime || ''}-${court.id}`,
+                date: formattedDate,
+                startTime: slot.startTime || '',
+                endTime: slot.endTime || '',
+                spotsLeft: slot.spotsLeft ?? slot.capacity ?? 0,
+                totalSpots: slot.capacity || 0,
+                courts: [court],
+                instructor: Array.isArray(slot.instructors) && slot.instructors.length > 0
+                  ? slot.instructors[0]
+                  : 'Sin instructor',
+                price: typeof slot.price === 'number' ? slot.price : 0
+              }
+
+              // Log detallado
+              console.log(` Sesión generada para clase RECURRENTE: ${formattedDate} (${['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][sessionDate.getDay()]}) ${slot.startTime}-${slot.endTime} - ${court.name}`);
+
+              // Añadir a lista temporal para posterior paginación
+              tempSessions.push(session);
+            })
+          })
+          
+          // Avanzar al siguiente día de la semana (7 días más tarde)
+          currentDate.setDate(currentDate.getDate() + 7)
+        }
+      })
+    }
     
-    // Añadir sesiones específicas
+    // Añadir sesiones específicas (esto aplica tanto para clases recurrentes como no recurrentes)
     specificSessions.forEach(specificSession => {
       // Verificar que la fecha está en el rango permitido
       const sessionDate = new Date(specificSession.date);

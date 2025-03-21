@@ -127,7 +127,7 @@ export function SimpleShiftBookingModal({
 
   const { organization } = useOrganization()
 
-  const { canMakeBooking } = useBookingCount({ 
+  const { canMakeBooking, isLoading: isLoadingBookingCount } = useBookingCount({ 
     empresaId: organization?.id || '', 
     date: selectedDate.toISOString().split('T')[0],
     enabled: !!organization?.id && !!selectedDate && isOpen
@@ -174,11 +174,16 @@ export function SimpleShiftBookingModal({
         duration: durationInMinutes
       })
 
-      if (!canMakeBooking) {
+      // Solo cambiar a noCredits si explícitamente sabemos que no hay créditos
+      // y no estamos en proceso de carga
+      if (!isLoadingBookingCount && !canMakeBooking) {
         setCurrentStep('noCredits')
+      } else if (!isLoadingBookingCount && canMakeBooking && currentStep === 'noCredits') {
+        // Si tenemos créditos pero estamos en el paso de no créditos, cambiar al paso inicial
+        setCurrentStep('participants')
       }
     }
-  }, [isOpen, selection, setSelectedCourts, setTimeSelection, canMakeBooking])
+  }, [isOpen, selection, setSelectedCourts, setTimeSelection, canMakeBooking, isLoadingBookingCount, currentStep])
 
   useEffect(() => {
     switch (currentStep) {

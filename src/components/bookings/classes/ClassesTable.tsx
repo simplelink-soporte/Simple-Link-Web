@@ -469,11 +469,7 @@ export function ClassesTable() {
                           Máx. {firstTimeSlot.capacity || 0} participantes
                           {/* Mostrar fecha para clases únicas */}
                           {!classItem.is_recurring && classItem.start_date && (
-                            ` • ${new Date(classItem.start_date).toLocaleDateString('es-ES', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })}`
+                            ` • ${classItem.start_date.split('T')[0].split('-').reverse().join('/')}` // Formato DD/MM/YYYY sin conversión de zona horaria
                           )}
                         </p>
                       </div>

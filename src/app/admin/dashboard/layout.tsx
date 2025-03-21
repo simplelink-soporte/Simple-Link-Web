@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [])
 
   // Consulta para verificar la conexión de Stripe
-  const { data: stripeConnection } = useQuery({
+  const { data: stripeConnection, isLoading: isLoadingStripe } = useQuery({
     queryKey: ['stripeConnection', organization?.id],
     queryFn: async () => {
       try {
@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <main className="flex-1 lg:pl-[240px]">
         <div className="container p-8">{children}</div>
       </main>
-      <StripeWarningToast show={!!organization && !stripeConnection} />
+      <StripeWarningToast show={!!organization && !isLoadingStripe && !stripeConnection} />
       <SuccessSubscriptionToast
         show={showSuccessToast}
         planName="Pro"

@@ -239,59 +239,64 @@ export function EnrolledParticipantsSection({
                   {filteredParticipants.length} {filteredParticipants.length === 1 ? 'participante' : 'participantes'}
                 </span>
               </div>
-              <div className="space-y-1">
-                {filteredParticipants.map((participant) => (
-                  <motion.button
-                    key={participant.id}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                      "w-full px-2.5 py-1.5 rounded-md text-left relative overflow-hidden",
-                      "border border-gray-100/75 bg-white",
-                      "transition-all duration-200 hover:bg-gray-50/70",
-                      "focus:outline-none focus:ring-1 focus:ring-blue-500/20"
-                    )}
-                    onClick={() => handleParticipantClick(participant)}
-                  >
-                    {/* Barra indicadora lateral */}
-                    <div className={cn(
-                      "absolute left-0 top-0 bottom-0 w-[4px]",
-                      participant.bookingDetails ? getBorderColor(participant.bookingDetails.payment_status) : 'bg-gray-200'
-                    )} />
-                    <div className="flex items-center gap-2 pl-2.5">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {participant.fullName}
-                        </p>
-                        
-                        {/* Estado del pago como texto gris y más pequeño */}
-                        {participant.bookingDetails && (
-                          <div className="flex flex-wrap gap-1 items-center mt-0.5">
-                            <span className="text-[10px] text-gray-500 block">
-                              {getPaymentStatusText(participant.bookingDetails.payment_status)}
-                            </span>
-                            
-                            {/* Indicador de garantía */}
-                            {hasGuarantee(participant.bookingDetails) && (
-                              <span className="text-[10px] bg-purple-50 text-purple-800 px-1.5 py-0.5 rounded-full border border-purple-200">
-                                {getGuaranteeText()}
+              <div className="relative">
+                {filteredParticipants.length > 5 && (
+                  <div className="absolute -bottom-0.5 left-0 right-1.5 h-6 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+                )}
+                <div className="space-y-1 max-h-[320px] overflow-y-auto pr-1.5 rounded-md">
+                  {filteredParticipants.map((participant) => (
+                    <motion.button
+                      key={participant.id}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={cn(
+                        "w-full px-2.5 py-1.5 rounded-md text-left relative overflow-hidden",
+                        "border border-gray-100/75 bg-white",
+                        "transition-all duration-200 hover:bg-gray-50/70",
+                        "focus:outline-none focus:ring-1 focus:ring-blue-500/20"
+                      )}
+                      onClick={() => handleParticipantClick(participant)}
+                    >
+                      {/* Barra indicadora lateral */}
+                      <div className={cn(
+                        "absolute left-0 top-0 bottom-0 w-[4px]",
+                        participant.bookingDetails ? getBorderColor(participant.bookingDetails.payment_status) : 'bg-gray-200'
+                      )} />
+                      <div className="flex items-center gap-2 pl-2.5">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {participant.fullName}
+                          </p>
+                          
+                          {/* Estado del pago como texto gris y más pequeño */}
+                          {participant.bookingDetails && (
+                            <div className="flex flex-wrap gap-1 items-center mt-0.5">
+                              <span className="text-[10px] text-gray-500 block">
+                                {getPaymentStatusText(participant.bookingDetails.payment_status)}
                               </span>
-                            )}
-                          </div>
-                        )}
+                              
+                              {/* Indicador de garantía */}
+                              {hasGuarantee(participant.bookingDetails) && (
+                                <span className="text-[10px] bg-purple-50 text-purple-800 px-1.5 py-0.5 rounded-full border border-purple-200">
+                                  {getGuaranteeText()}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          
+                          {participant.email && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500 truncate mt-0.5">
+                              <IconMail size={11} />
+                              <span className="truncate">{participant.email}</span>
+                            </div>
+                          )}
+                        </div>
                         
-                        {participant.email && (
-                          <div className="flex items-center gap-1 text-xs text-gray-500 truncate mt-0.5">
-                            <IconMail size={11} />
-                            <span className="truncate">{participant.email}</span>
-                          </div>
-                        )}
+                        <IconChevronRight size={14} className="text-gray-400 flex-shrink-0" />
                       </div>
-                      
-                      <IconChevronRight size={14} className="text-gray-400 flex-shrink-0" />
-                    </div>
-                  </motion.button>
-                ))}
+                    </motion.button>
+                  ))}
+                </div>
               </div>
             </>
           )}

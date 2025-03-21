@@ -14,32 +14,44 @@ export function StripeWarningToast({ show }: StripeWarningToastProps) {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
+  const [hasShownBefore, setHasShownBefore] = useState(false)
 
   useEffect(() => {
-    // Si show es true, esperamos 5 segundos antes de mostrar el toast
-    // para dar tiempo a verificar si la empresa tiene una cuenta de Stripe conectada
-    if (show) {
-      const showTimer = setTimeout(() => {
-        setShouldRender(true)
-        // Activamos la visibilidad solo después de setShouldRender
-        // para asegurar una transición suave
-        setTimeout(() => {
-          setIsVisible(true)
-        }, 100)
-      }, 5000) // Aumentado de 2000 a 5000ms para dar más tiempo a la verificación
+    let showTimer: NodeJS.Timeout | null = null;
+    let hideTimer: NodeJS.Timeout | null = null;
 
-      return () => clearTimeout(showTimer)
+    // Si el toast debe mostrarse
+    if (show) {
+      // Si ya se ha mostrado antes y ahora debe mostrarse de nuevo, mostrarlo inmediatamente
+      if (hasShownBefore) {
+        setShouldRender(true);
+        setIsVisible(true);
+      } else {
+        // Primera vez que se muestra, aplicar el delay
+        showTimer = setTimeout(() => {
+          setShouldRender(true);
+          // Marcamos que ya se ha mostrado antes para futuras apariciones
+          setHasShownBefore(true);
+          // Activamos la visibilidad con un pequeño delay para la animación
+          setTimeout(() => {
+            setIsVisible(true);
+          }, 100);
+        }, 2000); // Reducido a 2 segundos, ya que ahora controlamos el isLoading
+      }
     } else {
       // Si show cambia a false, primero ocultamos con animación
-      setIsVisible(false)
+      setIsVisible(false);
       // Después de la animación, dejamos de renderizar
-      const hideTimer = setTimeout(() => {
-        setShouldRender(false)
-      }, 300) // Tiempo para la animación de salida
-      
-      return () => clearTimeout(hideTimer)
+      hideTimer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300); // Tiempo para la animación de salida
     }
-  }, [show])
+
+    return () => {
+      if (showTimer) clearTimeout(showTimer);
+      if (hideTimer) clearTimeout(hideTimer);
+    };
+  }, [show, hasShownBefore]);
 
   if (!shouldRender) return null
 
@@ -109,4 +121,4 @@ export function StripeWarningToast({ show }: StripeWarningToastProps) {
       )}
     </AnimatePresence>
   )
-} 
+}

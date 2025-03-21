@@ -695,7 +695,7 @@ export function ViewBookingModal({
                             Información de la reserva
                           </h3>
                           <p className="text-xs text-gray-500">
-                            {format(new Date(currentBooking.date), "dd 'de' MMMM, yyyy", { locale: es })} • {currentBooking.startTime} - {currentBooking.endTime}
+                            {format(new Date(currentBooking.date + "T00:00:00"), "dd 'de' MMMM, yyyy", { locale: es })} • {currentBooking.startTime} - {currentBooking.endTime}
                           </p>
                         </div>
 

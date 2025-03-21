@@ -102,7 +102,7 @@ export function ViewClassModal({
                         {classData.title}
                       </h3>
                       <p className="text-xs text-gray-500">
-                        {format(new Date(classData.date), "dd 'de' MMMM, yyyy", { locale: es })} • {formatTime(classData.startTime)} - {formatTime(classData.endTime)}
+                        {format(new Date(classData.date + "T00:00:00"), "dd 'de' MMMM, yyyy", { locale: es })} • {formatTime(classData.startTime)} - {formatTime(classData.endTime)}
                       </p>
                     </div>
 

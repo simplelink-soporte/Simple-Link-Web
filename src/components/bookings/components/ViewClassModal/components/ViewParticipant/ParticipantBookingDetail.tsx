@@ -241,14 +241,13 @@ export function ParticipantBookingDetail({
         {/* Si hay detalles de la reserva, mostrar la información */}
         {isEditingPayment ? (
           <PaymentDetailsStep 
-            initialData={{
-              paymentMethod: participant.bookingDetails?.payment_method as PaymentMethodEnum || 'cash',
-              paymentStatus: participant.bookingDetails?.payment_status as PaymentStatusEnum || 'pending',
-              depositAmount: participant.bookingDetails?.deposit_amount || 0
-            }}
+            initialPaymentMethod={participant.bookingDetails?.payment_method as PaymentMethodEnum || 'cash'}
+            initialPaymentStatus={participant.bookingDetails?.payment_status as PaymentStatusEnum || 'pending'}
+            initialDepositAmount={participant.bookingDetails?.deposit_amount || 0}
+            sessionPrice={participant.bookingDetails?.total_price || 0}
             isLoading={isLoading}
-            onCancel={() => setIsEditingPayment(false)}
-            onSubmit={updatePaymentStatus}
+            onBack={() => setIsEditingPayment(false)}
+            onConfirm={updatePaymentStatus}
           />
         ) : participant.bookingDetails ? (
           <div className="space-y-3">
@@ -276,17 +275,6 @@ export function ParticipantBookingDetail({
                     <span>Con garantía</span>
                   </Badge>
                 )}
-                
-                {!isEditingDisabled && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6"
-                    onClick={() => setIsEditingPayment(true)}
-                  >
-                    <IconEdit size={14} className="text-gray-400" />
-                  </Button>
-                )}
               </div>
             </div>
             
@@ -302,7 +290,7 @@ export function ParticipantBookingDetail({
             </div>
             
             {/* Importe */}
-            {typeof participant.bookingDetails.total_price === 'number' && (
+            {typeof participant.bookingDetails?.total_price !== 'undefined' && (
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">Importe total</span>
                 <div className="flex items-center gap-1.5">
@@ -314,43 +302,18 @@ export function ParticipantBookingDetail({
               </div>
             )}
             
-            {/* Depósito */}
-            {typeof participant.bookingDetails.deposit_amount === 'number' && (
+            {/* Depósito / Importe abonado */}
+            {typeof participant.bookingDetails?.total_price !== 'undefined' && (
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">Importe abonado</span>
                 <div className="flex items-center gap-1.5">
                   <IconCurrencyDollar size={14} className="text-gray-500" />
                   <span className="text-xs font-medium text-gray-700">
-                    {formatCurrency(participant.bookingDetails.deposit_amount)}
+                    {participant.bookingDetails.payment_status === 'completed'
+                      ? formatCurrency(participant.bookingDetails.total_price)
+                      : formatCurrency(participant.bookingDetails.deposit_amount || 0)}
                   </span>
                 </div>
-              </div>
-            )}
-            
-            {/* Fecha de la reserva o clase */}
-            {(participant.bookingDetails.date || participant.bookingDetails.created_at) && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">Fecha de reserva</span>
-                <div className="flex items-center gap-1.5">
-                  <IconCalendar size={14} className="text-gray-500" />
-                  <span className="text-xs font-medium text-gray-700">
-                    {participant.bookingDetails.date 
-                      ? format(new Date(participant.bookingDetails.date), 'PPP', { locale: es })
-                      : participant.bookingDetails.created_at
-                        ? format(new Date(participant.bookingDetails.created_at), 'PPP', { locale: es })
-                        : 'Fecha no disponible'}
-                  </span>
-                </div>
-              </div>
-            )}
-            
-            {/* Información adicional sobre la reserva o clase */}
-            {participant.bookingDetails.description && (
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <h4 className="text-xs font-medium text-gray-700 mb-1">Notas</h4>
-                <p className="text-xs text-gray-600 whitespace-pre-line">
-                  {participant.bookingDetails.description}
-                </p>
               </div>
             )}
             
@@ -386,6 +349,19 @@ export function ParticipantBookingDetail({
                   </div>
                 </div>
               </div>
+            )}
+            
+            {/* Botón de edición - visible solo cuando no está inhabilitado y el estado no es completed */}
+            {!isEditingDisabled && participant.bookingDetails.payment_status !== 'completed' && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full mt-3 text-xs font-medium text-gray-700 border-gray-200"
+                onClick={() => setIsEditingPayment(true)}
+              >
+                <IconEdit size={14} className="mr-2 text-gray-500" />
+                Editar detalles de pago
+              </Button>
             )}
           </div>
         ) : (

@@ -56,7 +56,7 @@ export function ParticipantsSummary({
           <div className="flex items-center gap-2">
             <IconCalendar size={14} className="text-gray-500" />
             <span className="text-xs text-gray-700">
-              {format(new Date(date), "dd 'de' MMMM, yyyy", { locale: es })}
+              {format(new Date(date + "T00:00:00"), "dd 'de' MMMM, yyyy", { locale: es })}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -121,4 +121,4 @@ export function ParticipantsSummary({
       </div>
     </div>
   )
-} 
+}
