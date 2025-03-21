@@ -1,0 +1,6170 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[LocationStep] Seleccionando ubicación:",
+      "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "date": "2025-03-20T03:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "date": "2025-03-20T03:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando formato nuevo de horarios"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Día de la semana:",
+      "thursday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horario del día:",
+      {
+        "isOpen": true,
+        "timeRanges": [
+          {
+            "openTime": "08:00",
+            "closeTime": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios obtenidos:",
+      {
+        "dayOfWeek": "thursday",
+        "schedule": {
+          "isOpen": true,
+          "timeRanges": [
+            {
+              "openTime": "08:00",
+              "closeTime": "20:00"
+            }
+          ]
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios de la sede:",
+      [
+        "08:00-20:00"
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando formato nuevo de horarios"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Día de la semana:",
+      "thursday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horario del día:",
+      {
+        "isOpen": true,
+        "timeRanges": [
+          {
+            "openTime": "08:00",
+            "closeTime": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios obtenidos:",
+      {
+        "dayOfWeek": "thursday",
+        "schedule": {
+          "isOpen": true,
+          "timeRanges": [
+            {
+              "openTime": "08:00",
+              "closeTime": "20:00"
+            }
+          ]
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios de la sede:",
+      [
+        "08:00-20:00"
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "courts": [
+          {
+            "id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "name": "Pista 5",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 30,
+              "90": 90
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "12:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  },
+                  {
+                    "endTime": "23:00",
+                    "startTime": "15:00",
+                    "percentage": 15
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 20
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-23T18:17:23.422+00:00",
+            "updated_at": "2024-12-04T09:41:19.928+00:00"
+          },
+          {
+            "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "name": "Pista 2",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 40,
+              "90": 50
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 10
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 15
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T13:58:05.068+00:00",
+            "updated_at": "2024-12-05T20:00:46.205+00:00"
+          },
+          {
+            "id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "name": "Pista 3",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:30:25.01+00:00",
+            "updated_at": "2024-12-05T20:00:56.567+00:00"
+          },
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "covered",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120,
+              150,
+              180
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55,
+              "150": 60,
+              "180": 70
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "15:00",
+                    "percentage": 20
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": -5
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:24:05.83+00:00",
+            "updated_at": "2025-01-17T08:02:59.849+00:00"
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "courtIds": [
+          "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "8f69eb96-fde1-4085-8577-61da097e4f99"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "courts": [
+          {
+            "id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "name": "Pista 5",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 30,
+              "90": 90
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "12:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  },
+                  {
+                    "endTime": "23:00",
+                    "startTime": "15:00",
+                    "percentage": 15
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 20
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-23T18:17:23.422+00:00",
+            "updated_at": "2024-12-04T09:41:19.928+00:00"
+          },
+          {
+            "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "name": "Pista 2",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 40,
+              "90": 50
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 10
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 15
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T13:58:05.068+00:00",
+            "updated_at": "2024-12-05T20:00:46.205+00:00"
+          },
+          {
+            "id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "name": "Pista 3",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:30:25.01+00:00",
+            "updated_at": "2024-12-05T20:00:56.567+00:00"
+          },
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "covered",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120,
+              150,
+              180
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55,
+              "150": 60,
+              "180": 70
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "15:00",
+                    "percentage": 20
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": -5
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:24:05.83+00:00",
+            "updated_at": "2025-01-17T08:02:59.849+00:00"
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "courtIds": [
+          "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "8f69eb96-fde1-4085-8577-61da097e4f99"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - resultado:",
+      {
+        "bookings": [
+          {
+            "id": "a8bb467a-cd0a-40bf-90d8-2efac1450800",
+            "court_id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-20",
+            "title": "Clase: Clase | Tecnica | Entrenamiento",
+            "description": "Clase diseñada para mejorar tu técnica y resistencia en el agua, combinando ejercicios de estilo libre y respiración con drills de fortalecimiento acuático.",
+            "total_price": 10,
+            "deposit_amount": 0,
+            "created_at": "2025-03-19T19:38:39.75759+00:00",
+            "updated_at": "2025-03-19T19:38:39.75759+00:00",
+            "payment_status": "pending",
+            "payment_method": "card",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "guarantee",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+            "class_session_price": 10,
+            "start_time": "2025-03-20T08:00:00",
+            "end_time": "2025-03-20T10:00:00",
+            "guarantee_percentage": 30
+          },
+          {
+            "id": "ed2ba51d-d51c-4707-87b5-fa0380a5fcb5",
+            "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T02:14:27.253921+00:00",
+            "updated_at": "2025-03-20T02:14:27.253921+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 40,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T16:00:00",
+            "end_time": "2025-03-20T17:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "0c01b577-9447-465d-bd23-d59d367e6df9",
+            "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T02:17:32.060162+00:00",
+            "updated_at": "2025-03-20T02:17:32.060162+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 40,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T17:00:00",
+            "end_time": "2025-03-20T18:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "0d010cf1-fb7a-416d-9f3f-3d61bf28a3ef",
+            "court_id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T03:03:49.550648+00:00",
+            "updated_at": "2025-03-20T03:03:49.550648+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T12:00:00",
+            "end_time": "2025-03-20T13:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "52aba318-4347-460c-a3de-7ecb500b2593",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T03:22:33.77068+00:00",
+            "updated_at": "2025-03-20T03:22:33.77068+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T12:00:00",
+            "end_time": "2025-03-20T13:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "91cbc019-f29e-43d8-a07e-bfd1ac87403b",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 30,
+            "deposit_amount": 30,
+            "created_at": "2025-03-20T03:48:22.534758+00:00",
+            "updated_at": "2025-03-20T03:48:22.534758+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 30,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T14:00:00",
+            "end_time": "2025-03-20T15:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "71838324-9c8e-47e6-8c1a-36014c7797b4",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T04:13:13.475861+00:00",
+            "updated_at": "2025-03-20T04:13:13.475861+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 30,
+            "rental_items_price": 10,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T09:00:00",
+            "end_time": "2025-03-20T10:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "418049a3-acba-4bd1-9faa-5d34166f8efd",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 79,
+            "deposit_amount": 79,
+            "created_at": "2025-03-20T04:25:03.179934+00:00",
+            "updated_at": "2025-03-20T04:25:03.179934+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 34,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T16:00:00",
+            "end_time": "2025-03-20T17:00:00",
+            "guarantee_percentage": null
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 5:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 5"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 5:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 5:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 2:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 2"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 2:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 2:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 3:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 3"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 3:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 3:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 1:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 1"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 1:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 1:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - slots encontrados:",
+      {
+        "total": 0,
+        "slotsConPrecios": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 0,
+        "params": {
+          "date": "2025-03-20T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - resultado:",
+      {
+        "bookings": [
+          {
+            "id": "a8bb467a-cd0a-40bf-90d8-2efac1450800",
+            "court_id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-20",
+            "title": "Clase: Clase | Tecnica | Entrenamiento",
+            "description": "Clase diseñada para mejorar tu técnica y resistencia en el agua, combinando ejercicios de estilo libre y respiración con drills de fortalecimiento acuático.",
+            "total_price": 10,
+            "deposit_amount": 0,
+            "created_at": "2025-03-19T19:38:39.75759+00:00",
+            "updated_at": "2025-03-19T19:38:39.75759+00:00",
+            "payment_status": "pending",
+            "payment_method": "card",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "guarantee",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+            "class_session_price": 10,
+            "start_time": "2025-03-20T08:00:00",
+            "end_time": "2025-03-20T10:00:00",
+            "guarantee_percentage": 30
+          },
+          {
+            "id": "ed2ba51d-d51c-4707-87b5-fa0380a5fcb5",
+            "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T02:14:27.253921+00:00",
+            "updated_at": "2025-03-20T02:14:27.253921+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 40,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T16:00:00",
+            "end_time": "2025-03-20T17:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "0c01b577-9447-465d-bd23-d59d367e6df9",
+            "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T02:17:32.060162+00:00",
+            "updated_at": "2025-03-20T02:17:32.060162+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 40,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T17:00:00",
+            "end_time": "2025-03-20T18:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "0d010cf1-fb7a-416d-9f3f-3d61bf28a3ef",
+            "court_id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T03:03:49.550648+00:00",
+            "updated_at": "2025-03-20T03:03:49.550648+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T12:00:00",
+            "end_time": "2025-03-20T13:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "52aba318-4347-460c-a3de-7ecb500b2593",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T03:22:33.77068+00:00",
+            "updated_at": "2025-03-20T03:22:33.77068+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T12:00:00",
+            "end_time": "2025-03-20T13:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "91cbc019-f29e-43d8-a07e-bfd1ac87403b",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 30,
+            "deposit_amount": 30,
+            "created_at": "2025-03-20T03:48:22.534758+00:00",
+            "updated_at": "2025-03-20T03:48:22.534758+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 30,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T14:00:00",
+            "end_time": "2025-03-20T15:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "71838324-9c8e-47e6-8c1a-36014c7797b4",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T04:13:13.475861+00:00",
+            "updated_at": "2025-03-20T04:13:13.475861+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 30,
+            "rental_items_price": 10,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T09:00:00",
+            "end_time": "2025-03-20T10:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "418049a3-acba-4bd1-9faa-5d34166f8efd",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-20",
+            "title": null,
+            "description": null,
+            "total_price": 79,
+            "deposit_amount": 79,
+            "created_at": "2025-03-20T04:25:03.179934+00:00",
+            "updated_at": "2025-03-20T04:25:03.179934+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 34,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-20T16:00:00",
+            "end_time": "2025-03-20T17:00:00",
+            "guarantee_percentage": null
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 5:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 5"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 5:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 5:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 2:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 2"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 2:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 2:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 3:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 3"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 3:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 3:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 1:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 1"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 1:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 1:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - slots encontrados:",
+      {
+        "total": 0,
+        "slotsConPrecios": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 0,
+        "params": {
+          "date": "2025-03-20T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-21T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-21T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "date": "2025-03-21T03:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando formato nuevo de horarios"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Día de la semana:",
+      "friday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horario del día:",
+      {
+        "isOpen": true,
+        "timeRanges": [
+          {
+            "openTime": "05:00",
+            "closeTime": "23:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios obtenidos:",
+      {
+        "dayOfWeek": "friday",
+        "schedule": {
+          "isOpen": true,
+          "timeRanges": [
+            {
+              "openTime": "05:00",
+              "closeTime": "23:00"
+            }
+          ]
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios de la sede:",
+      [
+        "05:00-23:00"
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "courts": [
+          {
+            "id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "name": "Pista 5",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 30,
+              "90": 90
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "12:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  },
+                  {
+                    "endTime": "23:00",
+                    "startTime": "15:00",
+                    "percentage": 15
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 20
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-23T18:17:23.422+00:00",
+            "updated_at": "2024-12-04T09:41:19.928+00:00"
+          },
+          {
+            "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "name": "Pista 2",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90
+            ],
+            "duration_pricing": {
+              "60": 40,
+              "90": 50
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 10
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 15
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T13:58:05.068+00:00",
+            "updated_at": "2024-12-05T20:00:46.205+00:00"
+          },
+          {
+            "id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "name": "Pista 3",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "indoor",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": 0
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:30:25.01+00:00",
+            "updated_at": "2024-12-05T20:00:56.567+00:00"
+          },
+          {
+            "id": "8f69eb96-fde1-4085-8577-61da097e4f99",
+            "name": "Pista 1",
+            "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+            "sport": "padel",
+            "court_type": "covered",
+            "surface": "crystal",
+            "features": [
+              "wall-glass",
+              "floor-concrete"
+            ],
+            "is_active": true,
+            "available_durations": [
+              60,
+              90,
+              120,
+              150,
+              180
+            ],
+            "duration_pricing": {
+              "60": 45,
+              "90": 50,
+              "120": 55,
+              "150": 60,
+              "180": 70
+            },
+            "custom_pricing": {
+              "5": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "15:00",
+                    "percentage": 20
+                  }
+                ]
+              },
+              "6": {
+                "isSelected": true,
+                "timeRanges": [
+                  {
+                    "endTime": "22:00",
+                    "startTime": "09:00",
+                    "percentage": -5
+                  }
+                ]
+              }
+            },
+            "created_at": "2024-11-20T00:24:05.83+00:00",
+            "updated_at": "2025-01-17T08:02:59.849+00:00"
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - params:",
+      {
+        "date": "2025-03-21T03:00:00.000Z",
+        "courtIds": [
+          "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "8f69eb96-fde1-4085-8577-61da097e4f99"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings - resultado:",
+      {
+        "bookings": [
+          {
+            "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-21",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T02:20:42.269909+00:00",
+            "updated_at": "2025-03-20T02:20:42.269909+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-21T14:00:00",
+            "end_time": "2025-03-21T15:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-21",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T02:21:03.099726+00:00",
+            "updated_at": "2025-03-20T02:21:03.099726+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-21T17:00:00",
+            "end_time": "2025-03-21T18:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-21",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T02:58:02.2998+00:00",
+            "updated_at": "2025-03-20T02:58:02.2998+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-21T10:00:00",
+            "end_time": "2025-03-21T11:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+            "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+            "date": "2025-03-21",
+            "title": null,
+            "description": null,
+            "total_price": 40,
+            "deposit_amount": 40,
+            "created_at": "2025-03-20T02:59:59.882867+00:00",
+            "updated_at": "2025-03-20T02:59:59.882867+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 40,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-21T11:00:00",
+            "end_time": "2025-03-21T12:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a",
+            "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+            "date": "2025-03-21",
+            "title": null,
+            "description": null,
+            "total_price": 45,
+            "deposit_amount": 45,
+            "created_at": "2025-03-20T03:02:00.520653+00:00",
+            "updated_at": "2025-03-20T03:02:00.520653+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 45,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "booking",
+            "class_id": null,
+            "class_session_price": 0,
+            "start_time": "2025-03-21T17:00:00",
+            "end_time": "2025-03-21T18:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "46fce0ad-4dca-497a-90a9-e1a2393f78d7",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-21",
+            "title": "Clase: CLASE DE LUCAS",
+            "description": "AAAA",
+            "total_price": 15,
+            "deposit_amount": 0,
+            "created_at": "2025-03-20T05:53:20.912828+00:00",
+            "updated_at": "2025-03-20T05:53:20.912828+00:00",
+            "payment_status": "pending",
+            "payment_method": "card",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "guarantee",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "7a774c8b-c625-4dc3-89f5-57c530cfa53f",
+            "class_session_price": 15,
+            "start_time": "2025-03-21T07:00:00",
+            "end_time": "2025-03-21T08:00:00",
+            "guarantee_percentage": 45
+          },
+          {
+            "id": "7450bd95-c9a6-4827-b044-e4b89d9d692e",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-21",
+            "title": "Reserva manual para clase: CLASE DE LUCAS",
+            "description": "Participante: Lucas",
+            "total_price": 15,
+            "deposit_amount": 0,
+            "created_at": "2025-03-20T15:04:33.639143+00:00",
+            "updated_at": "2025-03-20T15:04:33.639143+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "7a774c8b-c625-4dc3-89f5-57c530cfa53f",
+            "class_session_price": 15,
+            "start_time": "2025-03-21T07:00:00",
+            "end_time": "2025-03-21T08:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "e070ed94-6f5e-4bc0-a4cd-e4713260ad4f",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-21",
+            "title": "Reserva manual para clase: CLASE DE LUCAS",
+            "description": "Participante: Jennifer",
+            "total_price": 15,
+            "deposit_amount": 0,
+            "created_at": "2025-03-20T15:04:33.788585+00:00",
+            "updated_at": "2025-03-20T15:04:33.788585+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "7a774c8b-c625-4dc3-89f5-57c530cfa53f",
+            "class_session_price": 15,
+            "start_time": "2025-03-21T07:00:00",
+            "end_time": "2025-03-21T08:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "b7ff8e05-2dbe-4e07-ac91-c89bde3c0817",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-21",
+            "title": "Reserva manual para clase: CLASE DE LUCAS",
+            "description": "Participante: test-tz1",
+            "total_price": 15,
+            "deposit_amount": 0,
+            "created_at": "2025-03-20T15:04:33.873605+00:00",
+            "updated_at": "2025-03-20T15:04:33.873605+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "7a774c8b-c625-4dc3-89f5-57c530cfa53f",
+            "class_session_price": 15,
+            "start_time": "2025-03-21T07:00:00",
+            "end_time": "2025-03-21T08:00:00",
+            "guarantee_percentage": null
+          },
+          {
+            "id": "816c121d-e86c-46b9-8856-4952a4218568",
+            "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+            "date": "2025-03-21",
+            "title": "Reserva manual para clase: CLASE DE LUCAS",
+            "description": "Participante: George Clooney",
+            "total_price": 15,
+            "deposit_amount": 0,
+            "created_at": "2025-03-20T15:05:33.892638+00:00",
+            "updated_at": "2025-03-20T15:05:33.892638+00:00",
+            "payment_status": "completed",
+            "payment_method": "cash",
+            "cancelled_at": null,
+            "cancellation_reason": null,
+            "court_price": 0,
+            "rental_items_price": 0,
+            "payment_type": "booking",
+            "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+            "reservation_type": "class",
+            "class_id": "7a774c8b-c625-4dc3-89f5-57c530cfa53f",
+            "class_session_price": 15,
+            "start_time": "2025-03-21T07:00:00",
+            "end_time": "2025-03-21T08:00:00",
+            "guarantee_percentage": null
+          }
+        ],
+        "error": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 5:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 5"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 5:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 5:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 2:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 2"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 2:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 2:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 0,
+        "ranges": []
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 3:",
+      {
+        "ranges": [],
+        "durationInMinutes": 60,
+        "courtName": "Pista 3"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 3:",
+      {
+        "totalSlots": 0,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 3:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 1,
+        "ranges": [
+          {
+            "start": "05:00",
+            "end": "23:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Rangos disponibles para Pista 1:",
+      {
+        "ranges": [
+          {
+            "start": "05:00",
+            "end": "23:00"
+          }
+        ],
+        "durationInMinutes": 60,
+        "courtName": "Pista 1"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "05:00",
+        "end": "06:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "05:30",
+        "end": "06:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "06:00",
+        "end": "07:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "06:30",
+        "end": "07:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "07:00",
+        "end": "08:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "07:30",
+        "end": "08:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "08:00",
+        "end": "09:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "08:30",
+        "end": "09:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "09:00",
+        "end": "10:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "09:30",
+        "end": "10:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "10:00",
+        "end": "11:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "10:30",
+        "end": "11:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "11:00",
+        "end": "12:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "11:30",
+        "end": "12:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "12:00",
+        "end": "13:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "12:30",
+        "end": "13:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "13:00",
+        "end": "14:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "13:30",
+        "end": "14:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "14:00",
+        "end": "15:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "14:30",
+        "end": "15:30",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "15:00",
+        "end": "16:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "15:30",
+        "end": "16:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "16:00",
+        "end": "17:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "16:30",
+        "end": "17:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "17:00",
+        "end": "18:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "17:30",
+        "end": "18:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "18:00",
+        "end": "19:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "18:30",
+        "end": "19:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "19:00",
+        "end": "20:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "19:30",
+        "end": "20:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "20:00",
+        "end": "21:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "20:30",
+        "end": "21:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "21:00",
+        "end": "22:00",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "21:30",
+        "end": "22:30",
+        "court": "Pista 1",
+        "price": 54
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slot válido encontrado:",
+      {
+        "start": "22:00",
+        "end": "23:00",
+        "court": "Pista 1",
+        "price": 45
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total slots generados para Pista 1:",
+      {
+        "totalSlots": 35,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Slots generados para Pista 1:",
+      [
+        {
+          "start": "05:00",
+          "end": "06:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "05:30",
+          "end": "06:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "06:00",
+          "end": "07:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "06:30",
+          "end": "07:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "07:00",
+          "end": "08:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "07:30",
+          "end": "08:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "08:00",
+          "end": "09:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "08:30",
+          "end": "09:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "09:30",
+          "end": "10:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "10:30",
+          "end": "11:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "11:30",
+          "end": "12:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "12:30",
+          "end": "13:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "13:30",
+          "end": "14:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "14:30",
+          "end": "15:30",
+          "isAvailable": true,
+          "price": 45
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "15:30",
+          "end": "16:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "16:30",
+          "end": "17:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "17:30",
+          "end": "18:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "18:30",
+          "end": "19:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "19:30",
+          "end": "20:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "20:30",
+          "end": "21:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "21:00",
+          "end": "22:00",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "21:30",
+          "end": "22:30",
+          "isAvailable": true,
+          "price": 54
+        },
+        {
+          "start": "22:00",
+          "end": "23:00",
+          "isAvailable": true,
+          "price": 45
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "05:00",
+        "end": "06:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "05:30",
+        "end": "06:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "06:00",
+        "end": "07:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "06:30",
+        "end": "07:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "07:00",
+        "end": "08:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "07:30",
+        "end": "08:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "08:00",
+        "end": "09:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "08:30",
+        "end": "09:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "09:00",
+        "end": "10:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "09:30",
+        "end": "10:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "10:00",
+        "end": "11:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "10:30",
+        "end": "11:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "11:00",
+        "end": "12:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "11:30",
+        "end": "12:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "12:00",
+        "end": "13:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "12:30",
+        "end": "13:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "13:00",
+        "end": "14:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "13:30",
+        "end": "14:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "14:00",
+        "end": "15:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "14:30",
+        "end": "15:30",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "15:00",
+        "end": "16:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "15:30",
+        "end": "16:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "16:00",
+        "end": "17:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "16:30",
+        "end": "17:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "17:00",
+        "end": "18:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "17:30",
+        "end": "18:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "18:00",
+        "end": "19:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "18:30",
+        "end": "19:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "19:00",
+        "end": "20:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "19:30",
+        "end": "20:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "20:00",
+        "end": "21:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "20:30",
+        "end": "21:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "21:00",
+        "end": "22:00",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "21:30",
+        "end": "22:30",
+        "price": 54,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Agregando slot con precio:",
+      {
+        "court": "Pista 1",
+        "start": "22:00",
+        "end": "23:00",
+        "price": 45,
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - slots encontrados:",
+      {
+        "total": 35,
+        "slotsConPrecios": [
+          {
+            "court": "Pista 1",
+            "time": "05:00-06:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "05:30-06:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "06:00-07:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "06:30-07:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "07:00-08:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "07:30-08:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "08:00-09:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "08:30-09:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "09:00-10:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "09:30-10:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "10:00-11:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "10:30-11:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "11:00-12:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "11:30-12:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "12:00-13:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "12:30-13:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "13:00-14:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "13:30-14:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "14:00-15:00",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "14:30-15:30",
+            "price": 45
+          },
+          {
+            "court": "Pista 1",
+            "time": "15:00-16:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "15:30-16:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "16:00-17:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "16:30-17:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "17:00-18:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "17:30-18:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "18:00-19:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "18:30-19:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "19:00-20:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "19:30-20:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "20:00-21:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "20:30-21:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "21:00-22:00",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "21:30-22:30",
+            "price": 54
+          },
+          {
+            "court": "Pista 1",
+            "time": "22:00-23:00",
+            "price": 45
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 35,
+        "params": {
+          "date": "2025-03-21T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        },
+        "primerSlot": {
+          "id": "8f69eb96-fde1-4085-8577-61da097e4f99-2025-03-21-05:00",
+          "startTime": "05:00",
+          "endTime": "06:00",
+          "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+          "courtName": "Pista 1",
+          "courtType": "covered",
+          "price": 45,
+          "status": "available"
+        }
+      }
+    ]
+  }
+]

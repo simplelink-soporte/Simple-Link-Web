@@ -1,35 +1,18 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShiftForm } from '../../context/ShiftFormContext';
 import { StepComponentProps } from '../StepRenderer';
 import { StepNavigation } from '../../shared/StepNavigation';
 import { Button } from '@/components/ui/button';
-import { IconCalendar, IconClock, IconLock, IconMapPin, IconCreditCard, IconCash, IconBuildingBank, IconChevronDown } from '@tabler/icons-react';
+import { IconCalendar, IconClock, IconLock, IconMapPin, IconCreditCard, IconChevronDown, IconChevronRight, X, Check } from '@tabler/icons-react';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-// Definición de los métodos de pago disponibles
-const PAYMENT_METHODS = {
-  cash: {
-    icon: IconCash,
-    label: 'Efectivo',
-    description: 'Paga en efectivo al llegar'
-  },
-  card: {
-    icon: IconCreditCard,
-    label: 'Tarjeta',
-    description: 'Pago con tarjeta en la recepción'
-  },
-  transfer: {
-    icon: IconBuildingBank,
-    label: 'Transferencia',
-    description: 'Transferencia bancaria'
-  }
-};
+import { PaymentTypeEnum } from '@/components/shifts-registration/components/payment-types';
+import { PaymentTypeSection } from '@/components/shifts-registration/components/PaymentTypeSection';
 
 // Función para formatear la fecha en un formato legible
 const formatShiftDate = (dateString: string) => {
@@ -65,10 +48,12 @@ export function SummaryStep({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentTypeEnum | null>(null);
   const [showOverlay, setShowOverlay] = useState(false);
-  const [summarySubStep, setSummarySubStep] = useState<'details' | 'payment'>('details'); 
+  const [summarySubStep, setSummarySubStep] = useState<'details' | 'payment'>('details');
+  const [showPaymentList, setShowPaymentList] = useState(false);
   const { toast } = useToast();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Ref para exponer métodos y estados al componente padre
   const summaryStepRef = useRef<any>({});
@@ -107,8 +92,23 @@ export function SummaryStep({
   };
 
   // Manejar selección de método de pago
-  const handleSelectPaymentMethod = useCallback((method: string) => {
+  const handleSelectPaymentMethod = useCallback((method: PaymentTypeEnum) => {
     setSelectedPaymentMethod(method);
+    setShowPaymentList(false);
+  }, []);
+
+  // Manejar clics fuera del componente para cerrar la lista
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowPaymentList(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   // Manejar la creación de reserva
@@ -384,42 +384,17 @@ export function SummaryStep({
   const PaymentMethodsSection = useCallback(() => {
     return (
       <div className="space-y-4 rounded-lg border border-gray-200 bg-white/60 overflow-hidden">
-        <div className="p-6 space-y-4">
-          {Object.entries(PAYMENT_METHODS).map(([key, method]) => {
-            const Icon = method.icon;
-            const isSelected = selectedPaymentMethod === key;
-            
-            return (
-              <button
-                key={key}
-                onClick={() => handleSelectPaymentMethod(key)}
-                className={cn(
-                  "w-full flex items-center p-4 rounded-lg border transition-all duration-200",
-                  isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
-                )}
-              >
-                <div className="flex items-center flex-1">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-md bg-gray-100 text-gray-700">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">{method.label}</p>
-                    <p className="text-xs text-gray-500">{method.description}</p>
-                  </div>
-                </div>
-                <div className={cn(
-                  "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                  isSelected ? "border-blue-500" : "border-gray-300"
-                )}>
-                  {isSelected && <div className="h-3 w-3 rounded-full bg-blue-500" />}
-                </div>
-              </button>
-            );
-          })}
+        <div className="p-6 space-y-4" ref={containerRef}>
+          <h3 className="text-lg font-medium text-gray-900">Método de pago</h3>
+          
+          <PaymentTypeSection 
+            selectedPaymentMethod={selectedPaymentMethod}
+            setSelectedPaymentMethod={setSelectedPaymentMethod}
+          />
         </div>
       </div>
     );
-  }, [selectedPaymentMethod, handleSelectPaymentMethod]);
+  }, [selectedPaymentMethod]);
 
   // Componente de Layout para Desktop
   const DesktopLayout = useCallback(({ children }: { children: React.ReactNode }) => (

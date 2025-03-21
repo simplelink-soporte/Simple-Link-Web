@@ -1,0 +1,5873 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ShiftsStep] Duración cambiada a 1 minutos. Reseteando skipItemsStep."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-21T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-21T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "cantidad": 4,
+        "primeraCancha": {
+          "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "name": "Pista 2",
+          "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "sport": "padel",
+          "court_type": "indoor",
+          "surface": "crystal",
+          "features": [
+            "wall-glass",
+            "floor-concrete"
+          ],
+          "is_active": true,
+          "available_durations": [
+            60,
+            90
+          ],
+          "duration_pricing": {
+            "60": 40,
+            "90": 50
+          },
+          "custom_pricing": {
+            "5": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "22:00",
+                  "startTime": "09:00",
+                  "percentage": 10
+                }
+              ]
+            },
+            "6": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "22:00",
+                  "startTime": "09:00",
+                  "percentage": 15
+                }
+              ]
+            }
+          },
+          "created_at": "2024-11-20T13:58:05.068+00:00",
+          "updated_at": "2024-12-05T20:00:46.205+00:00"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Analizando estructura de opening_hours"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando horarios del formato opening_hours.schedule"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios procesados:",
+      {
+        "openingDays": {
+          "friday": true,
+          "monday": true,
+          "sunday": true,
+          "tuesday": true,
+          "saturday": true,
+          "thursday": true,
+          "wednesday": true
+        },
+        "schedule": {
+          "friday": {
+            "open": "05:00",
+            "close": "23:00"
+          },
+          "monday": {
+            "open": "09:00",
+            "close": "22:00"
+          },
+          "sunday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "tuesday": {
+            "open": "08:00",
+            "close": "22:00"
+          },
+          "saturday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "thursday": {
+            "open": "08:00",
+            "close": "20:00"
+          },
+          "wednesday": {
+            "open": "08:00",
+            "close": "22:00"
+          }
+        },
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - día de la semana:",
+      "friday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - días abiertos:",
+      {
+        "friday": true,
+        "monday": true,
+        "sunday": true,
+        "tuesday": true,
+        "saturday": true,
+        "thursday": true,
+        "wednesday": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - horario del día:",
+      {
+        "isOpen": true,
+        "timeRanges": [
+          {
+            "openTime": "05:00",
+            "closeTime": "23:00"
+          }
+        ],
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Duración convertida: 1 → 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando duración de 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Se encontraron 7 reservas para la fecha 2025-03-21, ids canchas: 562b18bd-612d-4c20-b9ad-c31a1aea44a2,1ff82367-757c-4812-96b7-daee3238d6cd,54aca0f1-2f00-45d4-b662-094defa9c704,8f69eb96-fde1-4085-8577-61da097e4f99:",
+      [
+        {
+          "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "start": "2025-03-21T14:00:00",
+          "end": "2025-03-21T15:00:00",
+          "status": "completed"
+        },
+        {
+          "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "start": "2025-03-21T17:00:00",
+          "end": "2025-03-21T18:00:00",
+          "status": "completed"
+        },
+        {
+          "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "start": "2025-03-21T10:00:00",
+          "end": "2025-03-21T11:00:00",
+          "status": "completed"
+        },
+        {
+          "id": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+          "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "start": "2025-03-21T11:00:00",
+          "end": "2025-03-21T12:00:00",
+          "status": "completed"
+        },
+        {
+          "id": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "start": "2025-03-21T17:00:00",
+          "end": "2025-03-21T18:00:00",
+          "status": "completed"
+        },
+        {
+          "id": "5204f7c6-7d37-4a34-bddc-66fe960cc91a",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "start": "2025-03-21T04:00:00",
+          "end": "2025-03-21T05:30:00",
+          "status": "completed"
+        },
+        {
+          "id": "06c827a5-5c44-45d4-8d51-d4c4063883c9",
+          "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "start": "2025-03-21T04:00:00",
+          "end": "2025-03-21T05:30:00",
+          "status": "completed"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Se encontraron 7 reservas para la fecha 2025-03-21, ids canchas: 562b18bd-612d-4c20-b9ad-c31a1aea44a2,1ff82367-757c-4812-96b7-daee3238d6cd,54aca0f1-2f00-45d4-b662-094defa9c704,8f69eb96-fde1-4085-8577-61da097e4f99:",
+      [
+        {
+          "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 45,
+          "deposit_amount": 45,
+          "created_at": "2025-03-20T02:20:42.269909+00:00",
+          "updated_at": "2025-03-20T02:20:42.269909+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 45,
+          "rental_items_price": 0,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T14:00:00",
+          "end_time": "2025-03-21T15:00:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 45,
+          "deposit_amount": 45,
+          "created_at": "2025-03-20T02:21:03.099726+00:00",
+          "updated_at": "2025-03-20T02:21:03.099726+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 45,
+          "rental_items_price": 0,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T17:00:00",
+          "end_time": "2025-03-21T18:00:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 45,
+          "deposit_amount": 45,
+          "created_at": "2025-03-20T02:58:02.2998+00:00",
+          "updated_at": "2025-03-20T02:58:02.2998+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 45,
+          "rental_items_price": 0,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T10:00:00",
+          "end_time": "2025-03-21T11:00:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+          "court_id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 40,
+          "deposit_amount": 40,
+          "created_at": "2025-03-20T02:59:59.882867+00:00",
+          "updated_at": "2025-03-20T02:59:59.882867+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 40,
+          "rental_items_price": 0,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T11:00:00",
+          "end_time": "2025-03-21T12:00:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 45,
+          "deposit_amount": 45,
+          "created_at": "2025-03-20T03:02:00.520653+00:00",
+          "updated_at": "2025-03-20T03:02:00.520653+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 45,
+          "rental_items_price": 0,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T17:00:00",
+          "end_time": "2025-03-21T18:00:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "5204f7c6-7d37-4a34-bddc-66fe960cc91a",
+          "court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 64.5,
+          "deposit_amount": 64.5,
+          "created_at": "2025-03-20T17:35:38.011923+00:00",
+          "updated_at": "2025-03-20T17:35:38.011923+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 50,
+          "rental_items_price": 14.5,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T04:00:00",
+          "end_time": "2025-03-21T05:30:00",
+          "guarantee_percentage": null
+        },
+        {
+          "id": "06c827a5-5c44-45d4-8d51-d4c4063883c9",
+          "court_id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "date": "2025-03-21",
+          "title": null,
+          "description": null,
+          "total_price": 106,
+          "deposit_amount": 106,
+          "created_at": "2025-03-20T17:39:48.289781+00:00",
+          "updated_at": "2025-03-20T17:39:48.289781+00:00",
+          "payment_status": "completed",
+          "payment_method": "cash",
+          "cancelled_at": null,
+          "cancellation_reason": null,
+          "court_price": 90,
+          "rental_items_price": 16,
+          "payment_type": "booking",
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "reservation_type": "booking",
+          "class_id": null,
+          "class_session_price": 0,
+          "start_time": "2025-03-21T04:00:00",
+          "end_time": "2025-03-21T05:30:00",
+          "guarantee_percentage": null
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "rangos": [
+          "05:00-23:00"
+        ],
+        "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+        "date": "2025-03-21",
+        "bookingsCount": 7
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - findAvailableRanges iniciando:",
+      {
+        "fecha": "2025-03-21",
+        "cantidadRangos": 1,
+        "cantidadReservas": 1,
+        "reservas": [
+          {
+            "id": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+            "estado": "completed",
+            "inicio": "2025-03-21T11:00:00",
+            "fin": "2025-03-21T12:00:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reservas filtradas y ordenadas:",
+      {
+        "cantidad": 1,
+        "reservas": [
+          {
+            "id": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+            "estado": "completed",
+            "inicio": "2025-03-21T11:00:00",
+            "fin": "2025-03-21T12:00:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva 8c979bb3-7761-4dfb-86d6-9b6122853ddb (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "11:00 - 12:00",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 660,
+          "reservaFin": 720
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "inicio": "05:00",
+        "fin": "11:00",
+        "duracion": 360,
+        "reserva": "8c979bb3-7761-4dfb-86d6-9b6122853ddb",
+        "estadoReserva": "completed"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "inicio": "12:00",
+        "fin": "23:00",
+        "duracion": 660,
+        "ultimaReserva": "8c979bb3-7761-4dfb-86d6-9b6122853ddb"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 2,
+        "ranges": [
+          "05:00-11:00",
+          "12:00-23:00"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 2",
+      [
+        {
+          "start": "05:00",
+          "end": "11:00"
+        },
+        {
+          "start": "12:00",
+          "end": "23:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 2",
+        "timeRanges": [
+          "05:00-11:00",
+          "12:00-23:00"
+        ],
+        "durationInMinutes": 60,
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados: 32"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 2",
+      32
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "05:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "09:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "10:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "13:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "14:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "14:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "16:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "17:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "17:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 44,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 2",
+        "durationInMinutes": 60,
+        "basePrice": 40,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 10
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 15
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "rangos": [
+          "05:00-23:00"
+        ],
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "date": "2025-03-21",
+        "bookingsCount": 7
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - findAvailableRanges iniciando:",
+      {
+        "fecha": "2025-03-21",
+        "cantidadRangos": 1,
+        "cantidadReservas": 5,
+        "reservas": [
+          {
+            "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+            "estado": "completed",
+            "inicio": "2025-03-21T14:00:00",
+            "fin": "2025-03-21T15:00:00"
+          },
+          {
+            "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+            "estado": "completed",
+            "inicio": "2025-03-21T17:00:00",
+            "fin": "2025-03-21T18:00:00"
+          },
+          {
+            "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+            "estado": "completed",
+            "inicio": "2025-03-21T10:00:00",
+            "fin": "2025-03-21T11:00:00"
+          },
+          {
+            "id": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a",
+            "estado": "completed",
+            "inicio": "2025-03-21T17:00:00",
+            "fin": "2025-03-21T18:00:00"
+          },
+          {
+            "id": "5204f7c6-7d37-4a34-bddc-66fe960cc91a",
+            "estado": "completed",
+            "inicio": "2025-03-21T04:00:00",
+            "fin": "2025-03-21T05:30:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reservas filtradas y ordenadas:",
+      {
+        "cantidad": 5,
+        "reservas": [
+          {
+            "id": "5204f7c6-7d37-4a34-bddc-66fe960cc91a",
+            "estado": "completed",
+            "inicio": "2025-03-21T04:00:00",
+            "fin": "2025-03-21T05:30:00"
+          },
+          {
+            "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+            "estado": "completed",
+            "inicio": "2025-03-21T10:00:00",
+            "fin": "2025-03-21T11:00:00"
+          },
+          {
+            "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+            "estado": "completed",
+            "inicio": "2025-03-21T14:00:00",
+            "fin": "2025-03-21T15:00:00"
+          },
+          {
+            "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+            "estado": "completed",
+            "inicio": "2025-03-21T17:00:00",
+            "fin": "2025-03-21T18:00:00"
+          },
+          {
+            "id": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a",
+            "estado": "completed",
+            "inicio": "2025-03-21T17:00:00",
+            "fin": "2025-03-21T18:00:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva 5204f7c6-7d37-4a34-bddc-66fe960cc91a (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "04:00 - 05:30",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 240,
+          "reservaFin": 330
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva 2f20a3f6-c6c8-4cc8-b377-46b75e4efacd (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "10:00 - 11:00",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 600,
+          "reservaFin": 660
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva e7ad343f-1f48-4082-979a-e2e34f850e8e (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "14:00 - 15:00",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 840,
+          "reservaFin": 900
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0 (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "17:00 - 18:00",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 1020,
+          "reservaFin": 1080
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva 18ff63bb-fcb5-490d-87d2-66fc6e7d841a (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "17:00 - 18:00",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 1020,
+          "reservaFin": 1080
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "inicio": "05:30",
+        "fin": "10:00",
+        "duracion": 270,
+        "reservaActual": {
+          "id": "5204f7c6-7d37-4a34-bddc-66fe960cc91a",
+          "estado": "completed",
+          "original": {
+            "inicio": "2025-03-21T04:00:00",
+            "fin": "2025-03-21T05:30:00"
+          },
+          "convertido": {
+            "inicio": "04:00",
+            "fin": "05:30"
+          }
+        },
+        "reservaSiguiente": {
+          "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+          "estado": "completed"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "inicio": "05:30",
+        "fin": "10:00",
+        "duracion": 270,
+        "reserva": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+        "estadoReserva": "completed"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "inicio": "11:00",
+        "fin": "14:00",
+        "duracion": 180,
+        "reservaActual": {
+          "id": "2f20a3f6-c6c8-4cc8-b377-46b75e4efacd",
+          "estado": "completed",
+          "original": {
+            "inicio": "2025-03-21T10:00:00",
+            "fin": "2025-03-21T11:00:00"
+          },
+          "convertido": {
+            "inicio": "10:00",
+            "fin": "11:00"
+          }
+        },
+        "reservaSiguiente": {
+          "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+          "estado": "completed"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "inicio": "11:00",
+        "fin": "14:00",
+        "duracion": 180,
+        "reserva": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+        "estadoReserva": "completed"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "inicio": "15:00",
+        "fin": "17:00",
+        "duracion": 120,
+        "reservaActual": {
+          "id": "e7ad343f-1f48-4082-979a-e2e34f850e8e",
+          "estado": "completed",
+          "original": {
+            "inicio": "2025-03-21T14:00:00",
+            "fin": "2025-03-21T15:00:00"
+          },
+          "convertido": {
+            "inicio": "14:00",
+            "fin": "15:00"
+          }
+        },
+        "reservaSiguiente": {
+          "id": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+          "estado": "completed"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "inicio": "15:00",
+        "fin": "17:00",
+        "duracion": 120,
+        "reserva": "ee8cb3d5-f183-40ea-bc7f-50ad5060ccf0",
+        "estadoReserva": "completed"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "inicio": "18:00",
+        "fin": "23:00",
+        "duracion": 300,
+        "ultimaReserva": "18ff63bb-fcb5-490d-87d2-66fc6e7d841a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 4,
+        "ranges": [
+          "05:30-10:00",
+          "11:00-14:00",
+          "15:00-17:00",
+          "18:00-23:00"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 3",
+      [
+        {
+          "start": "05:30",
+          "end": "10:00"
+        },
+        {
+          "start": "11:00",
+          "end": "14:00"
+        },
+        {
+          "start": "15:00",
+          "end": "17:00"
+        },
+        {
+          "start": "18:00",
+          "end": "23:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 3",
+        "timeRanges": [
+          "05:30-10:00",
+          "11:00-14:00",
+          "15:00-17:00",
+          "18:00-23:00"
+        ],
+        "durationInMinutes": 60,
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados: 25"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 3",
+      25
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 3",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 0
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "rangos": [
+          "05:00-23:00"
+        ],
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-21",
+        "bookingsCount": 7
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - findAvailableRanges iniciando:",
+      {
+        "fecha": "2025-03-21",
+        "cantidadRangos": 1,
+        "cantidadReservas": 1,
+        "reservas": [
+          {
+            "id": "06c827a5-5c44-45d4-8d51-d4c4063883c9",
+            "estado": "completed",
+            "inicio": "2025-03-21T04:00:00",
+            "fin": "2025-03-21T05:30:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reservas filtradas y ordenadas:",
+      {
+        "cantidad": 1,
+        "reservas": [
+          {
+            "id": "06c827a5-5c44-45d4-8d51-d4c4063883c9",
+            "estado": "completed",
+            "inicio": "2025-03-21T04:00:00",
+            "fin": "2025-03-21T05:30:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Reserva 06c827a5-5c44-45d4-8d51-d4c4063883c9 (completed) intersecta con rango 05:00-23:00:",
+      {
+        "rangoHorario": "05:00 - 23:00",
+        "reservaLocal": "04:00 - 05:30",
+        "minutos": {
+          "rangoInicio": 300,
+          "rangoFin": 1380,
+          "reservaInicio": 240,
+          "reservaFin": 330
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "inicio": "05:30",
+        "fin": "23:00",
+        "duracion": 1050,
+        "ultimaReserva": "06c827a5-5c44-45d4-8d51-d4c4063883c9"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 1,
+        "ranges": [
+          "05:30-23:00"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 5",
+      [
+        {
+          "start": "05:30",
+          "end": "23:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 5",
+        "timeRanges": [
+          "05:30-23:00"
+        ],
+        "durationInMinutes": 60,
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados: 34"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 5",
+      34
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "09:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "10:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "10:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "11:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "11:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "13:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "14:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 30,
+        "date": "2025-03-21",
+        "startTime": "14:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "16:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "17:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "17:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 5",
+        "durationInMinutes": 60,
+        "basePrice": 34.5,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "12:00",
+                "startTime": "09:00",
+                "percentage": 0
+              },
+              {
+                "endTime": "23:00",
+                "startTime": "15:00",
+                "percentage": 15
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": 20
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "rangos": [
+          "05:00-23:00"
+        ],
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "date": "2025-03-21",
+        "bookingsCount": 7
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - No hay reservas para esta cancha, devolviendo rangos completos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 1",
+      [
+        {
+          "start": "05:00",
+          "end": "23:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 1",
+        "timeRanges": [
+          "05:00-23:00"
+        ],
+        "durationInMinutes": 60,
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados: 35"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 1",
+      35
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "05:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "06:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "07:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "08:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "09:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "10:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "11:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "12:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "13:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "14:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "15:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "16:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "17:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "18:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "19:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "20:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 54,
+        "date": "2025-03-21",
+        "startTime": "21:30",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "PricingService - Calculando precio:",
+      {
+        "courtName": "Pista 1",
+        "durationInMinutes": 60,
+        "basePrice": 45,
+        "date": "2025-03-21",
+        "startTime": "22:00",
+        "customPricing": {
+          "5": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "15:00",
+                "percentage": 20
+              }
+            ]
+          },
+          "6": {
+            "isSelected": true,
+            "timeRanges": [
+              {
+                "endTime": "22:00",
+                "startTime": "09:00",
+                "percentage": -5
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Total de slots disponibles encontrados: 126"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 126,
+        "params": {
+          "date": "2025-03-21T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        },
+        "primerSlot": {
+          "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2-2025-03-21-05:00",
+          "startTime": "05:00",
+          "endTime": "06:00",
+          "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "courtName": "Pista 2",
+          "courtType": "indoor",
+          "date": "2025-03-21",
+          "price": 40
+        }
+      }
+    ]
+  }
+]

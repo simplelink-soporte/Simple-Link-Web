@@ -1,0 +1,2013 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[LocationStep] Intentando avanzar al siguiente paso, ubicación seleccionada:",
+      "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[LocationStep] Avanzando al siguiente paso:",
+      {
+        "selectedLocation": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "branchName": "Sede 2"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Iniciando fetchSlots:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - findAvailableSlots - params:",
+      {
+        "date": "2025-03-20T03:00:00.000Z",
+        "duration": 1,
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - params:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "cantidad": 4,
+        "primeraCancha": {
+          "id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "name": "Pista 5",
+          "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "sport": "padel",
+          "court_type": "indoor",
+          "surface": "crystal",
+          "features": [],
+          "is_active": true,
+          "available_durations": [
+            60,
+            90
+          ],
+          "duration_pricing": {
+            "60": 30,
+            "90": 90
+          },
+          "custom_pricing": {
+            "5": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "12:00",
+                  "startTime": "09:00",
+                  "percentage": 0
+                },
+                {
+                  "endTime": "23:00",
+                  "startTime": "15:00",
+                  "percentage": 15
+                }
+              ]
+            },
+            "6": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "22:00",
+                  "startTime": "09:00",
+                  "percentage": 20
+                }
+              ]
+            }
+          },
+          "created_at": "2024-11-23T18:17:23.422+00:00",
+          "updated_at": "2024-12-04T09:41:19.928+00:00"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getCourts - resultado:",
+      {
+        "cantidad": 4,
+        "primeraCancha": {
+          "id": "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "name": "Pista 5",
+          "branch_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "sport": "padel",
+          "court_type": "indoor",
+          "surface": "crystal",
+          "features": [],
+          "is_active": true,
+          "available_durations": [
+            60,
+            90
+          ],
+          "duration_pricing": {
+            "60": 30,
+            "90": 90
+          },
+          "custom_pricing": {
+            "5": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "12:00",
+                  "startTime": "09:00",
+                  "percentage": 0
+                },
+                {
+                  "endTime": "23:00",
+                  "startTime": "15:00",
+                  "percentage": 15
+                }
+              ]
+            },
+            "6": {
+              "isSelected": true,
+              "timeRanges": [
+                {
+                  "endTime": "22:00",
+                  "startTime": "09:00",
+                  "percentage": 20
+                }
+              ]
+            }
+          },
+          "created_at": "2024-11-23T18:17:23.422+00:00",
+          "updated_at": "2024-12-04T09:41:19.928+00:00"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBranchSchedule:",
+      {
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Analizando estructura de opening_hours"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando horarios del formato opening_hours.schedule"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios procesados:",
+      {
+        "openingDays": {
+          "friday": true,
+          "monday": true,
+          "sunday": true,
+          "tuesday": true,
+          "saturday": true,
+          "thursday": true,
+          "wednesday": true
+        },
+        "schedule": {
+          "friday": {
+            "open": "05:00",
+            "close": "23:00"
+          },
+          "monday": {
+            "open": "09:00",
+            "close": "22:00"
+          },
+          "sunday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "tuesday": {
+            "open": "08:00",
+            "close": "22:00"
+          },
+          "saturday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "thursday": {
+            "open": "08:00",
+            "close": "20:00"
+          },
+          "wednesday": {
+            "open": "08:00",
+            "close": "22:00"
+          }
+        },
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - día de la semana:",
+      "thursday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - días abiertos:",
+      {
+        "friday": true,
+        "monday": true,
+        "sunday": true,
+        "tuesday": true,
+        "saturday": true,
+        "thursday": true,
+        "wednesday": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - horario del día:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Convertido duration ID 1 a 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando duración de 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings:",
+      {
+        "date": "2025-03-20",
+        "courtIds": [
+          "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "8f69eb96-fde1-4085-8577-61da097e4f99"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Datos de horarios obtenidos:",
+      {
+        "schedule": {
+          "friday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "05:00",
+                "closeTime": "23:00"
+              }
+            ]
+          },
+          "monday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "09:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "sunday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "tuesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "22:00"
+              }
+            ]
+          },
+          "saturday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "19:00"
+              }
+            ]
+          },
+          "thursday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "20:00"
+              }
+            ]
+          },
+          "wednesday": {
+            "isOpen": true,
+            "timeRanges": [
+              {
+                "openTime": "08:00",
+                "closeTime": "12:00"
+              },
+              {
+                "openTime": "15:00",
+                "closeTime": "22:00"
+              }
+            ]
+          }
+        },
+        "timezone": "Europe/Madrid"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Analizando estructura de opening_hours"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando horarios del formato opening_hours.schedule"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Horarios procesados:",
+      {
+        "openingDays": {
+          "friday": true,
+          "monday": true,
+          "sunday": true,
+          "tuesday": true,
+          "saturday": true,
+          "thursday": true,
+          "wednesday": true
+        },
+        "schedule": {
+          "friday": {
+            "open": "05:00",
+            "close": "23:00"
+          },
+          "monday": {
+            "open": "09:00",
+            "close": "22:00"
+          },
+          "sunday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "tuesday": {
+            "open": "08:00",
+            "close": "22:00"
+          },
+          "saturday": {
+            "open": "08:00",
+            "close": "19:00"
+          },
+          "thursday": {
+            "open": "08:00",
+            "close": "20:00"
+          },
+          "wednesday": {
+            "open": "08:00",
+            "close": "22:00"
+          }
+        },
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - día de la semana:",
+      "thursday"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - días abiertos:",
+      {
+        "friday": true,
+        "monday": true,
+        "sunday": true,
+        "tuesday": true,
+        "saturday": true,
+        "thursday": true,
+        "wednesday": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - horario del día:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "timezone": "America/Santiago"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Convertido duration ID 1 a 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - Usando duración de 60 minutos"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - getBookings:",
+      {
+        "date": "2025-03-20",
+        "courtIds": [
+          "54aca0f1-2f00-45d4-b662-094defa9c704",
+          "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "8f69eb96-fde1-4085-8577-61da097e4f99"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "09:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "10:00",
+        "end": "14:00",
+        "size": 240,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T09:00:00",
+            "end": "2025-03-20T10:00:00"
+          },
+          "convertido": {
+            "start": "09:00",
+            "end": "10:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "10:00",
+        "end": "14:00",
+        "size": 240
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "15:00",
+        "end": "16:00",
+        "size": 60,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T14:00:00",
+            "end": "2025-03-20T15:00:00"
+          },
+          "convertido": {
+            "start": "14:00",
+            "end": "15:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "15:00",
+        "end": "16:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "18:00",
+        "end": "20:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 4,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "09:00"
+          },
+          {
+            "start": "10:00",
+            "end": "14:00"
+          },
+          {
+            "start": "15:00",
+            "end": "16:00"
+          },
+          {
+            "start": "18:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 5",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "09:00"
+        },
+        {
+          "openTime": "10:00",
+          "closeTime": "14:00"
+        },
+        {
+          "openTime": "15:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 5",
+        "timeRanges": [
+          "08:00-09:00",
+          "10:00-14:00",
+          "15:00-16:00",
+          "18:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 5",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 5",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "11:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "12:00",
+        "end": "13:00",
+        "size": 60,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T11:00:00",
+            "end": "2025-03-20T12:00:00"
+          },
+          "convertido": {
+            "start": "11:00",
+            "end": "12:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "12:00",
+        "end": "13:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "14:00",
+        "end": "16:00",
+        "size": 120,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T13:00:00",
+            "end": "2025-03-20T14:00:00"
+          },
+          "convertido": {
+            "start": "13:00",
+            "end": "14:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "14:00",
+        "end": "16:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "18:00",
+        "end": "20:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 4,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "11:00"
+          },
+          {
+            "start": "12:00",
+            "end": "13:00"
+          },
+          {
+            "start": "14:00",
+            "end": "16:00"
+          },
+          {
+            "start": "18:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 2",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "11:00"
+        },
+        {
+          "openTime": "12:00",
+          "closeTime": "13:00"
+        },
+        {
+          "openTime": "14:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 2",
+        "timeRanges": [
+          "08:00-11:00",
+          "12:00-13:00",
+          "14:00-16:00",
+          "18:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 2",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 2",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "12:00",
+        "size": 240
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "13:00",
+        "end": "16:00",
+        "size": 180,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T12:00:00",
+            "end": "2025-03-20T13:00:00"
+          },
+          "convertido": {
+            "start": "12:00",
+            "end": "13:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "13:00",
+        "end": "16:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "17:00",
+        "end": "20:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 3,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "16:00"
+          },
+          {
+            "start": "17:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 3",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "12:00"
+        },
+        {
+          "openTime": "13:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "17:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 3",
+        "timeRanges": [
+          "08:00-12:00",
+          "13:00-16:00",
+          "17:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 3",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 3",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "10:00",
+        "end": "12:00",
+        "size": 120,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T08:00:00",
+            "end": "2025-03-20T10:00:00"
+          },
+          "convertido": {
+            "start": "08:00",
+            "end": "10:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "10:00",
+        "end": "12:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "13:00",
+        "end": "20:00",
+        "size": 420
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 2,
+        "ranges": [
+          {
+            "start": "10:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 1",
+      [
+        {
+          "openTime": "10:00",
+          "closeTime": "12:00"
+        },
+        {
+          "openTime": "13:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 1",
+        "timeRanges": [
+          "10:00-12:00",
+          "13:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 1",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 1",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - total de slots generados en todas las canchas:",
+      57
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots disponibles después de verificar holds:",
+      57
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 57,
+        "params": {
+          "date": "2025-03-20T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        },
+        "primerSlot": {
+          "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2_2025-03-20_08:00_09:00",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "courtName": "Pista 2",
+          "courtType": "indoor",
+          "date": "2025-03-20",
+          "price": null
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "54aca0f1-2f00-45d4-b662-094defa9c704",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "09:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "10:00",
+        "end": "14:00",
+        "size": 240,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T09:00:00",
+            "end": "2025-03-20T10:00:00"
+          },
+          "convertido": {
+            "start": "09:00",
+            "end": "10:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "10:00",
+        "end": "14:00",
+        "size": 240
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "15:00",
+        "end": "16:00",
+        "size": 60,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T14:00:00",
+            "end": "2025-03-20T15:00:00"
+          },
+          "convertido": {
+            "start": "14:00",
+            "end": "15:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "15:00",
+        "end": "16:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "18:00",
+        "end": "20:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 4,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "09:00"
+          },
+          {
+            "start": "10:00",
+            "end": "14:00"
+          },
+          {
+            "start": "15:00",
+            "end": "16:00"
+          },
+          {
+            "start": "18:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 5",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "09:00"
+        },
+        {
+          "openTime": "10:00",
+          "closeTime": "14:00"
+        },
+        {
+          "openTime": "15:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 5",
+        "timeRanges": [
+          "08:00-09:00",
+          "10:00-14:00",
+          "15:00-16:00",
+          "18:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 5",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 5",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "11:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "12:00",
+        "end": "13:00",
+        "size": 60,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T11:00:00",
+            "end": "2025-03-20T12:00:00"
+          },
+          "convertido": {
+            "start": "11:00",
+            "end": "12:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "12:00",
+        "end": "13:00",
+        "size": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "14:00",
+        "end": "16:00",
+        "size": 120,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T13:00:00",
+            "end": "2025-03-20T14:00:00"
+          },
+          "convertido": {
+            "start": "13:00",
+            "end": "14:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "14:00",
+        "end": "16:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "18:00",
+        "end": "20:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 4,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "11:00"
+          },
+          {
+            "start": "12:00",
+            "end": "13:00"
+          },
+          {
+            "start": "14:00",
+            "end": "16:00"
+          },
+          {
+            "start": "18:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 2",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "11:00"
+        },
+        {
+          "openTime": "12:00",
+          "closeTime": "13:00"
+        },
+        {
+          "openTime": "14:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 2",
+        "timeRanges": [
+          "08:00-11:00",
+          "12:00-13:00",
+          "14:00-16:00",
+          "18:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 2",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 2",
+      12
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "08:00",
+        "end": "12:00",
+        "size": 240
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "13:00",
+        "end": "16:00",
+        "size": 180,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T12:00:00",
+            "end": "2025-03-20T13:00:00"
+          },
+          "convertido": {
+            "start": "12:00",
+            "end": "13:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "13:00",
+        "end": "16:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "17:00",
+        "end": "20:00",
+        "size": 180
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 3,
+        "ranges": [
+          {
+            "start": "08:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "16:00"
+          },
+          {
+            "start": "17:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 3",
+      [
+        {
+          "openTime": "08:00",
+          "closeTime": "12:00"
+        },
+        {
+          "openTime": "13:00",
+          "closeTime": "16:00"
+        },
+        {
+          "openTime": "17:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 3",
+        "timeRanges": [
+          "08:00-12:00",
+          "13:00-16:00",
+          "17:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 3",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 3",
+      17
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - calculateAvailableRanges:",
+      {
+        "openTime": "08:00",
+        "closeTime": "20:00",
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "date": "2025-03-20",
+        "bookingsCount": 15
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando espacio entre reservas:",
+      {
+        "start": "10:00",
+        "end": "12:00",
+        "size": 120,
+        "booking": {
+          "original": {
+            "start": "2025-03-20T08:00:00",
+            "end": "2025-03-20T10:00:00"
+          },
+          "convertido": {
+            "start": "08:00",
+            "end": "10:00"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango antes de reserva:",
+      {
+        "start": "10:00",
+        "end": "12:00",
+        "size": 120
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Evaluando rango final:",
+      {
+        "start": "13:00",
+        "end": "20:00",
+        "size": 420
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Rangos disponibles después de filtrado:",
+      {
+        "totalRanges": 2,
+        "ranges": [
+          {
+            "start": "10:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - rangos disponibles para la cancha:",
+      "Pista 1",
+      [
+        {
+          "openTime": "10:00",
+          "closeTime": "12:00"
+        },
+        {
+          "openTime": "13:00",
+          "closeTime": "20:00"
+        }
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Generando slots:",
+      {
+        "courtName": "Pista 1",
+        "timeRanges": [
+          "10:00-12:00",
+          "13:00-20:00"
+        ],
+        "durationInMinutes": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "TimeSlotService - Total de slots generados:",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots generados para la cancha:",
+      "Pista 1",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots con precios para la cancha:",
+      "Pista 1",
+      16
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - total de slots generados en todas las canchas:",
+      57
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "AvailabilityService - slots disponibles después de verificar holds:",
+      57
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "useAvailability - Slots obtenidos:",
+      {
+        "cantidad": 57,
+        "params": {
+          "date": "2025-03-20T03:00:00.000Z",
+          "duration": 1,
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+        },
+        "primerSlot": {
+          "id": "562b18bd-612d-4c20-b9ad-c31a1aea44a2_2025-03-20_08:00_09:00",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+          "courtName": "Pista 2",
+          "courtType": "indoor",
+          "date": "2025-03-20",
+          "price": null
+        }
+      }
+    ]
+  }
+]

@@ -243,6 +243,31 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     });
   }, [selectShift, setShiftDetails]);
 
+  // Organizar slots por pista
+  const organizedSlots = useMemo(() => {
+    if (!slots.length) return [];
+    
+    // Agrupar por courtName (pista)
+    const groupedByCourt = slots.reduce((acc, slot) => {
+      const courtKey = slot.courtName || 'sin-asignar';
+      if (!acc[courtKey]) {
+        acc[courtKey] = [];
+      }
+      acc[courtKey].push(slot);
+      return acc;
+    }, {} as Record<string, typeof slots>);
+    
+    // Ordenar cada grupo por hora de inicio
+    Object.keys(groupedByCourt).forEach(courtKey => {
+      groupedByCourt[courtKey].sort((a, b) => {
+        return a.startTime.localeCompare(b.startTime);
+      });
+    });
+    
+    // Aplanar el resultado manteniendo los grupos juntos
+    return Object.values(groupedByCourt).flat();
+  }, [slots]);
+
   // Exponer el estado de selección para que StepRenderer pueda acceder a él
   useEffect(() => {
     if (viewType === 'mobile' && typeof window !== 'undefined') {
@@ -315,7 +340,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
           <div className="mt-6 flex-1 overflow-hidden flex flex-col">
             <div className="flex-1 relative">
               <ShiftsList 
-                shifts={slots.map(slot => ({
+                shifts={organizedSlots.map(slot => ({
                   id: slot.id,
                   time: slot.startTime,
                   endTime: slot.endTime,
@@ -386,7 +411,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
         <div className="mt-6 flex-1 overflow-hidden flex flex-col">
           <div className="flex-1 relative">
             <ShiftsList 
-              shifts={slots.map(slot => ({
+              shifts={organizedSlots.map(slot => ({
                 id: slot.id,
                 time: slot.startTime,
                 endTime: slot.endTime,

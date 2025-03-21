@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AvailabilitySlot, AvailabilityParams, TimeRange } from '@/types/availability';
-import availabilityService from '@/services/availability.service';
+import availabilityService from '@/services/availability';
 import { DURATIONS, COURT_TYPES } from '@/config/availability';
 
 export interface UseAvailabilityReturn {

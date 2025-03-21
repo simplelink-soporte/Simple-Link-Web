@@ -49,6 +49,7 @@ export interface OpeningHours {
 export interface DaySchedule {
   isOpen: boolean;
   timeRanges: TimeRangeSchedule[];
+  timezone?: string;
 }
 
 export interface TimeRangeSchedule {
@@ -60,4 +61,4 @@ export interface TimeSlot {
   start: string;
   end: string;
   isAvailable: boolean;
-} 
+}

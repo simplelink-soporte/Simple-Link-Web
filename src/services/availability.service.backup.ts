@@ -150,7 +150,11 @@ class AvailabilityService {
         console.log('AvailabilityService - Solapamiento detectado:', {
           slot: { start: startTime, end: endTime },
           booking: { 
-            original: { start: booking.start_time, end: booking.end_time },
+            original: { 
+              start: booking.start_time, 
+              end: booking.end_time,
+              type: typeof booking.start_time
+            },
             convertido: { start: localStartTime, end: localEndTime }
           }
         });
@@ -294,19 +298,129 @@ class AvailabilityService {
   }
 
   /**
-   * Convierte un tiempo en formato HH:mm desde UTC a la zona horaria local.
+   * Convierte un tiempo en formato timestamp desde UTC a la zona horaria local.
    * Utilizamos este método para convertir los horarios de las reservas al comparar con slots.
    */
   private convertBookingTimeToLocal(time: string, timezone: string, date: Date): string {
+    // Verificar si el formato es timestamp (contiene espacios o T como separador de fecha/hora)
+    if (time.includes(' ') || time.includes('T')) {
+      try {
+        // Intentar crear DateTime directamente desde el timestamp
+        const bookingDateTime = DateTime.fromSQL(time, { zone: 'UTC' });
+        
+        if (bookingDateTime.isValid) {
+          // Convertir a la zona horaria local
+          const localDateTime = bookingDateTime.setZone(timezone);
+          return localDateTime.toFormat('HH:mm');
+        }
+      } catch (error) {
+        console.error('Error al parsear timestamp:', error);
+      }
+      
+      // Si falla, intentar extraer solo la parte de hora
+      try {
+        const timeOnly = time.includes('T') 
+          ? time.split('T')[1].substring(0, 5) 
+          : time.split(' ')[1].substring(0, 5);
+          
+        // Continuar con el enfoque anterior
+        const [hours, minutes] = timeOnly.split(':').map(Number);
+        const dateObj = new Date(date);
+        dateObj.setHours(hours, minutes, 0, 0);
+        
+        const utcDateTime = DateTime.fromJSDate(dateObj, { zone: 'UTC' });
+        const localDateTime = utcDateTime.setZone(timezone);
+        
+        return localDateTime.toFormat('HH:mm');
+      } catch (error) {
+        console.error('Error al extraer hora del timestamp:', error);
+      }
+    }
+    
+    // Si no es timestamp o hubo errores, usar el enfoque original
     const [hours, minutes] = time.split(':').map(Number);
     const dateObj = new Date(date);
     dateObj.setHours(hours, minutes, 0, 0);
     
-    // Las reservas están almacenadas en UTC, convertimos a la zona horaria local
     const utcDateTime = DateTime.fromJSDate(dateObj, { zone: 'UTC' });
     const localDateTime = utcDateTime.setZone(timezone);
     
     return localDateTime.toFormat('HH:mm');
+  }
+
+  private findAvailableGaps(
+    rangeStartMinutes: number,
+    rangeEndMinutes: number,
+    bookings: any[],
+    date: Date
+  ): Array<{start: number, end: number}> {
+    // Ordenar las reservas por hora de inicio
+    const sortedBookings = [...bookings]
+      .filter(booking => booking.date === format(date, 'yyyy-MM-dd'))
+      .sort((a, b) => {
+        // Convertir a minutos para comparación, considerando que ahora son timestamps
+        const aStart = this.extractTimeMinutesFromTimestamp(a.start_time);
+        const bStart = this.extractTimeMinutesFromTimestamp(b.start_time);
+        return aStart - bStart;
+      });
+
+    const gaps: Array<{start: number, end: number}> = [];
+    let currentStart = rangeStartMinutes;
+
+    // Procesar cada reserva para encontrar gaps
+    sortedBookings.forEach(booking => {
+      const bookingStart = this.extractTimeMinutesFromTimestamp(booking.start_time);
+      const bookingEnd = this.extractTimeMinutesFromTimestamp(booking.end_time);
+
+      // Si hay espacio antes de la reserva, agregar gap
+      if (currentStart < bookingStart) {
+        gaps.push({
+          start: currentStart,
+          end: bookingStart
+        });
+      }
+
+      currentStart = bookingEnd;
+    });
+
+    // Agregar el último gap si queda espacio
+    if (currentStart < rangeEndMinutes) {
+      gaps.push({
+        start: currentStart,
+        end: rangeEndMinutes
+      });
+    }
+
+    return gaps;
+  }
+
+  /**
+   * Extrae los minutos desde la medianoche de un timestamp
+   * Maneja tanto formato de time como formato de timestamp
+   */
+  private extractTimeMinutesFromTimestamp(timestamp: string): number {
+    try {
+      // Si es un timestamp (contiene espacios o T)
+      if (timestamp.includes(' ') || timestamp.includes('T')) {
+        let timeStr: string;
+        
+        if (timestamp.includes('T')) {
+          // Formato ISO
+          timeStr = timestamp.split('T')[1].substring(0, 5);
+        } else {
+          // Formato SQL
+          timeStr = timestamp.split(' ')[1].substring(0, 5);
+        }
+        
+        return this.timeToMinutes(timeStr);
+      }
+      
+      // Si es formato hora simple (HH:MM)
+      return this.timeToMinutes(timestamp);
+    } catch (error) {
+      console.error('Error al extraer minutos del timestamp:', error, timestamp);
+      return 0; // Valor por defecto en caso de error
+    }
   }
 
   private findAvailableRanges(
@@ -392,7 +506,17 @@ class AvailabilityService {
             console.log(`AvailabilityService - Evaluando espacio entre reservas:`, {
               start: booking.endLocal,
               end: nextBooking.startLocal,
-              size: gapSize
+              size: gapSize,
+              booking: {
+                original: {
+                  start: booking.start_time,
+                  end: booking.end_time
+                },
+                convertido: {
+                  start: booking.startLocal,
+                  end: booking.endLocal
+                }
+              }
             });
             
             ranges.push({
@@ -602,51 +726,6 @@ class AvailabilityService {
     return mergedRanges;
   }
 
-  private findAvailableGaps(
-    rangeStartMinutes: number,
-    rangeEndMinutes: number,
-    bookings: any[],
-    date: Date
-  ): Array<{start: number, end: number}> {
-    // Ordenar las reservas por hora de inicio
-    const sortedBookings = [...bookings]
-      .filter(booking => booking.date === format(date, 'yyyy-MM-dd'))
-      .sort((a, b) => {
-        const aStart = this.timeToMinutes(a.start_time);
-        const bStart = this.timeToMinutes(b.start_time);
-        return aStart - bStart;
-      });
-
-    const gaps: Array<{start: number, end: number}> = [];
-    let currentStart = rangeStartMinutes;
-
-    // Procesar cada reserva para encontrar gaps
-    sortedBookings.forEach(booking => {
-      const bookingStart = this.timeToMinutes(booking.start_time);
-      const bookingEnd = this.timeToMinutes(booking.end_time);
-
-      // Si hay espacio antes de la reserva, agregar gap
-      if (currentStart < bookingStart) {
-        gaps.push({
-          start: currentStart,
-          end: bookingStart
-        });
-      }
-
-      currentStart = bookingEnd;
-    });
-
-    // Agregar el último gap si queda espacio
-    if (currentStart < rangeEndMinutes) {
-      gaps.push({
-        start: currentStart,
-        end: rangeEndMinutes
-      });
-    }
-
-    return gaps;
-  }
-
   private minutesToTime(minutes: number): string {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -654,8 +733,30 @@ class AvailabilityService {
   }
 
   private timeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
+    try {
+      // Si es un timestamp (contiene espacios o T)
+      if (time && (time.includes(' ') || time.includes('T'))) {
+        let timeStr: string;
+        
+        if (time.includes('T')) {
+          // Formato ISO
+          timeStr = time.split('T')[1].substring(0, 5);
+        } else {
+          // Formato SQL
+          timeStr = time.split(' ')[1].substring(0, 5);
+        }
+        
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      }
+      
+      // Si es formato hora simple (HH:MM)
+      const [hours, minutes] = time.split(':').map(Number);
+      return hours * 60 + minutes;
+    } catch (error) {
+      console.error('Error al convertir tiempo a minutos:', error, time);
+      return 0; // Valor por defecto en caso de error
+    }
   }
 
   private canCreateSlot(start: string, end: string, durationInMinutes: number): boolean {
