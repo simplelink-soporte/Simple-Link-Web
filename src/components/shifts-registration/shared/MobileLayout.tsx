@@ -49,16 +49,14 @@ export function MobileLayout({
 
   return (
     <div className={cn(
-      "flex flex-col min-h-screen",
+      "flex flex-col",
       // Reducción del espacio para el header
       "pt-6 pb-16",
-      // Permitir overflow solo en este contenedor
-      "overflow-y-auto h-[100vh] w-full",
-      // Estilo para scrollbar
-      "scrollbar-thin scrollbar-thumb-gray-300"
+      // Eliminar scroll completamente
+      "overflow-hidden h-[100vh] w-full"
     )}>
       {/* Contenido principal */}
-      <main className="flex-1">
+      <main className="flex-1 overflow-hidden">
         {children}
       </main>
       

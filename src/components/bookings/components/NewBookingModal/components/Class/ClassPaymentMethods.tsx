@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { IconCheck, IconPercentage } from "@tabler/icons-react"
 import type { ClassPaymentConfig } from "../../types"
+import { Slider } from "@/components/ui/slider"
+import { Percent } from "lucide-react"
 
 interface ClassPaymentMethodsProps {
   config: ClassPaymentConfig
@@ -38,12 +40,16 @@ export function ClassPaymentMethods({
   onChange,
   onValidationChange
 }: ClassPaymentMethodsProps) {
-  const [guaranteePercentage, setGuaranteePercentage] = useState<number>(
-    config.guaranteePercentage || 30
-  )
-  const [partialPaymentPercentage, setPartialPaymentPercentage] = useState<number>(
-    config.partialPaymentPercentage || 20
-  )
+  const [guaranteePercentage, setGuaranteePercentage] = useState<number>(() => {
+    // Redondear al múltiplo de 5 más cercano
+    const initialValue = config.guaranteePercentage || 30;
+    return Math.round(initialValue / 5) * 5;
+  })
+  const [partialPaymentPercentage, setPartialPaymentPercentage] = useState<number>(() => {
+    // Redondear al múltiplo de 5 más cercano
+    const initialValue = config.partialPaymentPercentage || 20;
+    return Math.round(initialValue / 5) * 5;
+  })
 
   useEffect(() => {
     onValidationChange(config.paymentMethods?.length > 0)
@@ -174,22 +180,32 @@ export function ClassPaymentMethods({
                   Define el porcentaje a cobrar como garantía
                 </p>
               </div>
-              <div className="flex items-center">
-                <input
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h5 className="text-xs text-gray-600">
+                    Porcentaje a cobrar
+                  </h5>
+                  <span className="flex items-center text-xs font-medium text-gray-700">
+                    {guaranteePercentage}<Percent className="inline ml-0.5 h-3 w-3" />
+                  </span>
+                </div>
+                <Slider
                   id="guaranteePercentage"
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={guaranteePercentage}
-                  onChange={handleGuaranteePercentageChange}
-                  className={cn(
-                    "w-16 px-2 py-1 text-sm text-center",
-                    "rounded border border-gray-200/75",
-                    "focus:outline-none focus:border-gray-300",
-                    "transition-all duration-200"
-                  )}
+                  min={5}
+                  max={100}
+                  step={5}
+                  value={[guaranteePercentage]}
+                  onValueChange={(value) => {
+                    // Asegurar que el valor sea múltiplo de 5
+                    const roundedValue = Math.round(value[0] / 5) * 5;
+                    setGuaranteePercentage(roundedValue);
+                    onChange({
+                      ...config,
+                      guaranteePercentage: roundedValue,
+                    });
+                  }}
+                  className="w-full"
                 />
-                <span className="ml-1.5 text-xs text-gray-500">%</span>
               </div>
             </div>
           </motion.div>
@@ -212,22 +228,32 @@ export function ClassPaymentMethods({
                   Define el porcentaje del precio total como seña
                 </p>
               </div>
-              <div className="flex items-center">
-                <input
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h5 className="text-xs text-gray-600">
+                    Porcentaje a cobrar
+                  </h5>
+                  <span className="flex items-center text-xs font-medium text-gray-700">
+                    {partialPaymentPercentage}<Percent className="inline ml-0.5 h-3 w-3" />
+                  </span>
+                </div>
+                <Slider
                   id="partialPaymentPercentage"
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={partialPaymentPercentage}
-                  onChange={handlePartialPaymentPercentageChange}
-                  className={cn(
-                    "w-16 px-2 py-1 text-sm text-center",
-                    "rounded border border-gray-200/75",
-                    "focus:outline-none focus:border-gray-300",
-                    "transition-all duration-200"
-                  )}
+                  min={5}
+                  max={100}
+                  step={5}
+                  value={[partialPaymentPercentage]}
+                  onValueChange={(value) => {
+                    // Asegurar que el valor sea múltiplo de 5
+                    const roundedValue = Math.round(value[0] / 5) * 5;
+                    setPartialPaymentPercentage(roundedValue);
+                    onChange({
+                      ...config,
+                      partialPaymentPercentage: roundedValue,
+                    });
+                  }}
+                  className="w-full"
                 />
-                <span className="ml-1.5 text-xs text-gray-500">%</span>
               </div>
             </div>
           </motion.div>

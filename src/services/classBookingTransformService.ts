@@ -30,17 +30,33 @@ export class ClassBookingTransformService {
    * @param paymentType - Tipo de pago a normalizar
    * @returns Tipo de pago normalizado
    */
-  static normalizePaymentType(paymentType: string): PaymentTypeEnum {
+  static normalizePaymentType(paymentType?: string): PaymentTypeEnum {
+    console.log(' [ClassBookingTransformService] Normalizando tipo de pago:', paymentType);
+    
+    // Si no hay tipo de pago, usamos 'booking' por defecto (pago en el club)
+    if (!paymentType) {
+      console.log(' [ClassBookingTransformService] Tipo de pago no definido, estableciendo valor por defecto: booking');
+      return 'booking';
+    }
+    
     // Mapeamos tipos no estándar a valores aceptados por la base de datos
     switch(paymentType) {
       case 'full':
       case 'class':
+        console.log(` [ClassBookingTransformService] Tipo de pago '${paymentType}' normalizado a 'booking'`);
         return 'booking';
       default:
         // Verificamos que el valor sea uno de los aceptados
-        return (['booking', 'deposit', 'remaining', 'guarantee', 'no_show_charge'] as const).includes(paymentType as any) 
-          ? paymentType as PaymentTypeEnum
-          : 'booking';
+        const validTypes = ['booking', 'deposit', 'remaining', 'guarantee', 'no_show_charge'] as const;
+        const isValid = validTypes.includes(paymentType as any);
+        
+        if (!isValid) {
+          console.log(` [ClassBookingTransformService] Tipo de pago '${paymentType}' no reconocido, usando 'booking' por defecto`);
+          return 'booking';
+        }
+        
+        console.log(` [ClassBookingTransformService] Tipo de pago '${paymentType}' validado correctamente`);
+        return paymentType as PaymentTypeEnum;
     }
   }
 
@@ -98,15 +114,12 @@ export class ClassBookingTransformService {
       // Campos de pago
       paymentMethod: options.paymentMethod || 'cash',
       paymentStatus: options.paymentStatus || 'pending',
-      paymentType: this.normalizePaymentType(options.paymentType || 'booking'),
+      paymentType: this.normalizePaymentType(options.paymentType),
       depositAmount: options.depositAmount || 0,
-      guaranteePercentage: options.guaranteePercentage || null, // Incluir el porcentaje de garantía
-      
-      // ID de empresa (necesario para la relación en la base de datos)
-      empresaId: options.empresaId || '',
-      
-      // ID del método de pago de Stripe (si aplica)
-      stripe_payment_method_id: options.stripePaymentMethodId || null
+      // Si es pago con tarjeta, incluir ID del método de pago
+      stripe_payment_method_id: options.stripePaymentMethodId,
+      empresaId: options.empresaId,
+      guaranteePercentage: options.guaranteePercentage // Incluir porcentaje de garantía si existe
     };
   }
   
@@ -128,6 +141,12 @@ export class ClassBookingTransformService {
    * @returns Objeto con el resumen de sesiones o null si no hay datos válidos
    */
   static generateSessionsSummary(classData: PublicClass, sessionIds: string[]): any {
+    // Validación básica de datos
+    if (!classData || !sessionIds || !sessionIds.length) {
+      console.warn(' [ClassBookingTransformService] No hay datos suficientes para generar el resumen de sesiones');
+      return null;
+    }
+    
     if (!classData || !classData.sessions) return null;
     
     const selectedSessions = classData.sessions.filter(s => sessionIds.includes(s.id));
@@ -203,13 +222,13 @@ export class ClassBookingTransformService {
                 );
                 
                 if (matchingSession) {
-                  console.log(`🔄 Recuperada sesión por fecha/hora en lugar de ID exacto: ${date} ${startTime}`);
+                  console.log(` [ClassBookingTransformService] Recuperada sesión por fecha/hora en lugar de ID exacto: ${date} ${startTime}`);
                   selectedSessions.push(matchingSession);
                 }
               }
             }
           } catch (error) {
-            console.warn(`❌ Error al intentar recuperar sesión por ID: ${sessionId}`, error);
+            console.warn(` [ClassBookingTransformService] Error al intentar recuperar sesión por ID: ${sessionId}`, error);
           }
         }
       }
@@ -219,7 +238,7 @@ export class ClassBookingTransformService {
     if (selectedSessions.length === 0 && sessionIds.length === 1) {
       // Si hay al menos una sesión disponible en la clase, usar la primera como referencia
       if (classData.sessions.length > 0) {
-        console.log(`⚠️ No se encontró la sesión ${sessionIds[0]}, pero se procederá como reserva de clase general`);
+        console.log(` [ClassBookingTransformService] No se encontró la sesión ${sessionIds[0]}, pero se procederá como reserva de clase general`);
         selectedSessions.push(classData.sessions[0]);
       }
     }

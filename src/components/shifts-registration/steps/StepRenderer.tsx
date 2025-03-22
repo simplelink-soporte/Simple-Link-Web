@@ -173,7 +173,7 @@ export const StepRenderer: React.FC<{
 
   // Forzar la actualización de las propiedades de navegación móvil
   const [mobileNavProps, setMobileNavProps] = useState({
-    nextLabel: isLastStep ? 'Finalizar' : 'Siguiente',
+    nextLabel: isLastStep ? 'Finalizar' : 'Continuar',
     isNextDisabled: false,
     isProcessing: false,
     customOnNext: undefined as (() => void) | undefined
@@ -184,7 +184,7 @@ export const StepRenderer: React.FC<{
     // Función para obtener las propiedades actualizadas
     const getMobileNavProps = () => {
       const defaultProps = {
-        nextLabel: isLastStep ? 'Finalizar' : 'Siguiente',
+        nextLabel: isLastStep ? 'Finalizar' : 'Continuar',
         isNextDisabled: false,
         isProcessing: false,
         customOnNext: undefined as (() => void) | undefined

@@ -126,7 +126,7 @@ export function TableHeader({
             <IconChevronLeft className="h-4 w-4" stroke={2} />
           </button>
           
-          <div className="relative flex items-center">
+          <div className="relative flex items-center overflow-hidden">
             <button
               onClick={handleToday}
               className={cn(

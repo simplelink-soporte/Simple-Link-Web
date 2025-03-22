@@ -44,8 +44,7 @@ export function StepNavigation({
   const { 
     state, 
     nextStep: goToNextStep, 
-    prevStep: goToPrevStep,
-    goBackToStep 
+    prevStep: goToPrevStep
   } = useShiftForm();
   const currentStep = state.currentStep;
   const config = STEP_CONFIG[currentStep] || {};
@@ -57,22 +56,16 @@ export function StepNavigation({
 
   // Determinar el texto del botón siguiente según el paso actual
   const getNextButtonLabel = () => {
+    // Si hay una etiqueta personalizada proporcionada como prop, usarla
     if (nextLabel) return nextLabel;
 
-    switch (currentStep) {
-      case 0:
-        return 'Elegir turno';
-      case 1:
-        return 'Elegir artículos';
-      case 2:
-        return 'Revisar y confirmar';
-      case 3:
-        return 'Confirmar turno';
-      case 4:
-        return 'Confirmar turno';
-      default:
-        return 'Continuar';
+    // Solo en el paso de resumen (paso 3) mostrar "Confirmar reserva"
+    if (currentStep === 3) {
+      return 'Confirmar reserva';
     }
+    
+    // En todos los demás pasos, mostrar "Continuar"
+    return 'Continuar';
   };
 
   const handleNext = async () => {
@@ -227,7 +220,7 @@ export function StepNavigation({
                 }}
               >
                 {/* Mostrar "Continuar" en todas las vistas */}
-                <span>Continuar</span>
+                <span>{getNextButtonLabel()}</span>
               </Button>
             )}
           </div>

@@ -192,8 +192,23 @@ export class ClassBookingService {
       console.log('📋 [ClassBookingService] Datos de reserva transformados:', JSON.stringify(bookingData, null, 2));
       
       // Asegurarnos de que el tipo de pago sea válido
-      const normalizedPaymentType = ClassBookingTransformService.normalizePaymentType(bookingData.paymentType);
-      console.log('📋 [ClassBookingService] Tipo de pago normalizado:', normalizedPaymentType);
+      let normalizedPaymentType = ClassBookingTransformService.normalizePaymentType(bookingData.paymentType);
+      
+      // Log detallado del tipo de pago recibido y normalizado para depuración
+      console.log('📋 [ClassBookingService] Normalización del tipo de pago:', {
+        original: options.paymentType,
+        transformado: bookingData.paymentType,
+        normalizado: normalizedPaymentType,
+        método: options.paymentMethod
+      });
+      
+      // Validación adicional: si es pago en efectivo y no hay tipo de pago válido, forzar a 'booking'
+      if (options.paymentMethod === 'cash' && (!normalizedPaymentType || normalizedPaymentType === '' as any)) {
+        console.log('⚠️ [ClassBookingService] Tipo de pago inválido para pago en efectivo, forzando a "booking"');
+        normalizedPaymentType = 'booking';
+      }
+      
+      console.log('📋 [ClassBookingService] Tipo de pago final utilizado:', normalizedPaymentType);
       
       // 2. Obtener la información de la cancha para obtener la sede
       let courtId = bookingData.courtId;
@@ -242,7 +257,7 @@ export class ClassBookingService {
         p_deposit_amount: bookingData.depositAmount || 0,
         p_payment_method: bookingData.paymentMethod || 'cash',
         p_payment_status: bookingData.paymentStatus || 'pending',
-        p_payment_type: normalizedPaymentType,
+        p_payment_type: normalizedPaymentType,  // Usar el tipo normalizado con validación adicional
         p_rental_items: bookingData.rentalItems || [],
         p_rental_items_price: bookingData.rentalItemsPrice || 0,
         p_title: bookingData.title || '',

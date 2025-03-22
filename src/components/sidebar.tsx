@@ -166,7 +166,7 @@ const menuItems = [
   },
   {
     title: "Links",
-    href: "/admin/dashboard/forms-a",
+    href: "/admin/dashboard/links",
     icon: LinkIcon,
     exact: false
   }

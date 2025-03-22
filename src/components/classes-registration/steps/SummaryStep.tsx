@@ -16,7 +16,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PaymentTypeSection } from '../components/PaymentTypeSection'
 import { PaymentMethodEnum } from '@/types/bookings';
-import { PaymentMethod } from '../types/models'
+import { PaymentMethod as BookingPaymentMethod } from '../types/models'
 import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from '../components/payment-types'
 import { PaymentMethod as CardPaymentMethod, PaymentSectionWithStripe } from '../components/PaymentSection'
 import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext'
@@ -24,7 +24,7 @@ import { useStripeConfig } from '@/hooks/useStripeConfig'
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Database } from '@/types/supabase'
-import type { UserPackageFromDB, ClassSession, PaymentMethod } from '../types/models'
+import type { UserPackageFromDB, ClassSession } from '../types/models'
 import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 import { requiresCardPayment } from '../components/PaymentTypeSection'
@@ -60,7 +60,11 @@ export function SummaryStep() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isContentVisible, setIsContentVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentTypeEnum | null>(null)
+  const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentTypeEnum | null>(() => {
+    // Establecer el tipo de pago por defecto a "booking" (pago en el club)
+    const defaultType: PaymentTypeEnum = 'booking';
+    return defaultType;
+  });
   const [selectedCardMethod, setSelectedCardMethod] = useState<CardPaymentMethod | null>(null)
   const [showCardMethodsList, setShowCardMethodsList] = useState(false)
   const [guaranteePercentage, setGuaranteePercentage] = useState<number>(30) // Nuevo estado para el porcentaje de garantía
@@ -169,22 +173,30 @@ export function SummaryStep() {
     )
   }, [state.selectedClass?.sessions, state.selectedSessions[0]])
 
-  // Manejar la selección de tipo de pago
+  // Manejar la selección del tipo de pago (pago total, seña, etc.)
   const handlePaymentTypeSelection = useCallback((type: PaymentTypeEnum | null, percentage?: number) => {
-    console.log('📢 Tipo de pago seleccionado:', type, percentage ? `con porcentaje: ${percentage}%` : '')
-    setSelectedPaymentType(type)
+    console.log('📢 Tipo de pago seleccionado:', type, percentage ? `con porcentaje: ${percentage}%` : '');
+    
+    // Sincronizar el método de pago con el tipo de pago seleccionado
+    if (type === 'booking') {
+      console.log('📢 Tipo de pago "booking" seleccionado, forzando método de pago a "cash"');
+      // Establecer el método de pago a "cash" para pago en el club
+      updateState({ type: 'SELECT_PAYMENT', payload: 'cash' });
+    }
     
     // Si se proporciona un porcentaje y el tipo es garantía, actualizarlo
     if (percentage !== undefined && type === 'guarantee') {
-      setGuaranteePercentage(percentage)
-      console.log('📢 Porcentaje de garantía actualizado:', percentage)
+      setGuaranteePercentage(percentage);
+      console.log('📢 Porcentaje de garantía actualizado:', percentage);
     }
     
     // Cerrar la lista de tarjetas si está abierta
     if (showCardMethodsList) {
-      setShowCardMethodsList(false)
+      setShowCardMethodsList(false);
     }
-  }, [showCardMethodsList])
+    
+    setSelectedPaymentType(type);
+  }, [showCardMethodsList, updateState]);
 
   // Mostrar la lista de métodos de pago
   const handleShowPaymentMethods = useCallback(() => {
@@ -222,11 +234,49 @@ export function SummaryStep() {
 
   // Manejar la creación de reserva
   const handleCreateReservation = useCallback(async () => {
-    if (isProcessing || !state.selectedPayment) return
+    console.log('🚀 [SummaryStep] Iniciando handleCreateReservation...');
+    console.log('🚀 [SummaryStep] Estado actual:', {
+      isProcessing,
+      selectedPayment: state.selectedPayment,
+      selectedPaymentType
+    });
     
-    setIsProcessing(true)
+    // Validación inicial
+    if (isProcessing) {
+      console.log('⚠️ [SummaryStep] Ya hay un proceso en curso, abortando');
+      return;
+    }
+    
+    // Corrección para el pago en el club: si el tipo es 'booking' pero no hay método, establecer a 'cash'
+    if (selectedPaymentType === 'booking' && !state.selectedPayment) {
+      console.log('⚠️ [SummaryStep] Tipo de pago "booking" detectado sin método de pago, forzando método a "cash"');
+      updateState({ type: 'SELECT_PAYMENT', payload: 'cash' });
+      // Esperamos brevemente para que se actualice el estado
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    // Validación de método de pago después de posible corrección
+    if (!state.selectedPayment) {
+      console.log('⚠️ [SummaryStep] No hay método de pago seleccionado, abortando');
+      toast({
+        title: 'Error',
+        description: 'Por favor, selecciona un método de pago',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    // Establecer tipo de pago predeterminado para pagos en el club
+    if (state.selectedPayment === 'cash' && !selectedPaymentType) {
+      console.log('📋 [SummaryStep] Pago en el club detectado sin tipo específico, estableciendo tipo como "booking"');
+      setSelectedPaymentType('booking');
+      // Esperamos brevemente para que se actualice el estado
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    setIsProcessing(true);
     // Mostrar el overlay al iniciar el proceso
-    setShowOverlay(true)
+    setShowOverlay(true);
     
     console.log('📋 [SummaryStep] Iniciando creación de reserva:');
     console.log('📋 [SummaryStep] Método de pago:', state.selectedPayment);
@@ -374,24 +424,44 @@ export function SummaryStep() {
         }
       } else {
         console.log('⚠️ [SummaryStep] No se requiere procesamiento de pago con Stripe, continuando con la creación de reserva');
+        
+        // Para pagos en el club (cash), establecer automáticamente el tipo de pago como 'booking' si no está definido
+        if (state.selectedPayment === 'cash' && !selectedPaymentType) {
+          console.log('📋 [SummaryStep] Pago en el club detectado sin tipo específico, estableciendo tipo como "booking"');
+          setSelectedPaymentType('booking');
+          // Como setSelectedPaymentType es asíncrono, usamos directamente 'booking' en la creación de la reserva
+        }
       }
+      
+      // Definir el tipo de pago a utilizar
+      // Para pagos en el club (cash), usar siempre 'booking' como respaldo si no hay tipo definido
+      const paymentTypeToUse = state.selectedPayment === 'cash' && !selectedPaymentType 
+        ? 'booking' 
+        : selectedPaymentType;
       
       // Log antes de crear la reserva
       console.log('📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:', {
         paymentMethod: state.selectedPayment,
-        paymentType: selectedPaymentType,
+        paymentType: paymentTypeToUse || 'booking', // Usar siempre un valor por defecto
         hasCardMethod: !!selectedCardMethod
       });
       
       // Procesar la creación de reservas con el método de pago seleccionado
+      console.log('🔄 [SummaryStep] Llamando a submitClassBooking con los siguientes parámetros...', {
+        paymentMethod: state.selectedPayment,
+        paymentType: paymentTypeToUse || 'booking'
+      });
+      
       const result = await submitClassBooking({
         paymentMethod: state.selectedPayment as PaymentMethodEnum,
-        paymentType: selectedPaymentType || undefined,
+        paymentType: paymentTypeToUse || 'booking', // Nunca enviar undefined para paymentType
         paymentMethodDetails: state.selectedPayment === 'card' && selectedCardMethod 
           ? selectedCardMethod as { id: string; [key: string]: any }
           : undefined,
         guaranteePercentage: selectedPaymentType === 'guarantee' ? guaranteePercentage : undefined
       });
+      
+      console.log('📋 [SummaryStep] Resultado de submitClassBooking:', result);
       
       if (result.error) {
         console.error('❌ [SummaryStep] Error al crear la reserva:', result.error);
@@ -446,10 +516,12 @@ export function SummaryStep() {
     // Solo avanzar a la creación de reserva si estamos en la vista de pago en móvil
     // o si estamos en desktop
     if (!isMobile || mobileView === 'payment') {
-      handleCreateReservation()
+      console.log('📣 [SummaryStep] Condiciones cumplidas, llamando a handleCreateReservation()');
+      handleCreateReservation();
     } else {
       // Si estamos en la vista de detalles en móvil, cambiar a la vista de pago
-      setMobileView('payment')
+      console.log('📣 [SummaryStep] Cambiando a vista de pago en móvil');
+      setMobileView('payment');
     }
   }, [handleCreateReservation, isMobile, mobileView]) // Añadimos mobileView como dependencia
   
@@ -560,6 +632,15 @@ export function SummaryStep() {
     // Ejecutamos la verificación solo cuando sea necesario
     checkActivePackages()
   }, [state.isGuest, state.selectedClass?.branchInfo?.id]) // Dependencias más específicas
+
+  // Efecto para sincronizar el tipo de pago con el método de pago
+  useEffect(() => {
+    // Si el tipo es "booking" (pago en el club) pero el método no es "cash", actualizarlo
+    if (selectedPaymentType === 'booking' && state.selectedPayment !== 'cash') {
+      console.log('📢 [SummaryStep] Sincronizando método de pago: tipo=booking, estableciendo método=cash');
+      updateState({ type: 'SELECT_PAYMENT', payload: 'cash' });
+    }
+  }, [selectedPaymentType, state.selectedPayment, updateState]);
 
   // Componente para mostrar información de depuración si es necesario
   const DebugInfo = useCallback(() => {
@@ -753,7 +834,7 @@ export function SummaryStep() {
     // Filtrar los tipos de pago basados en los métodos disponibles de la clase
     const availablePaymentTypes = PAYMENT_TYPES.filter(type => {
       // Mapeo entre PaymentTypeEnum y los valores de la tabla classes
-      const paymentTypeToMethodMap: Record<string, PaymentMethod> = {
+      const paymentTypeToMethodMap: Record<string, BookingPaymentMethod> = {
         'booking': 'pay_at_club',
         'full': 'full_payment',
         'deposit': 'partial_payment',
