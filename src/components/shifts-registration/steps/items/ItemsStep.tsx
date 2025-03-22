@@ -396,6 +396,16 @@ export function ItemsStep({
   const handleNext = () => {
     // Guardar los ítems seleccionados en el contexto global
     setSelectedItems(localSelectedItems);
+    
+    // Guardar los datos completos de los ítems con todos sus metadatos
+    // Esto permitirá al SummaryStep tener acceso a la información completa de pricing
+    window.localStorage.setItem(
+      'itemsWithStockData', 
+      JSON.stringify(itemsWithStock.filter(item => 
+        localSelectedItems[item.id] && localSelectedItems[item.id] > 0
+      ))
+    );
+    
     setItemsTotalPrice(totalPrice);
     
     // Avanzar al siguiente paso

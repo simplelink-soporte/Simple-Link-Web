@@ -158,7 +158,7 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   };
 
   return (
-    <div className="container mx-auto p-4 pb-32">
+    <div className="container mx-auto px-8 py-8">
       {/* Contenido del paso actual */}
       {state.bookingStatus === 'submitting' ? (
         <div className="p-8 flex flex-col items-center justify-center">

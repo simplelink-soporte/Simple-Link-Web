@@ -199,37 +199,8 @@ export const LinkSection = ({
               </div>
             </div>
             
-            {/* Sección con opciones */}
-            <div className="bg-white rounded-md border border-gray-100 p-3">
-              <div className="flex-1">
-                <h4 className="text-sm font-medium text-gray-900">
-                  {linkType === 'classes' ? "Crea y administra tus clases" : "Configura tu formulario de reservas"}
-                </h4>
-                <p className="text-xs text-gray-500 mt-0.5 mb-2">
-                  {linkType === 'classes' 
-                    ? "Crea, edita y configura tus clases" 
-                    : "Ajusta el formulario de reservas para que se ajuste a tus necesidades"}
-                </p>
-                <Button
-                  onClick={handleButtonClick}
-                  variant="outline"
-                  size="sm"
-                  className="h-7 px-2.5 text-xs bg-white border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  {linkType === 'classes' ? (
-                    <>
-                      <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
-                      Crear clase
-                    </>
-                  ) : (
-                    <>
-                      <Settings className="h-3.5 w-3.5 mr-1.5" />
-                      Configurar Formulario
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
+            {/* Nota: La sección con opciones ha sido eliminada */}
+            
           </div>
         ) : (
           <Button

@@ -1,19 +1,29 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShiftForm } from '../../context/ShiftFormContext';
 import { StepComponentProps } from '../StepRenderer';
 import { StepNavigation } from '../../shared/StepNavigation';
 import { Button } from '@/components/ui/button';
-import { IconCalendar, IconClock, IconLock, IconMapPin, IconCreditCard, IconChevronDown, IconChevronRight, X, Check } from '@tabler/icons-react';
+import { IconCalendar, IconClock, IconLock, IconMapPin, IconCreditCard, IconChevronDown, IconChevronRight, IconX, IconCheck, IconPackage } from '@tabler/icons-react';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { PaymentTypeEnum } from '@/components/shifts-registration/components/payment-types';
 import { PaymentTypeSection } from '@/components/shifts-registration/components/PaymentTypeSection';
-import { PaymentSectionWithStripe, PaymentMethod } from '@/components/shifts-registration/components/PaymentSection';
+import { PaymentSectionWithStripe, PaymentMethod as StripePaymentMethod } from '@/components/shifts-registration/components/PaymentSection';
+import { useStripeConfig } from '@/hooks/useStripeConfig';
+import { useAuth } from '@/contexts/AuthContext';
+import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext';
+import { useOrganization } from '@/contexts/OrganizationContext';
+// Nuevos imports para el procesamiento de reservas de turnos
+import { shiftBookingService } from '@/services/shiftBookingService';
+import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/bookings';
+// Importar los servicios de pago
+import { fullPaymentService } from '@/services/full-payment-client.service';
+import { depositPaymentService } from '@/services/deposit-payment-client.service';
 
 // Función para formatear la fecha en un formato legible
 const formatShiftDate = (dateString: string) => {
@@ -50,13 +60,40 @@ export function SummaryStep({
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentTypeEnum | null>(null);
-  const [selectedCardMethod, setSelectedCardMethod] = useState<PaymentMethod | null>(null);
+  const [selectedCardMethod, setSelectedCardMethod] = useState<StripePaymentMethod | null>(null);
   const [showCardMethodModal, setShowCardMethodModal] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [summarySubStep, setSummarySubStep] = useState<'details' | 'payment'>('details');
   const [showPaymentList, setShowPaymentList] = useState(false);
+  const [itemsData, setItemsData] = useState<any[]>([]);
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Obtenemos la información necesaria para el ID de Stripe (igual que en classes)
+  const { user } = useAuth();
+  const { organization } = useClientOrganizationContext();
+  const { organization: adminOrganization } = useOrganization();
+
+  // Determinamos el ID de empresa a usar, priorizando el del contexto del cliente
+  const empresaId = useMemo(() => 
+    organization?.id || adminOrganization?.id || user?.metadata?.empresa_id
+  , [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id]);
+
+  // Obtener la configuración de Stripe usando el ID de empresa
+  const { stripeAccountId, isConnected } = useStripeConfig(empresaId || null);
+
+  // Log para depuración
+  useEffect(() => {
+    console.log('[SummaryStep-Shifts] IDs disponibles:', {
+      clientOrgId: organization?.id,
+      adminOrgId: adminOrganization?.id,
+      userMetadataEmpresaId: user?.metadata?.empresa_id,
+      selectedEmpresaId: empresaId,
+      stripeAccountId,
+      isConnected,
+      userId: user?.id
+    });
+  }, [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id, empresaId, stripeAccountId, isConnected, user?.id]);
 
   // Ref para exponer métodos y estados al componente padre
   const summaryStepRef = useRef<any>({});
@@ -87,6 +124,20 @@ export function SummaryStep({
     }, 50);
     
     return () => clearTimeout(timer);
+  }, []);
+
+  // Efecto para cargar los datos de los ítems desde localStorage
+  useEffect(() => {
+    try {
+      const storedItemsData = window.localStorage.getItem('itemsWithStockData');
+      if (storedItemsData) {
+        const parsedData = JSON.parse(storedItemsData);
+        setItemsData(parsedData);
+        console.log('📋 [SummaryStep] Datos de ítems cargados del localStorage:', parsedData);
+      }
+    } catch (e) {
+      console.error('❌ [SummaryStep] Error al cargar datos de ítems desde localStorage:', e);
+    }
   }, []);
 
   // Verificar la validez de la fecha
@@ -140,33 +191,247 @@ export function SummaryStep({
     setIsProcessing(true);
     setShowOverlay(true);
     
+    let paymentAmount = 0;
+    
     try {
-      // Simulación temporal de proceso
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Obtener los detalles del turno
+      const shiftDetails = state.shiftDetails;
+      if (!shiftDetails) {
+        throw new Error('No se encontraron los detalles del turno');
+      }
+
+      // Verificar si tenemos los IDs necesarios
+      if (!user?.id) {
+        throw new Error('No se pudo identificar al usuario');
+      }
+
+      if (!empresaId) {
+        throw new Error('No se pudo identificar la empresa');
+      }
+
+      // Determinar si se necesita procesar el pago con tarjeta a través de Stripe
+      const isCardPayment = 
+        (selectedPaymentMethod === 'card' || 
+         selectedPaymentMethod === 'full' || 
+         selectedPaymentMethod === 'deposit') && 
+        selectedCardMethod && 
+        stripeAccountId;
+        
+      const guaranteePercentage = 30; // Porcentaje predeterminado para garantía
       
-      // Aquí iría la lógica para enviar la reserva de turno
-      console.log('Creando reserva con método de pago:', selectedPaymentMethod);
-      console.log('Método de tarjeta seleccionado:', selectedCardMethod);
+      // Solo procesar pago con Stripe si se seleccionó método de tarjeta
+      if (isCardPayment && selectedCardMethod) {
+        // Obtener el customer ID de Stripe
+        const stripeCustomerId = selectedCardMethod.customerId;
+        
+        if (!stripeCustomerId) {
+          console.error('❌ [SummaryStep] No se encontró customerId en el método de pago seleccionado');
+          throw new Error('No se encontró la información necesaria del cliente para procesar el pago');
+        }
+        
+        // Mostrar mensaje al usuario
+        toast({
+          title: 'Procesando pago',
+          description: selectedPaymentMethod === 'deposit' 
+            ? 'Estamos procesando el pago de tu seña...' 
+            : 'Estamos procesando tu pago con tarjeta...',
+          variant: 'default'
+        });
+        
+        try {
+          let paymentResult: any = null; // Usamos any temporalmente para manejar los diferentes tipos de respuesta
+          
+          if (selectedPaymentMethod === 'deposit') {
+            // Procesar pago de seña
+            console.log('🔄 [SummaryStep] Procesando pago de SEÑA con depositPaymentService...');
+            paymentResult = await depositPaymentService.processPayment({
+              paymentMethodId: selectedCardMethod.id,
+              amount: shiftDetails.price * 0.3, // 30% por defecto
+              totalAmount: shiftDetails.price,
+              depositPercentage: 30,
+              empresaId: empresaId || '',
+              description: `Seña - Turno en ${shiftDetails.courtName}`,
+              stripeCustomerId: stripeCustomerId,
+              stripeAccountId: stripeAccountId
+            });
+          } else {
+            // Procesar pago completo
+            console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService...');
+            paymentResult = await fullPaymentService.processPayment({
+              paymentMethodId: selectedCardMethod.id,
+              amount: shiftDetails.price,
+              empresaId: empresaId || '',
+              description: `Pago completo - Turno en ${shiftDetails.courtName}`,
+              stripeCustomerId: stripeCustomerId,
+              stripeAccountId: stripeAccountId
+            });
+          }
+          
+          console.log('✅ [SummaryStep] Resultado del procesamiento de pago:', paymentResult);
+          
+          // Calcular el monto de depósito basado en el tipo de pago y el resultado
+          if (selectedPaymentMethod === 'deposit' && paymentResult?.depositAmount) {
+            paymentAmount = paymentResult.depositAmount;
+          } else if ((selectedPaymentMethod === 'full' || selectedPaymentMethod === 'card') && paymentResult?.success) {
+            paymentAmount = shiftDetails.price;
+          }
+              
+          console.log('💰 [SummaryStep] Monto de depósito a registrar:', paymentAmount);
+          
+          // Verificar el resultado del pago
+          if (!paymentResult?.success) {
+            console.error('❌ [SummaryStep] Error al procesar el pago:', paymentResult?.error);
+            toast({
+              title: 'Error de pago',
+              description: paymentResult?.message || 'No se pudo procesar el pago con tarjeta',
+              variant: 'destructive'
+            });
+            setIsProcessing(false);
+            setShowOverlay(false);
+            return;
+          }
+          
+          console.log('✅ [SummaryStep] Pago procesado correctamente:', {
+            paymentIntentId: paymentResult.paymentIntentId,
+            status: paymentResult.chargeStatus,
+            isDepositPayment: selectedPaymentMethod === 'deposit',
+            depositAmount: selectedPaymentMethod === 'deposit' && 'depositAmount' in paymentResult ? paymentResult.depositAmount : null,
+            totalAmount: selectedPaymentMethod === 'deposit' && 'totalAmount' in paymentResult ? paymentResult.totalAmount : shiftDetails.price
+          });
+          
+          toast({
+            title: 'Pago exitoso',
+            description: selectedPaymentMethod === 'deposit' 
+              ? 'Tu seña ha sido procesada correctamente' 
+              : 'Tu pago ha sido procesado correctamente',
+            variant: 'default'
+          });
+          
+          // Guardar el ID del payment intent como respaldo
+          try {
+            localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
+            localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
+            if (selectedPaymentMethod === 'deposit' && 
+                'depositAmount' in paymentResult && 
+                'totalAmount' in paymentResult && 
+                'depositPercentage' in paymentResult) {
+              localStorage.setItem('lastDepositAmount', JSON.stringify({
+                depositAmount: paymentResult.depositAmount,
+                totalAmount: paymentResult.totalAmount,
+                depositPercentage: paymentResult.depositPercentage
+              }));
+            }
+          } catch (storageError) {
+            console.warn('⚠️ [SummaryStep] No se pudo guardar en localStorage:', storageError);
+          }
+        } catch (paymentError: any) {
+          console.error('❌ [SummaryStep] Error al llamar al servicio de pago:', paymentError);
+          toast({
+            title: 'Error de pago',
+            description: paymentError?.message || 'Error inesperado al procesar el pago',
+            variant: 'destructive'
+          });
+          setIsProcessing(false);
+          setShowOverlay(false);
+          return;
+        }
+      } else {
+        console.log('⚠️ [SummaryStep] No se requiere procesamiento de pago con Stripe, continuando con la creación de reserva');
+      }
       
+      // Mapear el tipo de pago a PaymentMethodEnum
+      const paymentMethodMap: Record<string, PaymentMethodEnum> = {
+        'cash': 'cash',
+        'card': 'card',
+        'full': 'card',
+        'deposit': 'card',
+        'guarantee': 'card',
+        'transfer': 'transfer'
+      };
+
+      const paymentMethod = paymentMethodMap[selectedPaymentMethod] || 'cash';
+      const paymentStatus = 
+        selectedPaymentMethod === 'full' || selectedPaymentMethod === 'card' 
+          ? 'completed' as PaymentStatusEnum
+          : selectedPaymentMethod === 'deposit' 
+            ? 'partial' as PaymentStatusEnum
+            : 'pending' as PaymentStatusEnum;
+            
+      // Obtener los datos completos de los ítems seleccionados desde localStorage
+      let itemsDataToUse = itemsData;
+      
+      // Log antes de crear la reserva
+      console.log('📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:', {
+        paymentMethod,
+        paymentType: selectedPaymentMethod,
+        paymentStatus,
+        hasCardMethod: !!selectedCardMethod,
+        depositAmount: paymentAmount,
+        selectedItems: state.selectedItems,
+        itemsTotalPrice: state.itemsTotalPrice,
+        itemsCompleteData: itemsDataToUse.length > 0 ? itemsDataToUse : 'No disponible'
+      });
+      
+      // Crear la reserva de turno usando el servicio
+      const bookingResult = await shiftBookingService.createShiftBooking(
+        shiftDetails, 
+        {
+          userId: user.id,
+          empresaId: empresaId,
+          paymentMethod,
+          paymentStatus,
+          paymentType: selectedPaymentMethod as PaymentTypeEnum,
+          stripePaymentMethodId: selectedCardMethod?.id,
+          guaranteePercentage: selectedPaymentMethod === 'guarantee' ? guaranteePercentage : undefined,
+          depositAmount: paymentAmount,  // Usamos el monto calculado basado en el resultado del pago
+          rentalItems: state.selectedItems,
+          rentalItemsPrice: state.itemsTotalPrice,
+          itemsData: itemsDataToUse // Pasamos los datos completos de los ítems
+        }
+      );
+      
+      if (bookingResult.error) {
+        console.error('❌ [SummaryStep] Error al crear la reserva de turno:', bookingResult.error);
+        toast({
+          title: 'Error de reserva',
+          description: bookingResult.error.message || 'No se pudo completar la reserva',
+          variant: 'destructive'
+        });
+        setIsProcessing(false);
+        setShowOverlay(false);
+        return;
+      }
+      
+      // Si llegamos aquí, la reserva fue creada exitosamente
+      console.log('✅ [SummaryStep] Reserva de turno creada con éxito. ID:', bookingResult.id);
+      
+      // Guardar el ID de la reserva en el estado
+      dispatch({ type: 'SET_BOOKING_ID', payload: bookingResult.id || '' });
+      
+      // Mostrar mensaje de éxito
       toast({
         title: 'Reserva creada',
         description: 'Tu reserva ha sido procesada correctamente',
         variant: 'default'
       });
       
+      // Esperar un segundo antes de avanzar para que el usuario vea el mensaje
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Avanzar al siguiente paso
       onNext();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al procesar la reserva:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo procesar la reserva',
+        description: error?.message || 'No se pudo procesar la reserva',
         variant: 'destructive'
       });
     } finally {
       setIsProcessing(false);
       setShowOverlay(false);
     }
-  }, [isProcessing, selectedPaymentMethod, selectedCardMethod, onNext, toast]);
+  }, [isProcessing, selectedPaymentMethod, selectedCardMethod, onNext, toast, state.shiftDetails, user, empresaId, stripeAccountId, dispatch]);
 
   // Manejar la navegación entre sub-pasos
   const handleNextSubStep = useCallback(() => {
@@ -357,7 +622,7 @@ export function SummaryStep({
           {hasItems && (
             <div className="flex items-start gap-3">
               <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-md bg-gray-100">
-                <IconCreditCard className="h-4 w-4 text-gray-500" />
+                <IconPackage className="h-4 w-4 text-gray-500" />
               </div>
               <div className="flex-1">
                 <div className="space-y-1 pb-2">
@@ -365,27 +630,29 @@ export function SummaryStep({
                     Artículos Seleccionados
                   </p>
                   <div className="space-y-3 mt-2">
-                    {Object.entries(state.selectedItems).map(([itemId, quantity]) => (
-                      <div key={itemId} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="h-6 w-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
-                            {quantity}
+                    {Object.entries(state.selectedItems).map(([itemId, quantity]) => {
+                      // Buscar el item completo en itemsData
+                      const itemDetails = itemsData.find(item => item.id === itemId);
+                      // Obtener el precio según la duración
+                      const itemPrice = itemDetails 
+                        ? (itemDetails.duration_pricing && state.duration
+                            ? itemDetails.duration_pricing[`${state.duration * 60}`] || 0
+                            : 0)
+                        : 0;
+                      
+                      return (
+                        <div key={itemId} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-sm text-gray-600">
+                              {itemDetails ? itemDetails.name : itemId}
+                            </span>
                           </div>
-                          <span className="text-sm text-gray-600">{itemId}</span>
+                          <span className="text-sm text-gray-600 font-medium">
+                            €{((itemPrice || 0) * quantity).toFixed(2)}
+                          </span>
                         </div>
-                        <span className="text-sm text-gray-600 font-medium">
-                          €{(15.99 * quantity).toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
-                    <div className="pt-2 mt-2 border-t border-gray-200">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-600">Subtotal Artículos</span>
-                        <span className="text-sm font-semibold text-gray-900">
-                          €{state.itemsTotalPrice.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -394,7 +661,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [state.shiftDetails, state.duration, state.selectedItems, state.itemsTotalPrice]);
+  }, [state.shiftDetails, state.duration, state.selectedItems, state.itemsTotalPrice, itemsData]);
 
   // Componente para la sección de métodos de pago
   const PaymentMethodsSection = useCallback(() => {
@@ -407,9 +674,17 @@ export function SummaryStep({
     return (
       <div className="space-y-4 rounded-lg border border-gray-200 bg-white/60 overflow-hidden">
         <div className="p-6 space-y-4" ref={containerRef}>
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900">Finaliza tu reserva</h3>
+          <div>
+            <h3 className="text-base font-medium text-gray-900">Finaliza tu reserva</h3>
             <p className="text-sm text-gray-500 mt-1">Configura los detalles de pago para confirmar tu reserva</p>
+          </div>
+          
+          {/* Línea divisoria después del título */}
+          <div className="border-t border-gray-200 pt-4"></div>
+          
+          {/* Título para la sección de tipo de pago */}
+          <div>
+            <h4 className="text-[14px] font-medium text-gray-700 mb-2">Elige cómo deseas realizar el pago</h4>
           </div>
           
           <PaymentTypeSection 
@@ -419,35 +694,35 @@ export function SummaryStep({
           
           {/* Mostrar el selector de tarjeta sólo si el método seleccionado requiere tarjeta */}
           {requiresCard && (
-            <div className="mt-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">
-                {selectedPaymentMethod === 'guarantee' 
-                  ? 'Selecciona una tarjeta para garantía'
-                  : selectedPaymentMethod === 'full'
-                    ? 'Selecciona una tarjeta para el pago completo'
-                    : selectedPaymentMethod === 'deposit'
-                      ? 'Selecciona una tarjeta para el pago de la seña'
-                      : 'Selecciona una tarjeta para el pago'}
-              </p>
-              <PaymentSectionWithStripe
-                selectedMethod={selectedCardMethod}
-                onShowMethods={() => setShowCardMethodModal(true)}
-                onUpdateMethod={(method: PaymentMethod) => {
-                  console.log('Actualizando método de tarjeta:', method);
-                  setSelectedCardMethod(method);
-                  return Promise.resolve();
-                }}
-                onRemoveMethod={() => setSelectedCardMethod(null)}
-                theme="light"
-                viewType={isMobile ? "mobile" : "desktop"}
-                expandCardList={!selectedCardMethod}
-              />
-            </div>
+            <>
+              {/* Línea divisoria entre secciones */}
+              <div className="border-t border-gray-200 pt-4"></div>
+              
+              <div>
+                <h4 className="text-[14px] font-medium text-gray-700 mb-2">
+                  Selecciona o agrega una tarjeta
+                </h4>
+                <PaymentSectionWithStripe
+                  selectedMethod={selectedCardMethod}
+                  onShowMethods={() => setShowCardMethodModal(true)}
+                  onUpdateMethod={(method: StripePaymentMethod) => {
+                    console.log('Actualizando método de tarjeta:', method);
+                    setSelectedCardMethod(method);
+                    return Promise.resolve();
+                  }}
+                  onRemoveMethod={() => setSelectedCardMethod(null)}
+                  theme="light"
+                  viewType={isMobile ? "mobile" : "desktop"}
+                  expandCardList={!selectedCardMethod}
+                  stripeAccountId={stripeAccountId || ''} // Pasar el ID de cuenta de Stripe
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
     );
-  }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef]);
+  }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef, stripeAccountId]);
 
   // Componente de Layout para Desktop
   const DesktopLayout = useCallback(({ children }: { children: React.ReactNode }) => (
@@ -518,18 +793,7 @@ export function SummaryStep({
           >
             {isMobile ? (
               // Layout móvil
-              <div className="w-full max-w-lg mx-auto px-4 py-6">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-semibold mb-1 text-gray-900">
-                    {summarySubStep === 'details' ? 'Resumen del Turno' : 'Finaliza tu reserva'}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {summarySubStep === 'details' 
-                      ? 'Revisa los detalles de tu reserva antes de continuar' 
-                      : 'Configura los detalles de pago para confirmar tu reserva'}
-                  </p>
-                </div>
-
+              <div className="w-full max-w-lg mx-auto">
                 {/* Contenido basado en el sub-paso actual */}
                 {summarySubStep === 'details' ? (
                   // Sub-paso 1: Detalles de la reserva
@@ -570,16 +834,6 @@ export function SummaryStep({
                       {/* Sección: Configuración de pago */}
                       <div className="w-full py-8 px-6 overflow-y-auto">
                         <div className="w-full max-w-xl mx-auto">
-                          {/* Título y subtítulo principal */}
-                          <div className="mb-6">
-                            <h2 className="text-xl font-semibold mb-1 text-gray-900">
-                              Finaliza tu reserva
-                            </h2>
-                            <p className="text-sm text-gray-500">
-                              Configura los detalles de pago para confirmar tu reserva
-                            </p>
-                          </div>
-                          
                           <PaymentMethodsSection />
                         </div>
                       </div>

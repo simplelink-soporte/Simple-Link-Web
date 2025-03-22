@@ -245,30 +245,20 @@ export function PaymentSection({
     // No hacer nada si el formulario de tarjeta está visible
     if (showCardForm) return;
     
-    // Si hay tarjetas disponibles o estamos cargando, mostrar/ocultar la lista
-    if (viewType === 'desktop') {
-      if (!isCardsLoading || cards.length > 0 || isCardsLoading) {
-        console.log('[PaymentSection] Toggle lista de tarjetas')
-        setIsListExpanded(!isListExpanded)
-      } 
-      // Si no hay tarjetas disponibles, abrir el modal
-      else {
-        console.log('[PaymentSection] No hay tarjetas disponibles, mostrar modal')
-        openPaymentMethodModal()
-      }
-    } 
-    // Comportamiento para móvil: mostrar el modal
-    else if (viewType === 'mobile') {
+    // Comportamiento para versión móvil: siempre mostrar el modal
+    if (viewType === 'mobile') {
       console.log('[PaymentSection] Versión móvil: abriendo modal de tarjetas')
       setShowCardModal(true)
+      return;
     }
-    // Comportamiento para otras vistas
-    else {
-      if (!isCardsLoading && cards.length > 0) {
-        setIsListExpanded(!isListExpanded)
-      } else {
-        openPaymentMethodModal()
-      }
+    
+    // Comportamiento para versión desktop
+    if (!isCardsLoading || cards.length > 0 || isCardsLoading) {
+      console.log('[PaymentSection] Toggle lista de tarjetas')
+      setIsListExpanded(!isListExpanded)
+    } else {
+      console.log('[PaymentSection] No hay tarjetas disponibles, mostrar modal')
+      openPaymentMethodModal()
     }
   }, [isCardsLoading, cards.length, viewType, isListExpanded, showCardForm, openPaymentMethodModal])
 
@@ -369,21 +359,24 @@ export function PaymentSection({
         )}
       </div>
 
-      <CardList 
-        cards={cards}
-        selectedCardId={methodToDisplay?.id}
-        onSelect={handleCardSelect}
-        onAddCard={handleAddCard}
-        onDeleteCard={deleteCard}
-        isExpanded={isListExpanded}
-        isLoading={isCardsLoading}
-        showCardForm={showCardForm}
-        onCardSetupSuccess={handleCardSetupSuccess}
-        onCardSetupError={handleCardSetupError}
-        onCardSetupBack={handleCardSetupBack}
-        theme={theme}
-        stripeAccountId={stripeAccountId}
-      />
+      {/* Solo mostrar CardList en versión desktop */}
+      {viewType === 'desktop' && (
+        <CardList 
+          cards={cards}
+          selectedCardId={methodToDisplay?.id}
+          onSelect={handleCardSelect}
+          onAddCard={handleAddCard}
+          onDeleteCard={deleteCard}
+          isExpanded={isListExpanded}
+          isLoading={isCardsLoading}
+          showCardForm={showCardForm}
+          onCardSetupSuccess={handleCardSetupSuccess}
+          onCardSetupError={handleCardSetupError}
+          onCardSetupBack={handleCardSetupBack}
+          theme={theme}
+          stripeAccountId={stripeAccountId}
+        />
+      )}
 
       {hasError && (
         <div className={cn(
@@ -422,7 +415,7 @@ export function PaymentSectionWithStripe(props: PaymentSectionProps) {
   return (
     <StripeProvider 
       empresaId={props.stripeAccountId || null}
-      isConnected={true}
+      isConnected={!!props.stripeAccountId} // Aseguramos que solo esté conectado si hay un ID
       isLoading={false}
       error={null}
       charges_enabled={true}

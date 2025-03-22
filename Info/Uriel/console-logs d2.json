@@ -1,0 +1,405 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T08:33:19.923Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T08:33:20.129Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T08:33:20.091Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T08:33:20.289Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [SummaryStep] Procesando pago de SEÑA con depositPaymentService..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos para pago de seña:",
+      {
+        "amount": 12,
+        "totalAmount": 40,
+        "depositPercentage": 30,
+        "paymentMethodId": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "stripeCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [qmog5erdx0e6d0zt7jv59wc2] Iniciando proceso de pago con seña:",
+      {
+        "paymentMethodId": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "amount": 12,
+        "totalAmount": 40,
+        "depositPercentage": 30,
+        "timestamp": "2025-03-22T08:33:24.718Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [qmog5erdx0e6d0zt7jv59wc2] Datos calculados para el pago con seña:",
+      {
+        "totalAmount": 40,
+        "depositPercentage": 30,
+        "depositAmount": 12
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [qmog5erdx0e6d0zt7jv59wc2] Respuesta de API de pago con seña:",
+      {
+        "success": true,
+        "paymentIntentId": "pi_3R5NUeC4oQv4vCtF1jhfqThZ",
+        "status": "succeeded",
+        "depositAmount": 12,
+        "totalAmount": 40,
+        "depositPercentage": 30
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Resultado del procesamiento de pago:",
+      {
+        "success": true,
+        "paymentIntentId": "pi_3R5NUeC4oQv4vCtF1jhfqThZ",
+        "chargeStatus": "succeeded",
+        "depositAmount": 12,
+        "totalAmount": 40,
+        "depositPercentage": 30,
+        "message": "Pago de seña procesado correctamente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Pago procesado correctamente:",
+      {
+        "paymentIntentId": "pi_3R5NUeC4oQv4vCtF1jhfqThZ",
+        "status": "succeeded",
+        "isDepositPayment": true,
+        "depositAmount": 12,
+        "totalAmount": 40
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:",
+      {
+        "paymentMethod": "card",
+        "paymentType": "deposit",
+        "paymentStatus": "partially_paid",
+        "hasCardMethod": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Creando reserva para el turno:",
+      "Pista 2",
+      "fecha:",
+      null
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Opciones recibidas:",
+      "{\n  \"userId\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n  \"empresaId\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"partially_paid\",\n  \"paymentType\": \"deposit\",\n  \"stripePaymentMethodId\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos de reserva transformados:",
+      "{\n  \"reservationType\": \"normal\",\n  \"courtId\": \"562b18bd-612d-4c20-b9ad-c31a1aea44a2\",\n  \"startTime\": \"08:00\",\n  \"endTime\": \"09:00\",\n  \"title\": \"Turno: Pista 2\",\n  \"description\": \"Reserva de turno en Pista 2\",\n  \"participants\": [\n    {\n      \"id\": \"8fd7ff50-2e1c-42c4-9705-c0157410c000\",\n      \"user_id\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n      \"role\": \"player\"\n    }\n  ],\n  \"courtPrice\": 40,\n  \"classSessionPrice\": 0,\n  \"rentalItemsPrice\": 0,\n  \"rentalItems\": [],\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"partially_paid\",\n  \"paymentType\": \"deposit\",\n  \"depositAmount\": 0,\n  \"guaranteePercentage\": null,\n  \"empresaId\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"stripe_payment_method_id\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Tipo de pago normalizado:",
+      "deposit"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "start": "08:00",
+          "end": "09:00",
+          "timezone": "Europe/Madrid",
+          "localStart": null,
+          "localEnd": null
+        },
+        "utc": {
+          "date": "Invalid DateTime",
+          "start": null,
+          "end": null,
+          "fullStartUTC": null,
+          "fullEndUTC": null
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos finales para RPC:",
+      "{\n  \"reservationType\": \"normal\",\n  \"courtId\": \"562b18bd-612d-4c20-b9ad-c31a1aea44a2\",\n  \"startTime\": \"08:00\",\n  \"endTime\": \"09:00\",\n  \"title\": \"Turno: Pista 2\",\n  \"description\": \"Reserva de turno en Pista 2\",\n  \"participants\": [\n    {\n      \"id\": \"8fd7ff50-2e1c-42c4-9705-c0157410c000\",\n      \"user_id\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n      \"role\": \"player\"\n    }\n  ],\n  \"courtPrice\": 40,\n  \"classSessionPrice\": 0,\n  \"rentalItemsPrice\": 0,\n  \"rentalItems\": [],\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"partially_paid\",\n  \"paymentType\": \"deposit\",\n  \"depositAmount\": 0,\n  \"guaranteePercentage\": null,\n  \"empresaId\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"stripe_payment_method_id\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\",\n  \"booking_date_utc\": \"Invalid DateTime\",\n  \"start_time_utc\": \"\",\n  \"end_time_utc\": \"\",\n  \"timezone\": \"Europe/Madrid\",\n  \"payment_type\": \"deposit\"\n}"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [ShiftBookingService] Error al crear la reserva:",
+      {
+        "code": "PGRST202",
+        "details": "Searched for the function public.create_booking with parameters booking_date_utc, classSessionPrice, courtId, courtPrice, depositAmount, description, empresaId, endTime, end_time_utc, guaranteePercentage, participants, paymentMethod, paymentStatus, paymentType, payment_type, rentalItems, rentalItemsPrice, reservationType, startTime, start_time_utc, stripe_payment_method_id, timezone, title or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.",
+        "hint": "Perhaps you meant to call the function public.create_booking_v2",
+        "message": "Could not find the function public.create_booking(booking_date_utc, classSessionPrice, courtId, courtPrice, depositAmount, description, empresaId, endTime, end_time_utc, guaranteePercentage, participants, paymentMethod, paymentStatus, paymentType, payment_type, rentalItems, rentalItemsPrice, reservationType, startTime, start_time_utc, stripe_payment_method_id, timezone, title) in the schema cache"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [SummaryStep] Error al crear la reserva de turno:",
+      {
+        "message": "Error al crear la reserva",
+        "details": "Could not find the function public.create_booking(booking_date_utc, classSessionPrice, courtId, courtPrice, depositAmount, description, empresaId, endTime, end_time_utc, guaranteePercentage, participants, paymentMethod, paymentStatus, paymentType, payment_type, rentalItems, rentalItemsPrice, reservationType, startTime, start_time_utc, stripe_payment_method_id, timezone, title) in the schema cache",
+        "code": "PGRST202"
+      }
+    ]
+  }
+]

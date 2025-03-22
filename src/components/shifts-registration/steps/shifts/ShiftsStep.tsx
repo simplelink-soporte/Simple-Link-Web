@@ -134,17 +134,21 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     // Actualizar el ID del turno en el contexto
     selectShift(slot.id);
     
+    // Formatear la fecha en ISO (solo la parte de la fecha)
+    const formattedDate = selectedDate.toISOString().split('T')[0];
+    
     // Guardar los detalles completos del turno en el contexto global
     setShiftDetails({
       startTime: slot.startTime,
       endTime: slot.endTime,
       courtId: slot.courtId,
       courtName: slot.courtName,
-      price: slot.price || 0
+      price: slot.price || 0,
+      date: formattedDate // Incluir la fecha en los detalles del turno
     });
     
-    // Guardar la fecha seleccionada en formato ISO (solo la parte de la fecha)
-    selectDate(selectedDate.toISOString().split('T')[0]);
+    // Guardar la fecha seleccionada también por separado (para compatibilidad)
+    selectDate(formattedDate);
   }, [selectShift, setShiftDetails, selectDate, selectedDate]);
 
   // Manejador para avanzar al siguiente paso
@@ -173,7 +177,8 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
       endTime: '',
       courtId: '',
       courtName: '',
-      price: 0
+      price: 0,
+      date: date.toISOString().split('T')[0] // Incluir la fecha seleccionada
     });
     
     // Guardar la fecha en el contexto
@@ -200,12 +205,13 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
       endTime: '',
       courtId: '',
       courtName: '',
-      price: 0
+      price: 0,
+      date: selectedDate.toISOString().split('T')[0] // Mantener la fecha seleccionada
     });
     
     // Actualizar duración en el contexto global
     setShiftDuration(value[0]);
-  }, [selectShift, setShiftDetails, setSkipItemsStep, setShiftDuration]);
+  }, [selectShift, setShiftDetails, setSkipItemsStep, setShiftDuration, selectedDate]);
   
   // Manejador para cambiar el filtro de tiempo
   const handleTimeChange = useCallback((value: TimeOfDay | null) => {
@@ -221,9 +227,10 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
       endTime: '',
       courtId: '',
       courtName: '',
-      price: 0
+      price: 0,
+      date: selectedDate.toISOString().split('T')[0] // Mantener la fecha seleccionada
     });
-  }, [selectShift, setShiftDetails]);
+  }, [selectShift, setShiftDetails, selectedDate]);
   
   // Manejador para cambiar el filtro de tipo de cancha
   const handleCourtFilterChange = useCallback((value: CourtType) => {
@@ -239,9 +246,10 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
       endTime: '',
       courtId: '',
       courtName: '',
-      price: 0
+      price: 0,
+      date: selectedDate.toISOString().split('T')[0] // Mantener la fecha seleccionada
     });
-  }, [selectShift, setShiftDetails]);
+  }, [selectShift, setShiftDetails, selectedDate]);
 
   // Organizar slots por pista
   const organizedSlots = useMemo(() => {

@@ -104,7 +104,7 @@ export default function ShiftFormPageNew() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-0 py-0">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -116,7 +116,7 @@ export default function ShiftFormPageNew() {
 
   if (!form) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-0 py-0">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Formulario no encontrado</AlertTitle>
@@ -131,7 +131,7 @@ export default function ShiftFormPageNew() {
   return (
     <ShiftFormProvider formData={form} empresaId={form.empresa_id || ''}>
       <div className="min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-0 py-0">
           <div className="max-w-3xl mx-auto">
             <ShiftRegistrationForm form={form} />
           </div>

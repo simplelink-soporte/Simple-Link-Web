@@ -6,6 +6,30 @@ import { Check, ChevronDown as IconChevronDown, ChevronRight as IconChevronRight
 import { cn } from "@/lib/utils"
 import { PaymentTypeList } from "./PaymentTypeList"
 import { PaymentTypeEnum, PAYMENT_TYPES } from "./payment-types"
+import { PaymentTypeModal } from "./PaymentTypeModal"
+
+// Hook personalizado para detectar si estamos en vista móvil
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Función para verificar el ancho de la ventana
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px es el breakpoint estándar para tablet
+    };
+    
+    // Verificar el tamaño inicial
+    checkMobile();
+    
+    // Agregar listener para cambios de tamaño
+    window.addEventListener('resize', checkMobile);
+    
+    // Limpiar listener cuando se desmonta el componente
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+};
 
 interface PaymentTypeSectionProps {
   selectedPaymentMethod: PaymentTypeEnum | null;
@@ -26,17 +50,24 @@ export function PaymentTypeSection({
   paymentConfig
 }: PaymentTypeSectionProps) {
   const [showPaymentList, setShowPaymentList] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   // Función para manejar la selección de tipo de pago
   const handleSelectPaymentMethod = (type: PaymentTypeEnum) => {
     setSelectedPaymentMethod(type);
     setShowPaymentList(false);
+    setShowModal(false);
   };
   
   // Función para manejar el mostrar/ocultar la lista de tipos de pago
   const handleSelectPaymentType = () => {
-    setShowPaymentList(!showPaymentList);
+    if (isMobile) {
+      setShowModal(true);
+    } else {
+      setShowPaymentList(!showPaymentList);
+    }
   };
   
   // Cerrar la lista cuando se hace clic fuera del componente
@@ -142,34 +173,28 @@ export function PaymentTypeSection({
         )}
       </div>
       
-      {/* Lista de tipos de pago desplegable */}
+      {/* Lista de tipos de pago desplegable (solo para desktop) */}
       <AnimatePresence>
-        {showPaymentList && (
-          <motion.div
-            initial={{ opacity: 0, y: 5, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: 5, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={cn(
-              "absolute left-0 right-0 z-[100] mt-2 w-full",
-              "rounded-lg",
-              "overflow-hidden bg-white",
-              "border border-gray-200",
-              "shadow-md"
-            )}
-          >
-            <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
-              <PaymentTypeList
-                selectedType={selectedPaymentMethod}
-                onSelect={handleSelectPaymentMethod}
-                isExpanded={true}
-                noContainer={true}
-                paymentConfig={paymentConfig}
-              />
-            </div>
-          </motion.div>
+        {showPaymentList && !isMobile && (
+          <div className="relative mt-2">
+            <PaymentTypeList
+              selectedType={selectedPaymentMethod}
+              onSelect={handleSelectPaymentMethod}
+              isExpanded={true}
+              paymentConfig={paymentConfig}
+            />
+          </div>
         )}
       </AnimatePresence>
+      
+      {/* Modal de tipos de pago (solo para mobile) */}
+      <PaymentTypeModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        selectedPaymentMethod={selectedPaymentMethod}
+        onSelect={handleSelectPaymentMethod}
+        paymentConfig={paymentConfig}
+      />
     </div>
   );
 }

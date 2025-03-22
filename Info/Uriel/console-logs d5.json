@@ -1,0 +1,1381 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[ShiftsStep] Avanzando al siguiente paso con el turno:",
+      "562b18bd-612d-4c20-b9ad-c31a1aea44a2-2025-03-22-08:00-62269"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando procesamiento de items, cantidad:",
+      5
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Items procesados correctamente:",
+      5
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Primer ítem procesado:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando procesamiento de items, cantidad:",
+      5
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Items procesados correctamente:",
+      5
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Primer ítem procesado:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 ItemsList - Estado actual:",
+      {
+        "itemsCount": 5,
+        "isLoading": false,
+        "selectedItemsCount": 0,
+        "layout": "list"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 Primer ítem de la lista:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando caché: hay 5 artículos disponibles para duración=1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 ItemsList - Estado actual:",
+      {
+        "itemsCount": 5,
+        "isLoading": false,
+        "selectedItemsCount": 0,
+        "layout": "list"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 Primer ítem de la lista:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 ItemsList - Estado actual:",
+      {
+        "itemsCount": 5,
+        "isLoading": false,
+        "selectedItemsCount": 1,
+        "layout": "list"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 Primer ítem de la lista:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando caché: hay 5 artículos disponibles para duración=1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 ItemsList - Estado actual:",
+      {
+        "itemsCount": 5,
+        "isLoading": false,
+        "selectedItemsCount": 2,
+        "layout": "list"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 Primer ítem de la lista:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando caché: hay 5 artículos disponibles para duración=1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 ItemsList - Estado actual:",
+      {
+        "itemsCount": 5,
+        "isLoading": false,
+        "selectedItemsCount": 3,
+        "layout": "list"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 Primer ítem de la lista:",
+      {
+        "id": "19380ce9-78cc-473c-a9e0-b6c422415158",
+        "name": "Artículo 1",
+        "type": "equipment",
+        "duration_pricing": {
+          "60": 10,
+          "90": 16,
+          "120": 20
+        },
+        "default_duration": 60,
+        "stock": 50,
+        "requires_deposit": false,
+        "deposit_amount": null,
+        "is_active": true,
+        "created_at": "2024-11-24T22:29:57.02+00:00",
+        "updated_at": "2025-03-18T21:39:02.589503+00:00",
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "sede_id": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "availableStock": 50,
+        "baseStock": 50,
+        "reservedUnits": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando caché: hay 5 artículos disponibles para duración=1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": null,
+        "isConnected": false,
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": null,
+        "isConnected": false,
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Iniciando búsqueda de configuración:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeConfig] Configuración encontrada:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "status": "active",
+        "charges_enabled": true,
+        "is_active": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isConnected": true,
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Seleccionando tipo de pago: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      {
+        "id": "guarantee",
+        "name": "Garantía",
+        "description": "Dejar tarjeta como garantía",
+        "requiresCard": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:10.890Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:11.097Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:10.919Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:11.129Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] handleCardSelect llamado con:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Procesando selección de tarjeta:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentSection] Actualizando método de pago global:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de tarjeta:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando método de pago local:",
+      {
+        "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+        "brand": "visa",
+        "last4": "4242",
+        "expMonth": 9,
+        "expYear": 2060,
+        "type": "card",
+        "name": "visa terminada en 4242",
+        "description": "Expira: 09/2060",
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Tarjeta seleccionada correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:12.582Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:12.787Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:12.570Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:12.796Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ [SummaryStep] No se requiere procesamiento de pago con Stripe, continuando con la creación de reserva"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:",
+      {
+        "paymentMethod": "card",
+        "paymentType": "guarantee",
+        "paymentStatus": "pending",
+        "hasCardMethod": true,
+        "depositAmount": 0,
+        "selectedItems": {
+          "8e76de4a-d5d0-4083-afee-581ecf0c9dc9": 1,
+          "5088e195-5053-4160-8997-4786ba61b873": 1,
+          "a54f254d-1cc4-40bd-bdad-3d182ebc304e": 1
+        },
+        "itemsTotalPrice": 32
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Creando reserva para el turno:",
+      "Pista 2",
+      "fecha:",
+      "2025-03-22"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Opciones recibidas:",
+      "{\n  \"userId\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n  \"empresaId\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"pending\",\n  \"paymentType\": \"guarantee\",\n  \"stripePaymentMethodId\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\",\n  \"guaranteePercentage\": 30,\n  \"depositAmount\": 0,\n  \"rentalItems\": {\n    \"8e76de4a-d5d0-4083-afee-581ecf0c9dc9\": 1,\n    \"5088e195-5053-4160-8997-4786ba61b873\": 1,\n    \"a54f254d-1cc4-40bd-bdad-3d182ebc304e\": 1\n  },\n  \"rentalItemsPrice\": 32\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos de reserva transformados:",
+      "{\n  \"reservationType\": \"booking\",\n  \"courtId\": \"562b18bd-612d-4c20-b9ad-c31a1aea44a2\",\n  \"date\": \"2025-03-22\",\n  \"startTime\": \"08:00\",\n  \"endTime\": \"09:00\",\n  \"title\": \"Turno: Pista 2\",\n  \"description\": \"Reserva de cancha Pista 2\",\n  \"participants\": [\n    {\n      \"id\": \"62657ec8-2d5d-46d4-ba01-f642c77b0f08\",\n      \"user_id\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n      \"role\": \"player\"\n    }\n  ],\n  \"courtPrice\": 40,\n  \"classSessionPrice\": 0,\n  \"rentalItemsPrice\": 32,\n  \"rentalItems\": [\n    {\n      \"itemId\": \"8e76de4a-d5d0-4083-afee-581ecf0c9dc9\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"5088e195-5053-4160-8997-4786ba61b873\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"a54f254d-1cc4-40bd-bdad-3d182ebc304e\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    }\n  ],\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"pending\",\n  \"paymentType\": \"guarantee\",\n  \"depositAmount\": 0,\n  \"guaranteePercentage\": 30,\n  \"empresaId\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"stripe_payment_method_id\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Tipo de pago normalizado:",
+      "guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Estado de pago normalizado:",
+      "pending"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Tipo de reserva normalizado:",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "start": "08:00",
+          "end": "09:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-03-22T08:00:00.000+01:00",
+          "localEnd": "2025-03-22T09:00:00.000+01:00"
+        },
+        "utc": {
+          "date": "2025-03-22",
+          "start": "2025-03-22 07:00:00",
+          "end": "2025-03-22 08:00:00",
+          "fullStartUTC": "2025-03-22T07:00:00.000Z",
+          "fullEndUTC": "2025-03-22T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos finales para RPC:",
+      "{\n  \"p_court_id\": \"562b18bd-612d-4c20-b9ad-c31a1aea44a2\",\n  \"p_date\": \"2025-03-22\",\n  \"p_start_time\": \"2025-03-22 07:00:00\",\n  \"p_end_time\": \"2025-03-22 08:00:00\",\n  \"p_court_price\": 40,\n  \"p_deposit_amount\": 0,\n  \"p_payment_method\": \"card\",\n  \"p_payment_status\": \"pending\",\n  \"p_payment_type\": \"guarantee\",\n  \"p_rental_items\": [\n    {\n      \"itemId\": \"8e76de4a-d5d0-4083-afee-581ecf0c9dc9\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"5088e195-5053-4160-8997-4786ba61b873\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"a54f254d-1cc4-40bd-bdad-3d182ebc304e\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    }\n  ],\n  \"p_rental_items_price\": 32,\n  \"p_title\": \"Turno: Pista 2\",\n  \"p_description\": \"Reserva de cancha Pista 2\",\n  \"p_participants\": [\n    {\n      \"id\": \"62657ec8-2d5d-46d4-ba01-f642c77b0f08\",\n      \"user_id\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n      \"role\": \"player\"\n    }\n  ],\n  \"p_empresa_id\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"p_reservation_type\": \"booking\",\n  \"p_class_id\": null,\n  \"p_class_session_price\": 0,\n  \"p_stripe_payment_method_id\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\",\n  \"p_guarantee_percentage\": 30\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Parámetros enviados a RPC create_booking_v2:",
+      "{\n  \"p_court_id\": \"562b18bd-612d-4c20-b9ad-c31a1aea44a2\",\n  \"p_date\": \"2025-03-22\",\n  \"p_start_time\": \"2025-03-22 07:00:00\",\n  \"p_end_time\": \"2025-03-22 08:00:00\",\n  \"p_court_price\": 40,\n  \"p_deposit_amount\": 0,\n  \"p_payment_method\": \"card\",\n  \"p_payment_status\": \"pending\",\n  \"p_payment_type\": \"guarantee\",\n  \"p_rental_items\": [\n    {\n      \"itemId\": \"8e76de4a-d5d0-4083-afee-581ecf0c9dc9\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"5088e195-5053-4160-8997-4786ba61b873\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    },\n    {\n      \"itemId\": \"a54f254d-1cc4-40bd-bdad-3d182ebc304e\",\n      \"quantity\": 1,\n      \"pricePerUnit\": 0,\n      \"totalPrice\": 0\n    }\n  ],\n  \"p_rental_items_price\": 32,\n  \"p_title\": \"Turno: Pista 2\",\n  \"p_description\": \"Reserva de cancha Pista 2\",\n  \"p_participants\": [\n    {\n      \"id\": \"62657ec8-2d5d-46d4-ba01-f642c77b0f08\",\n      \"user_id\": \"3860596c-080b-416c-a3a0-5070ea0bbd5a\",\n      \"role\": \"player\"\n    }\n  ],\n  \"p_empresa_id\": \"99f78081-24fa-4892-aae2-823816e7d132\",\n  \"p_reservation_type\": \"booking\",\n  \"p_class_id\": null,\n  \"p_class_session_price\": 0,\n  \"p_stripe_payment_method_id\": \"pm_1R3JMZC4oQv4vCtFtcQO3lNA\",\n  \"p_guarantee_percentage\": 30\n}"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [ShiftBookingService] Error al crear la reserva:",
+      {
+        "code": "P0001",
+        "details": null,
+        "hint": null,
+        "message": "Item no encontrado"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [SummaryStep] Error al crear la reserva de turno:",
+      {
+        "message": "Error al crear la reserva",
+        "details": "Item no encontrado",
+        "code": "P0001"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cambio en estado de autenticación:",
+      {
+        "event": "SIGNED_IN",
+        "timestamp": "2025-03-22T11:38:51.342Z",
+        "storageKey": "sb-padel-auth-token"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftRegistrationForm: Ejecutando verificación de autenticación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftFormContext: Usuario autenticado, mostrando paso de ubicación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Página de turnos: Usuario autenticado, cargando formulario"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:51.763Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:51.996Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cambio en estado de autenticación:",
+      {
+        "event": "SIGNED_IN",
+        "timestamp": "2025-03-22T11:38:56.380Z",
+        "storageKey": "sb-padel-auth-token"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftRegistrationForm: Ejecutando verificación de autenticación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftFormContext: Usuario autenticado, mostrando paso de ubicación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Página de turnos: Usuario autenticado, cargando formulario"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:38:56.909Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:38:57.138Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cambio en estado de autenticación:",
+      {
+        "event": "SIGNED_IN",
+        "timestamp": "2025-03-22T11:39:06.059Z",
+        "storageKey": "sb-padel-auth-token"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sesión iniciada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftRegistrationForm: Ejecutando verificación de autenticación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ShiftFormContext: Usuario autenticado, mostrando paso de ubicación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Página de turnos: Usuario autenticado, cargando formulario"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-22T11:39:06.554Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-22T11:39:06.800Z",
+        "retryCount": 0
+      }
+    ]
+  }
+]
