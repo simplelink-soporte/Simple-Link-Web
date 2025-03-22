@@ -75,6 +75,13 @@ function PaymentTypeItem({ type, isSelected, onClick }: PaymentTypeItemProps) {
           )}>
             {type.description}
           </p>
+          {type.details && (
+            <ul className="text-xs text-gray-500 list-disc pl-4 space-y-1">
+              {type.details.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       {isSelected && (
@@ -114,17 +121,77 @@ export function PaymentTypeList({
   viewType = 'desktop',
   paymentConfig
 }: PaymentTypeListProps) {
+  // Verificar si existe garantía pero no booking
+  const hasGuarantee = paymentTypes.some(type => type.id === 'guarantee');
+  const hasBooking = paymentTypes.some(type => type.id === 'booking');
+  const showGuaranteeAsBooking = hasGuarantee && !hasBooking;
+
+  // Crear tipos de pago modificados con el caso especial
+  const modifiedPaymentTypes = [...paymentTypes]; // Clonar el array original
+
+  // Si tenemos garantía pero no booking, reemplazamos la descripción y nombre de garantía
+  if (showGuaranteeAsBooking) {
+    for (let i = 0; i < modifiedPaymentTypes.length; i++) {
+      if (modifiedPaymentTypes[i].id === 'guarantee') {
+        // Modificar la opción de garantía para mostrarla como "Pago en el Club"
+        modifiedPaymentTypes[i] = {
+          ...modifiedPaymentTypes[i],
+          name: 'Pago en el Club',
+          description: 'Pagar al llegar al club',
+          details: [
+            'Se solicitarán los datos de tu tarjeta como garantía',
+            'No se realizará ningún cargo inmediato',
+            'En caso de no presentarse, se realizará un cargo del porcentaje establecido'
+          ]
+        };
+        break;
+      }
+    }
+  }
+
   // Filtrar los tipos de pago excluidos
-  const filteredPaymentTypes = paymentTypes.filter(
+  const filteredPaymentTypes = modifiedPaymentTypes.filter(
     type => !EXCLUDED_PAYMENT_OPTIONS.includes(type.id)
   );
-  
+
+  // Modificamos los tipos de pago para incluir los porcentajes configurados
+  const typesWithUpdatedPercentages = filteredPaymentTypes.map(type => {
+    // Clonar el tipo de pago para no modificar el original
+    const updatedType = { ...type };
+    
+    // Actualizar los detalles según tipo de pago y configuración disponible
+    if (paymentConfig) {
+      if (type.id === 'guarantee' && paymentConfig.guaranteePercentage) {
+        // Actualizar detalles de garantía con el porcentaje configurado
+        updatedType.details = [
+          'Se solicitarán los datos de tu tarjeta como garantía',
+          'No se realizará ningún cargo inmediato',
+          `En caso de no presentarse, se realizará un cargo del ${paymentConfig.guaranteePercentage}% del valor de la reserva`
+        ];
+        updatedType.guaranteeConfig = {
+          percentage: paymentConfig.guaranteePercentage
+        };
+      } else if (type.id === 'deposit' && paymentConfig.partialPaymentPercentage) {
+        // Actualizar detalles de seña con el porcentaje configurado
+        updatedType.details = [
+          `Paga una seña del ${paymentConfig.partialPaymentPercentage}% ahora`,
+          'El resto se pagará al llegar al club',
+          'La seña no es reembolsable en caso de no asistencia'
+        ];
+        // También actualizamos la descripción
+        updatedType.description = `Pagar solo el ${paymentConfig.partialPaymentPercentage}% ahora`;
+      }
+    }
+    
+    return updatedType;
+  });
+
   // Función para manejar la selección de un tipo de pago
   const handleTypeSelect = (type: PaymentTypeEnum) => {
     console.log(`[PaymentTypeList] Seleccionando tipo de pago: ${type}`);
     
     // Obtener información completa del tipo seleccionado
-    const typeInfo = filteredPaymentTypes.find(t => t.id === type);
+    const typeInfo = typesWithUpdatedPercentages.find(t => t.id === type);
     
     // Añadir información detallada en los logs
     console.log(`[PaymentTypeList] Detalles del tipo seleccionado:`, {
@@ -138,7 +205,7 @@ export function PaymentTypeList({
     // Para todos los tipos, seleccionar directamente
     onSelect(type);
   };
-  
+
   // Función para obtener la descripción actualizada según la configuración de pago
   const getUpdatedDescription = (type: PaymentType): string => {
     // Si no hay configuración de pago, usar la descripción original
@@ -166,7 +233,7 @@ export function PaymentTypeList({
   const listContent = (
     <div className="space-y-1">
       <AnimatePresence>
-        {filteredPaymentTypes.map((type) => (
+        {typesWithUpdatedPercentages.map((type) => (
           <PaymentTypeItem
             key={`${type.id}-${type.name}`}
             type={{

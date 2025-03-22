@@ -36,6 +36,10 @@ export interface FormSettings {
     views: number;
     submissions: number;
   };
+  paymentMethods?: {
+    available: string[];
+    percentages?: Record<string, number>;
+  };
 }
 
 export interface PublishedForm {

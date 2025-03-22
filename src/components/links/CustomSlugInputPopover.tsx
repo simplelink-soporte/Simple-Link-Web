@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Edit, HelpCircle, AlertCircle } from "lucide-react"
+import { Edit, HelpCircle, AlertCircle, Percent } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -19,11 +19,14 @@ import {
 } from "@/components/ui/tooltip"
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Slider } from "@/components/ui/slider"
 
 interface CustomSlugInputPopoverProps {
-  onUpdate: (slug: string) => void
+  onUpdate: (slug: string, paymentOptions?: string[], paymentPercentages?: Record<string, number>) => void
   isLoading: boolean
   defaultSlug?: string
+  defaultPaymentOptions?: string[]
+  defaultPaymentPercentages?: Record<string, number>
   linkType: 'classes' | 'bookings'
   children?: React.ReactNode
 }
@@ -32,12 +35,15 @@ export function CustomSlugInputPopover({
   onUpdate, 
   isLoading, 
   defaultSlug = '', 
+  defaultPaymentOptions = ["local"],
+  defaultPaymentPercentages = { garantia: 50, sena: 30 },
   linkType,
   children 
 }: CustomSlugInputPopoverProps) {
   const [slug, setSlug] = useState(defaultSlug)
   const [isOpen, setIsOpen] = useState(false)
-  const [paymentOptions, setPaymentOptions] = useState<string[]>(["local"])
+  const [paymentOptions, setPaymentOptions] = useState<string[]>(defaultPaymentOptions)
+  const [paymentPercentages, setPaymentPercentages] = useState<Record<string, number>>(defaultPaymentPercentages)
   const { loadStripeConnection } = useOrganization()
   const [stripeConnection, setStripeConnection] = useState<{
     stripe_account_id: string;
@@ -90,7 +96,12 @@ export function CustomSlugInputPopover({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (slug.trim()) {
-      onUpdate(slug.trim())
+      // Sólo enviamos paymentOptions y paymentPercentages si es un enlace de reservas
+      if (linkType === 'bookings') {
+        onUpdate(slug.trim(), paymentOptions, paymentPercentages)
+      } else {
+        onUpdate(slug.trim())
+      }
       setIsOpen(false)
     }
   }
@@ -116,6 +127,13 @@ export function CustomSlugInputPopover({
     
     // Si llegamos aquí, podemos agregar la opción
     setPaymentOptions(prev => [...prev, value]);
+  }
+
+  const handlePercentageChange = (optionName: string, value: number[]) => {
+    setPaymentPercentages(prev => ({
+      ...prev,
+      [optionName]: value[0]
+    }));
   }
 
   return (
@@ -268,6 +286,28 @@ export function CustomSlugInputPopover({
                           </Tooltip>
                         </div>
                         <p className="text-xs text-gray-500">Se solicita tarjeta como garantía que se cobrará en caso de no asistencia</p>
+                        
+                        {paymentOptions.includes("garantia") && (
+                          <div className="mt-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="garantia-slider" className="text-xs text-gray-600">
+                                Porcentaje a cobrar
+                              </Label>
+                              <span className="flex items-center text-xs font-medium text-gray-700">
+                                {paymentPercentages.garantia}<Percent className="inline ml-0.5 h-3 w-3" />
+                              </span>
+                            </div>
+                            <Slider
+                              id="garantia-slider"
+                              min={10}
+                              max={100}
+                              step={5}
+                              value={[paymentPercentages.garantia]}
+                              onValueChange={(value) => handlePercentageChange("garantia", value)}
+                              className="w-full"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -302,6 +342,28 @@ export function CustomSlugInputPopover({
                           </Tooltip>
                         </div>
                         <p className="text-xs text-gray-500">El cliente paga un porcentaje por adelantado como reserva</p>
+                        
+                        {paymentOptions.includes("sena") && (
+                          <div className="mt-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="sena-slider" className="text-xs text-gray-600">
+                                Porcentaje a cobrar
+                              </Label>
+                              <span className="flex items-center text-xs font-medium text-gray-700">
+                                {paymentPercentages.sena}<Percent className="inline ml-0.5 h-3 w-3" />
+                              </span>
+                            </div>
+                            <Slider
+                              id="sena-slider"
+                              min={10}
+                              max={100}
+                              step={5}
+                              value={[paymentPercentages.sena]}
+                              onValueChange={(value) => handlePercentageChange("sena", value)}
+                              className="w-full"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -361,15 +423,12 @@ export function CustomSlugInputPopover({
               <Button
                 type="submit"
                 disabled={!slug.trim() || isLoading}
-                variant="ghost"
                 className={cn(
-                  "text-xs text-gray-900 hover:text-gray-900",
-                  "hover:bg-gray-100",
-                  "font-medium",
-                  "h-7 px-2"
+                  "text-xs bg-zinc-800 hover:bg-zinc-900 text-white",
+                  "h-7 px-3 rounded-md"
                 )}
               >
-                Actualizar
+                Guardar
               </Button>
             </div>
           </div>

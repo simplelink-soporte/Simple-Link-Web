@@ -334,31 +334,37 @@ export default function FormsPage() {
                               {/* Secciones de Links - Una debajo de la otra */}
                               <div className="space-y-4 mb-8">
                                 {/* Sección de Link de Reserva */}
-                                <LinkSection 
-                                  title="Link de Reserva"
-                                  description="Genera y comparte este enlace para que tus clientes puedan realizar reservas de forma rápida y sencilla."
-                                  linkData={bookingLink}
-                                  baseUrl={`${window.location.origin}/f`}
-                                  actionLabel="Crear link de reservas"
-                                  onAction={handleCreateBookingLink}
-                                  onDeactivate={deactivateBookingLink}
-                                  onUpdateSlug={updateBookingLinkSlug}
-                                  onConfigureForm={handleConfigureForm}
-                                  isLoading={isLoadingLinks}
-                                />
+                                {bookingLink && (
+                                  <LinkSection
+                                    title="Enlace de reservas"
+                                    description="Crea y comparte un enlace para que tus clientes puedan reservar turnos en tu establecimiento."
+                                    linkData={bookingLink}
+                                    baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/reservas`}
+                                    actionLabel="Configurar opciones"
+                                    onAction={handleConfigureForm}
+                                    onDeactivate={deactivateBookingLink}
+                                    onUpdateSlug={updateBookingLinkSlug}
+                                    onConfigureForm={handleConfigureForm}
+                                    className="min-h-[160px]"
+                                    isLoading={isLoading}
+                                  />
+                                )}
 
                                 {/* Sección de Link de Clases */}
-                                <LinkSection 
-                                  title="Link de Clases"
-                                  description="Permite a tus clientes inscribirse en clases a través de este enlace personalizado."
-                                  linkData={classesLink}
-                                  baseUrl={`${window.location.origin}/clases`}
-                                  actionLabel="Crear link de clases"
-                                  onAction={handleCreateClassLink}
-                                  onDeactivate={deactivateClassesLink}
-                                  onUpdateSlug={updateClassesLinkSlug}
-                                  isLoading={isLoadingLinks}
-                                />
+                                {classesLink && (
+                                  <LinkSection
+                                    title="Enlace de clases"
+                                    description="Crea y comparte un enlace para que tus clientes puedan registrarse en tus clases."
+                                    linkData={classesLink}
+                                    baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/clases`}
+                                    actionLabel="Gestionar clases"
+                                    onAction={handleCreateClassLink}
+                                    onDeactivate={deactivateClassesLink}
+                                    onUpdateSlug={updateClassesLinkSlug}
+                                    className="min-h-[160px]"
+                                    isLoading={isLoading}
+                                  />
+                                )}
                               </div>
 
                               {/* Header con buscador */}

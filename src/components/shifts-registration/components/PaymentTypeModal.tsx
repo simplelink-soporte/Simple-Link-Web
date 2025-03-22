@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaymentTypeList } from "./PaymentTypeList"
-import { PaymentTypeEnum } from "./payment-types"
+import { PaymentTypeEnum, PaymentType } from "./payment-types"
 
 interface PaymentTypeModalProps {
   isOpen: boolean
@@ -13,6 +13,7 @@ interface PaymentTypeModalProps {
   selectedPaymentMethod: PaymentTypeEnum | null
   onSelect: (type: PaymentTypeEnum) => void
   isLoading?: boolean
+  paymentTypes?: PaymentType[]
   paymentConfig?: {
     status: string
     currency: string
@@ -27,6 +28,7 @@ export function PaymentTypeModal({
   selectedPaymentMethod,
   onSelect,
   isLoading = false,
+  paymentTypes,
   paymentConfig
 }: PaymentTypeModalProps) {
   // Función para manejar la selección de tipo de pago
@@ -90,21 +92,20 @@ export function PaymentTypeModal({
                 }}
               >
                 {isLoading ? (
-                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-                    <p className="text-sm text-gray-500 text-center">
-                      Cargando tipos de pago...
-                    </p>
+                  <div className="flex justify-center items-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
                   </div>
                 ) : (
-                  <PaymentTypeList
-                    selectedType={selectedPaymentMethod}
-                    onSelect={handlePaymentTypeSelect}
-                    isExpanded={true}
-                    noContainer={true}
-                    viewType="mobile"
-                    paymentConfig={paymentConfig}
-                  />
+                  <div className="px-3 py-3">
+                    <PaymentTypeList
+                      selectedType={selectedPaymentMethod}
+                      onSelect={handlePaymentTypeSelect}
+                      noContainer
+                      viewType="mobile"
+                      paymentConfig={paymentConfig}
+                      paymentTypes={paymentTypes}
+                    />
+                  </div>
                 )}
               </div>
             </motion.div>

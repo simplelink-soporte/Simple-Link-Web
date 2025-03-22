@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { PaymentTypeList } from "./PaymentTypeList"
 import { PaymentTypeEnum, PAYMENT_TYPES } from "./payment-types"
 import { PaymentTypeModal } from "./PaymentTypeModal"
+import { useShiftForm } from '../context/ShiftFormContext'
 
 // Hook personalizado para detectar si estamos en vista móvil
 const useIsMobile = () => {
@@ -41,19 +42,65 @@ interface PaymentTypeSectionProps {
     guaranteePercentage?: number;
     partialPaymentPercentage?: number;
   };
+  availablePaymentMethods?: string[];
 }
 
 export function PaymentTypeSection({
   selectedPaymentMethod,
   setSelectedPaymentMethod,
   className,
-  paymentConfig
+  paymentConfig,
+  availablePaymentMethods
 }: PaymentTypeSectionProps) {
   const [showPaymentList, setShowPaymentList] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { state } = useShiftForm();
   
+  // Obtiene los métodos de pago disponibles, ya sea de props o del contexto
+  const paymentMethodsAvailable = availablePaymentMethods || state.availablePaymentMethods;
+  
+  // Creamos una configuración de pago basada en los porcentajes del contexto si no se proporciona directamente
+  const effectivePaymentConfig = paymentConfig || {
+    status: 'active',
+    currency: 'EUR',
+    guaranteePercentage: state.paymentPercentages?.garantia || state.paymentPercentages?.guarantee || 40,
+    partialPaymentPercentage: state.paymentPercentages?.sena || state.paymentPercentages?.deposit || 25
+  };
+  
+  // Verificar si tenemos el caso especial: garantía sin booking
+  const hasGuarantee = paymentMethodsAvailable?.includes('guarantee');
+  const hasBooking = paymentMethodsAvailable?.includes('booking');
+  const showGuaranteeAsBooking = hasGuarantee && !hasBooking;
+
+  // Filtra los tipos de pago disponibles según la configuración
+  const availableTypes = paymentMethodsAvailable && paymentMethodsAvailable.length > 0
+    ? PAYMENT_TYPES.filter(type => paymentMethodsAvailable.includes(type.id))
+    : PAYMENT_TYPES;
+  
+  // Modificamos los tipos de pago si es necesario para el caso especial
+  const displayTypes = [...availableTypes];
+  if (showGuaranteeAsBooking) {
+    // Para cada tipo, si es garantía, modificamos su presentación
+    for (let i = 0; i < displayTypes.length; i++) {
+      if (displayTypes[i].id === 'guarantee') {
+        displayTypes[i] = {
+          ...displayTypes[i],
+          name: 'Pago en el Club',
+          description: 'Pagar al llegar al club',
+          // Mantenemos los detalles de garantía para que el usuario sepa que se le pedirá tarjeta
+          details: [
+            'Se solicitarán los datos de tu tarjeta como garantía',
+            'No se realizará ningún cargo inmediato',
+            'En caso de no presentarse, se realizará un cargo del porcentaje establecido'
+          ]
+        };
+        break;
+      }
+    }
+  }
+
   // Función para manejar la selección de tipo de pago
   const handleSelectPaymentMethod = (type: PaymentTypeEnum) => {
     setSelectedPaymentMethod(type);
@@ -84,9 +131,9 @@ export function PaymentTypeSection({
     };
   }, [containerRef]);
   
-  // Datos del tipo de pago seleccionado
+  // Datos del tipo de pago seleccionado - usamos displayTypes para mostrar el nombre adaptado
   const selectedTypeData = selectedPaymentMethod 
-    ? PAYMENT_TYPES.find(t => t.id === selectedPaymentMethod) 
+    ? displayTypes.find(t => t.id === selectedPaymentMethod) 
     : null;
   
   return (
@@ -173,28 +220,32 @@ export function PaymentTypeSection({
         )}
       </div>
       
-      {/* Lista de tipos de pago desplegable (solo para desktop) */}
+      {/* Modal para dispositivos móviles */}
       <AnimatePresence>
-        {showPaymentList && !isMobile && (
-          <div className="relative mt-2">
-            <PaymentTypeList
-              selectedType={selectedPaymentMethod}
-              onSelect={handleSelectPaymentMethod}
-              isExpanded={true}
-              paymentConfig={paymentConfig}
-            />
-          </div>
+        {showModal && (
+          <PaymentTypeModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSelect={handleSelectPaymentMethod}
+            selectedPaymentMethod={selectedPaymentMethod}
+            paymentTypes={displayTypes}
+            paymentConfig={effectivePaymentConfig}
+          />
         )}
       </AnimatePresence>
-      
-      {/* Modal de tipos de pago (solo para mobile) */}
-      <PaymentTypeModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        selectedPaymentMethod={selectedPaymentMethod}
-        onSelect={handleSelectPaymentMethod}
-        paymentConfig={paymentConfig}
-      />
+
+      {/* Dropdown de opciones para desktop */}
+      <AnimatePresence>
+        {showPaymentList && !isMobile && (
+          <PaymentTypeList
+            selectedType={selectedPaymentMethod}
+            onSelect={handleSelectPaymentMethod}
+            paymentTypes={displayTypes}
+            isExpanded={showPaymentList}
+            paymentConfig={effectivePaymentConfig}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

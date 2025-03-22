@@ -124,10 +124,14 @@ const transformBookingDataForDB = (data: BookingCreationData): CreateBookingPara
     participants: data.participants
   });
   
+  // Respetar el estado de pago enviado desde el frontend
+  // Si no se especificó uno, usar 'completed' como predeterminado
+  const paymentStatus = data.paymentStatus || 'completed' as PaymentStatusEnum;
+  
   // Determinar el tipo de pago basado en el estado
   const paymentType = data.paymentType || (
-    data.paymentStatus === 'completed' ? 'booking' :
-    data.paymentStatus === 'partial' ? 'deposit' :
+    paymentStatus === 'completed' ? 'booking' :
+    paymentStatus === 'partial' ? 'deposit' :
     'booking'
   ) as PaymentTypeEnum;
 
@@ -159,7 +163,7 @@ const transformBookingDataForDB = (data: BookingCreationData): CreateBookingPara
     p_court_price: data.courtPrice,
     p_rental_items_price: data.rentalItemsPrice,
     p_payment_method: data.paymentMethod,
-    p_payment_status: data.paymentStatus,
+    p_payment_status: paymentStatus,
     p_payment_type: paymentType,
     p_deposit_amount: data.depositAmount || 0,
     p_title: data.title,

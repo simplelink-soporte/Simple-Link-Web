@@ -217,7 +217,15 @@ export function SummaryStep({
         selectedCardMethod && 
         stripeAccountId;
         
-      const guaranteePercentage = 30; // Porcentaje predeterminado para garantía
+      // Obtener el porcentaje de garantía del contexto, con valor predeterminado si no está configurado
+      const guaranteePercentage = state.paymentPercentages?.garantia || 
+                               state.paymentPercentages?.guarantee || 
+                               40; // Porcentaje predeterminado actualizado a 40%
+
+      // Obtener el porcentaje de seña del contexto con valor predeterminado
+      const depositPercentage = state.paymentPercentages?.sena ||
+                               state.paymentPercentages?.deposit ||
+                               25; // Porcentaje predeterminado para seña
       
       // Solo procesar pago con Stripe si se seleccionó método de tarjeta
       if (isCardPayment && selectedCardMethod) {
@@ -244,11 +252,13 @@ export function SummaryStep({
           if (selectedPaymentMethod === 'deposit') {
             // Procesar pago de seña
             console.log('🔄 [SummaryStep] Procesando pago de SEÑA con depositPaymentService...');
+            // Calcular el precio total (turno + ítems)
+            const totalAmount = shiftDetails.price + state.itemsTotalPrice;
             paymentResult = await depositPaymentService.processPayment({
               paymentMethodId: selectedCardMethod.id,
-              amount: shiftDetails.price * 0.3, // 30% por defecto
-              totalAmount: shiftDetails.price,
-              depositPercentage: 30,
+              amount: totalAmount * (depositPercentage / 100), // Calculamos el monto de la seña según el porcentaje
+              totalAmount: totalAmount,
+              depositPercentage: depositPercentage,
               empresaId: empresaId || '',
               description: `Seña - Turno en ${shiftDetails.courtName}`,
               stripeCustomerId: stripeCustomerId,
@@ -257,9 +267,11 @@ export function SummaryStep({
           } else {
             // Procesar pago completo
             console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService...');
+            // Calcular el precio total (turno + ítems)
+            const totalAmount = shiftDetails.price + state.itemsTotalPrice;
             paymentResult = await fullPaymentService.processPayment({
               paymentMethodId: selectedCardMethod.id,
-              amount: shiftDetails.price,
+              amount: totalAmount,
               empresaId: empresaId || '',
               description: `Pago completo - Turno en ${shiftDetails.courtName}`,
               stripeCustomerId: stripeCustomerId,
@@ -273,7 +285,7 @@ export function SummaryStep({
           if (selectedPaymentMethod === 'deposit' && paymentResult?.depositAmount) {
             paymentAmount = paymentResult.depositAmount;
           } else if ((selectedPaymentMethod === 'full' || selectedPaymentMethod === 'card') && paymentResult?.success) {
-            paymentAmount = shiftDetails.price;
+            paymentAmount = shiftDetails.price + state.itemsTotalPrice;
           }
               
           console.log('💰 [SummaryStep] Monto de depósito a registrar:', paymentAmount);
@@ -296,7 +308,7 @@ export function SummaryStep({
             status: paymentResult.chargeStatus,
             isDepositPayment: selectedPaymentMethod === 'deposit',
             depositAmount: selectedPaymentMethod === 'deposit' && 'depositAmount' in paymentResult ? paymentResult.depositAmount : null,
-            totalAmount: selectedPaymentMethod === 'deposit' && 'totalAmount' in paymentResult ? paymentResult.totalAmount : shiftDetails.price
+            totalAmount: selectedPaymentMethod === 'deposit' && 'totalAmount' in paymentResult ? paymentResult.totalAmount : shiftDetails.price + state.itemsTotalPrice
           });
           
           toast({
@@ -510,9 +522,11 @@ export function SummaryStep({
     // Si no hay detalles del turno seleccionado, no renderizar
     if (!state.shiftDetails) return null;
     
-    // Formatear el precio
-    const price = state.shiftDetails?.price;
-    const formatted = price?.toFixed(2);
+    // Formatear el precio (sumando el precio del turno y el precio de los ítems)
+    const shiftPrice = state.shiftDetails?.price || 0;
+    const itemsPrice = state.itemsTotalPrice || 0;
+    const totalPrice = shiftPrice + itemsPrice;
+    const formatted = totalPrice.toFixed(2);
     const [integerPart, decimalPart] = formatted?.split('.');
     
     return (
@@ -536,7 +550,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [state.shiftDetails]);
+  }, [state.shiftDetails, state.itemsTotalPrice]);
 
   // Renderizado de los detalles de la reserva
   const ReservationDetails = useCallback(() => {

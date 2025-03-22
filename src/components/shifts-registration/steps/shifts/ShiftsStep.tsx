@@ -43,7 +43,6 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     selectShift, 
     setDuration: setShiftDuration, 
     setShiftDetails, 
-    selectDate, 
     setSkipItemsStep 
   } = useShiftForm();
   
@@ -78,9 +77,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
 
   // Estados locales
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
-    if (state.selectedDate) {
-      return startOfDay(parseISO(state.selectedDate));
-    }
+    // Inicializar con la fecha actual ya que state.selectedDate no existe
     return startOfDay(new Date());
   });
   
@@ -146,10 +143,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
       price: slot.price || 0,
       date: formattedDate // Incluir la fecha en los detalles del turno
     });
-    
-    // Guardar la fecha seleccionada también por separado (para compatibilidad)
-    selectDate(formattedDate);
-  }, [selectShift, setShiftDetails, selectDate, selectedDate]);
+  }, [selectShift, setShiftDetails, selectedDate]);
 
   // Manejador para avanzar al siguiente paso
   const handleNext = useCallback(() => {
@@ -165,26 +159,17 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
   
   // Manejador para cambiar la fecha
   const handleDateChange = useCallback((date: Date) => {
+    // Actualizar la fecha seleccionada en el estado local
     setSelectedDate(date);
     
-    // Limpiar la selección al cambiar la fecha
+    // Resetear el turno seleccionado
     setSelectedShiftId(null);
-    selectShift('');
+    selectShift("");
     
-    // Limpiar los detalles del turno
-    setShiftDetails({
-      startTime: '',
-      endTime: '',
-      courtId: '',
-      courtName: '',
-      price: 0,
-      date: date.toISOString().split('T')[0] // Incluir la fecha seleccionada
-    });
-    
-    // Guardar la fecha en el contexto
-    selectDate(date.toISOString().split('T')[0]);
-  }, [selectShift, setShiftDetails, selectDate]);
-  
+    // Reiniciar los detalles del turno
+    setShiftDetails(null);
+  }, [selectShift, setShiftDetails, setSelectedShiftId]);
+
   // Manejador para cambiar la duración
   const handleDurationChange = useCallback((value: number[]) => {
     // Actualizar estado local
@@ -197,7 +182,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     
     // Limpiar la selección de turno al cambiar la duración
     setSelectedShiftId(null);
-    selectShift('');
+    selectShift("");
     
     // Limpiar los detalles del turno
     setShiftDetails({
@@ -219,7 +204,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     
     // Limpiar la selección de turno al cambiar el filtro
     setSelectedShiftId(null);
-    selectShift('');
+    selectShift("");
     
     // Limpiar los detalles del turno
     setShiftDetails({
@@ -238,7 +223,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
     
     // Limpiar la selección de turno al cambiar el filtro
     setSelectedShiftId(null);
-    selectShift('');
+    selectShift("");
     
     // Limpiar los detalles del turno
     setShiftDetails({

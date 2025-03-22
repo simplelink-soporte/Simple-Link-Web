@@ -24,6 +24,7 @@ export default function ShiftFormPageNew() {
   const [error, setError] = useState<string | null>(null);
   const { setOrganization } = useOrganization();
   const { user, isLoading: authLoading } = useAuth();
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState<string[]>(['local']);
   
   // Verificar autenticación a nivel de página
   useEffect(() => {
@@ -52,6 +53,18 @@ export default function ShiftFormPageNew() {
 
         const formData = await formPublishService.getBySlug(params.slug as string);
         console.log('Formulario cargado (versión nueva):', formData);
+        
+        // Extraer los métodos de pago disponibles
+        if (formData.settings?.paymentMethods?.available && 
+            Array.isArray(formData.settings.paymentMethods.available) && 
+            formData.settings.paymentMethods.available.length > 0) {
+          setAvailablePaymentMethods(formData.settings.paymentMethods.available);
+          console.log('Métodos de pago disponibles:', formData.settings.paymentMethods.available);
+        } else {
+          // Valor predeterminado si no hay métodos configurados
+          setAvailablePaymentMethods(['local']);
+          console.log('No se encontraron métodos de pago configurados, usando valor predeterminado');
+        }
         
         // Actualizar el contexto de la organización
         if (formData.empresa_id) {
@@ -129,7 +142,7 @@ export default function ShiftFormPageNew() {
   }
 
   return (
-    <ShiftFormProvider formData={form} empresaId={form.empresa_id || ''}>
+    <ShiftFormProvider formData={form} empresaId={form.empresa_id || ''} availablePaymentMethods={availablePaymentMethods}>
       <div className="min-h-screen bg-white">
         <div className="container mx-auto px-0 py-0">
           <div className="max-w-3xl mx-auto">

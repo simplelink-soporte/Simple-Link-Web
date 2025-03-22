@@ -69,31 +69,35 @@ export class FormPublishService {
       // Validar estructura de campos
       this.validateFields(fields);
 
+      // Mapear campos para que cumplan con la interfaz FormField
+      const mappedFields = this.mapFieldsToFormFields(fields);
+
       // Construir respuesta con valores por defecto
       const publishedForm: PublishedForm = {
         id: link.id,
         empresa_id: link.empresa_id,
         slug: link.slug,
-        title: link.settings?.title || 'Formulario sin título',
-        description: link.settings?.description || '',
-        fields: fields,
+        fields: mappedFields,
         settings: {
-          theme: link.settings?.theme?.mode || 'light',
-          isCustomizable: link.settings?.isCustomizable ?? true
-        },
-        customization: {
-          colors: {
-            primary: link.settings?.theme?.primary_color || '#000000'
+          title: link.settings?.title || 'Formulario sin título',
+          description: link.settings?.description || '',
+          fields: mappedFields,
+          theme: {
+            mode: link.settings?.theme?.mode || 'light',
+            primary_color: link.settings?.theme?.primary_color || '#000000',
+            logo_url: link.settings?.theme?.logo_url
           },
-          logo: {
-            url: link.settings?.theme?.logo_url || undefined
+          isCustomizable: link.settings?.isCustomizable ?? true,
+          paymentMethods: {
+            available: this.normalizePaymentMethods(link.settings?.paymentMethods?.available),
+            percentages: link.settings?.paymentMethods?.percentages || {}
+          },
+          analytics: {
+            views: link.settings?.analytics?.views || 0,
+            submissions: link.settings?.analytics?.submissions || 0
           }
         },
         status: 'published',
-        analytics: {
-          views: link.settings?.analytics?.views || 0,
-          submissions: link.settings?.analytics?.submissions || 0
-        },
         metadata: {
           createdBy: link.settings?.created_by,
           updatedBy: link.settings?.updated_by
@@ -143,16 +147,64 @@ export class FormPublishService {
     FormPublishService.debug.log('✅ Validación de campos exitosa:', { count: fields.length });
   }
 
+  /**
+   * Mapea los campos del formulario para que cumplan con la interfaz FormField
+   * @param fields Campos originales
+   * @returns Campos mapeados que cumplen con FormField
+   */
+  private mapFieldsToFormFields(fields: any[]): any[] {
+    return fields.map((field, index) => {
+      // Asegurarse de que cada campo tenga una propiedad order
+      return {
+        ...field,
+        // Si no tiene order, usar el índice como order
+        order: field.order !== undefined ? field.order : index,
+        // Si no tiene required, establecer como falso
+        required: field.required !== undefined ? field.required : false,
+        // Asegurarse de que tenga un label
+        label: field.label || field.title || `Campo ${index + 1}`
+      };
+    });
+  }
+
+  /**
+   * Incrementa el contador de vistas para un formulario (actualmente desactivado)
+   * @param slug Slug del formulario
+   */
   async incrementViews(slug: string): Promise<void> {
+    // Funcionalidad de contador de vistas desactivada
+    // Si necesitas reactivarla en el futuro, descomenta el siguiente código:
+    
+    /*
     try {
+      // Primero obtenemos el registro actual para preservar sus configuraciones
+      const { data: link, error: fetchError } = await this.supabase
+        .from('company_links')
+        .select('settings')
+        .eq('slug', slug)
+        .single();
+
+      if (fetchError) {
+        FormPublishService.debug.error('Error al obtener el enlace para actualizar vistas:', fetchError);
+        return;
+      }
+
+      // Preparamos el objeto de actualización preservando todas las propiedades existentes
+      const currentSettings = link?.settings || {};
+      const updatedSettings = {
+        ...currentSettings,
+        analytics: {
+          ...currentSettings.analytics,
+          views: (currentSettings.analytics?.views || 0) + 1,
+          lastView: new Date().toISOString()
+        }
+      };
+
+      // Actualizamos con el objeto completo preservando todo
       const { error } = await this.supabase
         .from('company_links')
         .update({
-          settings: {
-            analytics: {
-              views: this.supabase.rpc('increment', { x: 1 })
-            }
-          }
+          settings: updatedSettings
         })
         .eq('slug', slug);
 
@@ -164,6 +216,7 @@ export class FormPublishService {
     } catch (error) {
       FormPublishService.debug.error('Error al incrementar vistas:', error);
     }
+    */
   }
 
   async publish(form: any): Promise<string> {
@@ -264,6 +317,40 @@ export class FormPublishService {
       .replace(/[\u0300-\u036f]/g, '');
     
     return slug || `formulario-${timestamp}`;
+  }
+
+  /**
+   * Normaliza los métodos de pago del JSONB a los valores esperados por el frontend
+   * @param methods Array de métodos de pago desde el JSONB
+   * @returns Array de métodos de pago normalizados según PaymentTypeEnum
+   */
+  private normalizePaymentMethods(methods: any[] | undefined): string[] {
+    if (!methods || !Array.isArray(methods) || methods.length === 0) {
+      return ['booking']; // Valor por defecto (pago en el local)
+    }
+
+    // Mapeo de nombres de métodos que podrían venir del JSONB a los IDs de PaymentTypeEnum
+    const paymentMethodsMap: Record<string, string> = {
+      'local': 'booking',    // Pago en el club
+      'sena': 'deposit',     // Pago con seña
+      'completo': 'full',    // Pago completo
+      'garantia': 'guarantee', // Garantía
+
+      // Ya soportamos los nombres oficiales también
+      'booking': 'booking',
+      'deposit': 'deposit',
+      'full': 'full',
+      'guarantee': 'guarantee'
+    };
+
+    // Filtrar y mapear los métodos de pago válidos
+    return methods.map(method => {
+      const normalizedMethod = typeof method === 'string' ? 
+        paymentMethodsMap[method.toLowerCase()] || method : '';
+      
+      // Si no existe en el mapeo, usar el método original si es válido
+      return normalizedMethod || 'booking';
+    }).filter(Boolean);
   }
 }
 

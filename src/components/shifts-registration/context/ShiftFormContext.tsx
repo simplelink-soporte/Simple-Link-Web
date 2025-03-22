@@ -46,6 +46,8 @@ interface ShiftFormState {
   selectedItems: Record<string, number>;
   itemsTotalPrice: number;
   skipItemsStep: boolean;
+  availablePaymentMethods: string[];
+  paymentPercentages: Record<string, number>;
   customerInfo: {
     name: string;
     email: string;
@@ -67,6 +69,7 @@ type ShiftFormAction =
   | { type: 'SET_STEP'; payload: ShiftFormStep }
   | { type: 'SET_IS_AUTHENTICATED'; payload: boolean }
   | { type: 'SET_IS_GUEST'; payload: boolean }
+  | { type: 'SET_AUTH_STATUS'; payload: { isAuthenticated: boolean; isGuest: boolean } }
   | { type: 'SET_AUTH_VIEW'; payload: AuthView }
   | { type: 'SET_CUSTOMER_INFO'; payload: ShiftFormState['customerInfo'] }
   | { type: 'SELECT_LOCATION'; payload: string }
@@ -77,6 +80,8 @@ type ShiftFormAction =
   | { type: 'SET_SELECTED_ITEMS'; payload: Record<string, number> }
   | { type: 'SET_ITEMS_TOTAL_PRICE'; payload: number }
   | { type: 'SET_SKIP_ITEMS_STEP'; payload: boolean }
+  | { type: 'SET_AVAILABLE_PAYMENT_METHODS'; payload: string[] }
+  | { type: 'SET_PAYMENT_PERCENTAGES'; payload: Record<string, number> }
   | { type: 'SET_BOOKING_ID'; payload: string }
   | { type: 'SET_BOOKING_STATUS'; payload: ShiftFormState['bookingStatus'] }
   | { type: 'SET_ERROR'; payload: Error | null }
@@ -99,6 +104,8 @@ const initialState: ShiftFormState = {
   selectedItems: {},
   itemsTotalPrice: 0,
   skipItemsStep: false,
+  availablePaymentMethods: ['local'],
+  paymentPercentages: {},
   customerInfo: null,
   bookingId: null,
   error: null,
@@ -122,6 +129,8 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
       return { ...state, isAuthenticated: action.payload };
     case 'SET_IS_GUEST':
       return { ...state, isGuest: action.payload };
+    case 'SET_AUTH_STATUS':
+      return { ...state, isAuthenticated: action.payload.isAuthenticated, isGuest: action.payload.isGuest };
     case 'SET_AUTH_VIEW':
       return { ...state, authView: action.payload };
     case 'SET_CUSTOMER_INFO':
@@ -142,6 +151,10 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
       return { ...state, itemsTotalPrice: action.payload };
     case 'SET_SKIP_ITEMS_STEP':
       return { ...state, skipItemsStep: action.payload };
+    case 'SET_AVAILABLE_PAYMENT_METHODS':
+      return { ...state, availablePaymentMethods: action.payload };
+    case 'SET_PAYMENT_PERCENTAGES':
+      return { ...state, paymentPercentages: action.payload };
     case 'SET_BOOKING_ID':
       return { ...state, bookingId: action.payload };
     case 'SET_BOOKING_STATUS':
@@ -178,6 +191,8 @@ interface ShiftFormContextProps {
   setSelectedItems: (items: Record<string, number>) => void;
   setItemsTotalPrice: (price: number) => void;
   setSkipItemsStep: (skip: boolean) => void;
+  setAvailablePaymentMethods: (methods: string[]) => void;
+  setPaymentPercentages: (percentages: Record<string, number>) => void;
   setBookingId: (id: string) => void;
   setBookingStatus: (status: ShiftFormState['bookingStatus']) => void;
   setError: (error: Error | null) => void;
@@ -203,10 +218,11 @@ interface ShiftFormProviderProps {
   children: ReactNode;
   formData: PublishedForm | null;
   empresaId: string;
+  availablePaymentMethods?: string[];
 }
 
 // Proveedor interno (client-side)
-function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormProviderProps) {
+function ClientSideShiftProvider({ children, formData, empresaId, availablePaymentMethods = ['local'] }: ShiftFormProviderProps) {
   const router = useRouter();
   const { user, isLoading: isLoadingAuth } = useAuth();
   const { organization, isLoading: orgLoading } = useClientOrganizationContext();
@@ -262,11 +278,13 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
     if (!isLoadingAuth && !hasInitialized) {
       // Actualizamos el estado de autenticación
       dispatch({
-        type: 'SET_AUTH_STATUS',
-        payload: { 
-          isAuthenticated: !!user, 
-          isGuest: false 
-        }
+        type: 'SET_IS_AUTHENTICATED',
+        payload: !!user
+      });
+      
+      dispatch({
+        type: 'SET_IS_GUEST',
+        payload: false
       });
 
       // Solo cambiamos el paso si el usuario está autenticado
@@ -334,6 +352,14 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
     dispatch({ type: 'SET_SKIP_ITEMS_STEP', payload: skip });
   }, [dispatch]);
 
+  const setAvailablePaymentMethods = useCallback((methods: string[]) => {
+    dispatch({ type: 'SET_AVAILABLE_PAYMENT_METHODS', payload: methods });
+  }, [dispatch]);
+
+  const setPaymentPercentages = useCallback((percentages: Record<string, number>) => {
+    dispatch({ type: 'SET_PAYMENT_PERCENTAGES', payload: percentages });
+  }, [dispatch]);
+
   const setCustomerInfo = useCallback((info: ShiftFormState['customerInfo']) => {
     dispatch({ type: 'SET_CUSTOMER_INFO', payload: info });
   }, [dispatch]);
@@ -355,11 +381,13 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
       
       // Actualizar el estado de autenticación
       dispatch({
-        type: 'SET_AUTH_STATUS',
-        payload: { 
-          isAuthenticated: isUserAuthenticated, 
-          isGuest: false 
-        }
+        type: 'SET_IS_AUTHENTICATED',
+        payload: isUserAuthenticated
+      });
+      
+      dispatch({
+        type: 'SET_IS_GUEST',
+        payload: false
       });
       
       // Marcar que se ha verificado la autenticación
@@ -381,7 +409,17 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
     }
   }, [isLoadingAuth, user, dispatch, router]);
 
-  // Memoizamos el valor de isLoading
+  // Efecto para inicializar los métodos de pago disponibles
+  useEffect(() => {
+    if (availablePaymentMethods && availablePaymentMethods.length > 0) {
+      dispatch({ 
+        type: 'SET_AVAILABLE_PAYMENT_METHODS', 
+        payload: availablePaymentMethods 
+      });
+      console.log('ShiftFormContext: Métodos de pago disponibles establecidos:', availablePaymentMethods);
+    }
+  }, [availablePaymentMethods, dispatch]);
+
   const isLoadingValue = React.useMemo(() => {
     return isLoadingAuth || (orgLoading && !organization) || isCheckingVinculacion;
   }, [isLoadingAuth, orgLoading, organization, isCheckingVinculacion]);
@@ -404,6 +442,8 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
     setSelectedItems,
     setItemsTotalPrice,
     setSkipItemsStep,
+    setAvailablePaymentMethods,
+    setPaymentPercentages,
     setBookingId: (id: string) => dispatch({ type: 'SET_BOOKING_ID', payload: id }),
     setBookingStatus: (status: ShiftFormState['bookingStatus']) => dispatch({ type: 'SET_BOOKING_STATUS', payload: status }),
     setError: (error: Error | null) => dispatch({ type: 'SET_ERROR', payload: error }),
@@ -450,10 +490,14 @@ function ClientSideShiftProvider({ children, formData, empresaId }: ShiftFormPro
 }
 
 // Proveedor del contexto
-export function ShiftFormProvider({ children, formData, empresaId }: ShiftFormProviderProps) {
+export function ShiftFormProvider({ children, formData, empresaId, availablePaymentMethods }: ShiftFormProviderProps) {
   return (
     <ClientOrganizationProvider empresaId={empresaId}>
-      <ClientSideShiftProvider empresaId={empresaId} formData={formData}>
+      <ClientSideShiftProvider 
+        empresaId={empresaId} 
+        formData={formData} 
+        availablePaymentMethods={availablePaymentMethods}
+      >
         {children}
       </ClientSideShiftProvider>
     </ClientOrganizationProvider>

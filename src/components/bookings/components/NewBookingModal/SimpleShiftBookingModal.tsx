@@ -236,6 +236,11 @@ export function SimpleShiftBookingModal({
     }
 
     try {
+      // Usar el estado de pago seleccionado por el usuario
+      // Si es una reserva con seña, mantener el estado 'partial'
+      // Solo forzar a 'completed' cuando no hay seña (deposit = 0) o es pago completo
+      const paymentStatus = paymentDetails.paymentStatus;
+      
       const bookingData: BookingCreationData = {
         courtId: selectedCourts[0],
         date: selectedDate.toISOString().split('T')[0],
@@ -243,9 +248,9 @@ export function SimpleShiftBookingModal({
         endTime: timeSelection.endTime,
         courtPrice: paymentDetails.manualPrice !== undefined ? paymentDetails.manualPrice : calculatedPrices.courtPrice,
         rentalItemsPrice: calculatedPrices.rentalPrice,
-        paymentStatus: paymentDetails.paymentStatus,
+        paymentStatus: paymentStatus,
         paymentMethod: paymentDetails.paymentMethod,
-        paymentType: paymentDetails.paymentStatus === 'completed' ? 'booking' : 'deposit',
+        paymentType: paymentStatus === 'completed' ? 'booking' : 'deposit',
         depositAmount: Math.min(paymentDetails.deposit, calculatedPrices.total),
         participants: participants.map(p => ({
           id: p.id,

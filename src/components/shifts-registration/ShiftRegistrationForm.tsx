@@ -41,7 +41,7 @@ const StepPlaceholder: React.FC<StepComponentProps & { title: string }> = ({
 
 // Componente principal del formulario
 export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form }) => {
-  const { state, nextStep, prevStep, checkAuthAndRedirect, dispatch } = useShiftForm();
+  const { state, nextStep, prevStep, checkAuthAndRedirect, dispatch, setAvailablePaymentMethods, setPaymentPercentages } = useShiftForm();
   const { user, isLoading: authLoading } = useShiftRegistrationAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
@@ -67,6 +67,24 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
       document.removeEventListener('auth-state-changed', handleAuthChange);
     };
   }, [checkAuthAndRedirect]);
+
+  // Inicializar los métodos de pago y porcentajes disponibles desde el formulario
+  useEffect(() => {
+    if (form && form.settings) {
+      // Establecer los métodos de pago disponibles
+      if (form.settings.paymentMethods?.available && 
+          Array.isArray(form.settings.paymentMethods.available)) {
+        console.log('Configurando métodos de pago desde el formulario:', form.settings.paymentMethods.available);
+        setAvailablePaymentMethods(form.settings.paymentMethods.available);
+      }
+
+      // Establecer los porcentajes configurados para cada método de pago
+      if (form.settings.paymentMethods?.percentages) {
+        console.log('Configurando porcentajes de pago desde el formulario:', form.settings.paymentMethods.percentages);
+        setPaymentPercentages(form.settings.paymentMethods.percentages);
+      }
+    }
+  }, [form, setAvailablePaymentMethods, setPaymentPercentages]);
 
   // Detectar si es dispositivo móvil
   useEffect(() => {

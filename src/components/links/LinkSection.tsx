@@ -16,7 +16,7 @@ interface LinkSectionProps {
   actionLabel: string;
   onAction: () => void;
   onDeactivate?: () => Promise<boolean>;
-  onUpdateSlug?: (newSlug: string) => Promise<boolean>;
+  onUpdateSlug?: (newSlug: string, paymentOptions?: string[], paymentPercentages?: Record<string, number>) => Promise<boolean>;
   onConfigureForm?: () => void;
   className?: string;
   isLoading?: boolean;
@@ -80,12 +80,12 @@ export const LinkSection = ({
     }
   };
 
-  const handleUpdateSlug = async (newSlug: string) => {
+  const handleUpdateSlug = async (newSlug: string, paymentOptions?: string[], paymentPercentages?: Record<string, number>) => {
     if (!onUpdateSlug) return;
     
     try {
       setIsUpdatingSlug(true);
-      await onUpdateSlug(newSlug);
+      await onUpdateSlug(newSlug, paymentOptions, paymentPercentages);
       toast.success("Link actualizado correctamente");
     } catch (error) {
       toast.error("Error al actualizar el link", {
@@ -169,6 +169,8 @@ export const LinkSection = ({
                       onUpdate={handleUpdateSlug}
                       isLoading={isLoading || isUpdatingSlug}
                       defaultSlug={linkData.slug}
+                      defaultPaymentOptions={linkData.settings?.paymentMethods?.available || ["local"]}
+                      defaultPaymentPercentages={linkData.settings?.paymentMethods?.percentages || {}}
                       linkType={linkData.type}
                     >
                       <Button 

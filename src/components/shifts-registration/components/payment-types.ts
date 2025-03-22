@@ -13,6 +13,9 @@ export interface PaymentType {
   details?: string[];
   requiresCard?: boolean;
   guaranteeConfig?: GuaranteeConfig;
+  depositConfig?: {
+    percentage: number;
+  };
 }
 
 // Lista de tipos de pago disponibles para turnos
@@ -34,8 +37,11 @@ export const PAYMENT_TYPES: PaymentType[] = [
     id: 'deposit',
     name: 'Pago con Seña',
     description: 'Pagar solo la seña ahora',
-    details: ['Paga una seña del 30% ahora y el resto al llegar al club'],
-    requiresCard: true
+    details: ['Paga una seña del 25% ahora y el resto al llegar al club'],
+    requiresCard: true,
+    depositConfig: {
+      percentage: 25
+    }
   },
   {
     id: 'guarantee',
@@ -48,7 +54,7 @@ export const PAYMENT_TYPES: PaymentType[] = [
     ],
     requiresCard: true,
     guaranteeConfig: {
-      percentage: 30
+      percentage: 40
     }
   }
 ];

@@ -30,7 +30,7 @@ export function CancelBookingModal({
   onConfirm,
   hasGuarantee = false,
   totalAmount = 0,
-  guaranteePercentage = 30,
+  guaranteePercentage,
   booking
 }: CancelBookingModalProps) {
   const { organization, stripeConnection, loadStripeConnection } = useOrganization();
@@ -43,6 +43,9 @@ export function CancelBookingModal({
   const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null)
   const [stripeAccountId, setStripeAccountId] = useState<string | null>(null)
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null)
+
+  // Usamos el porcentaje de garantía de la BD o el valor predeterminado si no está disponible
+  const effectiveGuaranteePercentage = guaranteePercentage || 40;
 
   // Log inicial de props
   useEffect(() => {
@@ -136,20 +139,20 @@ export function CancelBookingModal({
     }
   }, [isOpen, hasGuarantee, isLoadingStripe, stripeEnabled]);
 
-  // Calcular el monto del cargo (usando el porcentaje de garantía o 30% por defecto)
-  const chargeAmount = totalAmount * ((guaranteePercentage || 30) / 100);
+  // Calcular el monto del cargo (usando el porcentaje de garantía o 40% por defecto)
+  const chargeAmount = totalAmount * (effectiveGuaranteePercentage / 100);
   
   // Logs para depuración
   useEffect(() => {
     if (isOpen && hasGuarantee) {
       console.log('💰 Datos del cargo por garantía:', {
-        guaranteePercentage,
+        guaranteePercentage: effectiveGuaranteePercentage,
         totalAmount,
         chargeAmount,
         canApplyCharge: hasGuarantee && stripeEnabled && chargeAmount > 0
       });
     }
-  }, [isOpen, hasGuarantee, guaranteePercentage, totalAmount, chargeAmount, stripeEnabled]);
+  }, [isOpen, hasGuarantee, effectiveGuaranteePercentage, totalAmount, chargeAmount, stripeEnabled]);
 
   // Validar si se puede aplicar cargo
   const canApplyCharge = hasGuarantee && stripeEnabled && chargeAmount > 0
@@ -174,14 +177,14 @@ export function CancelBookingModal({
       if (shouldCharge && stripeEnabled) {
         console.log('💳 Procesando cargo por no-show:', {
           bookingId: booking.id,
-          amount: totalAmount * ((guaranteePercentage || 30) / 100),
+          amount: totalAmount * (effectiveGuaranteePercentage / 100),
           timestamp: new Date().toISOString()
         });
 
         // Preparar los datos para la API incluyendo stripeData cuando estén disponibles
         const requestData = {
           bookingId: booking.id,
-          amount: totalAmount * ((guaranteePercentage || 30) / 100),
+          amount: totalAmount * (effectiveGuaranteePercentage / 100),
           reason,
           empresaId: organization?.id
         };
@@ -341,7 +344,7 @@ export function CancelBookingModal({
                               Aplicar cargo por no presentarse
                             </label>
                             <p className="text-xs text-gray-500">
-                              Se cobrará el {guaranteePercentage}% del total ({new Intl.NumberFormat('es-ES', {
+                              Se cobrará el {effectiveGuaranteePercentage}% del total ({new Intl.NumberFormat('es-ES', {
                                 style: 'currency',
                                 currency: 'EUR'
                               }).format(chargeAmount)})

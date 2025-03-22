@@ -110,6 +110,30 @@ export function useCompanyLinks() {
       const slug = generateSlug(type, empresa.name);
       console.log('Creating new link with slug:', slug);
       
+      // Configuración inicial para los settings
+      const initialSettings = {
+        analytics: {
+          views: {
+            url: "https://rwyrbfilvaomnwumbpxu.supabase.co/rest/v1/rpc/increment",
+            body: {
+              x: 1
+            },
+            method: "POST",
+            schema: "public",
+            headers: {
+              "X-Client-Info": "@supabase/auth-helpers-nextjs@0.10.0"
+            }
+          }
+        }
+      };
+      
+      // Para enlaces de reservas, añadir configuración de métodos de pago
+      if (type === 'bookings') {
+        initialSettings.paymentMethods = {
+          available: ["local"]
+        };
+      }
+      
       const { data, error } = await supabase
         .from('company_links')
         .insert({
@@ -117,7 +141,7 @@ export function useCompanyLinks() {
           type,
           slug,
           is_active: true,
-          settings: {}
+          settings: initialSettings
         })
         .select()
         .single();
@@ -135,7 +159,7 @@ export function useCompanyLinks() {
               type,
               slug: newSlug,
               is_active: true,
-              settings: {}
+              settings: initialSettings
             })
             .select()
             .single();
@@ -208,8 +232,8 @@ export function useCompanyLinks() {
     }
   };
 
-  // Actualizar el slug de un link existente
-  const updateLinkSlug = async (linkId: string, newSlug: string) => {
+  // Actualizar el slug y/o los métodos de pago de un link existente
+  const updateLinkSlug = async (linkId: string, newSlug: string, paymentMethods?: string[], paymentPercentages?: Record<string, number>) => {
     if (!empresa?.id) {
       throw new Error('No hay una empresa seleccionada');
     }
@@ -217,7 +241,7 @@ export function useCompanyLinks() {
     try {
       setIsLoading(true);
       const supabase = createSupabaseClient();
-      console.log('Updating link slug:', { linkId, newSlug });
+      console.log('Updating link:', { linkId, newSlug, paymentMethods, paymentPercentages });
       
       // Verificar si el slug está disponible
       const { data: existingWithSlug, error: checkError } = await supabase
@@ -235,27 +259,80 @@ export function useCompanyLinks() {
         throw new Error('Este slug ya está en uso');
       }
       
-      // Actualizar el slug
+      // Primero, obtener la configuración actual
+      const { data: currentLink, error: fetchError } = await supabase
+        .from('company_links')
+        .select('settings')
+        .eq('id', linkId)
+        .single();
+        
+      if (fetchError) throw new Error(fetchError.message);
+      
+      // Preparar los datos a actualizar
+      const updateData: { slug: string; settings?: any } = { slug: newSlug };
+      
+      // Si se proporcionaron métodos de pago y/o porcentajes, actualizar la configuración
+      if (paymentMethods !== undefined || paymentPercentages !== undefined) {
+        console.log('Updating payment methods:', paymentMethods);
+        console.log('Updating payment percentages:', paymentPercentages);
+        const currentSettings = currentLink?.settings || {};
+        
+        // Remover la configuración de analytics que ya no es necesaria
+        const { analytics, ...restSettings } = currentSettings;
+        
+        // Estructura base actualizada para paymentMethods
+        const paymentMethodsSettings = {
+          ...(currentSettings.paymentMethods || {}),
+        };
+        
+        // Actualizar métodos de pago disponibles si se proporcionaron
+        if (paymentMethods !== undefined) {
+          paymentMethodsSettings.available = paymentMethods;
+        }
+        
+        // Actualizar porcentajes si se proporcionaron
+        if (paymentPercentages !== undefined) {
+          paymentMethodsSettings.percentages = paymentPercentages;
+        }
+        
+        // Configuración final actualizada
+        const updatedSettings = {
+          ...restSettings,
+          paymentMethods: paymentMethodsSettings
+        };
+        
+        updateData.settings = updatedSettings;
+      }
+      
+      // Realizar la actualización
       const { error } = await supabase
         .from('company_links')
-        .update({ slug: newSlug })
+        .update(updateData)
         .eq('id', linkId)
         .eq('empresa_id', empresa.id);
 
       if (error) throw new Error(error.message);
       
-      console.log('Link slug updated successfully');
+      console.log('Link updated successfully');
       
       // Refrescar los links después de actualizar
       await fetchCompanyLinks();
       
       return true;
     } catch (err) {
-      console.error('Error updating link slug:', err);
+      console.error('Error updating link:', err);
       throw err instanceof Error ? err : new Error('Error al actualizar el enlace');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Obtener los métodos de pago disponibles de un link
+  const getAvailablePaymentMethods = (link: CompanyLink | null): string[] => {
+    if (!link) return ["local"];
+    
+    const paymentMethods = link.settings?.paymentMethods?.available;
+    return Array.isArray(paymentMethods) ? paymentMethods : ["local"];
   };
 
   return {
@@ -267,8 +344,11 @@ export function useCompanyLinks() {
     createClassesLink: () => createLink('classes'),
     deactivateBookingLink: bookingLink ? () => deactivateLink(bookingLink.id) : undefined,
     deactivateClassesLink: classesLink ? () => deactivateLink(classesLink.id) : undefined,
-    updateBookingLinkSlug: bookingLink ? (newSlug: string) => updateLinkSlug(bookingLink.id, newSlug) : undefined,
-    updateClassesLinkSlug: classesLink ? (newSlug: string) => updateLinkSlug(classesLink.id, newSlug) : undefined,
+    updateBookingLinkSlug: bookingLink ? (newSlug: string, paymentMethods?: string[], paymentPercentages?: Record<string, number>) => 
+      updateLinkSlug(bookingLink.id, newSlug, paymentMethods, paymentPercentages) : undefined,
+    updateClassesLinkSlug: classesLink ? (newSlug: string) => 
+      updateLinkSlug(classesLink.id, newSlug) : undefined,
+    getBookingLinkPaymentMethods: () => getAvailablePaymentMethods(bookingLink),
     refreshLinks: fetchCompanyLinks
   };
-} 
+}

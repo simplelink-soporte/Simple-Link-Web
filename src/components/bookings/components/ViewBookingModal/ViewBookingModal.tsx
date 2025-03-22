@@ -791,21 +791,20 @@ export function ViewBookingModal({
                                 {getStatusText(processedData.paymentStatus)}
                               </span>
                             </div>
+                            {/* Mostrar el monto depositado siempre, sin importar si es 0 */}
+                            <div className="flex items-center justify-between py-1.5">
+                              <span className="text-sm text-gray-600">Monto depositado</span>
+                              <span className="text-sm text-gray-900 font-mono">
+                                €{processedData.depositAmount.toFixed(2)}
+                              </span>
+                            </div>
                             {processedData.paymentStatus === 'partial' && (
-                              <>
-                                <div className="flex items-center justify-between py-1.5">
-                                  <span className="text-sm text-gray-600">Seña pagada</span>
-                                  <span className="text-sm text-gray-900 font-mono">
-                                    €{processedData.depositAmount}
-                                  </span>
-                                </div>
-                                <div className="flex items-center justify-between py-1.5">
-                                  <span className="text-sm text-gray-600">Restante</span>
-                                  <span className="text-sm text-gray-900 font-mono">
-                                    €{processedData.totalAmount - processedData.depositAmount}
-                                  </span>
-                                </div>
-                              </>
+                              <div className="flex items-center justify-between py-1.5">
+                                <span className="text-sm text-gray-600">Restante</span>
+                                <span className="text-sm text-gray-900 font-mono">
+                                  €{(processedData.totalAmount - processedData.depositAmount).toFixed(2)}
+                                </span>
+                              </div>
                             )}
                             <div className="flex items-center justify-between py-1.5 border-t border-gray-100">
                               <span className="text-sm font-medium text-gray-900">Total</span>
@@ -882,6 +881,7 @@ export function ViewBookingModal({
           onConfirm={handleCancelBooking}
           hasGuarantee={currentBooking?.paymentType === 'guarantee'}
           totalAmount={processedData?.totalAmount}
+          guaranteePercentage={currentBooking?.guarantee_percentage}
           booking={currentBooking}
         />
       </>,
