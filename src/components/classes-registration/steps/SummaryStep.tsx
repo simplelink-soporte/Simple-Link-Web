@@ -27,6 +27,7 @@ import type { Database } from '@/types/supabase'
 import type { UserPackageFromDB, ClassSession, PaymentMethod } from '../types/models'
 import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
+import { requiresCardPayment } from '../components/PaymentTypeSection'
 
 // Definición de los métodos de pago disponibles
 const PAYMENT_METHODS: Record<PaymentMethodEnum, {
@@ -625,6 +626,11 @@ export function SummaryStep() {
     );
   }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config]);
 
+  // Determinar si el tipo de pago seleccionado requiere tarjeta
+  const showCardPaymentSection = useMemo(() => {
+    return requiresCardPayment(selectedPaymentType);
+  }, [selectedPaymentType]);
+
   if (!selectedSession || !state.selectedClass) {
     return (
       <StepContainer stepId="summary-error">
@@ -929,7 +935,7 @@ export function SummaryStep() {
                           {/* Elementos de pago con mejor separación */}
                           <PaymentTypesSection />
                           <div className="border-b border-gray-200 my-4" />
-                          <CardPaymentSection />
+                          {showCardPaymentSection && <CardPaymentSection />}
                         </div>
                       </div>
                       
@@ -956,7 +962,7 @@ export function SummaryStep() {
                       </div>
                       
                       <PaymentTypesSection />
-                      <CardPaymentSection />
+                      {showCardPaymentSection && <CardPaymentSection />}
                       <DebugInfo />
                     </div>
                   </div>

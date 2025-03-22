@@ -63,7 +63,7 @@ export function GuaranteeConfirmationModal({
             {/* Encabezado */}
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Confirmación de Garantía
+                Información de garantía
               </h3>
               <button
                 onClick={onClose}
@@ -78,8 +78,7 @@ export function GuaranteeConfirmationModal({
               {/* Explicación principal */}
               <div className="p-4 rounded-lg bg-gray-50">
                 <p className="text-sm text-gray-700">
-                  Al seleccionar la opción de <span className="font-medium">Garantía</span>, la tarjeta proporcionada 
-                  será utilizada únicamente como garantía para la reserva.
+                  Para completar esta reserva, es necesario proporcionar los datos de una tarjeta como garantía.
                 </p>
                 <p className="text-sm mt-2 text-gray-600">
                   No se realizará ningún cargo inmediato a la tarjeta.

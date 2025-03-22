@@ -10,9 +10,8 @@ import { PaymentType, PaymentTypeEnum, PAYMENT_TYPES, EXCLUDED_PAYMENT_OPTIONS }
 function getPaymentTypeIcon(typeId: string) {
   switch (typeId) {
     case 'guarantee':
-      return CreditCard
     case 'booking':
-      return Building
+      return typeId === 'booking' ? Building : CreditCard
     case 'deposit':
     case 'full':
     default:
@@ -68,6 +67,13 @@ function PaymentTypeItem({ type, isSelected, onClick }: PaymentTypeItemProps) {
           )}>
             {type.description}
           </p>
+          {type.details && (
+            <ul className="text-xs text-gray-500 list-disc pl-4 space-y-1">
+              {type.details.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       {isSelected && (
@@ -107,10 +113,38 @@ export function PaymentTypeList({
   viewType = 'desktop',
   paymentConfig
 }: PaymentTypeListProps) {
+  // Verificar si existe garantía pero no booking
+  const hasGuarantee = paymentTypes.some(type => type.id === 'guarantee');
+  const hasBooking = paymentTypes.some(type => type.id === 'booking');
+  const showGuaranteeAsBooking = hasGuarantee && !hasBooking;
+
+  // Crear tipos de pago modificados con el caso especial
+  const modifiedPaymentTypes = [...paymentTypes]; // Clonar el array original
+
+  // Si tenemos garantía pero no booking, reemplazamos la descripción y nombre de garantía
+  if (showGuaranteeAsBooking) {
+    for (let i = 0; i < modifiedPaymentTypes.length; i++) {
+      if (modifiedPaymentTypes[i].id === 'guarantee') {
+        // Modificar la opción de garantía para mostrarla como "Pago en el Club"
+        modifiedPaymentTypes[i] = {
+          ...modifiedPaymentTypes[i],
+          name: 'Pago en el Club',
+          description: 'Pagar al llegar al club',
+          details: [
+            'Se solicitarán los datos de tu tarjeta como garantía',
+            'No se realizará ningún cargo inmediato',
+            'En caso de no presentarse, se realizará un cargo del porcentaje establecido'
+          ]
+        };
+        break;
+      }
+    }
+  }
+  
   // Filtrar las opciones de pago
   const filteredPaymentTypes = useMemo(() => {
-    return paymentTypes.filter(type => !EXCLUDED_PAYMENT_OPTIONS.includes(type.name))
-  }, [paymentTypes])
+    return modifiedPaymentTypes.filter(type => !EXCLUDED_PAYMENT_OPTIONS.includes(type.id))
+  }, [modifiedPaymentTypes])
   
   // Función para manejar la selección de un tipo de pago
   const handleTypeSelect = (type: PaymentTypeEnum) => {
@@ -140,7 +174,7 @@ export function PaymentTypeList({
     switch (type.id) {
       case 'guarantee':
         // Si hay un porcentaje de garantía definido, actualizar la descripción
-        if (paymentConfig.guaranteePercentage) {
+        if (paymentConfig.guaranteePercentage && !showGuaranteeAsBooking) {
           return `Se cargará el ${paymentConfig.guaranteePercentage}% en caso de no asistencia`;
         }
         break;
@@ -198,6 +232,13 @@ export function PaymentTypeList({
             )}>
               {updatedDescription}
             </p>
+            {type.details && (
+              <ul className="text-xs text-gray-500 list-disc pl-4 space-y-1">
+                {type.details.map((detail, index) => (
+                  <li key={index}>{detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
         {isSelected && (
@@ -210,53 +251,29 @@ export function PaymentTypeList({
           </motion.div>
         )}
       </motion.div>
-    );
-  };
-  
-  // Contenido de los elementos de la lista con la configuración de pago
-  const listContent = (
-    <div className="space-y-1">
-      <AnimatePresence>
+    )
+  }
+
+  return (
+    <div className={cn(
+      !noContainer && "space-y-3",
+      'w-full'
+    )}>
+      {!noContainer && (
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-sm text-gray-900">Selecciona tu tipo de pago</h3>
+        </div>
+      )}
+      <div>
         {filteredPaymentTypes.map((type) => (
           <PaymentTypeItemWithConfig
-            key={`${type.id}-${type.name}`}
+            key={type.id}
             type={type}
             isSelected={selectedType === type.id}
-            onClick={() => handleTypeSelect(type.id)}
+            onClick={() => handleTypeSelect(type.id as PaymentTypeEnum)}
           />
         ))}
-      </AnimatePresence>
+      </div>
     </div>
-  )
-
-  // Si no se necesita contenedor, devolver solo el contenido
-  if (noContainer) {
-    return listContent
-  }
-  
-  // Implementación similar a CardList
-  if (!isExpanded) {
-    return null
-  }
-  
-  return (
-    <AnimatePresence>
-      {isExpanded && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-          className={cn(
-            "mt-3", // Agregamos el mismo margen superior que en CardList
-            noContainer 
-              ? "space-y-1" 
-              : "p-3 space-y-1 rounded-lg border border-gray-100 bg-white"
-          )}
-        >
-          {listContent}
-        </motion.div>
-      )}
-    </AnimatePresence>
   )
 }

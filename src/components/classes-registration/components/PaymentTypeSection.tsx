@@ -14,6 +14,21 @@ const FILTERED_PAYMENT_TYPES = PAYMENT_TYPES.filter(type =>
   !['card', 'cash'].includes(type.id)
 )
 
+// Tipos de pago que requieren tarjeta
+export const PAYMENT_TYPES_REQUIRING_CARD: PaymentTypeEnum[] = ['guarantee', 'full', 'deposit'];
+
+// Función auxiliar para verificar si un tipo de pago requiere tarjeta
+export function requiresCardPayment(paymentType: PaymentTypeEnum | null): boolean {
+  return paymentType !== null && PAYMENT_TYPES_REQUIRING_CARD.includes(paymentType);
+}
+
+// Función para verificar si estamos en el caso especial (garantía como booking)
+export function isGuaranteeActingAsBooking(paymentTypes: PaymentType[]): boolean {
+  const hasGuarantee = paymentTypes.some(type => type.id === 'guarantee');
+  const hasBooking = paymentTypes.some(type => type.id === 'booking');
+  return hasGuarantee && !hasBooking;
+}
+
 interface PaymentTypeSectionProps {
   selectedType: PaymentTypeEnum | null
   onSelect: (type: PaymentTypeEnum | null, guaranteePercentage?: number) => void
@@ -75,14 +90,18 @@ export function PaymentTypeSection({
 
   // Función para manejar la selección de un tipo de pago
   const handleSelectPaymentType = (type: PaymentTypeEnum) => {
-    if (type === 'guarantee') {
-      // Si es garantía, guardar la selección pendiente y mostrar el modal de confirmación
+    // Verificar si estamos en el caso especial donde garantía actúa como booking
+    const specialCase = isGuaranteeActingAsBooking(paymentTypes);
+    
+    // Si es garantía pero NO estamos en el caso especial, mostrar el modal de confirmación
+    if (type === 'guarantee' && !specialCase) {
+      // Si es garantía normal, guardar la selección pendiente y mostrar el modal de confirmación
       setPendingGuaranteeSelection(type);
       setShowGuaranteeModal(true);
       setShowList(false);
       setShowModal(false);
     } else {
-      // Para otros tipos de pago, seleccionar directamente
+      // Para otros tipos de pago o garantía en caso especial, seleccionar directamente
       onSelect(type);
       setShowList(false);
       setShowModal(false);
@@ -199,28 +218,24 @@ export function PaymentTypeSection({
         </motion.div>
       )}
 
-      {/* Lista de tipos de pago desplegable */}
+      {/* Lista desplegable de opciones */}
       <AnimatePresence>
         {showList && (
           <motion.div
-            initial={{ opacity: 0, y: -5, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -5, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={cn(
-              "fixed inset-x-4 sm:static sm:w-full z-[100] mt-2 origin-top",
-              "rounded-lg",
-              "overflow-hidden bg-white",
-              "border border-gray-100"
-            )}
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.3 }}
+            className="absolute z-30 w-full mt-1 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200"
           >
-            <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+            <div className="p-3">
               <PaymentTypeList
                 selectedType={selectedType}
                 onSelect={handleSelectPaymentType}
                 paymentTypes={paymentTypes}
                 isExpanded={true}
                 noContainer={true}
+                viewType={viewType}
                 paymentConfig={paymentConfig}
               />
             </div>
@@ -228,32 +243,35 @@ export function PaymentTypeSection({
         )}
       </AnimatePresence>
 
-      {/* Modal para la versión móvil */}
-      {viewType === 'mobile' && (
-        <PaymentTypeModal 
-          isOpen={showModal} 
+      {/* Modal para móvil */}
+      {showModal && (
+        <PaymentTypeModal
+          isOpen={showModal}
           onClose={() => setShowModal(false)}
-          title="Selecciona el tipo de pago"
+          title="Seleccionar tipo de pago"
         >
           <PaymentTypeList
             selectedType={selectedType}
             onSelect={handleSelectPaymentType}
-            noContainer={true}
             paymentTypes={paymentTypes}
             paymentConfig={paymentConfig}
+            noContainer={true}
+            viewType={viewType}
           />
         </PaymentTypeModal>
       )}
 
       {/* Modal de confirmación de garantía */}
-      <GuaranteeConfirmationModal
-        isOpen={showGuaranteeModal}
-        onClose={handleGuaranteeCancel}
-        onConfirm={handleGuaranteeConfirm}
-        onCancel={handleGuaranteeCancel}
-        guaranteePercentage={guaranteePercentage}
-        onPercentageChange={setGuaranteePercentage}
-      />
+      {showGuaranteeModal && (
+        <GuaranteeConfirmationModal
+          isOpen={showGuaranteeModal}
+          onClose={handleGuaranteeCancel}
+          onConfirm={handleGuaranteeConfirm}
+          onCancel={handleGuaranteeCancel}
+          guaranteePercentage={guaranteePercentage}
+          onPercentageChange={setGuaranteePercentage}
+        />
+      )}
     </motion.div>
   )
 }
