@@ -153,10 +153,37 @@ export class ShiftBookingService {
       const utcStartDateTime = localStartDateTime.toUTC();
       const utcEndDateTime = localEndDateTime.toUTC();
       
-      // Formato para timestamp en PostgreSQL (YYYY-MM-DD HH:MM:SS)
+      // Obtener solo el componente de hora en formato 'HH:mm:ss'
+      const startTimeUTCHour = utcStartDateTime.toFormat('HH:mm:ss');
+      const endTimeUTCHour = utcEndDateTime.toFormat('HH:mm:ss');
+      
+      // Verificar si la hora de fin es 00:00:00 o si la hora de fin es menor que la hora de inicio
+      // Esto indica que la reserva cruza la medianoche en UTC
+      const isOvernightUTC = endTimeUTCHour === '00:00:00' || 
+        parseInt(endTimeUTCHour.split(':')[0]) < parseInt(startTimeUTCHour.split(':')[0]);
+      
+      // Crear timestamp completo para la hora de inicio
       const startTimeUTC = utcStartDateTime.toFormat('yyyy-MM-dd HH:mm:ss');
-      const endTimeUTC = utcEndDateTime.toFormat('yyyy-MM-dd HH:mm:ss');
-      const bookingDateUTC = utcStartDateTime.toFormat('yyyy-MM-dd');
+      
+      // Para la hora de fin, depende de si la reserva cruza la medianoche
+      let endTimeUTC;
+      
+      if (isOvernightUTC) {
+        if (endTimeUTCHour === '00:00:00') {
+          // Caso especial para 00:00:00 - ajustar a un segundo antes
+          const adjustedEndDateTime = utcStartDateTime.set({ hour: 23, minute: 59, second: 59 });
+          endTimeUTC = adjustedEndDateTime.toFormat('yyyy-MM-dd HH:mm:ss');
+        } else {
+          // Para reservas que cruzan la medianoche, ajustar la fecha a un día después
+          endTimeUTC = utcEndDateTime.plus({ days: 1 }).toFormat('yyyy-MM-dd HH:mm:ss');
+        }
+      } else {
+        // Caso normal - mismo día
+        endTimeUTC = utcEndDateTime.toFormat('yyyy-MM-dd HH:mm:ss');
+      }
+      
+      // Usar la fecha original como fecha de reserva
+      const bookingDateUTC = formattedDate;
       
       console.log('🕒 Conversión de horarios:', {
         local: {
@@ -170,6 +197,7 @@ export class ShiftBookingService {
           date: bookingDateUTC,
           start: startTimeUTC,
           end: endTimeUTC,
+          isOvernightUTC,
           fullStartUTC: utcStartDateTime.isValid ? utcStartDateTime.toISO() : null,
           fullEndUTC: utcEndDateTime.isValid ? utcEndDateTime.toISO() : null
         }
