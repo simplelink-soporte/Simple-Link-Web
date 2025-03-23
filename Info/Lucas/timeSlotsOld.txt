@@ -260,30 +260,12 @@ class TimeSlotService {
 
     // Verificar si el slot se solapa con alguna reserva
     const hasOverlap = relevantBookings.some(booking => {
-      // Determinar si es una sesión de clase o una reserva regular
-      const isClassSession = booking.reservation_type === 'class';
+      // Convertir los horarios de la reserva a la zona horaria local
+      const localStartTime = bookingTransformer.convertBookingTimeToLocal(booking.start_time, timezone, date);
+      const localEndTime = bookingTransformer.convertBookingTimeToLocal(booking.end_time, timezone, date);
       
-      // Para sesiones de clase, usar los horarios tal como están (sin conversión)
-      // Para reservas regulares, convertir a la zona horaria local como antes
-      let bookingStartMinutes, bookingEndMinutes;
-      
-      if (isClassSession) {
-        // Para sesiones de clase, usar directamente los horarios sin conversión
-        bookingStartMinutes = bookingTransformer.timeToMinutes(booking.start_time);
-        bookingEndMinutes = bookingTransformer.timeToMinutes(booking.end_time);
-        
-        console.log(`TimeSlotService - Procesando SESIÓN DE CLASE ${booking.id}:`, {
-          horarios: `${booking.start_time} - ${booking.end_time}`,
-          minutos: `${bookingStartMinutes} - ${bookingEndMinutes}`
-        });
-      } else {
-        // Para reservas regulares, seguir con la lógica existente de conversión
-        const localStartTime = bookingTransformer.convertBookingTimeToLocal(booking.start_time, timezone, date);
-        const localEndTime = bookingTransformer.convertBookingTimeToLocal(booking.end_time, timezone, date);
-        
-        bookingStartMinutes = bookingTransformer.timeToMinutes(localStartTime);
-        bookingEndMinutes = bookingTransformer.timeToMinutes(localEndTime);
-      }
+      const bookingStartMinutes = bookingTransformer.timeToMinutes(localStartTime);
+      const bookingEndMinutes = bookingTransformer.timeToMinutes(localEndTime);
 
       // Un slot está disponible si:
       // 1. Termina antes o en el inicio de la reserva, o
@@ -295,19 +277,20 @@ class TimeSlotService {
       );
 
       if (overlaps) {
-        console.log(`TimeSlotService - SOLAPAMIENTO DETECTADO para slot ${startTime}-${endTime}, cancha ${courtId}. ${isClassSession ? 'Sesión de clase' : 'Reserva'} ${booking.id} (estado: ${booking.payment_status})`, {
+        console.log(`TimeSlotService - SOLAPAMIENTO DETECTADO para slot ${startTime}-${endTime}, cancha ${courtId}. Reserva ${booking.id} (estado: ${booking.payment_status})`, {
           slot: { start: startTime, end: endTime, startMinutes: slotStartMinutes, endMinutes: slotEndMinutes },
           booking: { 
             id: booking.id,
-            tipo: isClassSession ? 'class' : 'booking',
             estado: booking.payment_status,
             original: { 
               start: booking.start_time,
               end: booking.end_time
             },
-            minutos: {
-              start: bookingStartMinutes,
-              end: bookingEndMinutes
+            convertido: {
+              start: localStartTime, 
+              end: localEndTime,
+              startMinutes: bookingStartMinutes,
+              endMinutes: bookingEndMinutes 
             }
           }
         });
@@ -341,7 +324,6 @@ class TimeSlotService {
       zonaHoraria: timezone,
       reservas: courtBookings.map(b => ({
         id: b.id,
-        tipo: b.reservation_type || 'standard',
         estado: b.payment_status,
         inicio: b.start_time,
         fin: b.end_time
@@ -361,58 +343,25 @@ class TimeSlotService {
         return isRelevant;
       })
       .sort((a, b) => {
-        // Determinar si son sesiones de clase
-        const aIsClass = a.reservation_type === 'class';
-        const bIsClass = b.reservation_type === 'class';
-        
-        // Para las sesiones de clase, usar los horarios tal como están
-        // Para reservas regulares, convertir a la zona horaria local
-        let aStartMinutes, bStartMinutes;
-        
-        if (aIsClass) {
-          aStartMinutes = bookingTransformer.timeToMinutes(a.start_time);
-        } else {
-          const aStartLocal = bookingTransformer.convertBookingTimeToLocal(a.start_time, timezone, date);
-          aStartMinutes = bookingTransformer.timeToMinutes(aStartLocal);
-        }
-        
-        if (bIsClass) {
-          bStartMinutes = bookingTransformer.timeToMinutes(b.start_time);
-        } else {
-          const bStartLocal = bookingTransformer.convertBookingTimeToLocal(b.start_time, timezone, date);
-          bStartMinutes = bookingTransformer.timeToMinutes(bStartLocal);
-        }
-        
-        return aStartMinutes - bStartMinutes;
+        // Convertir los horarios de las reservas a la zona horaria de la sede
+        const aStartLocal = bookingTransformer.convertBookingTimeToLocal(a.start_time, timezone, date);
+        const bStartLocal = bookingTransformer.convertBookingTimeToLocal(b.start_time, timezone, date);
+        return bookingTransformer.timeToMinutes(aStartLocal) - bookingTransformer.timeToMinutes(bStartLocal);
       });
     
     console.log('TimeSlotService - Reservas filtradas y ordenadas:', {
       cantidad: sortedBookings.length,
       zonaHoraria: timezone,
-      reservas: sortedBookings.map(b => {
-        const isClass = b.reservation_type === 'class';
-        if (isClass) {
-          return {
-            id: b.id,
-            tipo: 'class',
-            estado: b.payment_status,
-            inicio: b.start_time,
-            fin: b.end_time
-          };
-        } else {
-          return {
-            id: b.id,
-            tipo: 'standard',
-            estado: b.payment_status,
-            inicio_original: b.start_time,
-            fin_original: b.end_time,
-            inicio_local: bookingTransformer.convertBookingTimeToLocal(b.start_time, timezone, date),
-            fin_local: bookingTransformer.convertBookingTimeToLocal(b.end_time, timezone, date)
-          };
-        }
-      })
+      reservas: sortedBookings.map(b => ({
+        id: b.id,
+        estado: b.payment_status,
+        inicio_original: b.start_time,
+        fin_original: b.end_time,
+        inicio_local: bookingTransformer.convertBookingTimeToLocal(b.start_time, timezone, date),
+        fin_local: bookingTransformer.convertBookingTimeToLocal(b.end_time, timezone, date)
+      }))
     });
-    
+
     // Procesar cada rango de horarios por separado
     timeRanges.forEach(range => {
       // Convertir los horarios de inicio y fin del rango a minutos para facilitar los cálculos
@@ -427,41 +376,22 @@ class TimeSlotService {
       
       // Filtrar solo las reservas que intersectan con este rango específico
       const rangeBookings: any[] = [];
-  
+
       // Filtrar las reservas que intersectan con este rango específico
       for (const booking of sortedBookings) {
-        // Determinar si es una sesión de clase
-        const isClassSession = booking.reservation_type === 'class';
+        // Convertir los tiempos de la reserva a la zona horaria de la sede
+        const bookingStartLocal = bookingTransformer.convertBookingTimeToLocal(booking.start_time, timezone, date);
+        const bookingEndLocal = bookingTransformer.convertBookingTimeToLocal(booking.end_time, timezone, date);
         
-        // Para sesiones de clase, usar los horarios tal como están
-        // Para reservas regulares, convertir a la zona horaria local
-        let bookingStartLocal, bookingEndLocal, bookingStartMinutes, bookingEndMinutes;
-        
-        if (isClassSession) {
-          // Para sesiones de clase, usar directamente los horarios sin conversión
-          bookingStartLocal = booking.start_time;
-          bookingEndLocal = booking.end_time;
-          bookingStartMinutes = bookingTransformer.timeToMinutes(bookingStartLocal);
-          bookingEndMinutes = bookingTransformer.timeToMinutes(bookingEndLocal);
-          
-          console.log(`TimeSlotService - Procesando SESIÓN DE CLASE ${booking.id} para rango:`, {
-            horarios: `${bookingStartLocal} - ${bookingEndLocal}`,
-            minutos: `${bookingStartMinutes} - ${bookingEndMinutes}`
-          });
-        } else {
-          // Para reservas regulares, convertir a la zona horaria local
-          bookingStartLocal = bookingTransformer.convertBookingTimeToLocal(booking.start_time, timezone, date);
-          bookingEndLocal = bookingTransformer.convertBookingTimeToLocal(booking.end_time, timezone, date);
-          bookingStartMinutes = bookingTransformer.timeToMinutes(bookingStartLocal);
-          bookingEndMinutes = bookingTransformer.timeToMinutes(bookingEndLocal);
-        }
-  
+        const bookingStartMinutes = bookingTransformer.timeToMinutes(bookingStartLocal);
+        const bookingEndMinutes = bookingTransformer.timeToMinutes(bookingEndLocal);
+
         // Una reserva intersecta con el rango si su inicio está antes del fin del rango
         // y su fin está después del inicio del rango
         const isIntersecting = !(bookingEndMinutes <= rangeStartMinutes || bookingStartMinutes >= rangeEndMinutes);
         
         if (isIntersecting) {
-          console.log(`TimeSlotService - ${isClassSession ? 'SESIÓN DE CLASE' : 'Reserva'} ${booking.id} (${booking.payment_status}) intersecta con rango ${range.openTime}-${range.closeTime}:`, {
+          console.log(`TimeSlotService - Reserva ${booking.id} (${booking.payment_status}) intersecta con rango ${range.openTime}-${range.closeTime}:`, {
             rangoHorario: `${range.openTime} - ${range.closeTime}`,
             reservaOriginal: `${booking.start_time} - ${booking.end_time}`,
             reservaLocal: `${bookingStartLocal} - ${bookingEndLocal}`,
@@ -475,7 +405,7 @@ class TimeSlotService {
           
           rangeBookings.push({
             ...booking,
-            // Guardamos las versiones procesadas para no tener que convertirlas de nuevo
+            // Guardamos las versiones convertidas para no tener que convertirlas de nuevo
             startLocal: bookingStartLocal,
             endLocal: bookingEndLocal,
             startMinutes: bookingStartMinutes,
@@ -483,17 +413,17 @@ class TimeSlotService {
           });
         }
       }
-  
+
       // Si no hay reservas en este rango, agregar el rango completo como disponible
       if (rangeBookings.length === 0) {
         console.log(`TimeSlotService - No hay reservas en rango ${range.openTime}-${range.closeTime}, añadiendo rango completo`);
         ranges.push({ start: range.openTime, end: range.closeTime });
         return; // Continuar con el siguiente rango
       }
-  
+
       // Inicializar desde el inicio del rango
       let currentStartMinutes = rangeStartMinutes;
-  
+
       // Procesar cada reserva dentro de este rango para encontrar los huecos disponibles
       for (let i = 0; i < rangeBookings.length; i++) {
         const booking = rangeBookings[i];
@@ -501,12 +431,11 @@ class TimeSlotService {
         // Agregar hueco disponible antes de la reserva actual (si existe)
         if (currentStartMinutes < booking.startMinutes) {
           const rangeSize = booking.startMinutes - currentStartMinutes;
-          console.log(`TimeSlotService - Añadiendo rango disponible antes de ${booking.reservation_type === 'class' ? 'SESIÓN DE CLASE' : 'reserva'}:`, {
+          console.log(`TimeSlotService - Añadiendo rango disponible antes de reserva:`, {
             inicio: bookingTransformer.minutesToTime(currentStartMinutes),
             fin: booking.startLocal,
             duracion: rangeSize,
-            reservaId: booking.id,
-            tipo: booking.reservation_type || 'standard'
+            reservaId: booking.id
           });
           
           ranges.push({
@@ -514,10 +443,10 @@ class TimeSlotService {
             end: booking.startLocal
           });
         }
-  
+
         // Avanzar el tiempo actual al final de la reserva actual
         currentStartMinutes = booking.endMinutes;
-  
+
         // Procesar hueco entre la reserva actual y la siguiente (si existe)
         if (i < rangeBookings.length - 1) {
           const nextBooking = rangeBookings[i + 1];
@@ -525,14 +454,12 @@ class TimeSlotService {
           // Si hay un hueco entre reservas, añadirlo como disponible
           if (booking.endMinutes < nextBooking.startMinutes) {
             const gapSize = nextBooking.startMinutes - booking.endMinutes;
-            console.log(`TimeSlotService - Añadiendo hueco entre ${booking.reservation_type === 'class' ? 'SESIÓN DE CLASE' : 'reserva'} y ${nextBooking.reservation_type === 'class' ? 'SESIÓN DE CLASE' : 'reserva'}:`, {
+            console.log(`TimeSlotService - Añadiendo hueco entre reservas:`, {
               inicio: booking.endLocal,
               fin: nextBooking.startLocal,
               duracion: gapSize,
               reservaActual: booking.id,
-              tipoActual: booking.reservation_type || 'standard',
-              reservaSiguiente: nextBooking.id,
-              tipoSiguiente: nextBooking.reservation_type || 'standard'
+              reservaSiguiente: nextBooking.id
             });
             
             ranges.push({
@@ -542,11 +469,11 @@ class TimeSlotService {
           }
         }
       }
-  
+
       // Agregar hueco disponible después de la última reserva (si existe)
       if (currentStartMinutes < rangeEndMinutes) {
         const finalRangeSize = rangeEndMinutes - currentStartMinutes;
-        console.log(`TimeSlotService - Añadiendo rango final después de última ${rangeBookings[rangeBookings.length-1].reservation_type === 'class' ? 'SESIÓN DE CLASE' : 'reserva'}:`, {
+        console.log(`TimeSlotService - Añadiendo rango final después de última reserva:`, {
           inicio: bookingTransformer.minutesToTime(currentStartMinutes),
           fin: range.closeTime,
           duracion: finalRangeSize
@@ -558,23 +485,20 @@ class TimeSlotService {
         });
       }
     });
-  
-    // Filtrar rangos demasiado cortos (menos de 15 minutos)
+
+    // Filtrar rangos demasiado cortos (menos de 15 minutos) y eliminar duplicados
     const filteredRanges = ranges.filter(range => {
       const startMinutes = bookingTransformer.timeToMinutes(range.start);
       const endMinutes = bookingTransformer.timeToMinutes(range.end);
       return endMinutes - startMinutes >= 15; // Mínimo 15 minutos para considerarlo útil
     });
     
-    // Eliminar rangos duplicados usando el método existente
-    const uniqueRanges = this.removeDuplicateRanges(filteredRanges);
-    
     console.log(`TimeSlotService - Rangos disponibles encontrados:`, {
-      cantidad: uniqueRanges.length,
-      rangos: uniqueRanges.map(r => `${r.start}-${r.end}`)
+      cantidad: filteredRanges.length,
+      rangos: filteredRanges.map(r => `${r.start}-${r.end}`)
     });
     
-    return uniqueRanges;
+    return filteredRanges;
   }
 
   /**

@@ -5,10 +5,13 @@ import { useShiftForm } from '../context/ShiftFormContext';
 import { StepComponentProps } from './StepRenderer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Calendar, Clock, Copy, Share2, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Calendar, Clock, AlertTriangle, MapPin, Phone, Mail, CreditCard, User, DollarSign } from 'lucide-react';
 import { format, parse } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useItems } from '@/hooks/useItems';
 
 // Servicios de ejemplo (se reemplazará con datos reales)
 const demoServices = [
@@ -26,11 +29,12 @@ const ConfirmationStep: React.FC<StepComponentProps> = ({
   progress,
 }) => {
   const { state, resetForm, dispatch, formData } = useShiftForm();
+  const { organization } = useOrganization();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [bookingCode, setBookingCode] = useState<string>('');
-  const [copySuccess, setCopySuccess] = useState(false);
 
   // Obtener datos del servicio seleccionado
   const selectedService = demoServices.find(service => service.id === state.selectedService);
@@ -44,6 +48,37 @@ const ConfirmationStep: React.FC<StepComponentProps> = ({
   const formattedTime = state.selectedTimeSlot
     ? format(parse(state.selectedTimeSlot, 'HH:mm', new Date()), 'h:mm a')
     : '';
+
+  // Determinar el método de pago en formato legible
+  const getPaymentMethodName = () => {
+    const methods: Record<string, string> = {
+      'cash': 'Efectivo',
+      'card': 'Tarjeta',
+      'transfer': 'Transferencia',
+      'deposit': 'Depósito',
+      'full': 'Pago completo',
+      'guarantee': 'Garantía',
+      'local': 'Pago en el local'
+    };
+    
+    // Si hay métodos de pago disponibles, mostrar el nombre correspondiente
+    if (state.availablePaymentMethods && state.availablePaymentMethods.length > 0) {
+      return methods[state.availablePaymentMethods[0]] || 'No especificado';
+    }
+    
+    return 'No especificado';
+  };
+
+  // Obtener items usando el hook useItems para conseguir sus nombres
+  const { data: itemsData = [] } = useItems(state.selectedLocation || undefined, {
+    enabled: !!state.selectedLocation,
+  });
+
+  // Función para obtener el nombre del ítem por su ID
+  const getItemNameById = (itemId: string) => {
+    const item = itemsData.find(item => item.id === itemId);
+    return item ? item.name : `Item ${itemId}`;
+  };
 
   // Simulación de envío de la reserva
   useEffect(() => {
@@ -91,27 +126,6 @@ const ConfirmationStep: React.FC<StepComponentProps> = ({
     }
   }, [state.customerInfo, bookingConfirmed, state.bookingId, dispatch, state.selectedService, state.selectedDate, state.selectedTimeSlot]);
 
-  // Copiar al portapapeles
-  const copyToClipboard = () => {
-    const textToCopy = `Reserva #${bookingCode}\nServicio: ${selectedService?.name}\nFecha: ${formattedDate}\nHora: ${formattedTime}\nNombre: ${state.customerInfo?.name}`;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    });
-  };
-
-  // Compartir reserva
-  const shareBooking = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Mi reserva de turno',
-        text: `He reservado un turno para ${selectedService?.name} el ${formattedDate} a las ${formattedTime}. Mi código de reserva es: ${bookingCode}`,
-        url: window.location.href,
-      });
-    }
-  };
-
   // Iniciar un nuevo turno
   const handleNewReservation = () => {
     resetForm();
@@ -152,95 +166,175 @@ const ConfirmationStep: React.FC<StepComponentProps> = ({
   // Si la reserva se confirmó exitosamente
   return (
     <div className="p-6 bg-white rounded-lg">
-      <div className="flex flex-col items-center text-center mb-8">
-        <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-semibold mb-2">¡Reserva Confirmada!</h2>
-        <p className="text-gray-600">Tu turno ha sido reservado exitosamente.</p>
+      <div className="flex flex-col items-center text-center mb-5">
+        <CheckCircle2 className="h-12 w-12 text-green-500 mb-3" />
+        <h2 className="text-lg font-medium mb-1">¡Reserva Confirmada!</h2>
+        <p className="text-sm text-gray-500">Tu turno ha sido reservado exitosamente.</p>
         
         {bookingCode && (
-          <div className="mt-4 bg-gray-50 px-4 py-2 rounded-md">
-            <span className="text-sm text-gray-500">Código de reserva:</span>
-            <div className="text-lg font-semibold">{bookingCode}</div>
+          <div className="mt-3 bg-gray-50 px-3 py-1.5 rounded-md">
+            <span className="text-xs text-gray-500">Código de reserva:</span>
+            <div className="text-base font-medium">{bookingCode}</div>
           </div>
         )}
       </div>
       
-      {/* Detalles de la reserva */}
-      <Card className="mb-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Detalles del Turno</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3">
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Servicio:</div>
-            <div>{selectedService?.name || 'No seleccionado'}</div>
-          </div>
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Fecha:</div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-500" />
-              {formattedDate}
+      {/* Información del Usuario */}
+      <div className="mb-4 border border-gray-100 rounded-md overflow-hidden">
+        <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
+          <h3 className="text-sm font-medium text-gray-700">Datos del Usuario</h3>
+        </div>
+        <div className="px-3 py-2 text-sm">
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Nombre:</div>
+            <div className="flex items-center gap-1.5">
+              <User className="h-3.5 w-3.5 text-gray-400" />
+              <span>{user?.metadata?.name || state.customerInfo?.name || 'No disponible'}</span>
             </div>
           </div>
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Hora:</div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-gray-500" />
-              {formattedTime}
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Email:</div>
+            <div className="flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5 text-gray-400" />
+              <span>{user?.email || state.customerInfo?.email || 'No disponible'}</span>
             </div>
           </div>
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Nombre:</div>
-            <div>{state.customerInfo?.name}</div>
-          </div>
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Email:</div>
-            <div>{state.customerInfo?.email}</div>
-          </div>
-          <div className="flex items-start">
-            <div className="w-24 font-medium">Teléfono:</div>
-            <div>{state.customerInfo?.phone}</div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={copyToClipboard} className="flex items-center gap-1 text-sm">
-            <Copy className="h-4 w-4" />
-            {copySuccess ? 'Copiado!' : 'Copiar'}
-          </Button>
-          {navigator.share && (
-            <Button variant="outline" size="sm" onClick={shareBooking} className="flex items-center gap-1 text-sm">
-              <Share2 className="h-4 w-4" />
-              Compartir
-            </Button>
+          {state.customerInfo?.phone && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Teléfono:</div>
+              <div className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-gray-400" />
+                <span>{state.customerInfo.phone}</span>
+              </div>
+            </div>
           )}
-        </CardFooter>
-      </Card>
-      
-      {/* Instrucciones adicionales */}
-      <div className="bg-blue-50 p-4 rounded-lg mb-6">
-        <h3 className="font-medium text-blue-700 mb-2">Instrucciones</h3>
-        <p className="text-sm text-blue-600 mb-2">
-          Hemos enviado los detalles de tu reserva a tu correo electrónico. Por favor, llega 10 minutos antes de tu horario programado.
-        </p>
-        <p className="text-sm text-blue-600">
-          Si necesitas cancelar o reprogramar tu turno, comunícate con nosotros con al menos 24 horas de anticipación.
-        </p>
+        </div>
       </div>
       
-      {/* Botones finales */}
-      <div className="flex flex-col gap-3">
-        <Button onClick={handleNewReservation} className="w-full">
-          Reservar otro turno
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            window.location.href = formData?.settings?.returnUrl || '/';
-          }} 
-          className="w-full"
-        >
-          Volver al inicio
-        </Button>
+      {/* Detalles de la reserva */}
+      <div className="mb-4 border border-gray-100 rounded-md overflow-hidden">
+        <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
+          <h3 className="text-sm font-medium text-gray-700">Detalles del Turno</h3>
+        </div>
+        <div className="px-3 py-2 text-sm">
+          {/* Información de la cancha o servicio */}
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Servicio:</div>
+            <div>{state.shiftDetails?.courtName || selectedService?.name || 'No seleccionado'}</div>
+          </div>
+          
+          {/* Fecha y hora */}
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Fecha:</div>
+            <div className="flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-gray-400" />
+              <span>{formattedDate || state.shiftDetails?.date || 'No especificada'}</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Hora:</div>
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-gray-400" />
+              <span>{formattedTime || (state.shiftDetails ? `${state.shiftDetails.startTime} - ${state.shiftDetails.endTime}` : 'No especificada')}</span>
+            </div>
+          </div>
+          
+          {/* Duración */}
+          {state.duration > 0 && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Duración:</div>
+              <div>{state.duration} {state.duration === 1 ? 'hora' : 'horas'}</div>
+            </div>
+          )}
+          
+          {/* Precio */}
+          {(state.shiftDetails?.price || selectedService?.price) && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Precio:</div>
+              <div className="flex items-center gap-1.5">
+                <DollarSign className="h-3.5 w-3.5 text-gray-400" />
+                <span>${state.shiftDetails?.price || selectedService?.price}</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Método de pago */}
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Pago:</div>
+            <div className="flex items-center gap-1.5">
+              <CreditCard className="h-3.5 w-3.5 text-gray-400" />
+              <span>{getPaymentMethodName()}</span>
+            </div>
+          </div>
+          
+          {/* Items adicionales si existen */}
+          {state.selectedItems && Object.keys(state.selectedItems).length > 0 && (
+            <div className="mt-1 pt-1 border-t border-gray-100">
+              <div className="text-xs font-medium text-gray-500 mb-1">Items adicionales:</div>
+              <ul className="text-xs pl-1">
+                {Object.entries(state.selectedItems).map(([itemId, quantity]) => (
+                  quantity > 0 && (
+                    <li key={itemId} className="flex justify-between py-0.5">
+                      <span>{getItemNameById(itemId)}</span>
+                      <span>x{quantity}</span>
+                    </li>
+                  )
+                ))}
+              </ul>
+              {state.itemsTotalPrice > 0 && (
+                <div className="flex justify-between text-xs mt-1 pt-1 border-t border-gray-100">
+                  <span>Subtotal items:</span>
+                  <span>${state.itemsTotalPrice}</span>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Total */}
+          {(state.shiftDetails?.price || selectedService?.price || 0) + (state.itemsTotalPrice || 0) > 0 && (
+            <div className="flex justify-between text-sm font-medium mt-1.5 pt-1.5 border-t border-gray-100">
+              <span>Total:</span>
+              <span>${(state.shiftDetails?.price || selectedService?.price || 0) + (state.itemsTotalPrice || 0)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Información del Club */}
+      <div className="mb-4 border border-gray-100 rounded-md overflow-hidden">
+        <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
+          <h3 className="text-sm font-medium text-gray-700">Información del Club</h3>
+        </div>
+        <div className="px-3 py-2 text-sm">
+          <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+            <div className="text-gray-500">Nombre:</div>
+            <div>{organization?.name || 'No disponible'}</div>
+          </div>
+          {organization?.business_name && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Razón Social:</div>
+              <div>{organization.business_name}</div>
+            </div>
+          )}
+          {organization?.email && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Email:</div>
+              <div className="flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-gray-400" />
+                <span>{organization.email}</span>
+              </div>
+            </div>
+          )}
+          {organization?.phone && (
+            <div className="grid grid-cols-[100px_1fr] py-1 items-center">
+              <div className="text-gray-500">Teléfono:</div>
+              <div className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-gray-400" />
+                <span>{organization.phone}</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

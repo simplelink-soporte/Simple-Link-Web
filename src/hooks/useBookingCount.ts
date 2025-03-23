@@ -39,7 +39,7 @@ async function fetchBookingCount(empresaId: string, date: string): Promise<Booki
 }
 
 export function useBookingCount({ empresaId, date, initialData, enabled = true }: UseBookingCountProps) {
-  const { data: bookingStatus, isLoading, error } = useQuery({
+  const { data: bookingStatus, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.bookingCount.status(empresaId, date),
     queryFn: () => fetchBookingCount(empresaId, date),
     initialData: initialData as BookingCountResponse,
@@ -60,6 +60,7 @@ export function useBookingCount({ empresaId, date, initialData, enabled = true }
     currentCount: bookingStatus?.currentCount ?? 0,
     limit: bookingStatus?.limit ?? 0,
     resetTime: bookingStatus?.resetTime ?? null,
-    isPro: bookingStatus?.isPro ?? false
+    isPro: bookingStatus?.isPro ?? false,
+    refetch
   }
 } 

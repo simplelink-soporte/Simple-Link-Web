@@ -41,7 +41,7 @@ class AvailabilityService {
    */
   private async getCourts(params?: { courtType?: string, branchId: string }) {
     console.log('AvailabilityService - getCourts - params:', params);
-    
+  
     const query = supabase.from('courts')
       .select('*')
       .eq('is_active', true);
@@ -112,18 +112,32 @@ class AvailabilityService {
         }))
       );
       
-      // NUEVO: Obtener sesiones de clases para esta fecha y canchas
+      // Obtener las sesiones de clases para esta fecha y canchas
       const classSessions = await classSessionService.getClassSessions(date, courtIds);
       
-      console.log(`AvailabilityService - Se encontraron ${classSessions.length} sesiones de clases para la fecha ${formattedDate}`);
+      // Convertir las sesiones de clase a formato de reserva
+      const sessionBookings: Booking[] = classSessions.map(session => ({
+        id: `class-session-${session.class_id}-${session.date}-${session.start_time}`,
+        court_id: session.court_id,
+        date: session.date,
+        start_time: session.start_time,
+        end_time: session.end_time,
+        payment_status: 'confirmed', // Para que se considere como ocupado
+        reservation_type: 'class'    // Para identificar que es una clase
+      }));
       
-      // Convertir las sesiones de clases al formato de reservas para poder usar la lógica existente
-      const classSessionsAsBookings = classSessionService.convertSessionsToBookingFormat(classSessions);
+      console.log(`AvailabilityService - Se encontraron ${sessionBookings.length} sesiones de clase para la fecha ${formattedDate}, ids canchas: ${courtIds.join(',')}:`, 
+        sessionBookings.map(b => ({
+          id: b.id,
+          court_id: b.court_id,
+          start: b.start_time,
+          end: b.end_time,
+          status: b.payment_status
+        }))
+      );
       
-      // Combinar reservas normales y sesiones de clases
-      const allBookings = [...bookings, ...classSessionsAsBookings];
-      
-      console.log(`AvailabilityService - Total de bloques ocupados (reservas + clases): ${allBookings.length}`);
+      // Combinar reservas regulares y sesiones de clase
+      const allBookings = [...bookings, ...sessionBookings];
       
       return allBookings;
     } catch (error) {
@@ -249,10 +263,6 @@ class AvailabilityService {
       booking.date === formattedDate
     );
     
-    // Log adicional para verificar si las sesiones de clase están siendo consideradas
-    const classSessions = relevantBookings.filter(booking => booking.reservation_type === 'class');
-    console.log(`AvailabilityService - Sesiones de clase para la cancha ${courtId} en la fecha ${formattedDate}: ${classSessions.length}`);
-    
     if (relevantBookings.length === 0) {
       // No hay reservas para esta cancha en esta fecha, por lo que el slot está disponible
       console.log(`AvailabilityService - No hay reservas para la cancha ${courtId} en la fecha ${formattedDate}. Slot ${startTime}-${endTime} disponible.`);
@@ -341,7 +351,7 @@ class AvailabilityService {
   /**
    * Encuentra los rangos disponibles para un día y cancha específicos
    */
-  private findAvailableRanges(daySchedule: DaySchedule, existingBookings: Booking[], courtId: string, date: Date): TimeRange[] {
+  private async findAvailableRanges(daySchedule: DaySchedule, existingBookings: Booking[], courtId: string, date: Date): Promise<TimeRange[]> {
     // Verificar si el día está abierto
     if (!daySchedule.isOpen || !daySchedule.timeRanges || daySchedule.timeRanges.length === 0) {
       console.log('AvailabilityService - No hay horarios disponibles para este día');
@@ -352,10 +362,24 @@ class AvailabilityService {
     const timezone = daySchedule.timezone || 'UTC';
     
     try {
-      // Generar rangos disponibles usando todos los rangos horarios del día
+      // Filtrar solo las reservas (incluidas las sesiones de clase) para esta cancha específica
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      const relevantBookings = existingBookings.filter(
+        booking => booking.court_id === courtId && booking.date === formattedDate
+      );
+      
+      // Registrar información para depuración, distinguiendo entre reservas regulares y sesiones de clase
+      const regularBookings = relevantBookings.filter(b => b.reservation_type !== 'class');
+      const classBookings = relevantBookings.filter(b => b.reservation_type === 'class');
+      
+      console.log(`AvailabilityService - Calculando disponibilidad para la cancha ${courtId} en la fecha ${formattedDate}:`);
+      console.log(`- Reservas regulares: ${regularBookings.length}`);
+      console.log(`- Sesiones de clase: ${classBookings.length}`);
+      
+      // Generar rangos disponibles usando la lógica existente
       return timeSlotService.calculateAvailableRanges(
         daySchedule.timeRanges,
-        existingBookings,
+        relevantBookings,
         courtId,
         date,
         timezone
@@ -464,7 +488,7 @@ class AvailabilityService {
       for (const court of courts) {
         try {
           // Encontrar rangos disponibles
-          const availableRanges = this.findAvailableRanges(
+          const availableRanges = await this.findAvailableRanges(
             daySchedule, 
             existingBookings, 
             court.id, 
@@ -514,7 +538,7 @@ class AvailabilityService {
           
           allSlots = [...allSlots, ...validSlots];
         } catch (error) {
-          console.error(`Error al generar slots para la cancha ${court.name}:`, error);
+          console.error(`Error al procesar la cancha ${court.name}:`, error);
         }
       }
       

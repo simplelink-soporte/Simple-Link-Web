@@ -8,6 +8,9 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StepRenderer } from './steps/StepRenderer';
 import { useShiftRegistrationAuth } from './hooks/useAuth';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { format } from 'date-fns';
+import { useBookingCount } from '@/hooks/useBookingCount';
 
 // Tipos para los pasos
 type StepComponentProps = {
@@ -41,22 +44,65 @@ const StepPlaceholder: React.FC<StepComponentProps & { title: string }> = ({
 
 // Componente principal del formulario
 export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form }) => {
-  const { state, nextStep, prevStep, checkAuthAndRedirect, dispatch, setAvailablePaymentMethods, setPaymentPercentages } = useShiftForm();
+  const { 
+    state, 
+    nextStep, 
+    prevStep, 
+    checkAuthAndRedirect, 
+    dispatch, 
+    setAvailablePaymentMethods, 
+    setPaymentPercentages, 
+    setHasNoCredits 
+  } = useShiftForm();
   const { user, isLoading: authLoading } = useShiftRegistrationAuth();
+  const { organization, isLoading: orgLoading } = useOrganization();
   const [isMobile, setIsMobile] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Verificar créditos disponibles - misma implementación exacta que en ClassRegistrationContext
+  const { canMakeBooking, remainingBookings, isPro, isLoading: isLoadingBookingCount } = useBookingCount({ 
+    empresaId: organization?.id || '', 
+    date: new Date().toISOString().split('T')[0],
+    enabled: !!organization?.id
+  });
+
+  // Efecto para verificar si hay créditos disponibles, igual que en ClassRegistrationContext
+  useEffect(() => {
+    if (!isLoadingBookingCount && organization?.id) {
+      const noCreditsAvailable = !isPro && remainingBookings <= 0;
+      
+      // Almacenar el estado en localStorage para persistencia entre recargas
+      if (noCreditsAvailable) {
+        localStorage.setItem(`shift_no_credits_${organization.id}`, 'true');
+        setHasNoCredits(true);
+        dispatch({ type: 'SET_STEP', payload: 'noCredits' });
+      } else {
+        localStorage.removeItem(`shift_no_credits_${organization.id}`);
+        setHasNoCredits(false);
+      }
+    }
+  }, [canMakeBooking, remainingBookings, isPro, organization?.id, isLoadingBookingCount, dispatch, setHasNoCredits]);
+
+  // Verificar estado guardado al cargar el componente
+  useEffect(() => {
+    if (organization?.id) {
+      const savedNoCredits = localStorage.getItem(`shift_no_credits_${organization.id}`);
+      if (savedNoCredits === 'true') {
+        setHasNoCredits(true);
+        dispatch({ type: 'SET_STEP', payload: 'noCredits' });
+      }
+    }
+  }, [organization?.id, setHasNoCredits, dispatch]);
 
   // Verificar autenticación cuando se carga el componente
   useEffect(() => {
     // Ejecutamos la verificación de autenticación inmediatamente
     // No usamos condiciones restrictivas que puedan impedir la verificación
-    console.log("ShiftRegistrationForm: Ejecutando verificación de autenticación");
     checkAuthAndRedirect();
     
     // También podemos añadir una verificación adicional cuando cambia el estado de autenticación
     const handleAuthChange = () => {
-      console.log("ShiftRegistrationForm: Cambio detectado en estado de autenticación");
       checkAuthAndRedirect();
     };
     
@@ -74,13 +120,11 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
       // Establecer los métodos de pago disponibles
       if (form.settings.paymentMethods?.available && 
           Array.isArray(form.settings.paymentMethods.available)) {
-        console.log('Configurando métodos de pago desde el formulario:', form.settings.paymentMethods.available);
         setAvailablePaymentMethods(form.settings.paymentMethods.available);
       }
 
       // Establecer los porcentajes configurados para cada método de pago
       if (form.settings.paymentMethods?.percentages) {
-        console.log('Configurando porcentajes de pago desde el formulario:', form.settings.paymentMethods.percentages);
         setPaymentPercentages(form.settings.paymentMethods.percentages);
       }
     }
@@ -114,8 +158,6 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
       setIsProcessing(true);
       
       try {
-        console.log('Enviando datos para crear reserva...');
-        // Aquí iría la lógica para enviar la reserva
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         setIsProcessing(false);
@@ -140,13 +182,15 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
     return <StepRenderer onNext={handleNext} onPrevious={handlePrevious} />;
   };
 
-  // Mostrar un loader mientras se verifica la autenticación
-  if (authLoading) {
+  // Mostrar un loader mientras se verifica la autenticación o los créditos
+  if (authLoading || isLoadingBookingCount) {
     return (
       <div className="container mx-auto p-4">
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">Verificando autenticación...</p>
+          <p className="mt-4 text-gray-600">
+            {authLoading ? "Verificando autenticación..." : "Verificando disponibilidad de créditos..."}
+          </p>
         </div>
       </div>
     );
@@ -177,21 +221,16 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
 
   return (
     <div className="container mx-auto px-8 py-8">
-      {/* Contenido del paso actual */}
       {state.bookingStatus === 'submitting' ? (
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">Procesando su reserva...</p>
         </div>
       ) : (
-        // Añadimos la clase para asegurar que los componentes internos puedan tener scroll individual
         <div className={isMobile ? "h-full mobile-content-container" : ""}>
           {renderCurrentStep()}
         </div>
       )}
-
-      {/* Navegación entre pasos */}
-      {/* La navegación ya se maneja en cada paso individual, así que eliminamos esto para evitar duplicados */}
     </div>
   );
 };

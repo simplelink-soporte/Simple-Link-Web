@@ -1,6 +1,4 @@
-'use client';
-
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { useShiftForm } from '../context/ShiftFormContext';
 import { MobileLayout } from '../shared/MobileLayout';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -11,6 +9,7 @@ const ShiftsStep = React.lazy(() => import('./shifts/ShiftsStep'));
 const ItemsStep = React.lazy(() => import('./items/ItemsStep'));
 const SummaryStep = React.lazy(() => import('./summary'));
 const ConfirmationStep = React.lazy(() => import('./ConfirmationStep'));
+const NoCreditsStep = React.lazy(() => import('./NoCreditsStep'));
 
 export type StepComponentProps = {
   onNext: () => void;
@@ -51,7 +50,6 @@ const Redirect: React.FC<RedirectProps> = ({ to, onNext, onPrevious, isFirstStep
   return (
     <div className="p-8 flex flex-col items-center justify-center">
       <LoadingSpinner size="lg" />
-      <p className="mt-4 text-gray-600">Redirigiendo...</p>
     </div>
   );
 };
@@ -137,7 +135,7 @@ export const StepRenderer: React.FC<{
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
 
-  const renderStep = () => {
+  const renderStep = useCallback(() => {
     const stepProps: StepComponentProps = {
       onNext,
       onPrevious,
@@ -146,6 +144,28 @@ export const StepRenderer: React.FC<{
       progress: ((currentStep + 1) / totalSteps) * 100,
       viewType
     };
+
+    // Para NoCredits, verificamos si el paso actual es 'noCredits'
+    if (state.step === 'noCredits') {
+      return (
+        <Suspense fallback={<div className="p-8 flex flex-col items-center justify-center">
+          <LoadingSpinner size="lg" />
+        </div>}>
+          <NoCreditsStep {...stepProps} />
+        </Suspense>
+      );
+    }
+    
+    // Si la empresa no tiene créditos (verificación secundaria), mostrar el paso NoCreditsStep
+    if (state.hasNoCredits) {
+      return (
+        <Suspense fallback={<div className="p-8 flex flex-col items-center justify-center">
+          <LoadingSpinner size="lg" />
+        </div>}>
+          <NoCreditsStep {...stepProps} />
+        </Suspense>
+      );
+    }
 
     switch (state.currentStep) {
       case 0:
@@ -159,7 +179,6 @@ export const StepRenderer: React.FC<{
         return (
           <Suspense fallback={<div className="p-8 flex flex-col items-center justify-center">
             <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">Cargando...</p>
           </div>}>
             <SummaryStep {...stepProps} />
           </Suspense>
@@ -169,7 +188,7 @@ export const StepRenderer: React.FC<{
       default:
         return <div>Paso no encontrado</div>;
     }
-  };
+  }, [state.currentStep, viewType, isLastStep, onNext, onPrevious]);
 
   // Forzar la actualización de las propiedades de navegación móvil
   const [mobileNavProps, setMobileNavProps] = useState({
@@ -360,7 +379,6 @@ export const StepRenderer: React.FC<{
       <Suspense fallback={
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">Cargando...</p>
         </div>
       }>
         {viewType === 'mobile' ? (

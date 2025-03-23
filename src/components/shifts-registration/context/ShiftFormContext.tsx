@@ -22,7 +22,7 @@ interface AuthUser {
 }
 
 // Tipos para el estado del formulario de turnos
-export type ShiftFormStep = 'auth' | 'location' | 'shifts' | 'items' | 'summary' | 'confirmation';
+export type ShiftFormStep = 'auth' | 'location' | 'shifts' | 'items' | 'summary' | 'confirmation' | 'noCredits';
 
 interface ShiftFormState {
   currentStep: number;
@@ -59,6 +59,7 @@ interface ShiftFormState {
   authError: Error | null;
   bookingStatus: 'idle' | 'submitting' | 'success' | 'error';
   authChecked: boolean; // Nueva bandera para verificar si la autenticación ya fue comprobada
+  hasNoCredits: boolean; // Indica si la empresa no tiene créditos disponibles
 }
 
 // Acciones que pueden ser despachadas al reducer
@@ -87,6 +88,7 @@ type ShiftFormAction =
   | { type: 'SET_ERROR'; payload: Error | null }
   | { type: 'SET_AUTH_ERROR'; payload: Error | null }
   | { type: 'SET_AUTH_CHECKED'; payload: boolean }
+  | { type: 'SET_HAS_NO_CREDITS'; payload: boolean }
   | { type: 'RESET_FORM' };
 
 // Estado inicial para el contexto
@@ -104,14 +106,15 @@ const initialState: ShiftFormState = {
   selectedItems: {},
   itemsTotalPrice: 0,
   skipItemsStep: false,
-  availablePaymentMethods: ['local'],
+  availablePaymentMethods: [],
   paymentPercentages: {},
   customerInfo: null,
   bookingId: null,
   error: null,
   authError: null,
   bookingStatus: 'idle',
-  authChecked: false
+  authChecked: false,
+  hasNoCredits: false, // Por defecto, asumimos que la empresa tiene créditos
 };
 
 // Reducer para gestionar el estado del formulario
@@ -124,6 +127,15 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
     case 'GO_TO_STEP':
       return { ...state, currentStep: action.payload };
     case 'SET_STEP':
+      // Si estamos cambiando al paso noCredits, también actualizar hasNoCredits
+      if (action.payload === 'noCredits') {
+        return { 
+          ...state, 
+          step: action.payload,
+          hasNoCredits: true,
+          currentStep: 0 // Reiniciar el paso numérico para evitar conflictos
+        };
+      }
       return { ...state, step: action.payload };
     case 'SET_IS_AUTHENTICATED':
       return { ...state, isAuthenticated: action.payload };
@@ -165,6 +177,18 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
       return { ...state, authError: action.payload };
     case 'SET_AUTH_CHECKED':
       return { ...state, authChecked: action.payload };
+    case 'SET_HAS_NO_CREDITS':
+      // Si se establece hasNoCredits a true, también cambiamos el paso actual a 'noCredits'
+      if (action.payload) {
+        return { 
+          ...state, 
+          hasNoCredits: action.payload,
+          step: 'noCredits',  // Cambiamos automáticamente al paso noCredits
+          currentStep: 0 // Reiniciamos el paso numérico
+        };
+      }
+      // Si se establece a false, mantenemos el paso actual
+      return { ...state, hasNoCredits: action.payload };
     case 'RESET_FORM':
       return { ...initialState };
     default:
@@ -198,6 +222,7 @@ interface ShiftFormContextProps {
   setError: (error: Error | null) => void;
   setAuthError: (error: Error | null) => void;
   setAuthChecked: (checked: boolean) => void;
+  setHasNoCredits: (hasNoCredits: boolean) => void;
   resetForm: () => void;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: {
@@ -242,8 +267,6 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
     // Usar el empresaId directamente en lugar de organization.id
     const realEmpresaId = empresaId;
 
-    console.log('ShiftFormContext: Verificando vinculación para usuario:', userId, 'y empresa:', realEmpresaId);
-
     async function checkVinculacion() {
       setIsCheckingVinculacion(true);
       try {
@@ -252,11 +275,8 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
         
         // Si no existe vinculación, crearla
         if (!vinculacion) {
-          console.log('ShiftFormContext: Creando nueva vinculación entre usuario y empresa');
           await vinculacionService.createVinculacion(userId, realEmpresaId);
-        } else {
-          console.log('ShiftFormContext: Vinculación existente encontrada');
-        }
+        } 
       } catch (error) {
         console.error('Error al verificar/crear vinculación:', error);
       } finally {
@@ -368,6 +388,10 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
     dispatch({ type: 'RESET_FORM' });
   }, [dispatch]);
 
+  const setHasNoCredits = useCallback((hasNoCredits: boolean) => {
+    dispatch({ type: 'SET_HAS_NO_CREDITS', payload: hasNoCredits });
+  }, [dispatch]);
+
   // Funciones para la autenticación
   const setAuthView = useCallback((view: AuthView) => {
     dispatch({ type: 'SET_AUTH_VIEW', payload: view });
@@ -396,14 +420,12 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
       if (isUserAuthenticated) {
         // Si el usuario está autenticado, mostrar el paso de ubicación
         dispatch({ type: 'SET_STEP', payload: 'location' });
-        console.log('ShiftFormContext: Usuario autenticado, mostrando paso de ubicación');
       } else {
         // Si no está autenticado, redirigir a la página de login con la URL actual como redirectTo
         const currentUrl = window.location.href;
         const encodedRedirectUrl = encodeURIComponent(currentUrl);
         const loginUrl = `/login?redirectTo=${encodedRedirectUrl}`;
         
-        console.log('ShiftFormContext: Usuario no autenticado, redirigiendo a:', loginUrl);
         router.replace(loginUrl); // Usar replace en lugar de push para evitar problemas con la navegación
       }
     }
@@ -416,7 +438,6 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
         type: 'SET_AVAILABLE_PAYMENT_METHODS', 
         payload: availablePaymentMethods 
       });
-      console.log('ShiftFormContext: Métodos de pago disponibles establecidos:', availablePaymentMethods);
     }
   }, [availablePaymentMethods, dispatch]);
 
@@ -449,6 +470,7 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
     setError: (error: Error | null) => dispatch({ type: 'SET_ERROR', payload: error }),
     setAuthError: (error: Error | null) => dispatch({ type: 'SET_AUTH_ERROR', payload: error }),
     setAuthChecked: (checked: boolean) => dispatch({ type: 'SET_AUTH_CHECKED', payload: checked }),
+    setHasNoCredits,
     resetForm,
     login: async (email: string, password: string) => {
       // Implementar la lógica de inicio de sesión aquí

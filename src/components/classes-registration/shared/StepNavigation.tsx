@@ -52,6 +52,10 @@ export function StepNavigation({
   const isSessionStep = currentStep === 'session'
   const shouldShowNext = showNext && !isSessionStep
   
+  // No mostrar el botón "Volver" en el paso de confirmación
+  const isConfirmationStep = currentStep === 'confirmation'
+  const shouldShowBack = showBack && !isConfirmationStep
+  
   // Determinar el estilo y texto del botón según el paso actual
   const isPackageStep = currentStep === 'package'
   const buttonLabel = isPackageStep ? 'No, gracias' : nextLabel
@@ -182,7 +186,7 @@ export function StepNavigation({
             </motion.button>
           )}
 
-          {showBack && config?.backStep && (
+          {shouldShowBack && config?.backStep && (
             <motion.button
               onClick={handleBack}
               disabled={isProcessing}

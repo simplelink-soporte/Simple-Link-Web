@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { DateTime } from 'luxon';
-import bookingTransformer from './bookingTransformerService';
 
 interface ClassSession {
   class_id: string;
@@ -336,22 +335,6 @@ class ClassSessionService {
   private getDayName(dayOfWeek: number): string {
     const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     return days[dayOfWeek] || `Día ${dayOfWeek}`;
-  }
-
-  /**
-   * Convierte sesiones de clase al formato compatible con bookings
-   * para poder utilizar la lógica existente de verificación de disponibilidad
-   */
-  public convertSessionsToBookingFormat(sessions: ClassSession[]): any[] {
-    return sessions.map(session => ({
-      id: `class-session-${session.class_id}-${session.date}-${session.start_time}`,
-      court_id: session.court_id,
-      date: session.date,
-      start_time: session.start_time,
-      end_time: session.end_time,
-      payment_status: 'confirmed', // Marcar como confirmada para que siempre se considere ocupada
-      reservation_type: 'class' // Añadir tipo para distinguir de reservas normales
-    }));
   }
 
   /**
