@@ -66,14 +66,14 @@ const initiateStripeConnect = async () => {
       response_type: 'code',
       client_id: process.env.NEXT_PUBLIC_STRIPE_CLIENT_ID!,
       scope: 'read_write',
-      redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/callback`,
+      redirect_uri: 'https://app.simple-link.com/api/stripe/callback',
       'stripe_user[country]': 'AR',
       'stripe_user[business_type]': 'company',
       'stripe_user[product_description]': 'Reservas deportivas',
       state: 'origin:onboarding', // Usar el mismo formato que en BillingSettings para consistencia
     })
 
-    const connectUrl = `https://connect.stripe.com/oauth/authorize?${params.toString()}`
+    const connectUrl = `https://connect.stripe.com/oauth/v2/authorize?${params.toString()}`
     console.log('📍 URL de conexión generada:', connectUrl)
     window.location.href = connectUrl
   } catch (error: any) {

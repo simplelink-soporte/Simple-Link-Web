@@ -172,14 +172,16 @@ export function TableHeader({
         />
 
         {/* Botón de Configuración */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="p-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200"
-          onClick={onConfigClick}
-        >
-          <IconSettings className="h-5 w-5 text-gray-600" stroke={1.5} />
-        </Button>
+        {false && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="p-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200"
+            onClick={onConfigClick}
+          >
+            <IconSettings className="h-5 w-5 text-gray-600" stroke={1.5} />
+          </Button>
+        )}
       </div>
     </div>
   )
