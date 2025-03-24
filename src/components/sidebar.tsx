@@ -310,7 +310,7 @@ function SidebarHeader() {
             )}
             <div className="border-t my-2" />
             <Link
-              href="/dashboard/settings"
+              href="/admin/dashboard/settings?tab=integrations"
               className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-accent text-sm text-muted-foreground"
             >
               <span>Administrar sucursales</span>

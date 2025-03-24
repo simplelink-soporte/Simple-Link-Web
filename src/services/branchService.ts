@@ -116,6 +116,8 @@ export const branchService = {
         is_active: formData.is_active,
         opening_hours: formData.opening_hours,
         settings: formData.settings || {},
+        timezone: formData.timezone,
+        organization_id: formData.organization_id || empresaId,
         empresa_id: empresaId
       }
 

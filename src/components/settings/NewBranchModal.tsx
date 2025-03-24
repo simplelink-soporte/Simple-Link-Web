@@ -10,6 +10,10 @@ import { Switch } from "@/components/ui/switch"
 import { TimeSelector } from "@/components/ui/time-selector"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
+import { Input } from "@/components/ui/input"
+import { SingleSelect } from "@/components/ui/single-select"
+import { BranchFormData, TimeRange, DaySchedule, OpeningHours } from "@/types/branch"
+import useOrganization from "@/hooks/useOrganization"
 
 interface NewBranchModalProps {
   isOpen: boolean
@@ -19,23 +23,20 @@ interface NewBranchModalProps {
 
 type ModalStep = 'details' | 'schedule'
 
-interface TimeRange {
-  openTime: string
-  closeTime: string
-}
-
 interface Schedule {
   day: string
   isOpen: boolean
   timeRanges: TimeRange[]
 }
 
-interface BranchFormData {
+// Interfaz local para manejar los datos del formulario
+interface LocalBranchFormData {
   name: string
   address: string
   phone: string
-  manager?: string
+  manager: string
   isActive: boolean
+  timezone: string
   schedule: Schedule[]
 }
 
@@ -74,12 +75,23 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
   const [currentStep, setCurrentStep] = useState<ModalStep>('details')
   const [isSubmitting, setIsSubmitting] = useState(false)
   
-  const [formData, setFormData] = useState<BranchFormData>({
+  // Lista de zonas horarias disponibles
+  const timezones = [
+    { id: 'Europe/Madrid', name: 'Europe/Madrid (UTC+1/+2)' },
+    { id: 'Europe/London', name: 'Europe/London (UTC+0/+1)' },
+    { id: 'America/New_York', name: 'America/New_York (UTC-5/-4)' },
+    { id: 'America/Los_Angeles', name: 'America/Los_Angeles (UTC-8/-7)' }
+  ]
+  
+  const { organization, organizationId } = useOrganization()
+  
+  const [formData, setFormData] = useState<LocalBranchFormData>({
     name: '',
     address: '',
     phone: '',
     manager: '',
     isActive: true,
+    timezone: 'Europe/Madrid',
     schedule: DAYS.map(day => ({
       day: day.id,
       isOpen: true,
@@ -132,6 +144,7 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
         phone: '',
         manager: '',
         isActive: true,
+        timezone: 'Europe/Madrid',
         schedule: DAYS.map(day => ({
           day: day.id,
           isOpen: true,
@@ -187,7 +200,50 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
   const handleSave = async () => {
     try {
       setIsSubmitting(true)
-      await onSave(formData)
+      
+      // Verificar si tenemos acceso a la organización
+      if (!organizationId) {
+        toast({
+          title: "Error",
+          description: "No se pudo obtener la información de la organización",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      
+      // Transformar el formato de horarios al formato requerido por la tabla sedes
+      const scheduleData = formData.schedule.reduce((acc, day) => {
+        acc[day.day] = {
+          isOpen: day.isOpen,
+          timeRanges: day.timeRanges.map(range => ({
+            openTime: range.openTime,
+            closeTime: range.closeTime
+          }))
+        }
+        return acc
+      }, {} as Record<string, DaySchedule>)
+      
+      // Crear el objeto OpeningHours
+      const openingHours: OpeningHours = {
+        schedule: scheduleData,
+        timezone: formData.timezone
+      }
+      
+      // Transformar de nuestra estructura interna a la estructura requerida por la API
+      const branchData: BranchFormData = {
+        name: formData.name,
+        address: formData.address,
+        phone: formData.phone,
+        manager_id: formData.manager, // Mapeo de manager a manager_id
+        is_active: formData.isActive, // Mapeo de isActive a is_active
+        timezone: formData.timezone,
+        opening_hours: openingHours,
+        settings: {}, // Añadiendo el campo settings vacío para cumplir con la interfaz
+        organization_id: organizationId // Añadiendo el ID de la organización
+      }
+      
+      await onSave(branchData)
       toast({
         title: "Sede creada",
         description: "La sede se ha creado correctamente",
@@ -213,7 +269,7 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/30 backdrop-blur-[2px]"
+            className="fixed inset-0 bg-white/80 backdrop-blur-[2px]"
             style={{
               position: 'fixed',
               top: 0,
@@ -288,71 +344,81 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
               >
                 <div className="p-6">
                   {currentStep === 'details' ? (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {/* Nombre */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Nombre de la sucursal</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={formData.name}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="ej. Sede Norte"
-                            className="w-full pb-2 border-b border-gray-300 focus:border-black outline-none transition-colors bg-transparent"
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700 block">
+                          Nombre de la sucursal
+                        </label>
+                        <Input
+                          value={formData.name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="ej. Sede Norte"
+                          className="w-full text-xs py-1.5 px-3"
+                        />
                       </div>
 
                       {/* Dirección */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Dirección</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={formData.address}
-                            onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                            placeholder="ej. Calle Principal 123"
-                            className="w-full pb-2 border-b border-gray-300 focus:border-black outline-none transition-colors bg-transparent"
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700 block">
+                          Dirección
+                        </label>
+                        <Input
+                          value={formData.address}
+                          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                          placeholder="ej. Calle Principal 123"
+                          className="w-full text-xs py-1.5 px-3"
+                        />
                       </div>
 
                       {/* Teléfono */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Teléfono</label>
-                        <div className="relative">
-                          <input
-                            type="tel"
-                            value={formData.phone}
-                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                            placeholder="ej. +34 123 456 789"
-                            className="w-full pb-2 border-b border-gray-300 focus:border-black outline-none transition-colors bg-transparent"
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700 block">
+                          Teléfono
+                        </label>
+                        <Input
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="ej. +34 123 456 789"
+                          className="w-full text-xs py-1.5 px-3"
+                        />
                       </div>
 
                       {/* Encargado (Opcional) */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Encargado
-                          <span className="text-gray-400 font-normal ml-1">(opcional)</span>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700 block">
+                          Encargado <span className="text-gray-400 font-normal">(opcional)</span>
                         </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={formData.manager}
-                            onChange={(e) => setFormData(prev => ({ ...prev, manager: e.target.value }))}
-                            placeholder="ej. Juan Pérez"
-                            className="w-full pb-2 border-b border-gray-300 focus:border-black outline-none transition-colors bg-transparent"
-                          />
-                        </div>
+                        <Input
+                          type="text"
+                          value={formData.manager}
+                          onChange={(e) => setFormData(prev => ({ ...prev, manager: e.target.value }))}
+                          placeholder="ej. Juan Pérez"
+                          className="w-full text-xs py-1.5 px-3"
+                        />
+                      </div>
+                      
+                      {/* Zona Horaria */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700 block">
+                          Zona Horaria
+                        </label>
+                        <SingleSelect
+                          value={formData.timezone}
+                          onChange={(value) => setFormData(prev => ({ ...prev, timezone: value }))}
+                          options={timezones}
+                          placeholder="Selecciona la zona horaria"
+                        />
                       </div>
 
                       {/* Estado de la sucursal */}
-                      <div className="flex items-center justify-between pt-4">
-                        <div className="space-y-0.5">
-                          <label className="text-sm font-medium">Estado de la sucursal</label>
-                          <p className="text-sm text-gray-500">
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                        <div>
+                          <label className="text-xs font-medium text-gray-700 block">
+                            Estado de la sucursal
+                          </label>
+                          <p className="text-xs text-gray-500 mt-0.5">
                             Activar o desactivar la sucursal
                           </p>
                         </div>
@@ -364,107 +430,6 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
                     </div>
                   ) : (
                     <div className="space-y-8">
-                      {/* Reutilizar Horarios */}
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-gray-700">Reutilizar Horarios</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                          {existingBranches.map((branch) => {
-                            const isSelected = JSON.stringify(branch.schedule) === JSON.stringify(formData.schedule)
-                            
-                            return (
-                              <button
-                                key={branch.branchId}
-                                onClick={() => {
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    schedule: [...branch.schedule]
-                                  }))
-                                }}
-                                className={cn(
-                                  "group relative p-3 rounded-lg border text-left transition-all duration-200",
-                                  isSelected
-                                    ? "border-black bg-gray-50 ring-1 ring-black/5"
-                                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50"
-                                )}
-                              >
-                                <div className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <p className={cn(
-                                      "text-sm font-medium",
-                                      isSelected ? "text-black" : "text-gray-700"
-                                    )}>
-                                      {branch.branchName}
-                                    </p>
-                                    <div className={cn(
-                                      "h-2 w-2 rounded-full transition-all duration-200",
-                                      isSelected ? "bg-black scale-110" : "bg-gray-300"
-                                    )} />
-                                  </div>
-                                  <p className={cn(
-                                    "text-xs",
-                                    isSelected ? "text-gray-900" : "text-gray-500"
-                                  )}>
-                                    {branch.schedule[0].timeRanges[0].openTime} - {branch.schedule[0].timeRanges[0].closeTime}
-                                  </p>
-                                </div>
-                              </button>
-                            )
-                          })}
-                          
-                          {/* Opción de Personalizado */}
-                          <button
-                            onClick={() => {
-                              setFormData(prev => ({
-                                ...prev,
-                                schedule: DAYS.map(day => ({
-                                  day: day.id,
-                                  isOpen: true,
-                                  timeRanges: [{
-                                    openTime: '08:00',
-                                    closeTime: '22:00'
-                                  }]
-                                }))
-                              }))
-                            }}
-                            className={cn(
-                              "p-3 rounded-lg border border-dashed text-left transition-all duration-200",
-                              JSON.stringify(formData.schedule) === JSON.stringify(DAYS.map(day => ({
-                                day: day.id,
-                                isOpen: true,
-                                timeRanges: [{
-                                  openTime: '08:00',
-                                  closeTime: '22:00'
-                                }]
-                              })))
-                                ? "border-black bg-gray-50"
-                                : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/50"
-                            )}
-                          >
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <p className="text-sm font-medium text-gray-900">Personalizado</p>
-                                <div className={cn(
-                                  "h-2 w-2 rounded-full transition-all duration-200",
-                                  JSON.stringify(formData.schedule) === JSON.stringify(DAYS.map(day => ({
-                                    day: day.id,
-                                    isOpen: true,
-                                    timeRanges: [{
-                                      openTime: '08:00',
-                                      closeTime: '22:00'
-                                    }]
-                                  })))
-                                    ? "bg-black scale-110"
-                                    : "bg-gray-300"
-                                )} />
-                              </div>
-                              <p className="text-xs text-gray-500">
-                                Configurar horarios manualmente
-                              </p>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-
                       {/* Configuración por día */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -666,4 +631,4 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
   if (!mounted) return null
 
   return createPortal(modalContent, document.body)
-} 
+}

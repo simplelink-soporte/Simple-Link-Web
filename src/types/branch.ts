@@ -28,6 +28,7 @@ export interface BranchFormData {
   opening_hours: OpeningHours
   timezone: string
   settings?: Record<string, any>
+  organization_id?: string
 }
 
 export interface Branch extends BranchFormData {

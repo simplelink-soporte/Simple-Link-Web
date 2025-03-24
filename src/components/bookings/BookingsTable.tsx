@@ -20,7 +20,7 @@ import { timeToMinutes } from "./utils"
 import { Z_LAYERS } from "@/constants/zIndex"
 import { useBookings } from "@/hooks/useBookings"
 import { cn } from "@/lib/utils"
-import { IconCircleCheck } from "@tabler/icons-react"
+import { IconCircleCheck, IconPlus } from "@tabler/icons-react"
 import { toast } from "@/components/ui/use-toast"
 import { useBookingStore } from '@/store/bookingStore'
 import { format } from 'date-fns'
@@ -503,6 +503,49 @@ export function BookingsTable() {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-red-500">Error al cargar los datos</p>
+      </div>
+    )
+  }
+
+  // Si hay una sede seleccionada pero no hay pistas disponibles
+  if (currentBranch && allCourts.length === 0) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex-none">
+          <TableHeader
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+            onConfigClick={handleConfigButtonClick}
+            onRefreshClick={handleRefresh}
+            isRefreshing={isRefreshing}
+            currentBranch={currentBranch}
+          />
+        </div>
+        
+        <div className="flex-1 min-h-0 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center py-10 px-4 bg-gray-50/25 rounded-lg border border-dashed border-gray-100/75 max-w-md mx-auto">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <img 
+                src="/images/empty-court.png" 
+                alt="No hay pistas" 
+                className="w-10 h-10 object-contain opacity-70" 
+                onError={(e) => { 
+                  e.currentTarget.src = "/images/Miroodles - No credits.png";
+                  e.currentTarget.onerror = null;
+                }}
+              />
+            </div>
+            <h3 className="text-base font-medium text-gray-700 mb-1">No hay pistas disponibles</h3>
+            <p className="text-sm text-gray-500 text-center mb-4">Para gestionar reservas, primero necesitas configurar al menos una pista en esta sede.</p>
+            <a 
+              href="/admin/dashboard/pricing/courts"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+            >
+              <IconPlus className="h-4 w-4 text-gray-500" />
+              Agregar Pista
+            </a>
+          </div>
+        </div>
       </div>
     )
   }
