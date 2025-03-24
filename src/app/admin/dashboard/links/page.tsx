@@ -334,37 +334,33 @@ export default function FormsPage() {
                               {/* Secciones de Links - Una debajo de la otra */}
                               <div className="space-y-4 mb-8">
                                 {/* Sección de Link de Reserva */}
-                                {bookingLink && (
-                                  <LinkSection
-                                    title="Enlace de reservas"
-                                    description="Crea y comparte un enlace para que tus clientes puedan reservar turnos en tu establecimiento."
-                                    linkData={bookingLink}
-                                    baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/reservas`}
-                                    actionLabel="Configurar opciones"
-                                    onAction={handleConfigureForm}
-                                    onDeactivate={deactivateBookingLink}
-                                    onUpdateSlug={updateBookingLinkSlug}
-                                    onConfigureForm={handleConfigureForm}
-                                    className="min-h-[160px]"
-                                    isLoading={isLoading}
-                                  />
-                                )}
+                                <LinkSection
+                                  title="Enlace de reservas"
+                                  description="Crea y comparte un enlace para que tus clientes puedan reservar turnos en tu establecimiento."
+                                  linkData={bookingLink}
+                                  baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/reservas`}
+                                  actionLabel="Configurar opciones"
+                                  onAction={handleConfigureForm}
+                                  onDeactivate={deactivateBookingLink}
+                                  onUpdateSlug={updateBookingLinkSlug}
+                                  onConfigureForm={handleConfigureForm}
+                                  className="min-h-[160px]"
+                                  isLoading={isLoading}
+                                />
 
                                 {/* Sección de Link de Clases */}
-                                {classesLink && (
-                                  <LinkSection
-                                    title="Enlace de clases"
-                                    description="Crea y comparte un enlace para que tus clientes puedan registrarse en tus clases."
-                                    linkData={classesLink}
-                                    baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/clases`}
-                                    actionLabel="Gestionar clases"
-                                    onAction={handleCreateClassLink}
-                                    onDeactivate={deactivateClassesLink}
-                                    onUpdateSlug={updateClassesLinkSlug}
-                                    className="min-h-[160px]"
-                                    isLoading={isLoading}
-                                  />
-                                )}
+                                <LinkSection
+                                  title="Enlace de clases"
+                                  description="Crea y comparte un enlace para que tus clientes puedan registrarse en tus clases."
+                                  linkData={classesLink}
+                                  baseUrl={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/clases`}
+                                  actionLabel="Gestionar clases"
+                                  onAction={handleCreateClassLink}
+                                  onDeactivate={deactivateClassesLink}
+                                  onUpdateSlug={updateClassesLinkSlug}
+                                  className="min-h-[160px]"
+                                  isLoading={isLoading}
+                                />
                               </div>
 
                               {/* Header con buscador */}

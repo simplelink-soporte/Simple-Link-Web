@@ -95,6 +95,12 @@ export function FinalStep() {
         return
       }
       
+      // Pequeño delay para asegurar que los datos se guardaron
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Cerrar sesión antes de navegar para que los datos se carguen correctamente
+      await signOut()
+      
       // Navegar al destino
       router.push(destination)
     } catch (error) {
@@ -286,7 +292,7 @@ export function FinalStep() {
               <Button
                 variant="default"
                 className="w-full"
-                onClick={() => completeOnboardingAndNavigate('/admin')}
+                onClick={() => completeOnboardingAndNavigate('/')}
                 disabled={isCompletingOnboarding}
               >
                 {isCompletingOnboarding ? (

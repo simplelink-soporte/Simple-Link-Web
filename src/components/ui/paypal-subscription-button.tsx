@@ -88,11 +88,17 @@ export function PayPalSubscriptionButton({
         createSubscription={async (_data: unknown, actions: CreateSubscriptionActions) => {
           try {
             setIsProcessing(true);
+            console.log('Entorno PayPal:', process.env.NODE_ENV === 'production' ? 'Producción' : 'Desarrollo');
             console.log('Iniciando suscripción con:', {
               plan_id: plan.plan_id,
               planType,
               client_id: PAYPAL_CONFIG.CLIENT_ID
             });
+
+            // Verificación adicional para debug
+            if (!plan.plan_id || plan.plan_id.trim() === '') {
+              throw new Error('ID de plan inválido o vacío');
+            }
 
             return actions.subscription.create({
               plan_id: plan.plan_id!,
