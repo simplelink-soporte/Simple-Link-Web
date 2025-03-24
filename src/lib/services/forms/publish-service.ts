@@ -233,10 +233,12 @@ export class FormPublishService {
 
       this.validateFields(form.fields);
 
-      // Extraer el nombre de la empresa del título
-      const empresaNombre = form.title?.includes('Reservas ')
-        ? form.title.replace('Reservas ', '').replace('Sin nombre', 'reservas')
-        : (form.title || 'reservas');
+      // Priorizar el nombre comercial de la empresa si está disponible
+      const empresaNombre = form.business_name
+        ? form.business_name
+        : form.title?.includes('Reservas ')
+          ? form.title.replace('Reservas ', '').replace('Sin nombre', 'reservas')
+          : (form.title || 'reservas');
       
       // Generar slug base a partir del nombre de la empresa
       let baseSlug = this.generateSlug(empresaNombre);

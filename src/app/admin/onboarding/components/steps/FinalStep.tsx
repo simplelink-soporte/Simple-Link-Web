@@ -11,6 +11,7 @@ import Link from "next/link"
 import { useAuth } from "@/contexts/AuthContext"
 import { onboardingService } from "@/services/onboardingService"
 import { toast } from "sonner"
+import { AnimatedLinkButton } from "@/components/ui/animated-link-button"
 
 const loadingMessages = [
   "Preparando tu formulario personalizado...",
@@ -219,15 +220,10 @@ export function FinalStep() {
                 ¡Todo listo para comenzar!
               </h2>
               {!isStripeConnected && (
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-sm text-gray-600 mt-2 font-medium">
                   Tu enlace de reservas está activo pero solo permite pagos locales. Para habilitar más métodos de pago, conecta tu cuenta de Stripe.
                 </p>
               )}
-              <p className="text-sm text-gray-500">
-                {isRedirecting 
-                  ? 'Redirigiendo al inicio de sesión...'
-                  : 'Ahora puedes cerrar esta ventana y acceder directamente al panel de administración.'}
-              </p>
             </div>
 
             {isGeneratingLink ? (
@@ -277,20 +273,10 @@ export function FinalStep() {
                   </div>
                 </button>
                 
-                <Link
-                  href={generatedLink}
-                  target="_blank"
-                  className={cn(
-                    "w-full flex items-center justify-center gap-1.5",
-                    "px-3 py-2",
-                    "text-sm text-blue-600 hover:text-blue-700",
-                    "rounded-lg border border-blue-100 bg-blue-50/50 hover:bg-blue-50",
-                    "transition-colors"
-                  )}
-                >
+                <AnimatedLinkButton href={generatedLink} className="h-9">
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span>Abrir enlace de reservas</span>
-                </Link>
+                </AnimatedLinkButton>
               </div>
             ) : (
               <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50/80 mb-6">
@@ -306,20 +292,7 @@ export function FinalStep() {
               </p>
               
               <Button
-                className="w-full mb-3"
-                onClick={handleCompleteOnboarding}
-                disabled={isRedirecting || isCompletingOnboarding}
-              >
-                {isRedirecting || isCompletingOnboarding ? (
-                  <>
-                    <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-current animate-spin mr-2"></div>
-                    Completando...
-                  </>
-                ) : "Finalizar y cerrar sesión"}
-              </Button>
-              
-              <Button
-                variant="outline"
+                variant="default"
                 className="w-full"
                 onClick={() => completeOnboardingAndNavigate('/admin')}
                 disabled={isCompletingOnboarding}

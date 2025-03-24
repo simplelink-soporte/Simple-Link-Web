@@ -67,11 +67,12 @@ interface Branch {
 }
 
 interface FormData {
-  empresaId?: string;
-  nombre?: string;
-  primaryColor?: string;
-  publicFormUrl?: string;
-  [key: string]: any; // Para permitir propiedades adicionales
+  empresaId?: string
+  nombre?: string
+  businessName?: string
+  primaryColor?: string
+  publicFormUrl?: string
+  [key: string]: any // Para permitir propiedades adicionales
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined)
@@ -178,7 +179,7 @@ function OnboardingProviderContent({
           try {
             const { data } = await supabase
               .from('empresas')
-              .select('id, onboarding')
+              .select('id, onboarding, business_name, name')
               .eq('id', formData.empresaId)
               .maybeSingle()
             
@@ -202,7 +203,7 @@ function OnboardingProviderContent({
           try {
             const { data } = await supabase
               .from('empresas')
-              .select('id, onboarding')
+              .select('id, onboarding, business_name, name')
               .eq('auth_user_id', user.id)
               .maybeSingle()
             
@@ -224,8 +225,19 @@ function OnboardingProviderContent({
           console.log('✅ Actualizando formData con empresaId:', empresaData.id)
           setFormData(prev => ({
             ...prev,
-            empresaId: empresaData.id
+            empresaId: empresaData.id,
+            nombre: formData.nombre || empresaData.name,
+            businessName: empresaData.business_name || empresaData.name
           }))
+        } else if (empresaData.id) {
+          // Si ya tenemos el ID pero no el business_name, actualizarlo
+          if (!formData.businessName && (empresaData.business_name || empresaData.name)) {
+            setFormData(prev => ({
+              ...prev,
+              businessName: empresaData.business_name || empresaData.name,
+              nombre: prev.nombre || empresaData.name
+            }))
+          }
         }
 
         // Evitar actualizaciones innecesarias comparando con el estado actual
@@ -399,6 +411,7 @@ function OnboardingProviderContent({
             empresa_id: formData.empresaId,
             title: `Reservas ${formData.nombre || 'Sin nombre'}`,
             description: `Realiza tu reserva en ${formData.nombre || 'nuestra instalación'}`,
+            business_name: formData.businessName || formData.nombre || 'Sin nombre',
             // Usar una plantilla básica o tomar campos desde los datos guardados
             fields: [], // Esto se llenará con campos por defecto en el servicio
             theme: {
