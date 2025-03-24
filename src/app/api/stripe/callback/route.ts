@@ -42,9 +42,12 @@ export async function GET(request: Request) {
     console.log('📍 Parámetros de origen:', { state, origin });
 
     // Determinar la URL de redirección basada en el origen
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.simple-link.com';
+    const cleanBaseUrl = baseUrl.replace(/\/$/, ''); // Eliminar barra final si existe
+    
     redirectUrl = origin === 'settings' 
-      ? `${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations` 
-      : `${process.env.NEXT_PUBLIC_APP_URL}/admin/onboarding`
+      ? `${cleanBaseUrl}/admin/dashboard/settings?tab=integrations` 
+      : `${cleanBaseUrl}/admin/onboarding`
 
     // Crear cliente de Supabase con el contexto de la solicitud
     const supabase = createRouteHandlerClient<Database>({ cookies })

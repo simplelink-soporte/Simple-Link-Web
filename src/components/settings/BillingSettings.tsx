@@ -107,11 +107,12 @@ export function BillingSettings() {
       }
 
       // Construir la URL de autorización
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
       const params = new URLSearchParams({
         response_type: 'code',
         client_id: process.env.NEXT_PUBLIC_STRIPE_CLIENT_ID!,
         scope: 'read_write',
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/callback`,
+        redirect_uri: `${baseUrl.replace(/\/$/, '')}/api/stripe/callback`,
         'stripe_user[country]': 'AR',
         'stripe_user[business_type]': 'company',
         'stripe_user[product_description]': 'Reservas deportivas',
