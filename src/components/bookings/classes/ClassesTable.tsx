@@ -323,7 +323,7 @@ export function ClassesTable() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {hasExistingLink && (
+            {hasExistingLink ? (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -340,6 +340,27 @@ export function ClassesTable() {
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
                     <p className="text-xs">Copiar link de clases</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="px-3 py-1.5 h-8 bg-white border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    >
+                      <a href="/admin/dashboard/links">
+                        <IconExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                        Crear Link de Clases
+                      </a>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p className="text-xs">Ir a la sección de links</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
