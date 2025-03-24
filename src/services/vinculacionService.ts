@@ -25,7 +25,7 @@ export class VinculacionService {
         .maybeSingle()
 
       if (searchError) {
-        console.error('Error al buscar vinculación:', searchError)
+        // console.error('Error al buscar vinculación:', searchError)
         throw searchError
       }
 
@@ -49,13 +49,13 @@ export class VinculacionService {
         .single()
 
       if (insertError) {
-        console.error('Error al crear vinculación:', insertError)
+        // console.error('Error al crear vinculación:', insertError)
         throw insertError
       }
 
       return newVinculacion
     } catch (error) {
-      console.error('Error en el servicio de vinculación:', error)
+      // console.error('Error en el servicio de vinculación:', error)
       throw error
     }
   }
@@ -72,7 +72,7 @@ export class VinculacionService {
       if (error) throw error
       return data
     } catch (error) {
-      console.error('Error al obtener vinculación:', error)
+      // console.error('Error al obtener vinculación:', error)
       throw error
     }
   }

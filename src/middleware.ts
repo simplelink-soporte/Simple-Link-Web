@@ -14,7 +14,8 @@ const PUBLIC_ROUTES = [
   '/admin/auth/callback',
   '/admin/auth/error',
   '/clases/login',
-  '/clases/registro'
+  '/clases/registro',
+  '/reservas/login'
 ] as const
 
 // Rutas de assets estáticos
@@ -106,6 +107,7 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/clases/:path*',
+    '/reservas/:path*',
     '/api/:path*',
     '/f/:path*'
   ]
@@ -169,6 +171,32 @@ export default async function middleware(req: NextRequest) {
 
       // Si el usuario está autenticado y tiene permisos, permitir acceso
       console.log('Middleware: Usuario autenticado con acceso a clases, rol:', userRole)
+      return NextResponse.next()
+    }
+
+    // Manejo específico para rutas de reservas
+    if (pathname.startsWith('/reservas/')) {
+      // Excluir rutas públicas de reservas
+      if (['/reservas/login'].includes(pathname)) {
+        return NextResponse.next()
+      }
+
+      if (!session) {
+        console.log('Middleware: No hay sesión, redirigiendo a login de reservas')
+        const returnUrl = encodeURIComponent(pathname)
+        const loginUrl = new URL(`/reservas/login?returnUrl=${returnUrl}`, req.url)
+        return NextResponse.redirect(loginUrl)
+      }
+
+      // Para rutas de reservas, permitir tanto clientes como administradores
+      const allowedRoles = ['client', 'admin', 'superadmin']
+      if (!allowedRoles.includes(userRole)) {
+        console.log('Middleware: Usuario sin acceso a reservas, rol:', userRole)
+        return NextResponse.redirect(new URL('/unauthorized', req.url))
+      }
+
+      // Si el usuario está autenticado y tiene permisos, permitir acceso
+      console.log('Middleware: Usuario autenticado con acceso a reservas, rol:', userRole)
       return NextResponse.next()
     }
 

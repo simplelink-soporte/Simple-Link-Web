@@ -278,7 +278,7 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
           await vinculacionService.createVinculacion(userId, realEmpresaId);
         } 
       } catch (error) {
-        console.error('Error al verificar/crear vinculación:', error);
+        // console.error('Error al verificar/crear vinculación:', error);
       } finally {
         setIsCheckingVinculacion(false);
         setHasCheckedVinculacion(true);
