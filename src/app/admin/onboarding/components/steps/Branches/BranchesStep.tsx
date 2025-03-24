@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { supabase } from "@/lib/supabase"
 import { onboardingBranchService } from '@/services/onboardingBranchService'
+import { onboardingCourtService } from '@/services/onboardingCourtService'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Select,
@@ -369,6 +370,11 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
     try {
       setIsSubmitting(true)
 
+      // Verificar que tengamos un ID de sede válido
+      if (!currentBranchId) {
+        throw new Error("Se necesita guardar la sede primero")
+      }
+
       // Actualizar los datos de la sede en el contexto
       setBranches((prevBranches) => {
         return prevBranches.map((branch) => 
@@ -378,9 +384,20 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         )
       })
 
+      // Guardar las pistas en Supabase
+      console.log('Guardando pistas para sede:', currentBranchId)
+      const { success, error } = await onboardingCourtService.saveCourts(
+        currentBranchId,
+        formData.courts
+      )
+
+      if (!success) {
+        throw new Error(error?.message || "No se pudieron guardar las pistas")
+      }
+
       // Marcar como completado
       if (completeAndAdvance) {
-        completeAndAdvance(2) // Usando número en lugar de string
+        completeAndAdvance(1) // Corregido: usar índice 1 para el paso de Sucursales
       }
       
       toast({
