@@ -220,8 +220,8 @@ export function FinalStep() {
                 ¡Todo listo para comenzar!
               </h2>
               {!isStripeConnected && (
-                <p className="text-sm text-gray-600 mt-2 font-medium">
-                  Tu enlace de reservas está activo pero solo permite pagos locales. Para habilitar más métodos de pago, conecta tu cuenta de Stripe.
+                <p className="text-sm text-gray-500 mt-1.5 font-normal">
+                  Tu enlace de reservas está activo pero no permite pagos online. Para habilitar más opciones, conecta Stripe.
                 </p>
               )}
             </div>
@@ -235,48 +235,40 @@ export function FinalStep() {
               </div>
             ) : generatedLink ? (
               <div className="w-full mb-6">
-                <div className="mb-2">
+                <div className="mb-2 text-left">
                   <h3 className="text-sm font-medium">Enlace de reservas</h3>
                   <p className="text-xs text-gray-500">
                     Comparte este enlace para que tus clientes realicen reservas
                   </p>
                 </div>
                 
-                <button
-                  onClick={handleCopy}
-                  className={cn(
-                    "w-full flex items-center justify-between",
-                    "px-3 py-2",
-                    "bg-gray-50/50 hover:bg-gray-50",
-                    "rounded-lg border border-gray-200",
-                    "text-sm transition-colors group mb-2"
-                  )}
-                >
-                  <span className="text-xs text-gray-600 truncate">
-                    {window.location.origin}{generatedLink}
-                  </span>
-                  <div className={cn(
-                    "flex items-center gap-1.5",
-                    "text-gray-400 group-hover:text-gray-600"
-                  )}>
-                    {copied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        <span className="text-[10px]">Copiado</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        <span className="text-[10px]">Copiar</span>
-                      </>
-                    )}
+                {/* Contenedor de enlace con botones integrados */}
+                <div className="flex items-center w-full rounded-lg border border-gray-200 bg-gray-50/60 overflow-hidden mb-2">
+                  {/* Texto del enlace */}
+                  <div className="flex-grow px-3 py-2 text-left truncate">
+                    <span className="text-xs text-gray-600">
+                      {window.location.origin}{generatedLink}
+                    </span>
                   </div>
-                </button>
-                
-                <AnimatedLinkButton href={generatedLink} className="h-9">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  <span>Abrir enlace de reservas</span>
-                </AnimatedLinkButton>
+                  
+                  {/* Botones de acción integrados */}
+                  <div className="flex border-l border-gray-200">
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100/80 transition-colors"
+                    >
+                      {copied ? "Copiado" : "Copiar"}
+                    </button>
+                    
+                    <Link
+                      href={generatedLink}
+                      target="_blank"
+                      className="flex items-center px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100/80 transition-colors border-l border-gray-200"
+                    >
+                      Abrir
+                    </Link>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50/80 mb-6">
@@ -302,7 +294,7 @@ export function FinalStep() {
                     <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-gray-400 animate-spin mr-2"></div>
                     Redirigiendo...
                   </>
-                ) : "Ir al panel ahora"}
+                ) : "Ir al Panel"}
               </Button>
             </div>
           </motion.div>
