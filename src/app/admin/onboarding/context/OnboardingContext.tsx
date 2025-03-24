@@ -390,13 +390,10 @@ function OnboardingProviderContent({
           console.error('No se encontró el ID de la empresa');
           setIsGeneratingLink(false);
           // Continuamos con el avance aunque no se pueda generar el link
-        } else if (!isStripeConnected) {
-          // Si el usuario no ha conectado Stripe, no generamos el enlace pero continuamos
-          console.log('El usuario no ha conectado su cuenta de Stripe. No se generará el enlace de reservas.');
-          setIsGeneratingLink(false);
-          // No retornamos - seguimos con el proceso para avanzar al siguiente paso
         } else {
-          // Solo generamos el enlace si hay Stripe conectado
+          // Modificado: Generamos el enlace independientemente de si hay Stripe conectado o no
+          console.log(`${isStripeConnected ? 'Usuario con Stripe conectado' : 'Usuario sin Stripe conectado'}. Generando enlace de reservas.`);
+          
           // Preparar los datos del formulario para la publicación
           const publishData = {
             empresa_id: formData.empresaId,
@@ -407,6 +404,20 @@ function OnboardingProviderContent({
             theme: {
               mode: 'light',
               primary_color: formData.primaryColor || '#000000'
+            },
+            // Configuración de métodos de pago según si tiene Stripe o no
+            settings: {
+              paymentMethods: {
+                available: isStripeConnected 
+                  ? ["garantia", "sena", "completo", "local"] 
+                  : ["local"], // Solo local si no hay Stripe
+                percentages: isStripeConnected
+                  ? {
+                      sena: 30,
+                      garantia: 30
+                    }
+                  : {}
+              }
             }
           };
           

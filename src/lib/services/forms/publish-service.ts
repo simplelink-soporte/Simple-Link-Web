@@ -233,8 +233,13 @@ export class FormPublishService {
 
       this.validateFields(form.fields);
 
-      // Generar slug base
-      let baseSlug = this.generateSlug(form.title || 'formulario');
+      // Extraer el nombre de la empresa del título
+      const empresaNombre = form.title?.includes('Reservas ')
+        ? form.title.replace('Reservas ', '').replace('Sin nombre', 'reservas')
+        : (form.title || 'reservas');
+      
+      // Generar slug base a partir del nombre de la empresa
+      let baseSlug = this.generateSlug(empresaNombre);
       let slug = baseSlug;
       let counter = 1;
 
@@ -295,7 +300,7 @@ export class FormPublishService {
       }
 
       // Usar ruta absoluta para el formulario público
-      const url = `/f/${link.slug}`;
+      const url = `/reservas/${link.slug}`;
       FormPublishService.debug.log('✅ Formulario publicado:', { url, linkData });
 
       return url;
@@ -306,17 +311,29 @@ export class FormPublishService {
   }
 
   private generateSlug(text: string): string {
-    const timestamp = Date.now().toString(36);
-    const slug = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/--+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+    if (!text || text.trim() === '' || text === 'Sin nombre') {
+      // Si no hay texto o es "Sin nombre", usar timestamp para el slug
+      const timestamp = Date.now().toString(36);
+      return `reservas-${timestamp}`;
+    }
     
-    return slug || `formulario-${timestamp}`;
+    // Normalizar el texto para eliminar acentos y caracteres especiales
+    const normalizedText = text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')  // Eliminar acentos
+      .replace(/[^\w\s-]/g, '')  // Eliminar caracteres especiales
+      .replace(/\s+/g, '-')      // Reemplazar espacios con guiones
+      .replace(/--+/g, '-')      // Evitar guiones múltiples
+      .replace(/^-+|-+$/g, '');  // Eliminar guiones al inicio y final
+    
+    // Si después de la normalización no queda texto, usar timestamp
+    if (!normalizedText || normalizedText.trim() === '') {
+      const timestamp = Date.now().toString(36);
+      return `reservas-${timestamp}`;
+    }
+    
+    return normalizedText;
   }
 
   /**

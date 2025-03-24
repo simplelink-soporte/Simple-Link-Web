@@ -1,4 +1,4 @@
-'use client'
+  'use client'
 
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
@@ -201,143 +201,137 @@ export function FinalStep() {
         ) : (
           <motion.div
             key="complete"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center text-center max-w-md w-full"
           >
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 200,
-                damping: 15
-              }}
+              className="bg-green-50/80 text-green-600 rounded-full p-3 mb-6"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
             >
-              <motion.div 
-                initial={{ backgroundColor: "rgb(243 244 246)" }}
-                animate={{ backgroundColor: "rgb(0 0 0)" }}
-                transition={{ duration: 0.3 }}
-                className="rounded-full p-2"
-              >
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Check className="h-6 w-6 text-white" />
-                </motion.div>
-              </motion.div>
+              <CheckCircle2 className="h-8 w-8" />
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-6 text-center"
-            >
-              <div className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  ¡Todo listo para comenzar!
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {isRedirecting 
-                    ? 'Redirigiendo al inicio de sesión...'
-                    : 'Serás redirigido al inicio de sesión en unos momentos.'}
+            
+            <div className="space-y-2 mb-8">
+              <h2 className="text-2xl font-semibold tracking-tight">
+                ¡Todo listo para comenzar!
+              </h2>
+              {!isStripeConnected && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Tu enlace de reservas está activo pero solo permite pagos locales. Para habilitar más métodos de pago, conecta tu cuenta de Stripe.
                 </p>
-                
-                {!isStripeConnected && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Recuerda terminar tu configuración para recibir pagos y obtener el link de reservas.
-                  </p>
-                )}
-              </div>
-
-              {isGeneratingLink ? (
-                <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50 mb-6">
-                  <div className="flex justify-center">
-                    <div className="h-5 w-5 rounded-full border-2 border-t-transparent border-gray-400 animate-spin"></div>
-                    <span className="ml-2 text-sm text-gray-500">Generando enlace de reservas...</span>
-                  </div>
-                </div>
-              ) : generatedLink ? (
-                <div className="w-full mb-6">
-                  <div className="mb-2">
-                    <h3 className="text-sm font-medium">Enlace de reservas</h3>
-                    <p className="text-xs text-gray-500">
-                      Comparte este enlace para que tus clientes realicen reservas
-                    </p>
-                  </div>
-                  
-                  <button
-                    onClick={handleCopy}
-                    className={cn(
-                      "w-full flex items-center justify-between",
-                      "px-3 py-2",
-                      "bg-gray-50/50 hover:bg-gray-50",
-                      "rounded-lg border border-gray-200",
-                      "text-sm transition-colors group mb-2"
-                    )}
-                  >
-                    <span className="text-xs text-gray-600 truncate">
-                      {window.location.origin}{generatedLink}
-                    </span>
-                    <div className={cn(
-                      "flex items-center gap-1.5",
-                      "text-gray-400 group-hover:text-gray-600"
-                    )}>
-                      {copied ? (
-                        <>
-                          <Check className="h-3.5 w-3.5" />
-                          <span className="text-[10px]">Copiado</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5" />
-                          <span className="text-[10px]">Copiar</span>
-                        </>
-                      )}
-                    </div>
-                  </button>
-                  
-                  <Link
-                    href={generatedLink}
-                    target="_blank"
-                    className={cn(
-                      "w-full flex items-center justify-center gap-1.5",
-                      "px-3 py-2",
-                      "text-sm text-blue-600 hover:text-blue-700",
-                      "rounded-lg border border-blue-100 bg-blue-50/50 hover:bg-blue-50",
-                      "transition-colors"
-                    )}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span>Abrir enlace de reservas</span>
-                  </Link>
-                </div>
-              ) : (
-                <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50/80 mb-6">
-                  <p className="text-sm text-gray-600 text-center">
-                    {!isStripeConnected 
-                      ? "El enlace de reservas no está disponible porque no has conectado Stripe. Esto es necesario para procesar los pagos de tus clientes."
-                      : "No se pudo generar el enlace de reservas. Por favor, contacta con soporte."}
-                  </p>
-                </div>
               )}
+              <p className="text-sm text-gray-500">
+                {isRedirecting 
+                  ? 'Redirigiendo al inicio de sesión...'
+                  : 'Ahora puedes cerrar esta ventana y acceder directamente al panel de administración.'}
+              </p>
+            </div>
 
-              <div>
-                <p className="text-sm text-gray-500 mb-2 md:hidden">
-                  Ingresa a Simple-Link desde computadora para acceder al Panel
-                </p>
-                <Button
-                  size="lg"
-                  className="w-full"
-                  onClick={() => completeOnboardingAndNavigate('/admin/dashboard/bookings/reservations')}
-                >
-                  Ir al Panel
-                </Button>
+            {isGeneratingLink ? (
+              <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50 mb-6">
+                <div className="flex justify-center">
+                  <div className="h-5 w-5 rounded-full border-2 border-t-transparent border-gray-400 animate-spin"></div>
+                  <span className="ml-2 text-sm text-gray-500">Generando enlace de reservas...</span>
+                </div>
               </div>
-            </motion.div>
+            ) : generatedLink ? (
+              <div className="w-full mb-6">
+                <div className="mb-2">
+                  <h3 className="text-sm font-medium">Enlace de reservas</h3>
+                  <p className="text-xs text-gray-500">
+                    Comparte este enlace para que tus clientes realicen reservas
+                  </p>
+                </div>
+                
+                <button
+                  onClick={handleCopy}
+                  className={cn(
+                    "w-full flex items-center justify-between",
+                    "px-3 py-2",
+                    "bg-gray-50/50 hover:bg-gray-50",
+                    "rounded-lg border border-gray-200",
+                    "text-sm transition-colors group mb-2"
+                  )}
+                >
+                  <span className="text-xs text-gray-600 truncate">
+                    {window.location.origin}{generatedLink}
+                  </span>
+                  <div className={cn(
+                    "flex items-center gap-1.5",
+                    "text-gray-400 group-hover:text-gray-600"
+                  )}>
+                    {copied ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" />
+                        <span className="text-[10px]">Copiado</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        <span className="text-[10px]">Copiar</span>
+                      </>
+                    )}
+                  </div>
+                </button>
+                
+                <Link
+                  href={generatedLink}
+                  target="_blank"
+                  className={cn(
+                    "w-full flex items-center justify-center gap-1.5",
+                    "px-3 py-2",
+                    "text-sm text-blue-600 hover:text-blue-700",
+                    "rounded-lg border border-blue-100 bg-blue-50/50 hover:bg-blue-50",
+                    "transition-colors"
+                  )}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  <span>Abrir enlace de reservas</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50/80 mb-6">
+                <p className="text-sm text-gray-600 text-center">
+                  No se pudo generar el enlace de reservas. Por favor, contacta con soporte.
+                </p>
+              </div>
+            )}
+
+            <div>
+              <p className="text-sm text-gray-500 mb-2 md:hidden">
+                Ingresa a Simple-Link desde computadora para acceder al Panel
+              </p>
+              
+              <Button
+                className="w-full mb-3"
+                onClick={handleCompleteOnboarding}
+                disabled={isRedirecting || isCompletingOnboarding}
+              >
+                {isRedirecting || isCompletingOnboarding ? (
+                  <>
+                    <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-current animate-spin mr-2"></div>
+                    Completando...
+                  </>
+                ) : "Finalizar y cerrar sesión"}
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => completeOnboardingAndNavigate('/admin')}
+                disabled={isCompletingOnboarding}
+              >
+                {isCompletingOnboarding ? (
+                  <>
+                    <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-gray-400 animate-spin mr-2"></div>
+                    Redirigiendo...
+                  </>
+                ) : "Ir al panel ahora"}
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
