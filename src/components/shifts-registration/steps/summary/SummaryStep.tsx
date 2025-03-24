@@ -18,6 +18,8 @@ import { useStripeConfig } from '@/hooks/useStripeConfig';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { MobileLayout } from '../../shared/MobileLayout';
 // Nuevos imports para el procesamiento de reservas de turnos
 import { shiftBookingService } from '@/services/shiftBookingService';
 import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/bookings';
@@ -58,7 +60,6 @@ export function SummaryStep({
   const { state, dispatch } = useShiftForm();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentTypeEnum | null>(null);
   const [selectedCardMethod, setSelectedCardMethod] = useState<StripePaymentMethod | null>(null);
   const [showCardMethodModal, setShowCardMethodModal] = useState(false);
@@ -98,24 +99,8 @@ export function SummaryStep({
   // Ref para exponer métodos y estados al componente padre
   const summaryStepRef = useRef<any>({});
   
-  // Detectar si es dispositivo móvil
-  useEffect(() => {
-    // Función para verificar si el dispositivo es móvil
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    // Verificar al montar
-    checkIsMobile();
-    
-    // Agregar listener para cambios de tamaño
-    window.addEventListener('resize', checkIsMobile);
-    
-    // Limpiar listener al desmontar
-    return () => {
-      window.removeEventListener('resize', checkIsMobile);
-    };
-  }, []);
+  // Detectar si es dispositivo móvil usando el hook
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Efecto para la animación del contenido
   useEffect(() => {
@@ -738,26 +723,17 @@ export function SummaryStep({
     );
   }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef, stripeAccountId]);
 
-  // Componente de Layout para Desktop
-  const DesktopLayout = useCallback(({ children }: { children: React.ReactNode }) => (
-    <div className="w-full max-w-6xl mx-auto">
-      {children}
-    </div>
-  ), []);
-
-  // Renderizado principal
   return (
-    <div className="container mx-auto">
+    <div>
       {/* Overlay de procesamiento */}
       <AnimatePresence>
-        {showOverlay && (
+        {isProcessing && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 0.5, 
-              ease: "easeInOut"
+            transition={{
+              duration: 0.2
             }}
             className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70 backdrop-blur-sm"
           >
@@ -797,17 +773,28 @@ export function SummaryStep({
 
       <AnimatePresence mode="wait">
         {isContentVisible && (
-          <motion.div
-            key={summarySubStep}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="w-full"
-          >
-            {isMobile ? (
-              // Layout móvil
-              <div className="w-full max-w-lg mx-auto">
+          isMobile ? (
+            // Layout móvil usando MobileLayout
+            <MobileLayout
+              onNext={handleNextSubStep}
+              onBack={handlePreviousSubStep}
+              nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
+              isNextDisabled={
+                summarySubStep === 'payment' && 
+                (!selectedPaymentMethod || 
+                ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
+                isProcessing)
+              }
+              isProcessing={isProcessing}
+            >
+              <motion.div
+                key={summarySubStep}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-col h-full"
+              >
                 {/* Contenido basado en el sub-paso actual */}
                 {summarySubStep === 'details' ? (
                   // Sub-paso 1: Detalles de la reserva
@@ -822,9 +809,18 @@ export function SummaryStep({
                     <PaymentMethodsSection />
                   </>
                 )}
-              </div>
-            ) : (
-              // Layout desktop - cambia según el sub-paso
+              </motion.div>
+            </MobileLayout>
+          ) : (
+            // Layout desktop - cambia según el sub-paso
+            <motion.div
+              key={summarySubStep}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="w-full"
+            >
               <div className="w-full max-w-6xl mx-auto">
                 <div className="flex flex-col w-full h-full">
                   {summarySubStep === 'details' ? (
@@ -855,26 +851,24 @@ export function SummaryStep({
                   )}
                 </div>
               </div>
-            )}
-          </motion.div>
+              
+              {/* Navegación con StepNavigation para desktop */}
+              <StepNavigation
+                onNext={handleNextSubStep}
+                onBack={handlePreviousSubStep}
+                nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
+                isNextDisabled={
+                  summarySubStep === 'payment' && 
+                  (!selectedPaymentMethod || 
+                  ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
+                  isProcessing)
+                }
+                isProcessing={isProcessing}
+              />
+            </motion.div>
+          )
         )}
       </AnimatePresence>
-      
-      {/* Navegación con StepNavigation adaptada según el sub-paso - Solo para desktop */}
-      {!isMobile && (
-        <StepNavigation
-          onNext={handleNextSubStep}
-          onBack={handlePreviousSubStep}
-          nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
-          isNextDisabled={
-            summarySubStep === 'payment' && 
-            (!selectedPaymentMethod || 
-            ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
-            isProcessing)
-          }
-          isProcessing={isProcessing}
-        />
-      )}
     </div>
   );
 }

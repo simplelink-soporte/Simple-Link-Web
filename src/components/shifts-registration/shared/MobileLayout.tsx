@@ -15,6 +15,9 @@ interface MobileLayoutProps {
 /**
  * Layout para vistas móviles en la aplicación de registro de turnos
  * Proporciona un header con botón de volver y un footer con botón de continuar
+ * 
+ * Nota: Evita usar h-[100vh] para prevenir problemas de layout en móviles
+ * Usa una aproximación más flexible para evitar el fondo gris durante las transiciones
  */
 export function MobileLayout({
   children,
@@ -31,32 +34,36 @@ export function MobileLayout({
     const originalOverflow = document.body.style.overflow;
     const originalHeight = document.body.style.height;
     const originalPosition = document.body.style.position;
+    const originalWidth = document.body.style.width;
     
-    // Prevenir scroll en el body
+    // Prevenir scroll en el body sin cambiar las dimensiones del viewport
     document.body.style.overflow = 'hidden';
-    document.body.style.height = '100%';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
     
     // Restaurar el overflow original al desmontar
     return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.height = originalHeight;
-      document.body.style.position = originalPosition;
-      document.body.style.width = '';
+      // Verificar si hay otros MobileLayout montados para evitar restaurar si otro componente sigue activo
+      const otherLayoutsActive = document.querySelectorAll('.mobile-layout-container').length > 1;
+      
+      if (!otherLayoutsActive) {
+        // Restaurar cada propiedad individualmente
+        document.body.style.overflow = originalOverflow;
+        document.body.style.height = originalHeight;
+        document.body.style.position = originalPosition;
+        document.body.style.width = originalWidth || '';
+      }
     };
   }, []);
 
   return (
     <div className={cn(
-      "flex flex-col",
+      "flex flex-col mobile-layout-container",
       // Reducción del espacio para el header
       "pt-6 pb-16",
-      // Eliminar scroll completamente
-      "overflow-hidden h-[100vh] w-full"
+      // Usar min-height en vez de height fija para adaptarse mejor
+      "overflow-hidden min-h-[100%] w-full"
     )}>
       {/* Contenido principal */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden px-4">
         {children}
       </main>
       

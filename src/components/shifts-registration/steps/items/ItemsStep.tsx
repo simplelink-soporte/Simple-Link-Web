@@ -15,6 +15,8 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SelectionSummaryToast } from './components/SelectionSummaryToast';
 import { StepNavigation } from '../../shared/StepNavigation';
+import { PageHeader } from '../shifts/components/PageHeader';
+import { MobileLayout } from '../../shared/MobileLayout';
 
 // Componente principal de items
 export function ItemsStep({
@@ -441,63 +443,130 @@ export function ItemsStep({
   }
 
   return (
-    <div className="container px-0 py-0 mx-auto max-w-6xl">
-      {/* Cabecera con título y descripción */}
-      <div className="mb-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-gray-900">Selecciona los ítems</h1>
-          <p className="text-sm text-gray-500">Selecciona los artículos que deseas reservar</p>
-        </div>
-      </div>
-      
-      {/* Layout responsivo con lista de ítems */}
-      <div className="w-full">
-        {/* Lista de ítems */}
-        {filteredItems.length > 0 ? (
-          <ItemsList 
-            items={filteredItems}
-            selectedItems={localSelectedItems}
-            onQuantityChange={handleItemSelection}
-            getItemPrice={getItemPrice}
-            isLoading={isLoading}
-            layout="list"
-            className="pb-10" // Reducido el espacio al eliminar el botón flotante
+    isMobile ? (
+      // Layout móvil con header y footer de navegación
+      <MobileLayout
+        onNext={handleNext}
+        onBack={onPrevious}
+        isNextDisabled={false} // La selección de ítems es opcional
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col h-full"
+        >
+          {/* Cabecera con título y descripción */}
+          <PageHeader 
+            title="Selecciona los ítems"
+            description="Selecciona los artículos que deseas reservar"
+            theme="light"
           />
-        ) : (
-          <div className="flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-neutral-900 rounded-lg">
-            <p className="text-gray-500">
-              {itemsWithStock.length > 0 
-                ? "No se encontraron ítems con precio configurado para la duración solicitada."
-                : "No se encontraron ítems disponibles."}
-            </p>
+          
+          {/* Layout responsivo con lista de ítems */}
+          <div className="w-full mt-6">
+            {/* Lista de ítems */}
+            {filteredItems.length > 0 ? (
+              <ItemsList 
+                items={filteredItems}
+                selectedItems={localSelectedItems}
+                onQuantityChange={handleItemSelection}
+                getItemPrice={getItemPrice}
+                isLoading={isLoading}
+                layout="list"
+                className="pb-10" // Reducido el espacio al eliminar el botón flotante
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-neutral-900 rounded-lg">
+                <p className="text-gray-500">
+                  {itemsWithStock.length > 0 
+                    ? "No se encontraron ítems con precio configurado para la duración solicitada."
+                    : "No se encontraron ítems disponibles."}
+                </p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      
-      {/* Navegación entre pasos - solo en desktop */}
-      {!isMobile && (
+          
+          {/* Toast de notificación para móvil (dentro del layout) */}
+          <AnimatePresence>
+            {toastVisible && (
+              <SelectionSummaryToast
+                selectedItems={localSelectedItems}
+                getItemDetails={(itemId) => {
+                  const item = itemsWithStock.find((i) => i.id === itemId);
+                  return item ? { item, price: getItemPrice(item) } : null;
+                }}
+                theme={theme}
+                visible={toastVisible}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </MobileLayout>
+    ) : (
+      // Layout desktop
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col h-full"
+      >
+        {/* Cabecera con título y descripción */}
+        <PageHeader 
+          title="Selecciona los ítems"
+          description="Selecciona los artículos que deseas reservar"
+          theme="light"
+        />
+        
+        {/* Layout responsivo con lista de ítems */}
+        <div className="w-full mt-6">
+          {/* Lista de ítems */}
+          {filteredItems.length > 0 ? (
+            <ItemsList 
+              items={filteredItems}
+              selectedItems={localSelectedItems}
+              onQuantityChange={handleItemSelection}
+              getItemPrice={getItemPrice}
+              isLoading={isLoading}
+              layout="list"
+              className="pb-10" // Reducido el espacio al eliminar el botón flotante
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-neutral-900 rounded-lg">
+              <p className="text-gray-500">
+                {itemsWithStock.length > 0 
+                  ? "No se encontraron ítems con precio configurado para la duración solicitada."
+                  : "No se encontraron ítems disponibles."}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* Navegación entre pasos - solo en desktop */}
         <StepNavigation 
           onNext={handleNext} 
           onBack={onPrevious} 
           isNextDisabled={false} // La selección de ítems es opcional
         />
-      )}
-      
-      {/* Toast de notificación */}
-      <AnimatePresence>
-        {toastVisible && (
-          <SelectionSummaryToast
-            selectedItems={localSelectedItems}
-            getItemDetails={(itemId) => {
-              const item = itemsWithStock.find((i) => i.id === itemId);
-              return item ? { item, price: getItemPrice(item) } : null;
-            }}
-            theme={theme}
-            visible={toastVisible}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+        
+        {/* Toast de notificación para desktop */}
+        <AnimatePresence>
+          {toastVisible && (
+            <SelectionSummaryToast
+              selectedItems={localSelectedItems}
+              getItemDetails={(itemId) => {
+                const item = itemsWithStock.find((i) => i.id === itemId);
+                return item ? { item, price: getItemPrice(item) } : null;
+              }}
+              theme={theme}
+              visible={toastVisible}
+            />
+          )}
+        </AnimatePresence>
+      </motion.div>
+    )
   );
 }
 

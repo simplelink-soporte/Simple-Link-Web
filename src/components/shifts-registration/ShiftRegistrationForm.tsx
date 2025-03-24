@@ -220,14 +220,14 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   };
 
   return (
-    <div className="container mx-auto px-8 py-8">
+    <div className="w-full">
       {state.bookingStatus === 'submitting' ? (
         <div className="p-8 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">Procesando su reserva...</p>
         </div>
       ) : (
-        <div className={isMobile ? "h-full mobile-content-container" : ""}>
+        <div className={isMobile ? "mobile-content-container" : ""}>
           {renderCurrentStep()}
         </div>
       )}

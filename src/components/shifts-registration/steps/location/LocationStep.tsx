@@ -10,6 +10,7 @@ import { useOrganization } from '@/contexts/OrganizationContext';
 import { useShiftLocationBranches } from '../../hooks';
 import { StepNavigation } from '../../shared/StepNavigation';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { MobileLayout } from '../../shared/MobileLayout';
 
 // Componente memoizado para el título y descripción
 const PageHeader = memo(({ 
@@ -262,23 +263,26 @@ const LocationStep: React.FC<StepComponentProps> = ({
   }
 
   return (
-    <div className="py-4">
-      <AnimatePresence mode="wait">
+    isMobile ? (
+      // Layout móvil con header y footer de navegación
+      <MobileLayout
+        onNext={handleNext}
+        onBack={onPrevious}
+        isNextDisabled={!selectedLocation}
+      >
         <motion.div
-          key="location-content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col h-full"
         >
-          <div className="pb-6">
-            <PageHeader 
-              title="¿Dónde quieres reservar tu turno?"
-              description="Selecciona la ubicación más conveniente para ti"
-            />
-          </div>
+          <PageHeader 
+            title="¿Dónde quieres reservar tu turno?"
+            description="Selecciona la ubicación más conveniente para ti"
+          />
           
-          <div className="space-y-3 pb-6">
+          <div className="mt-6 space-y-3">
             {branches.map((branch, index) => {
               const isSelected = selectedLocation === branch.id;
               
@@ -356,17 +360,113 @@ const LocationStep: React.FC<StepComponentProps> = ({
               );
             })}
           </div>
-          {/* Solo mostrar StepNavigation cuando NO estamos en vista móvil para evitar duplicación */}
-          {!isMobile && (
+        </motion.div>
+      </MobileLayout>
+    ) : (
+      // Layout desktop
+      <div className="py-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="location-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="pb-6">
+              <PageHeader 
+                title="¿Dónde quieres reservar tu turno?"
+                description="Selecciona la ubicación más conveniente para ti"
+              />
+            </div>
+            
+            <div className="space-y-3 pb-6">
+              {branches.map((branch, index) => {
+                const isSelected = selectedLocation === branch.id;
+                
+                return (
+                  <motion.button
+                    key={branch.id}
+                    onClick={() => handleLocationSelection(branch.id)}
+                    className={cn(
+                      "w-full h-auto text-sm font-medium rounded-xl p-3",
+                      "transition-all duration-200 ease-in-out border",
+                      isSelected
+                        ? "border-black text-gray-900"
+                        : "border-gray-200 hover:border-gray-300 text-gray-800"
+                    )}
+                    initial={{ opacity: 0 }}
+                    animate={{ 
+                      opacity: 1,
+                      transition: { duration: 0.3 }
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0 text-left">
+                        <h3 className="font-medium text-sm transition-colors mb-1 text-gray-900">
+                          {branch.name}
+                        </h3>
+                        <div className="space-y-0.5">
+                          {branch.address && (
+                            <p className="text-[11px] transition-colors text-left text-gray-500">
+                              {branch.address}
+                            </p>
+                          )}
+                          {branch.opening_hours && (
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="h-3 w-3 text-gray-400" />
+                              <p className="text-[10px] transition-colors text-left text-gray-500">
+                                {formatSimpleSchedule(branch.opening_hours)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center">
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 20
+                            }}
+                            className="rounded-full flex items-center justify-center bg-black h-5 w-5"
+                          >
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 20,
+                                delay: 0.1
+                              }}
+                            >
+                              <Check 
+                                className="h-3 w-3 text-white" 
+                                strokeWidth={2.5}
+                              />
+                            </motion.div>
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
             <StepNavigation 
               onNext={handleNext} 
               onBack={onPrevious} 
               isNextDisabled={!selectedLocation}
             />
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    )
   );
 };
 
