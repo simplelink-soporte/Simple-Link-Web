@@ -786,6 +786,7 @@ export function SummaryStep({
                 isProcessing)
               }
               isProcessing={isProcessing}
+              allowScroll={true} // Permitir scroll en el paso de resumen
             >
               <motion.div
                 key={summarySubStep}

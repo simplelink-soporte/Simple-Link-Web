@@ -1,0 +1,21 @@
+/* Estilos para ocultar la barra de desplazamiento manteniendo la funcionalidad de scroll */
+.hide-scrollbar {
+  /* Para Firefox */
+  scrollbar-width: none;
+  
+  /* Para Internet Explorer y Edge */
+  -ms-overflow-style: none;
+}
+
+/* Para WebKit (Chrome, Safari, etc.) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* Estilos adicionales para garantizar compatibilidad en iOS */
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+}

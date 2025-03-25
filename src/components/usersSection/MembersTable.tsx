@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { IconUser, IconTrash, IconEdit, IconFilter, IconPlus, IconChevronDown, IconDots, IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
+import { IconUser, IconTrash, IconEdit, IconFilter, IconPlus, IconChevronDown, IconDots, IconChevronLeft, IconChevronRight, IconInfoCircle } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -25,6 +25,7 @@ import { toast } from "sonner"
 import { NewMemberForm } from "./modals/NewMemberForm"
 import { MemberDetailsModal } from "./modals/MemberDetailsModal"
 import type { Usuario } from "./types"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 interface ColumnConfig {
   id: keyof typeof DEFAULT_COLUMN_VISIBILITY
@@ -123,7 +124,19 @@ export function MembersTable() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1">
             <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
-            <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+            <p className="text-sm text-gray-600">
+              Administra los usuarios registrados en tu plataforma.
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconInfoCircle className="inline-block ml-1 cursor-help" size={16} stroke={1.5} />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[220px]">
+                    <p>Los usuarios son agregados automáticamente a esta lista cuando acceden por primera vez al enlace de reservas de su club.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </p>
           </div>
         </div>
         <div className="flex items-center justify-center h-64">
@@ -139,7 +152,19 @@ export function MembersTable() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1">
             <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
-            <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+            <p className="text-sm text-gray-600">
+              Administra los usuarios registrados en tu plataforma.
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconInfoCircle className="inline-block ml-1 cursor-help" size={16} stroke={1.5} />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[220px]">
+                    <p>Los usuarios son agregados automáticamente a esta lista cuando acceden por primera vez al enlace de reservas de su club.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </p>
           </div>
         </div>
         <div className="flex items-center justify-center h-64">
@@ -154,7 +179,19 @@ export function MembersTable() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
           <h3 className="text-md font-medium text-gray-800">Lista de Miembros</h3>
-          <p className="text-sm text-gray-600">Administra los usuarios registrados en tu plataforma.</p>
+          <p className="text-sm text-gray-600">
+            Administra los usuarios registrados en tu plataforma.
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconInfoCircle className="inline-block ml-1 cursor-help" size={16} stroke={1.5} />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[220px]">
+                  <p>Los usuarios son agregados automáticamente a esta lista cuando acceden por primera vez al enlace de reservas de su club.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {/* Botón de Filtros con Popover */}

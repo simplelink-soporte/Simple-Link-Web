@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect } from 'react';
 import { MobileStepNavigation } from './MobileStepNavigation';
 import { cn } from '@/lib/utils';
+import './scrollbar-styles.css'; // Importamos los estilos personalizados para el scrollbar
 
 interface MobileLayoutProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface MobileLayoutProps {
   isNextDisabled?: boolean;
   isProcessing?: boolean;
   showBackButton?: boolean;
+  allowScroll?: boolean;
 }
 
 /**
@@ -27,9 +29,13 @@ export function MobileLayout({
   isNextDisabled = false,
   isProcessing = false,
   showBackButton = true,
+  allowScroll = false,
 }: MobileLayoutProps) {
   // Aplicar restricción de scroll al montar el componente
   useEffect(() => {
+    // Si allowScroll es true, no bloqueamos el scroll
+    if (allowScroll) return;
+    
     // Guardar el overflow original del body
     const originalOverflow = document.body.style.overflow;
     const originalHeight = document.body.style.height;
@@ -52,7 +58,7 @@ export function MobileLayout({
         document.body.style.width = originalWidth || '';
       }
     };
-  }, []);
+  }, [allowScroll]);
 
   return (
     <div className={cn(
@@ -60,10 +66,15 @@ export function MobileLayout({
       // Reducción del espacio para el header
       "pt-6 pb-16",
       // Usar min-height en vez de height fija para adaptarse mejor
-      "overflow-hidden min-h-[100%] w-full"
+      allowScroll ? "min-h-[100%] w-full" : "overflow-hidden min-h-[100%] w-full"
     )}>
       {/* Contenido principal */}
-      <main className="flex-1 overflow-hidden px-4">
+      <main 
+        className={cn(
+          "flex-1 px-4",
+          allowScroll ? "overflow-y-auto hide-scrollbar" : "overflow-hidden"
+        )}
+      >
         {children}
       </main>
       
