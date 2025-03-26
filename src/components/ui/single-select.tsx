@@ -84,7 +84,7 @@ export function SingleSelect<T extends string>({
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
           )}
         >
-          <div className="p-1">
+          <div className="p-1 max-h-48 overflow-y-auto">
             {options.map((option) => (
               <button
                 key={String(option.id)}

@@ -1,6 +1,11 @@
 export type Sport = 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash' | 'racket' | 'swimming'
 export type CourtType = 'indoor' | 'outdoor' | 'covered'
-export type SurfaceType = 'crystal' | 'synthetic' | 'clay' | 'grass' | 'rubber' | 'concrete' | 'panoramic' | 'premium'
+export type SurfaceType = 
+  // Superficies para deportes de raqueta
+  | 'crystal' | 'synthetic' | 'clay' | 'grass' | 'rubber' | 'concrete' | 'panoramic' | 'premium'
+  // Superficies y características para piscinas
+  | 'climatized' | 'seasonal' | 'indoor_pool' | 'outdoor_pool' | 'overflow' | 'skimmer' 
+  | 'elevated' | 'underground' | 'constructed' | 'prefabricated'
 export type DurationOption = 30 | 45 | 60 | 90 | 120
 
 export interface TimeRange {

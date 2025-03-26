@@ -823,6 +823,7 @@ export class ClassService {
           created_by,
           min_students,
           branch_id,
+          sport,
           branch:sedes (
             id,
             name,
@@ -865,6 +866,7 @@ export class ClassService {
           created_by,
           min_students,
           branch_id,
+          sport,
           branch:sedes (
             id,
             name,
@@ -970,6 +972,7 @@ export class ClassService {
           created_by,
           min_students,
           branch_id,
+          sport,
           branch:sedes (
             id,
             name,
@@ -1048,6 +1051,7 @@ export class ClassService {
           created_by,
           min_students,
           branch_id,
+          sport,
           branch:sedes (
             id,
             name,
@@ -1116,6 +1120,7 @@ export class ClassService {
           created_by,
           min_students,
           branch_id,
+          sport,
           branch:sedes (
             id,
             name,

@@ -26,17 +26,32 @@ const getCourtDescription = (court: Court) => {
   }
   descriptions.push(typeMap[court.court_type])
 
-  // Añadimos el tipo de superficie
-  const surfaceMap = {
-    crystal: 'Cristal',
-    synthetic: 'Sintética',
-    clay: 'Tierra',
-    grass: 'Césped',
-    rubber: 'Goma',
-    concrete: 'Cemento',
-    panoramic: 'Cristal Premium'
+  // Añadimos el tipo de superficie solo para deportes de raqueta
+  if (court.sport !== 'swimming') {
+    const surfaceMap = {
+      // Superficies para deportes de raqueta
+      crystal: 'Cristal',
+      synthetic: 'Sintética',
+      clay: 'Tierra',
+      grass: 'Césped',
+      rubber: 'Goma',
+      concrete: 'Cemento',
+      panoramic: 'Cristal Premium',
+      premium: 'Cristal Pro',
+      // Superficies y características para piscinas
+      climatized: 'Climatizada',
+      seasonal: 'De Temporada',
+      indoor_pool: 'Cubierta',
+      outdoor_pool: 'Descubierta',
+      overflow: 'Desbordante',
+      skimmer: 'De Skimmers',
+      elevated: 'Elevada',
+      underground: 'Soterrada',
+      constructed: 'De Obra',
+      prefabricated: 'Prefabricada'
+    }
+    descriptions.push(surfaceMap[court.surface as keyof typeof surfaceMap] || court.surface)
   }
-  descriptions.push(surfaceMap[court.surface as keyof typeof surfaceMap] || court.surface)
 
   return descriptions.join(' • ')
 }
