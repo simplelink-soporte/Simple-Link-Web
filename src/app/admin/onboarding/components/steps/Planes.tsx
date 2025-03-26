@@ -25,6 +25,9 @@ import { PAYPAL_CONFIG } from '@/config/paypal'
 import { useAuth } from '@/contexts/AuthContext'
 import type { PlanType } from '@/types/supabase'
 import { onboardingCompanyService } from "@/services/onboardingCompanyService"
+import { ChevronRight } from "lucide-react"
+import { onboardingCourtService } from "@/services/onboardingCourtService"
+import { onboardingBranchService } from "@/services/onboardingBranchService"
 
 interface PlanFeature {
   name: string
@@ -51,21 +54,6 @@ interface Plan {
 
 const plans: Plan[] = [
   {
-    name: "Free",
-    prices: {
-      monthly: 0,
-      quarterly: 0,
-      annually: 0
-    },
-    description: "Perfecto para empezar a gestionar tu club",
-    features: [
-      { name: "Hasta tres sedes", included: true },
-      { name: "Hasta 5 pistas", included: true },
-      { name: "200 reservas mensuales", included: true },
-      { name: "Actualizaciones de software continuas", included: false },
-    ],
-  },
-  {
     name: "Pro",
     prices: {
       monthly: PAYPAL_CONFIG.SUBSCRIPTION_PLANS.PRO_MONTHLY.price,
@@ -88,14 +76,12 @@ export function Planes() {
   const { user, updateUserMetadata } = useAuth()
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'quarterly' | 'annually'>('quarterly')
   const [showSuccessPayment, setShowSuccessPayment] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<'Free' | 'Pro'>()
+  const [selectedPlan, setSelectedPlan] = useState<'Pro'>()
   const { toast } = useToast()
+  const [isCreatingCourts, setIsCreatingCourts] = useState(false)
 
-  const handleSelectPlan = (planName: 'Free' | 'Pro') => {
+  const handleSelectPlan = (planName: 'Pro') => {
     setSelectedPlan(planName)
-    if (planName === 'Free') {
-      completeAndAdvance(3)
-    }
   }
 
   const handlePayPalSuccess = async (data: any) => {
@@ -236,6 +222,63 @@ export function Planes() {
     // la navegación automáticamente después de generar el enlace
   }
 
+  const handleCompleteAndCreateCourts = async () => {
+    try {
+      setIsCreatingCourts(true);
+      
+      // Obtener el ID de la sede desde onboardingBranchService
+      const branchesResponse = await onboardingBranchService.getBranchesByUserId();
+      
+      if (!branchesResponse.data || branchesResponse.data.length === 0) {
+        console.error('No se encontraron sedes para este usuario');
+        toast({
+          title: "Error",
+          description: "No se pudieron crear las pistas porque no se encontraron sedes",
+          variant: "destructive"
+        });
+        
+        // Continuar con el proceso de onboarding a pesar del error
+        await completeAndAdvance(3);
+        return;
+      }
+      
+      // Tomar la primera sede encontrada
+      const branchId = branchesResponse.data[0].id;
+      
+      // Crear las pistas por defecto (2 racket y 2 swimming)
+      const result = await onboardingCourtService.createDefaultCourts(branchId);
+      
+      if (result.success) {
+        toast({
+          title: "Pistas creadas",
+          description: "Se han creado 4 pistas por defecto para tu sede"
+        });
+      } else {
+        console.error('Error al crear pistas:', result.error);
+        toast({
+          title: "Error",
+          description: "No se pudieron crear las pistas por defecto",
+          variant: "destructive"
+        });
+      }
+      
+      // Continuar con el proceso de onboarding
+      await completeAndAdvance(3);
+    } catch (error) {
+      console.error('Error al crear pistas por defecto:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al crear las pistas",
+        variant: "destructive"
+      });
+      
+      // Continuar con el proceso de onboarding a pesar del error
+      await completeAndAdvance(3);
+    } finally {
+      setIsCreatingCourts(false);
+    }
+  };
+
   if (showSuccessPayment) {
     return <SuccessPayment onComplete={handleSuccessComplete} />
   }
@@ -268,15 +311,14 @@ export function Planes() {
         </div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px] mx-auto">
+        <div className="grid grid-cols-1 gap-6 max-w-[600px] mx-auto">
           {plans.map((plan) => (
             <Card 
               key={plan.name}
               className={cn(
                 "flex flex-col h-full p-6",
                 plan.isPopular && "ring-1 ring-primary",
-                selectedPlan === plan.name && "ring-2 ring-primary",
-                plan.name === "Pro" ? "order-first md:order-last" : "order-last md:order-first"
+                selectedPlan === plan.name && "ring-2 ring-primary"
               )}
             >
               {/* Plan Header */}
@@ -330,29 +372,28 @@ export function Planes() {
 
               {/* Action Button */}
               <div className="pt-8">
-                {plan.name === 'Free' ? (
-                  <Button 
-                    className="w-full"
-                    variant={plan.isPopular ? "default" : "outline"}
-                    onClick={() => handleSelectPlan('Free')}
-                  >
-                    Comenzar gratis
-                  </Button>
-                ) : (
-                  <PayPalSubscriptionButton
-                    planType={billingPeriod}
-                    onSuccess={handlePayPalSuccess}
-                    onError={handlePayPalError}
-                  />
-                )}
+                <PayPalSubscriptionButton
+                  planType={billingPeriod}
+                  onSuccess={handlePayPalSuccess}
+                  onError={handlePayPalError}
+                />
               </div>
             </Card>
           ))}
         </div>
 
-        <p className="text-xs text-center text-muted-foreground">
-          Todos los precios incluyen IVA. Puedes cancelar o cambiar tu plan en cualquier momento.
-        </p>
+        {/* Botón para probar gratis */}
+        <div className="flex justify-center">
+          <Button 
+            variant="secondary"
+            className="px-8 mt-4"
+            onClick={handleCompleteAndCreateCourts}
+            disabled={isCreatingCourts}
+          >
+            {isCreatingCourts ? "Procesando..." : "Probar Gratis"}
+            {!isCreatingCourts && <ChevronRight className="ml-2 h-4 w-4" />}
+          </Button>
+        </div>
       </div>
     </motion.div>
   )

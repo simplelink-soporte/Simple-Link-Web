@@ -8,8 +8,9 @@ import type {
   BookingStep, 
   TimeSelection, 
   ClassDetails as IClassDetails, 
-  ClassScheduleConfig,
-  ClassPaymentConfig
+  ScheduleConfig,
+  ClassPaymentConfig,
+  TimeSlot
 } from "../../types"
 
 interface ClassBookingProps {
@@ -18,13 +19,13 @@ interface ClassBookingProps {
   selectedCourts: string[]
   timeSelection?: TimeSelection
   classDetails?: IClassDetails
-  scheduleConfig?: ClassScheduleConfig
+  scheduleConfig?: ScheduleConfig
   paymentConfig: ClassPaymentConfig
   onDateSelect: (date: Date) => void
   onCourtSelect: (courts: string[]) => void
   onTimeSelect: (time: TimeSelection) => void
   onClassDetailsChange: (details: IClassDetails) => void
-  onScheduleConfigChange: (config: ClassScheduleConfig) => void
+  onScheduleConfigChange: (config: ScheduleConfig) => void
   onPaymentConfigChange: (config: ClassPaymentConfig) => void
   onValidationChange: (isValid: boolean) => void
   createdClassId?: string
@@ -67,7 +68,8 @@ export function ClassBooking({
             config={scheduleConfig}
             onChange={onScheduleConfigChange}
             onValidationChange={onValidationChange}
-            selectedBranchIds={classDetails?.branchId}
+            selectedBranchIds={classDetails?.branch_id}
+            sportFilter={classDetails?.sport}
           />
         )
       
@@ -84,7 +86,7 @@ export function ClassBooking({
         return (
           <ClassConfirmationStep
             selectedDate={scheduleConfig?.startDate}
-            selectedCourts={scheduleConfig?.timeSlots?.flatMap(slot => slot.courtIds || []) || []}
+            selectedCourts={scheduleConfig?.timeSlots?.flatMap((slot: TimeSlot) => slot.courtIds || []) || []}
             courts={courts}
             className={classDetails?.name}
             visibility={classDetails?.visibility || 'public'}
@@ -111,4 +113,4 @@ export function ClassBooking({
       {renderStep()}
     </motion.div>
   )
-} 
+}

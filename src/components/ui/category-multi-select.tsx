@@ -44,7 +44,7 @@ export function CategoryMultiSelect({
   }, [])
 
   const getDisplayValue = () => {
-    if (!value || value.length === 0) {
+    if (!value || !Array.isArray(value) || value.length === 0) {
       return placeholder
     }
 
@@ -98,7 +98,7 @@ export function CategoryMultiSelect({
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
-                onChange([])
+                if (onChange) onChange([])
                 setIsOpen(false)
               }}
               className={cn(
@@ -134,7 +134,7 @@ export function CategoryMultiSelect({
                         updatedValue = [...newValue, option.id]
                       }
                       
-                      onChange?.(updatedValue)
+                      if (onChange) onChange(updatedValue)
                       setIsOpen(false)
                     }}
                     className={cn(

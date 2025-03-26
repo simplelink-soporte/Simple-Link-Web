@@ -66,6 +66,7 @@ export interface PublicClass {
   is_active: boolean
   created_at: string
   updated_at: string
+  sport: 'racket' | 'swimming'
   schedule: {
     days: number[]
     timeSlots: TimeSlot[]

@@ -337,5 +337,28 @@ export const courtService = {
         }
       };
     }
+  },
+
+  async deleteCourt(courtId: string): Promise<ServiceResponse<void>> {
+    try {
+      const { error } = await supabase
+        .from('courts')
+        .delete()
+        .eq('id', courtId)
+
+      if (error) throw error
+
+      return { data: undefined }
+    } catch (error) {
+      console.error('Error al eliminar la pista:', error)
+      const pgError = error as PostgrestError
+      return {
+        error: {
+          message: pgError.message || 'Error al eliminar la pista',
+          details: pgError.details,
+          hint: pgError.hint
+        }
+      }
+    }
   }
 }

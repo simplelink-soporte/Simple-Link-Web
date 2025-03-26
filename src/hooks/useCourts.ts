@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { courtService } from '@/services/courtService'
 import { queryKeys } from '@/config/query-keys'
 import { keepPreviousData } from '@tanstack/react-query'
-import type { Court } from '@/types/court'
+import type { Court } from '@/types/courts'
 
 interface UseCourtProps {
   branchId?: string
@@ -51,4 +51,4 @@ export function useCourts({ branchId, onlyActive = true }: UseCourtProps = {}) {
     ...query,
     data: query.data || [],
   }
-} 
+}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useMemo } from 'react'
-import { IconSearch, IconFilter, IconX, IconChevronRight } from '@tabler/icons-react'
+import { IconSearch, IconFilter, IconX, IconChevronRight, IconBallTennis, IconSwimming } from '@tabler/icons-react'
 import { useClasses } from '../hooks'
 import { useClassRegistration } from '../context'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
@@ -18,6 +18,7 @@ import { StepNavigation } from '../shared/StepNavigation'
 interface Filters {
   type: 'all' | 'single' | 'recurring'
   branchId: string | null
+  sport: 'all' | 'racket' | 'swimming'
 }
 
 export function ClassSelectionStep() {
@@ -29,7 +30,8 @@ export function ClassSelectionStep() {
   const [selectedClassForMobile, setSelectedClassForMobile] = useState<PublicClass | null>(null)
   const [filters, setFilters] = useState<Filters>({
     type: 'all',
-    branchId: null
+    branchId: null,
+    sport: 'all'
   })
   const [companySlug, setCompanySlug] = useState<string | null>(null)
   const skipPackageRef = useRef(false)
@@ -163,7 +165,11 @@ export function ClassSelectionStep() {
       const matchesBranch = !filters.branchId || 
         classItem.branchInfo?.id === filters.branchId;
 
-      return matchesSearch && matchesType && matchesBranch;
+      // Filtrar por deporte
+      const matchesSport = filters.sport === 'all' || 
+        classItem.sport === filters.sport;
+
+      return matchesSearch && matchesType && matchesBranch && matchesSport;
     });
   }, [classes, searchQuery, filters]);
 
@@ -496,6 +502,51 @@ export function ClassSelectionStep() {
                     </div>
                   </div>
                 )}
+
+                {/* Filtro por deporte */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900">
+                    Deporte
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, sport: 'all' }))}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm",
+                        "transition-colors duration-200",
+                        filters.sport === 'all'
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      )}
+                    >
+                      Todos los deportes
+                    </button>
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, sport: 'racket' }))}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm",
+                        "transition-colors duration-200",
+                        filters.sport === 'racket'
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      )}
+                    >
+                      Raqueta
+                    </button>
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, sport: 'swimming' }))}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm",
+                        "transition-colors duration-200",
+                        filters.sport === 'swimming'
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      )}
+                    >
+                      Natación
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -579,9 +630,24 @@ export function ClassSelectionStep() {
                         <div className="space-y-3 sm:space-y-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="space-y-1 flex-1">
-                              <h3 className="text-base font-medium text-gray-900 truncate">
-                                {classItem.title}
-                              </h3>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="text-base font-medium text-gray-900 truncate">
+                                  {classItem.title}
+                                </h3>
+                                
+                                {/* Indicador del tipo de deporte */}
+                                <span className={cn(
+                                  "text-[10px] px-1.5 py-0.5 rounded-full flex items-center whitespace-nowrap",
+                                  classItem.sport === 'racket'
+                                    ? "bg-orange-50 text-orange-700 border border-orange-100" 
+                                    : "bg-blue-50 text-blue-700 border border-blue-100"
+                                )}>
+                                  {classItem.sport === 'racket' 
+                                    ? <><IconBallTennis className="h-2.5 w-2.5 mr-0.5" stroke={2} /> Raqueta</>
+                                    : <><IconSwimming className="h-2.5 w-2.5 mr-0.5" stroke={2} /> Natación</>
+                                  }
+                                </span>
+                              </div>
                               <p className="text-sm text-gray-600">
                                 {classItem.is_recurring ? 'Clase recurrente' : 'Clase única'}
                               </p>
@@ -615,7 +681,7 @@ export function ClassSelectionStep() {
                           )}
 
                           {/* Información principal */}
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
+                          <div className="flex flex-wrap gap-2 sm:gap-3 text-sm">
                             {classItem.instructor && (
                               <div className="flex items-center gap-1.5">
                                 <span className="text-gray-500">Profesor:</span>
@@ -687,9 +753,24 @@ export function ClassSelectionStep() {
               {/* Información de la clase */}
               <div className="space-y-4">
                 {/* Título */}
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {selectedClassForMobile.title}
-                </h3>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {selectedClassForMobile.title}
+                  </h3>
+                  
+                  {/* Indicador del tipo de deporte */}
+                  <span className={cn(
+                    "text-xs px-2 py-0.5 rounded-full flex items-center",
+                    selectedClassForMobile.sport === 'racket'
+                      ? "bg-orange-50 text-orange-700 border border-orange-100" 
+                      : "bg-blue-50 text-blue-700 border border-blue-100"
+                  )}>
+                    {selectedClassForMobile.sport === 'racket' 
+                      ? <><IconBallTennis className="h-3 w-3 mr-1" stroke={2} /> Raqueta</>
+                      : <><IconSwimming className="h-3 w-3 mr-1" stroke={2} /> Natación</>
+                    }
+                  </span>
+                </div>
 
                 {/* Descripción */}
                 {selectedClassForMobile.description && (

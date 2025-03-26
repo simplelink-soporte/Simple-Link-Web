@@ -15,31 +15,8 @@ const CACHE_EXPIRATION = 10000
 // Evitar consultas simultáneas
 let pendingRequests = new Map<string, Promise<any>>()
 
-// Función para convertir tipos de interfaz a tipos de BD
-const mapCourtTypeToDb = (type: string): string => {
-  const typeMap: Record<string, string> = {
-    'interior': 'indoor',
-    'exterior': 'outdoor',
-    'cubierta': 'covered'
-  }
-  return typeMap[type] || type
-}
-
-// Función para mapear deportes a los valores aceptados por la BD
-const mapSportToDb = (sport: string): string => {
-  const sportMap: Record<string, string> = {
-    'padel': 'padel',
-    'tennis': 'tennis',
-    'badminton': 'badminton',
-    'squash': 'squash',
-    'pickleball': 'pickleball'
-  }
-  return sportMap[sport] || sport
-}
-
-// Función para mapear características a superficie
-const mapCharacteristicsToSurface = (characteristics: string[]): string => {
-  // Mapeo de características a superficies aceptadas por la BD
+// Mapea características a una superficie para usar cuando no hay superficie definida
+const getDefaultSurfaceFromCharacteristics = (characteristics: string[]): string => {
   const surfaceMap: Record<string, string> = {
     'cristal-estandar': 'crystal',
     'cristal-panoramico': 'panoramic',
@@ -87,13 +64,13 @@ class OnboardingCourtService {
       const courtsToInsert = courts.map(court => ({
         name: court.name,
         branch_id: branchId,
-        sport: mapSportToDb(court.sports[0]), // Tomamos el primer deporte como principal
-        court_type: mapCourtTypeToDb(court.type),
-        surface: mapCharacteristicsToSurface(court.characteristics),
-        features: JSON.stringify(court.characteristics), // Guardamos todas las características como features
-        is_active: court.is_active,
-        available_durations: court.available_durations,
-        duration_pricing: court.duration_pricing,
+        sport: court.sports[0], // Tomamos el primer deporte como principal
+        court_type: court.type || 'indoor',
+        surface: getDefaultSurfaceFromCharacteristics(court.characteristics), // Derivamos superficie de características
+        features: JSON.stringify(court.characteristics || []), 
+        is_active: court.is_active !== undefined ? court.is_active : true,
+        available_durations: court.available_durations || [60],
+        duration_pricing: court.duration_pricing || {},
         custom_pricing: court.custom_pricing || {}
       }))
       
@@ -117,6 +94,120 @@ class OnboardingCourtService {
       return { success: true, data, error: null }
     } catch (error: any) {
       console.error('Error al guardar pistas:', error)
+      return { success: false, data: null, error }
+    }
+  }
+  
+  /**
+   * Crea automáticamente 4 pistas por defecto (2 racket y 2 swimming) para una sede
+   * @param branchId - ID de la sede
+   * @returns Resultado de la operación con las pistas creadas
+   */
+  async createDefaultCourts(
+    branchId: string
+  ): Promise<{
+    success: boolean,
+    data: any[] | null,
+    error: Error | null
+  }> {
+    try {
+      console.log('📍 Creando pistas por defecto para sede:', branchId)
+      
+      if (!branchId) {
+        throw new Error('Se requiere el ID de la sede para crear las pistas por defecto')
+      }
+      
+      // Definir las 4 pistas por defecto (2 racket y 2 swimming)
+      const defaultCourts = [
+        {
+          name: "Pista Raqueta 1",
+          branch_id: branchId,
+          sport: "racket",
+          court_type: "indoor",
+          surface: "synthetic",
+          features: JSON.stringify(["climate-control", "lighting"]),
+          is_active: true,
+          available_durations: [60, 90, 120],
+          duration_pricing: {
+            "60": "15",
+            "90": "20",
+            "120": "25"
+          },
+          custom_pricing: {}
+        },
+        {
+          name: "Pista Raqueta 2",
+          branch_id: branchId,
+          sport: "racket",
+          court_type: "outdoor",
+          surface: "concrete",
+          features: JSON.stringify(["lighting"]),
+          is_active: true,
+          available_durations: [60, 90, 120],
+          duration_pricing: {
+            "60": "10",
+            "90": "15",
+            "120": "20"
+          },
+          custom_pricing: {}
+        },
+        {
+          name: "Piscina Olímpica",
+          branch_id: branchId,
+          sport: "swimming",
+          court_type: "indoor",
+          surface: "concrete",
+          features: JSON.stringify(["climate-control", "lighting", "heated"]),
+          is_active: true,
+          available_durations: [60],
+          duration_pricing: {
+            "60": "8"
+          },
+          custom_pricing: {}
+        },
+        {
+          name: "Piscina Recreativa",
+          branch_id: branchId,
+          sport: "swimming",
+          court_type: "outdoor",
+          surface: "concrete",
+          features: JSON.stringify(["lighting"]),
+          is_active: true,
+          available_durations: [60],
+          duration_pricing: {
+            "60": "5"
+          },
+          custom_pricing: {}
+        }
+      ]
+      
+      // Verificar si ya existen pistas para esta sede
+      const existingCourts = await this.getCourtsByBranchId(branchId)
+      
+      // Si ya existen pistas, no crear nuevas
+      if (existingCourts.data && existingCourts.data.length > 0) {
+        console.log('⏭️ La sede ya tiene pistas, no se crearán nuevas')
+        return { success: true, data: existingCourts.data, error: null }
+      }
+      
+      // Insertar las pistas por defecto
+      const { data, error } = await supabase
+        .from('courts')
+        .insert(defaultCourts)
+        .select()
+      
+      if (error) throw error
+      
+      // Actualizar caché
+      courtsCache.set(branchId, {
+        data: data,
+        timestamp: Date.now()
+      })
+      
+      console.log('✅ Pistas por defecto creadas exitosamente')
+      return { success: true, data, error: null }
+    } catch (error: any) {
+      console.error('Error al crear pistas por defecto:', error)
       return { success: false, data: null, error }
     }
   }

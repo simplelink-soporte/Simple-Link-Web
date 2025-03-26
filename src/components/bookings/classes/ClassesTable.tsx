@@ -10,7 +10,7 @@ import { NewBookingModal } from "../components/NewBookingModal/NewBookingModal"
 import { useClasses } from "../hooks/useClasses"
 import { createSupabaseClient } from '@/lib/supabase'
 import type { Database } from "@/types/supabase"
-import { IconTrash, IconInfoCircle, IconCopy, IconCalendarPlus, IconExternalLink } from "@tabler/icons-react"
+import { IconTrash, IconInfoCircle, IconCopy, IconCalendarPlus, IconExternalLink, IconSwimming, IconBallTennis } from "@tabler/icons-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { EditClassModal } from "../components/NewBookingModal/components/Class/editModal/editclassmodal"
 import { PackagesTable } from "./PackagesTable"
@@ -459,6 +459,19 @@ export function ClassesTable() {
                               : classItem.isExpired 
                                 ? 'Vencida' 
                                 : 'Activa'
+                            }
+                          </span>
+                          
+                          {/* Indicador del tipo de deporte */}
+                          <span className={cn(
+                            "text-[10px] px-1.5 py-0.5 rounded-full flex items-center",
+                            classItem.sport === 'racket'
+                              ? "bg-orange-50 text-orange-700 border border-orange-100" 
+                              : "bg-blue-50 text-blue-700 border border-blue-100"
+                          )}>
+                            {classItem.sport === 'racket' 
+                              ? <><IconBallTennis className="h-2.5 w-2.5 mr-0.5" stroke={2} /> Raqueta</>
+                              : <><IconSwimming className="h-2.5 w-2.5 mr-0.5" stroke={2} /> Natación</>
                             }
                           </span>
                           

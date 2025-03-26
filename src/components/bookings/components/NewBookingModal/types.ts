@@ -49,6 +49,7 @@ export interface ClassDetails {
   description: string
   visibility: 'public' | 'private'
   branch_id?: string
+  sport: 'racket' | 'swimming'
 }
 
 export interface ClassPaymentConfig {
@@ -60,6 +61,7 @@ export interface ClassPaymentConfig {
 }
 
 export interface TimeSlot {
+  id: string
   startTime: string
   endTime: string
   price: number
@@ -88,4 +90,4 @@ export interface BookingState {
   classDetails: ClassDetails
   classPaymentConfig: ClassPaymentConfig
   scheduleConfig: ScheduleConfig
-} 
+}

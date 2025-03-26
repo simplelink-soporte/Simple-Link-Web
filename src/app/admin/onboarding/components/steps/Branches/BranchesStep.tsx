@@ -344,11 +344,11 @@ export function BranchesStep({ onReturnToSelection }: BranchesStepProps) {
         // Mostrar mensaje de éxito
         toast({
           title: "¡Éxito!",
-          description: "Sede guardada correctamente. Ahora puedes configurar las pistas."
+          description: "Sede guardada correctamente."
         })
         
-        // Avanzar al paso de configuración de pistas
-        setCurrentStep(3)
+        // Completar el paso y avanzar al siguiente (Integración)
+        completeAndAdvance(1)
       } else {
         throw new Error('No se recibieron datos de la sede guardada')
       }

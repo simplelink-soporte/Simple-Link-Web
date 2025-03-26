@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { IconSettings, IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { DateSelector } from "../DateSelector"
 import { RefreshButton } from "./RefreshButton"
+import { SportFilterButton, SportType } from "./SportFilterButton"
 import { cn } from "@/lib/utils"
 import { format, addDays, subDays, isToday } from "date-fns"
 import { es } from "date-fns/locale"
@@ -13,7 +14,14 @@ import {
 } from "@/components/ui/tooltip"
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Branch } from "@/types/branches"
+
+// Definir el tipo Branch aquí para evitar problemas con @/types/branches
+interface Branch {
+  id: string
+  name: string
+  timezone?: string
+  [key: string]: any
+}
 
 export interface TableHeaderProps {
   selectedDate: Date
@@ -23,6 +31,8 @@ export interface TableHeaderProps {
   onRefreshClick: () => void
   isRefreshing: boolean
   currentBranch: Branch
+  currentSport?: SportType
+  onSportChange?: (sport: SportType) => void
 }
 
 export function TableHeader({
@@ -32,7 +42,9 @@ export function TableHeader({
   onCreateClassClick,
   onRefreshClick,
   isRefreshing,
-  currentBranch
+  currentBranch,
+  currentSport = "racket",
+  onSportChange
 }: TableHeaderProps) {
   const [direction, setDirection] = useState<'up' | 'down'>('up')
 
@@ -110,6 +122,7 @@ export function TableHeader({
             </div>
           </div>
         </div>
+
       </div>
 
       <div className="flex items-center gap-2">
@@ -171,6 +184,14 @@ export function TableHeader({
           isRefreshing={isRefreshing}
         />
 
+        {/* SportFilterButton */}
+        {onSportChange && (
+          <SportFilterButton 
+            currentSport={currentSport} 
+            onSportChange={onSportChange} 
+          />
+        )}
+
         {/* Botón de Configuración */}
         {false && (
           <Button
@@ -185,4 +206,4 @@ export function TableHeader({
       </div>
     </div>
   )
-} 
+}

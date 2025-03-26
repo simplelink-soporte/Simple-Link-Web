@@ -82,6 +82,7 @@ interface ClassFromDB {
   created_by: string
   min_students: number
   branch_id: string | null
+  sport: 'racket' | 'swimming'
   branch?: {
     id: string
     name: string
@@ -670,6 +671,7 @@ export class ClassService {
       is_active: dbClass.status === 'active',
       created_at: dbClass.created_at,
       updated_at: dbClass.updated_at,
+      sport: dbClass.sport, // Agregar el campo sport
       schedule: {
         days,
         timeSlots: timeSlots.map(slot => ({

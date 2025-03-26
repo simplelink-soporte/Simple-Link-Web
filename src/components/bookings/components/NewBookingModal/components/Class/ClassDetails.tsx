@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { SingleSelect } from "@/components/ui/single-select"
 import type { ClassDetails as IClassDetails } from "../../types"
 
 interface ClassDetailsProps {
@@ -22,7 +23,8 @@ export function ClassDetails({
     name: '', 
     description: '', 
     visibility: 'public' as const,
-    branch_id: undefined
+    branch_id: undefined,
+    sport: 'racket' as const
   }, 
   onChange,
   onValidationChange
@@ -40,6 +42,11 @@ export function ClassDetails({
       })
     }
   }
+
+  const sportOptions = [
+    { id: 'racket', name: 'Raqueta' },
+    { id: 'swimming', name: 'Natación' },
+  ]
 
   return (
     <motion.div
@@ -66,6 +73,19 @@ export function ClassDetails({
             "placeholder:text-gray-400",
             "text-sm"
           )}
+        />
+      </div>
+
+      {/* Deporte */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">
+          Deporte
+        </label>
+        <SingleSelect
+          value={details.sport}
+          onChange={(value) => handleChange('sport', value)}
+          options={sportOptions}
+          placeholder="Seleccionar deporte"
         />
       </div>
 
@@ -153,5 +173,3 @@ export function ClassDetails({
     </motion.div>
   )
 } 
-
-

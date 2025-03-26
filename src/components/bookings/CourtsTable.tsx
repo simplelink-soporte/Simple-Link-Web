@@ -3,14 +3,14 @@
 import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
-import { IconPlus } from "@tabler/icons-react"
+import { IconPlus, IconSwimming, IconBallTennis } from "@tabler/icons-react"
 import { Switch } from "@/components/ui/switch"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { NewCourtModal } from "./NewCourtModal"
 import { courtService } from "@/services/courtService"
 import { useBranches } from "@/hooks/useBranches"
 import { toast } from "sonner"
-import type { Court } from "@/types/court"
+import type { Court, Sport } from "@/types/court"
 import { cn } from "@/lib/utils"
 import { useCourts } from "@/hooks/useCourts"
 import Image from "next/image"
@@ -49,6 +49,7 @@ export function CourtsTable() {
   const [editingCourt, setEditingCourt] = useState<Court | undefined>()
   const [popoverOpen, setPopoverOpen] = useState<Record<string, boolean>>({})
   const [searchTerm, setSearchTerm] = useState('')
+  const [sportFilter, setSportFilter] = useState<'all' | Sport>('all')
 
   // Query optimizada
   const courtsQuery = useCourts({ 
@@ -129,6 +130,39 @@ export function CourtsTable() {
     setIsNewCourtModalOpen(true)
   }
 
+  const getCourtsBackgroundAndBorder = (sport: Sport) => {
+    if (sport === 'racket' || ['padel', 'tennis', 'badminton', 'pickleball', 'squash'].includes(sport)) {
+      return "border-orange-300 bg-orange-50"
+    } else if (sport === 'swimming') {
+      return "border-blue-300 bg-blue-50"
+    }
+    return "border-gray-200 bg-white"
+  }
+
+  const getSportIcon = (sport: Sport) => {
+    if (sport === 'racket' || ['padel', 'tennis', 'badminton', 'pickleball', 'squash'].includes(sport)) {
+      return <IconBallTennis className="h-4 w-4 text-orange-600 mr-2" stroke={1.5} />
+    } else if (sport === 'swimming') {
+      return <IconSwimming className="h-4 w-4 text-blue-600 mr-2" stroke={1.5} />
+    }
+    return null
+  }
+
+  const courts = courtsQuery.data || []
+
+  // Filtrar las pistas por deporte si es necesario
+  const filteredCourts = courts.filter(court => {
+    // Filtrar por término de búsqueda (nombre)
+    const matchesSearch = court.name.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    // Filtrar por deporte si no es "all"
+    const matchesSport = sportFilter === 'all' || 
+      (sportFilter === 'racket' && ['padel', 'tennis', 'badminton', 'pickleball', 'squash', 'racket'].includes(court.sport)) ||
+      (sportFilter === 'swimming' && court.sport === 'swimming')
+    
+    return matchesSearch && matchesSport
+  })
+
   // Renderizado condicional mejorado
   if (!currentBranch) {
     return (
@@ -154,8 +188,6 @@ export function CourtsTable() {
     )
   }
 
-  const courts = courtsQuery.data || []
-
   return (
     <div className="w-full space-y-8 bg-transparent px-6 py-4">
       <div className="flex justify-between items-center">
@@ -164,38 +196,76 @@ export function CourtsTable() {
           <p className="text-sm text-gray-600">Administra las pistas disponibles para tus clientes.</p>
         </div>
 
-        {/* Buscador alineado a la derecha */}
-        <input
-          type="text"
-          placeholder="Buscar pistas..."
-          className="border border-gray-200 rounded-md p-2 ml-2 text-xs opacity-80 focus:outline-none focus:ring-0"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex space-x-2 items-center">
+          {/* Filtro por deporte */}
+          <div className="flex items-center space-x-2">
+            <button
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200", 
+                sportFilter === 'all' ? "bg-gray-100 text-gray-700" : "bg-white text-gray-500"
+              )}
+              onClick={() => setSportFilter('all')}
+            >
+              Todas
+            </button>
+            <button
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center", 
+                sportFilter === 'racket' ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-gray-500"
+              )}
+              onClick={() => setSportFilter('racket')}
+            >
+              <IconBallTennis className="h-3 w-3 mr-1" stroke={1.5} />
+              Raqueta
+            </button>
+            <button
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center", 
+                sportFilter === 'swimming' ? "bg-blue-100 text-blue-700 border border-blue-200" : "bg-white text-gray-500"
+              )}
+              onClick={() => setSportFilter('swimming')}
+            >
+              <IconSwimming className="h-3 w-3 mr-1" stroke={1.5} />
+              Natación
+            </button>
+          </div>
+
+          {/* Buscador alineado a la derecha */}
+          <input
+            type="text"
+            placeholder="Buscar pistas..."
+            className="border border-gray-200 rounded-md p-2 ml-2 text-xs opacity-80 focus:outline-none focus:ring-0"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* Lista de Pistas - Asegurarse de que esté dentro del flujo normal */}
       <div className="grid grid-cols-1">
-        {courts.length === 0 ? (
+        {filteredCourts.length === 0 ? (
           <div className="text-left">
             <p className="text-gray-500">No hay pistas registradas</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {courts.filter(court => court.name.toLowerCase().includes(searchTerm.toLowerCase())).map((court) => (
+            {filteredCourts.map((court) => (
               <div
                 key={court.id}
                 onClick={() => handleCourtClick(court)}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border bg-white",
-                  "hover:bg-gray-50 transition-colors cursor-pointer",
-                  "border-gray-200"
+                  "flex items-center justify-between p-3 rounded-lg border",
+                  "hover:shadow-sm transition-all cursor-pointer",
+                  getCourtsBackgroundAndBorder(court.sport)
                 )}
               >
-                <div className="space-y-1">
-                  <h4 className="text-sm font-medium text-gray-800">{court.name}</h4>
-                  <p className="text-xs text-gray-600">
-                    {getCourtDescription(court)}
-                  </p>
+                <div className="space-y-1 flex items-center">
+                  {getSportIcon(court.sport)}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-800">{court.name}</h4>
+                    <p className="text-xs text-gray-600">
+                      {getCourtDescription(court)}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>

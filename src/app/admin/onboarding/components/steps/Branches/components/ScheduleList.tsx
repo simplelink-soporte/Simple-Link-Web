@@ -209,14 +209,14 @@ export function ScheduleList({ schedule, onScheduleChange }: ScheduleListProps) 
                         type="time"
                         value={range.openTime}
                         onChange={(e) => handleTimeChange(selectedDay, index, 'openTime', e.target.value)}
-                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-20"
+                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-28"
                       />
                       <span className="text-xs text-gray-400">a</span>
                       <input
                         type="time"
                         value={range.closeTime}
                         onChange={(e) => handleTimeChange(selectedDay, index, 'closeTime', e.target.value)}
-                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-20"
+                        className="text-sm text-gray-600 border-0 bg-transparent focus:outline-none focus:ring-0 w-28"
                       />
                     </div>
                   </div>

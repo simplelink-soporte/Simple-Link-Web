@@ -1,4 +1,4 @@
-export type Sport = 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash'
+export type Sport = 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash' | 'racket' | 'swimming'
 export type CourtType = 'indoor' | 'outdoor' | 'covered'
 export type SurfaceType = 'crystal' | 'synthetic' | 'clay' | 'grass' | 'rubber' | 'concrete' | 'panoramic' | 'premium'
 export type DurationOption = 30 | 45 | 60 | 90 | 120
@@ -26,10 +26,11 @@ export interface Court {
   id: string
   name: string
   branch_id: string
-  sport: 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash'
+  sport: 'padel' | 'tennis' | 'badminton' | 'pickleball' | 'squash' | 'racket' | 'swimming'
   court_type: 'indoor' | 'outdoor' | 'covered'
   surface: string
   is_active: boolean
+  features?: string[]
   duration_pricing: Record<string, number>
   custom_pricing: Record<string, {
     isSelected: boolean
@@ -54,4 +55,4 @@ export type CreateCourtDTO = {
   duration_pricing: Record<string, number>
   custom_pricing: Court['custom_pricing']
   available_durations: number[]
-} 
+}

@@ -9,7 +9,7 @@ interface StepIndicatorProps {
 /**
  * Componente que muestra el indicador de pasos actual de forma minimalista
  */
-export function StepIndicator({ currentStep, totalSteps = 3 }: StepIndicatorProps) {
+export function StepIndicator({ currentStep, totalSteps = 2 }: StepIndicatorProps) {
   return (
     <div className="max-w-5xl mx-auto px-8 mb-6">
       <div className="flex items-center gap-2 w-36 ml-0">
