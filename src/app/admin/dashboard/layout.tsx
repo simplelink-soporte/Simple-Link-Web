@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/sidebar'
 import { MobileWarning } from '@/components/ui/mobile-warning'
 import { StripeWarningToast } from '@/components/ui/stripe-warning-toast'
 import { SuccessSubscriptionToast } from '@/components/ui/success-subscription-toast'
+import { DashboardTutorial } from '@/components/ui/dashboard-tutorial'
 import { useAuth } from '@/contexts/AuthContext'
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { useQuery } from '@tanstack/react-query'
@@ -17,6 +18,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user } = useAuth()
   const { organization } = useOrganization()
   const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
 
   // Efecto para manejar el mensaje de éxito de la suscripción
   useEffect(() => {
@@ -31,6 +33,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       window.removeEventListener('subscription:success', handleSubscriptionSuccess)
     }
   }, [])
+
+  // Efecto para mostrar el tutorial de bienvenida
+  useEffect(() => {
+    // Verificar si el tutorial ya se mostró anteriormente
+    const tutorialShown = localStorage.getItem('dashboard_tutorial_shown')
+    
+    if (!tutorialShown && organization?.id) {
+      setShowTutorial(true)
+    }
+  }, [organization?.id])
+
+  // Función para cerrar el tutorial y marcar como visto
+  const handleCloseTutorial = () => {
+    setShowTutorial(false)
+    localStorage.setItem('dashboard_tutorial_shown', 'true')
+  }
 
   // Consulta para verificar la conexión de Stripe
   const { data: stripeConnection, isLoading: isLoadingStripe } = useQuery({
@@ -64,6 +82,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         show={showSuccessToast}
         planName="Pro"
         onClose={() => setShowSuccessToast(false)}
+      />
+      <DashboardTutorial 
+        show={showTutorial}
+        onClose={handleCloseTutorial}
       />
     </div>
   )

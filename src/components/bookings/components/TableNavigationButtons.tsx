@@ -22,7 +22,7 @@ export function TableNavigationButtons({
   className
 }: TableNavigationButtonsProps) {
   return (
-    <div className={cn("flex justify-center gap-2 px-4 border-t border-gray-200 bg-white py-3", className)}>
+    <div className={cn("flex justify-center gap-2 px-4 bg-white", className)}>
       <Button
         variant="outline"
         size="icon"

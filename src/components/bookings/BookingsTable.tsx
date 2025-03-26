@@ -620,15 +620,24 @@ export function BookingsTable() {
       </div>
 
       <div className="flex-none">
-        {filteredCourts.length > 4 && (
-          <TableNavigationButtons 
-            onPrevClick={() => handleTableNavigation('left')}
-            onNextClick={() => handleTableNavigation('right')}
-            hasPrev={visibleCourtsStart > 0}
-            hasNext={visibleCourtsStart + 4 < filteredCourts.length}
-            currentPage={Math.floor(visibleCourtsStart / 4) + 1}
-            totalPages={Math.ceil(filteredCourts.length / 4)}
-          />
+        {filteredCourts.length > 0 ? (
+          <>
+            {filteredCourts.length > 4 && (
+              <TableNavigationButtons 
+                onPrevClick={() => handleTableNavigation('left')}
+                onNextClick={() => handleTableNavigation('right')}
+                hasPrev={visibleCourtsStart > 0}
+                hasNext={visibleCourtsStart + 4 < filteredCourts.length}
+                currentPage={Math.floor(visibleCourtsStart / 4) + 1}
+                totalPages={Math.ceil(filteredCourts.length / 4)}
+                className="mt-2"
+              />
+            )}
+          </>
+        ) : (
+          <div className="text-center py-3 text-sm text-gray-500 border-t">
+            No hay canchas disponibles para el tipo de deporte seleccionado
+          </div>
         )}
       </div>
 
