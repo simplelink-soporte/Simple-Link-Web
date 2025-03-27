@@ -1,0 +1,234 @@
+-- Información básica de la tabla
+
+[
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "empresa_id",
+      "ordinal_position": 2,
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "mercadopago_user_id",
+      "ordinal_position": 3,
+      "data_type": "text",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "mercadopago_email",
+      "ordinal_position": 4,
+      "data_type": "text",
+      "is_nullable": "YES",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "account_status",
+      "ordinal_position": 5,
+      "data_type": "USER-DEFINED",
+      "is_nullable": "YES",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": "'pending'::mercadopago_account_status"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "access_token",
+      "ordinal_position": 6,
+      "data_type": "text",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "refresh_token",
+      "ordinal_position": 7,
+      "data_type": "text",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "token_expiry",
+      "ordinal_position": 8,
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "created_at",
+      "ordinal_position": 9,
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": "timezone('utc'::text, now())"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "updated_at",
+      "ordinal_position": 10,
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": "timezone('utc'::text, now())"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "mercadopago_connections",
+      "column_name": "last_webhook_received_at",
+      "ordinal_position": 11,
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null,
+      "column_default": null
+    }
+  ]
+
+-- Índices de la tabla
+[
+    {
+      "indexname": "mercadopago_connections_pkey",
+      "indexdef": "CREATE UNIQUE INDEX mercadopago_connections_pkey ON public.mercadopago_connections USING btree (id)"
+    },
+    {
+      "indexname": "mercadopago_connections_empresa_id_key",
+      "indexdef": "CREATE UNIQUE INDEX mercadopago_connections_empresa_id_key ON public.mercadopago_connections USING btree (empresa_id)"
+    },
+    {
+      "indexname": "mercadopago_connections_mercadopago_user_id_key",
+      "indexdef": "CREATE UNIQUE INDEX mercadopago_connections_mercadopago_user_id_key ON public.mercadopago_connections USING btree (mercadopago_user_id)"
+    }
+  ]
+  
+-- Restricciones
+  [
+    {
+      "constraint_name": "mercadopago_connections_empresa_id_fkey",
+      "constraint_type": "FOREIGN KEY"
+    },
+    {
+      "constraint_name": "mercadopago_connections_empresa_id_key",
+      "constraint_type": "UNIQUE"
+    },
+    {
+      "constraint_name": "mercadopago_connections_mercadopago_user_id_key",
+      "constraint_type": "UNIQUE"
+    },
+    {
+      "constraint_name": "mercadopago_connections_pkey",
+      "constraint_type": "PRIMARY KEY"
+    },
+    {
+      "constraint_name": "2200_436823_1_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_2_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_3_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_6_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_7_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_9_not_null",
+      "constraint_type": "CHECK"
+    },
+    {
+      "constraint_name": "2200_436823_10_not_null",
+      "constraint_type": "CHECK"
+    }
+  ]
+
+-- Relaciones (Llaves foráneas)
+[
+    {
+      "foreign_key": "empresa_id",
+      "referenced_table": "empresas",
+      "referenced_column": "id"
+    }
+  ]
+
+-- Detalles de los triggers relacionados con la tabla
+[
+    {
+      "trigger_name": "RI_ConstraintTrigger_c_439959",
+      "trigger_timing": "AFTER",
+      "trigger_events": [],
+      "table_name": "mercadopago_connections",
+      "table_schema": "public",
+      "function_name": "RI_FKey_check_ins",
+      "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+    },
+    {
+      "trigger_name": "RI_ConstraintTrigger_c_439960",
+      "trigger_timing": "AFTER",
+      "trigger_events": [
+        "DELETE"
+      ],
+      "table_name": "mercadopago_connections",
+      "table_schema": "public",
+      "function_name": "RI_FKey_check_upd",
+      "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+    }
+  ]
+

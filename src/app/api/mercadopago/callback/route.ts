@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import { supabase } from '@/lib/supabase'
+import { supabaseService } from '@/lib/supabase-service'
 import { mercadoPagoConnectionService } from '@/services/mercadoPagoConnectionService'
 
 export async function GET(req: NextRequest) {
@@ -39,12 +40,12 @@ export async function GET(req: NextRequest) {
     
     if (error) {
       console.error('Error en OAuth Mercado Pago:', error, error_description)
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?error=auth_failed&details=${encodeURIComponent(error_description || '')}`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations&error=auth_failed&details=${encodeURIComponent(error_description || '')}`)
     }
     
     if (!code || !empresaId) {
       console.error('Falta código o ID de empresa:', { code, empresaId })
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?error=missing_params`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations&error=missing_params`)
     }
     
     // Verificar nuevamente si la empresa es de Argentina o México
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
       
     if (empresaError || !empresa) {
       console.error('Error al obtener información de la empresa:', empresaError)
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?error=invalid_company`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations&error=invalid_company`)
     }
     
     // Si no tenemos el país de la cookie, usamos el que acabamos de obtener
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Validar país nuevamente como medida de seguridad
     if (!mercadoPagoConnectionService.isCountrySupported(countryToUse)) {
       console.error('País no soportado para Mercado Pago:', countryToUse)
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?error=country_not_supported`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations&error=country_not_supported`)
     }
     
     // Recuperar las variables de entorno necesarias
@@ -74,7 +75,7 @@ export async function GET(req: NextRequest) {
     
     if (!clientId || !clientSecret) {
       console.error('Faltan variables de entorno para Mercado Pago')
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/settings/billing?error=configuration_error`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/admin/dashboard/settings?tab=integrations&error=configuration_error`)
     }
     
     // URL de redirección para el intercambio de tokens
@@ -128,7 +129,7 @@ export async function GET(req: NextRequest) {
     if (!tokenResponse.ok) {
       const responseText = await tokenResponse.text()
       console.error('Error al obtener token:', responseText)
-      return NextResponse.redirect(`${returnBaseUrl}/settings/billing?error=token_failed&details=${encodeURIComponent(responseText.substring(0, 100))}`)
+      return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&error=token_failed&details=${encodeURIComponent(responseText.substring(0, 100))}`)
     }
     
     const tokenData = await tokenResponse.json()
@@ -147,7 +148,7 @@ export async function GET(req: NextRequest) {
     if (!userResponse.ok) {
       const responseText = await userResponse.text()
       console.error('Error al obtener información del usuario:', responseText)
-      return NextResponse.redirect(`${returnBaseUrl}/settings/billing?error=user_info_failed&details=${encodeURIComponent(responseText.substring(0, 100))}`)
+      return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&error=user_info_failed&details=${encodeURIComponent(responseText.substring(0, 100))}`)
     }
     
     const userData = await userResponse.json()
@@ -155,22 +156,60 @@ export async function GET(req: NextRequest) {
     
     // Guardar la conexión en la base de datos
     console.log('Guardando conexión en la base de datos...')
-    const { error: dbError } = await supabase
-      .from('mercadopago_connections')
-      .upsert({
-        empresa_id: empresaId,
-        mercadopago_user_id: userData.id,
-        mercadopago_email: userData.email,
-        account_status: 'active',
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        token_expiry: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
-        updated_at: new Date().toISOString()
-      })
-    
-    if (dbError) {
-      console.error('Error al guardar conexión en BD:', dbError)
-      return NextResponse.redirect(`${returnBaseUrl}/settings/billing?error=db_failed`)
+    // Usar el cliente de servicio que ignora las políticas RLS completamente
+    try {
+      // Primero verificamos si ya existe una conexión para esta empresa
+      const { data: existingConnection, error: fetchError } = await supabaseService
+        .from('mercadopago_connections')
+        .select('id')
+        .eq('empresa_id', empresaId)
+        .single();
+      
+      let dbError;
+      
+      if (existingConnection) {
+        console.log('Conexión existente encontrada, actualizando...', existingConnection.id);
+        // Si ya existe, actualizamos el registro existente usando su ID
+        const { error: updateError } = await supabaseService
+          .from('mercadopago_connections')
+          .update({
+            mercadopago_user_id: userData.id,
+            mercadopago_email: userData.email,
+            account_status: 'active',
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token,
+            token_expiry: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingConnection.id);
+          
+        dbError = updateError;
+      } else {
+        console.log('No se encontró conexión existente, creando nueva...');
+        // Si no existe, insertamos un nuevo registro
+        const { error: insertError } = await supabaseService
+          .from('mercadopago_connections')
+          .insert({
+            empresa_id: empresaId,
+            mercadopago_user_id: userData.id,
+            mercadopago_email: userData.email,
+            account_status: 'active',
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token,
+            token_expiry: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+        dbError = insertError;
+      }
+      
+      if (dbError) {
+        console.error('Error al guardar conexión en BD:', dbError);
+        return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&error=db_failed`);
+      }
+    } catch (error) {
+      console.error('Error inesperado al guardar conexión:', error);
+      return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&error=db_failed`);
     }
     
     console.log('Conexión guardada exitosamente')
@@ -179,8 +218,8 @@ export async function GET(req: NextRequest) {
     cookieStore.delete('mp_empresaId')
     cookieStore.delete('mp_country')
     
-    // Redirigir al usuario de vuelta a la página de configuración
-    return NextResponse.redirect(`${returnBaseUrl}/settings/billing?success=true`)
+    // Redirigir al usuario de vuelta a la página de configuración de admin dashboard
+    return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&mp_success=true`)
   } catch (error) {
     console.error('Error en callback de Mercado Pago:', error)
     
@@ -189,6 +228,6 @@ export async function GET(req: NextRequest) {
       ? 'http://localhost:3000'
       : process.env.NEXT_PUBLIC_APP_URL
     
-    return NextResponse.redirect(`${returnBaseUrl}/settings/billing?error=general`)
+    return NextResponse.redirect(`${returnBaseUrl}/admin/dashboard/settings?tab=integrations&error=general`)
   }
 }

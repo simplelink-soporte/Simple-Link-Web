@@ -1,0 +1,51 @@
+-- Habilitar RLS en la tabla
+ALTER TABLE public.mercadopago_connections ENABLE ROW LEVEL SECURITY;
+
+-- Eliminar todas las políticas existentes en la tabla para empezar limpio
+DROP POLICY IF EXISTS "Permitir acceso completo a usuarios autenticados" ON public.mercadopago_connections;
+DROP POLICY IF EXISTS "Permitir acceso a administradores" ON public.mercadopago_connections;
+DROP POLICY IF EXISTS "Permitir acceso a dueños de empresa" ON public.mercadopago_connections;
+DROP POLICY IF EXISTS "Permitir servicios internos" ON public.mercadopago_connections;
+
+-- Política para permitir que los usuarios vean las conexiones de sus empresas
+CREATE POLICY "Usuarios pueden ver sus propias conexiones" 
+ON public.mercadopago_connections
+FOR SELECT
+USING (
+  empresa_id IN (
+    SELECT id FROM public.empresas WHERE auth_user_id = auth.uid()
+  )
+);
+
+-- Política para permitir que los usuarios actualicen las conexiones de sus empresas
+CREATE POLICY "Usuarios pueden actualizar sus propias conexiones" 
+ON public.mercadopago_connections
+FOR UPDATE
+USING (
+  empresa_id IN (
+    SELECT id FROM public.empresas WHERE auth_user_id = auth.uid()
+  )
+);
+
+-- Política para permitir que los administradores vean todas las conexiones
+CREATE POLICY "Administradores pueden ver todas las conexiones" 
+ON public.mercadopago_connections
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM usuarios u
+    WHERE u.id = auth.uid() AND (u.metadata ->> 'is_admin'::text) = 'true'::text
+  )
+);
+
+-- Política para permitir todas las operaciones a los roles de servicio
+CREATE POLICY "Permitir acceso al rol de servicio" 
+ON public.mercadopago_connections
+FOR ALL
+USING (
+  auth.jwt() ->> 'role' = 'service_role'
+);
+
+-- Otorgar permisos a los roles
+GRANT ALL ON public.mercadopago_connections TO service_role;
+GRANT SELECT, UPDATE, INSERT ON public.mercadopago_connections TO authenticated;
