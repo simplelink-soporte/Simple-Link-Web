@@ -17,49 +17,36 @@ import { useGroupedCourts } from '@/hooks/useGroupedCourts'
 import { useBranches } from '@/hooks/useBranches'
 import { toast } from "@/components/ui/use-toast"
 import { toZonedTime } from 'date-fns-tz'
-
-interface TimeSlot {
-  id: string
-  startTime: string
-  endTime: string
-  capacity: number
-  instructors: string[]
-  price: number
-  courtIds: string[]
-}
-
-interface ClassScheduleConfig {
-  isRecurring: boolean
-  startDate: Date | undefined
-  endDate: Date | undefined
-  weekDays: number[]
-  timeSlots: TimeSlot[]
-}
+import type { ScheduleConfig, TimeSlot } from "../../types"
 
 interface ClassScheduleProps {
-  config?: ClassScheduleConfig
-  onChange: (config: ClassScheduleConfig) => void
+  config?: ScheduleConfig
+  onChange: (config: ScheduleConfig) => void
   onValidationChange: (isValid: boolean) => void
   hideRecurringSwitch?: boolean
   readOnlyStartDate?: boolean
+  selectedBranchIds?: string
+  sportFilter?: string
 }
 
 export function ClassSchedule({
   config = {
     isRecurring: false,
-    startDate: undefined,
-    endDate: undefined,
+    startDate: new Date(),
     weekDays: [],
     timeSlots: []
   },
   onChange,
   onValidationChange,
   hideRecurringSwitch,
-  readOnlyStartDate
+  readOnlyStartDate,
+  selectedBranchIds,
+  sportFilter
 }: ClassScheduleProps) {
   const { currentBranch } = useBranches()
   const { courtOptions, isLoading: isLoadingCourts, error: courtsError } = useGroupedCourts({ 
-    branchId: currentBranch?.id 
+    branchId: currentBranch?.id,
+    sportFilter 
   })
   const [newInstructor, setNewInstructor] = useState<string>("")
   const [instructorInputs, setInstructorInputs] = useState<{ [key: string]: string }>({})
@@ -561,4 +548,4 @@ export function ClassSchedule({
       </div>
     </motion.div>
   )
-} 
+}

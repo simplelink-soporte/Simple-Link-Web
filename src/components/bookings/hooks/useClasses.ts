@@ -19,6 +19,7 @@ type BaseClass = Database['public']['Tables']['classes']['Row']
 interface ClassWithLink extends BaseClass {
   shareableLink: string | null
   isExpired?: boolean
+  sport: 'racket' | 'swimming'
   empresa?: {
     id: string
     name: string
@@ -124,6 +125,7 @@ async function fetchClasses({
       return {
         ...classItem,
         isExpired,
+        sport: classItem.sport,
         shareableLink: companySlug 
           ? `${window.location.origin}/clases/${companySlug}/${classItem.id}`
           : null

@@ -31,6 +31,7 @@ import { useClasses } from '@/hooks/useClasses'
 import type { TransformedClass } from '@/types/classes'
 import { isTransformedClass } from '@/types/classes'
 import { classQueryService } from '@/services/classQueryService'
+import type { SportType } from './components/SportFilterButton'
 
 const ScrollContainer = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -62,12 +63,34 @@ export function BookingsTable() {
       blocked: '#EF4444',
     }
   })
+  // Estado para el filtro de tipo de deporte
+  const [currentSport, setCurrentSport] = useState<SportType>("racket")
 
   // Custom hooks con fecha persistente
   const { data: allCourts = [] } = useCourts({ 
     branchId: currentBranch?.id,
     onlyActive: true
   })
+
+  // Filtrar las pistas según el tipo de deporte seleccionado
+  const filteredCourts = useMemo(() => {
+    // Convertir tipos antiguos a la categoría correspondiente
+    const mapSportCategory = (sport: string) => {
+      if (['padel', 'tennis', 'badminton', 'pickleball', 'squash'].includes(sport)) {
+        return 'racket';
+      }
+      if (sport === 'swimming') {
+        return 'swimming';
+      }
+      return 'racket'; // Por defecto, asignar a raqueta
+    };
+
+    return allCourts.filter(court => {
+      // Convertir tipo de pista al nuevo esquema de categorías
+      const courtCategory = mapSportCategory(court.sport);
+      return courtCategory === currentSport;
+    });
+  }, [allCourts, currentSport]);
 
   // Formatear la fecha para la consulta de reservas
   const formattedDate = format(selectedDate, 'yyyy-MM-dd')
@@ -93,7 +116,7 @@ export function BookingsTable() {
     handleTableNavigation,
     getCourtColumnWidth
   } = useTableNavigation({
-    totalCourts: allCourts.length
+    totalCourts: filteredCourts.length
   })
 
   const {
@@ -112,7 +135,7 @@ export function BookingsTable() {
     onModalClose: () => setSelection(null)
   })
 
-  const visibleCourts = allCourts.slice(
+  const visibleCourts = filteredCourts.slice(
     visibleCourtsStart,
     visibleCourtsStart + 4
   )
@@ -482,6 +505,11 @@ export function BookingsTable() {
     }
   }, [handleMouseUp])
 
+  // Función para manejar el cambio de tipo de deporte
+  const handleSportChange = (sport: SportType) => {
+    setCurrentSport(sport);
+  };
+
   // Renderizado condicional actualizado
   if (!currentBranch) {
     return (
@@ -508,7 +536,7 @@ export function BookingsTable() {
   }
 
   // Si hay una sede seleccionada pero no hay pistas disponibles
-  if (currentBranch && allCourts.length === 0) {
+  if (currentBranch && filteredCourts.length === 0) {
     return (
       <div className="h-full flex flex-col">
         <div className="flex-none">
@@ -519,6 +547,8 @@ export function BookingsTable() {
             onRefreshClick={handleRefresh}
             isRefreshing={isRefreshing}
             currentBranch={currentBranch}
+            currentSport={currentSport}
+            onSportChange={handleSportChange}
           />
         </div>
         
@@ -535,8 +565,8 @@ export function BookingsTable() {
                 }}
               />
             </div>
-            <h3 className="text-base font-medium text-gray-700 mb-1">No hay pistas disponibles</h3>
-            <p className="text-sm text-gray-500 text-center mb-4">Para gestionar reservas, primero necesitas configurar al menos una pista en esta sede.</p>
+            <h3 className="text-base font-medium text-gray-700 mb-1">No hay pistas de {currentSport === "racket" ? "raqueta" : "natación"}</h3>
+            <p className="text-sm text-gray-500 text-center mb-4">No se encontraron pistas del tipo seleccionado. Cambia el filtro o agrega nuevas pistas.</p>
             <a 
               href="/admin/dashboard/pricing/courts"
               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
@@ -551,23 +581,22 @@ export function BookingsTable() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-none">
-        <TableHeader
-          selectedDate={selectedDate}
-          onDateChange={handleDateChange}
-          onConfigClick={handleConfigButtonClick}
-          onRefreshClick={handleRefresh}
-          isRefreshing={isRefreshing}
-          currentBranch={currentBranch}
-        />
-      </div>
+    <div className="h-full flex flex-col overflow-hidden">
 
-      <div className="flex-1 min-h-0">
-        <div className={cn(
-          "h-full overflow-y-auto",
-          "bookings-scroll-container"
-        )}>
+      <TableHeader
+        selectedDate={selectedDate}
+        onDateChange={handleDateChange}
+        onConfigClick={handleConfigButtonClick}
+        onRefreshClick={handleRefresh}
+        isRefreshing={isRefreshing}
+        currentBranch={currentBranch}
+        currentSport={currentSport}
+        onSportChange={handleSportChange}
+      />
+      
+      <div className="flex flex-col flex-1 min-h-0">
+        {/* Contenedor principal de la tabla */}
+        <div className="flex flex-col flex-1 min-h-0">
           <div className="p-4">
             <div ref={tableContainerRef} 
                  className="w-full border rounded-lg">
@@ -591,13 +620,25 @@ export function BookingsTable() {
       </div>
 
       <div className="flex-none">
-        <TableNavigationButtons
-          totalItems={allCourts.length}
-          visibleItems={4}
-          currentStart={visibleCourtsStart}
-          onNavigate={handleTableNavigation}
-          className="border-t border-gray-200 bg-white py-3"
-        />
+        {filteredCourts.length > 0 ? (
+          <>
+            {filteredCourts.length > 4 && (
+              <TableNavigationButtons 
+                onPrevClick={() => handleTableNavigation('left')}
+                onNextClick={() => handleTableNavigation('right')}
+                hasPrev={visibleCourtsStart > 0}
+                hasNext={visibleCourtsStart + 4 < filteredCourts.length}
+                currentPage={Math.floor(visibleCourtsStart / 4) + 1}
+                totalPages={Math.ceil(filteredCourts.length / 4)}
+                className="mt-2"
+              />
+            )}
+          </>
+        ) : (
+          <div className="text-center py-3 text-sm text-gray-500 border-t">
+            No hay canchas disponibles para el tipo de deporte seleccionado
+          </div>
+        )}
       </div>
 
       {/* Modales y menús */}

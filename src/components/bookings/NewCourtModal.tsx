@@ -28,6 +28,7 @@ interface NewCourtModalProps {
   onDelete?: (id: string) => void
   editingCourt?: Court
   mode?: 'create' | 'edit'
+  isLoading?: boolean
 }
 
 const surfaceOptions = [
@@ -39,7 +40,7 @@ const surfaceOptions = [
   { value: 'grass', label: 'Césped Natural' },
   { value: 'rubber', label: 'Goma Profesional' },
   { value: 'concrete', label: 'Hormigón Pulido' }
-] as const
+]
 
 const defaultPricing: CourtPricing = {
   default: 0,
@@ -48,18 +49,15 @@ const defaultPricing: CourtPricing = {
 const durationOptions: DurationOption[] = [30, 45, 60, 90, 120];
 
 const sportOptions = [
-  { id: 'padel', name: 'Pádel' },
-  { id: 'tennis', name: 'Tenis' },
-  { id: 'badminton', name: 'Bádminton' },
-  { id: 'pickleball', name: 'Pickleball' },
-  { id: 'squash', name: 'Squash' },
-] as const
+  { id: 'racket', name: 'Raqueta' },
+  { id: 'swimming', name: 'Natación' },
+]
 
 const courtTypeOptions = [
   { id: 'indoor', name: 'Interior' },
   { id: 'outdoor', name: 'Exterior' },
   { id: 'covered', name: 'Cubierta' },
-] as const
+]
 
 const courtFeatures = [
   {
@@ -81,21 +79,22 @@ const courtFeatures = [
       { id: 'floor-rubber', name: 'Goma Profesional' },
     ]
   }
-] as const
+]
 
 // Añadimos un tipo para los pasos
 type Step = 'court' | 'pricing';
 
-const defaultFormData = {
+const defaultFormData: Omit<Court, 'id'> = {
   name: '',
   branch_id: '',
-  sport: 'padel' as const,
-  court_type: 'indoor' as const,
+  sport: 'racket',
+  court_type: 'indoor',
   surface: 'crystal',
   is_active: true,
   duration_pricing: {},
   custom_pricing: {} as Court['custom_pricing'],
-  available_durations: [60]
+  available_durations: [60],
+  features: []
 }
 
 export function NewCourtModal({ 
@@ -110,6 +109,7 @@ export function NewCourtModal({
   const [currentStep, setCurrentStep] = useState<Step>('court')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [newDuration, setNewDuration] = useState<number | null>(null)
+  const isRacketSport = formData.sport === 'racket'
 
   useEffect(() => {
     if (isOpen && editingCourt) {
@@ -117,7 +117,10 @@ export function NewCourtModal({
         ...editingCourt,
         duration_pricing: editingCourt.duration_pricing || {},
         custom_pricing: editingCourt.custom_pricing || {},
-        available_durations: editingCourt.available_durations || [60]
+        available_durations: editingCourt.available_durations || [60],
+        // Si no es un deporte de raqueta, asegurar que sea 'swimming' o 'racket'
+        sport: ['racket', 'swimming'].includes(editingCourt.sport) ? 
+          editingCourt.sport : 'racket'
       })
     } else {
       setFormData(defaultFormData)
@@ -133,12 +136,19 @@ export function NewCourtModal({
   }, [isOpen])
 
   const isFirstStepValid = () => {
+    if (formData.sport === 'swimming') {
+      return formData.name.trim() !== ''
+    }
     return formData.name.trim() !== '' && formData.available_durations.length > 0
   }
 
   const handleNext = () => {
     if (currentStep === 'court' && isFirstStepValid()) {
-      setCurrentStep('pricing')
+      if (isRacketSport) {
+        setCurrentStep('pricing')
+      } else {
+        handleSave() // Para natación guardar directamente
+      }
     }
   }
 
@@ -151,19 +161,30 @@ export function NewCourtModal({
   const handleSave = () => {
     if (!isFirstStepValid()) return
 
-    // Asegurarse de que cada duración tenga un precio
-    const duration_pricing = { ...formData.duration_pricing }
-    formData.available_durations.forEach(duration => {
-      const key = duration.toString()
-      if (!(key in duration_pricing)) {
-        duration_pricing[key] = 0
+    // Asegurarse de que cada duración tenga un precio solo para deportes de raqueta
+    let courtData = { ...formData }
+    
+    if (isRacketSport) {
+      const duration_pricing = { ...formData.duration_pricing }
+      formData.available_durations.forEach(duration => {
+        const key = duration.toString()
+        if (!(key in duration_pricing)) {
+          duration_pricing[key] = 0
+        }
+      })
+      courtData.duration_pricing = duration_pricing
+    } else {
+      // Para natación, establecer valores por defecto
+      courtData = {
+        ...courtData,
+        available_durations: [60],
+        duration_pricing: { '60': 0 },
+        custom_pricing: {},
+        features: []
       }
-    })
+    }
 
-    onSave({
-      ...formData,
-      duration_pricing
-    })
+    onSave(courtData)
   }
 
   const handleDelete = () => {
@@ -242,12 +263,31 @@ export function NewCourtModal({
                     <label className="text-sm font-medium">
                       Deporte
                     </label>
-                    <SingleSelect
-                      value={formData.sport}
-                      onChange={(value) => setFormData(prev => ({ ...prev, sport: value }))}
-                      options={sportOptions}
-                      placeholder="Seleccionar deporte"
-                    />
+                    {mode === 'edit' ? (
+                      // Campo de solo lectura para modo edición
+                      <div className={cn(
+                        "w-full px-3 py-2 rounded-lg border bg-gray-50",
+                        "text-sm text-gray-700"
+                      )}>
+                        {sportOptions.find(option => option.id === formData.sport)?.name || formData.sport}
+                      </div>
+                    ) : (
+                      // Selector normal para modo creación
+                      <SingleSelect
+                        value={formData.sport}
+                        onChange={(value: any) => {
+                          const sportValue = value as Court['sport'];
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            sport: sportValue,
+                            // Reset features if cambia a natación
+                            ...(sportValue === 'swimming' ? { features: [] } : {})
+                          }));
+                        }}
+                        options={sportOptions}
+                        placeholder="Seleccionar deporte"
+                      />
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -256,159 +296,165 @@ export function NewCourtModal({
                     </label>
                     <SingleSelect
                       value={formData.court_type}
-                      onChange={(value) => setFormData(prev => ({ ...prev, court_type: value }))}
+                      onChange={(value: any) => setFormData(prev => ({ ...prev, court_type: value as Court['court_type'] }))}
                       options={courtTypeOptions}
                       placeholder="Seleccionar tipo"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Características de la Pista
-                  </label>
-                  <CategoryMultiSelect
-                    value={formData.features}
-                    onChange={(features) => setFormData(prev => ({ ...prev, features }))}
-                    categories={courtFeatures}
-                    placeholder="Seleccionar características"
-                  />
-                </div>
+                {/* Características de la Pista - Solo visible para deportes de raqueta */}
+                {isRacketSport && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Características de la Pista
+                    </label>
+                    <CategoryMultiSelect
+                      value={formData.features || []}
+                      onChange={(features) => setFormData(prev => ({ ...prev, features }))}
+                      categories={courtFeatures}
+                      placeholder="Seleccionar características"
+                    />
+                  </div>
+                )}
 
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium">Duraciones disponibles</h3>
-                      {formData.available_durations.length > 0 && (
-                        <button
-                          onClick={() => setFormData(prev => ({ ...prev, available_durations: [] }))}
-                          className={cn(
-                            "text-xs text-gray-400",
-                            "hover:text-gray-600",
-                            "transition-colors duration-200",
-                            "flex items-center gap-1"
-                          )}
-                        >
-                          <span>Limpiar</span>
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Duraciones predefinidas */}
-                    <div className="flex flex-wrap gap-2">
-                      {durationOptions.map((duration) => (
-                        <button
-                          key={duration}
-                          onClick={() => {
-                            setFormData(prev => ({
-                              ...prev,
-                              available_durations: prev.available_durations.includes(duration)
-                                ? prev.available_durations.filter(d => d !== duration)
-                                : [...prev.available_durations, duration].sort((a, b) => a - b)
-                            }))
-                          }}
-                          className={cn(
-                            "h-9 px-4 rounded-md text-sm transition-all duration-200",
-                            "border hover:border-gray-400",
-                            formData.available_durations.includes(duration)
-                              ? "bg-gray-900 text-white border-transparent hover:bg-gray-800"
-                              : "bg-white text-gray-700 border-gray-200"
-                          )}
-                        >
-                          {duration} min
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Duración personalizada */}
-                    <div className="space-y-1">
-                      <div className="relative">
-                        <input
-                          type="number"
-                          placeholder="Añadir duración personalizada"
-                          value={newDuration || ''}
-                          onChange={(e) => setNewDuration(parseInt(e.target.value) || null)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && newDuration) {
-                              e.preventDefault()
-                              // Validar que la duración sea válida
-                              if (newDuration >= 1) {
-                                setFormData(prev => ({
-                                  ...prev,
-                                  available_durations: prev.available_durations.includes(newDuration)
-                                    ? prev.available_durations
-                                    : [...prev.available_durations, newDuration].sort((a, b) => a - b)
-                                }))
-                                setNewDuration(null) // Limpiar el input
-                              }
-                            }
-                          }}
-                          className={cn(
-                            "w-full px-3 py-2 rounded-lg",
-                            "border border-gray-200 bg-white",
-                            "focus:outline-none focus:border-gray-300",
-                            "transition-colors duration-200",
-                            "placeholder:text-gray-400",
-                            "text-sm",
-                            "[appearance:textfield]",
-                            "[&::-webkit-outer-spin-button]:appearance-none",
-                            "[&::-webkit-inner-spin-button]:appearance-none",
-                            "pr-12"
-                          )}
-                          min="1"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
-                          min
-                        </span>
+                {/* Duraciones disponibles - Solo visible para deportes de raqueta */}
+                {isRacketSport && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Duraciones disponibles</h3>
+                        {formData.available_durations.length > 0 && (
+                          <button
+                            onClick={() => setFormData(prev => ({ ...prev, available_durations: [] }))}
+                            className={cn(
+                              "text-xs text-gray-400",
+                              "hover:text-gray-600",
+                              "transition-colors duration-200",
+                              "flex items-center gap-1"
+                            )}
+                          >
+                            <span>Limpiar</span>
+                          </button>
+                        )}
                       </div>
-                      <p className="text-xs text-gray-500 pl-1">
-                        Presiona ENTER para agregar
-                      </p>
-                    </div>
 
-                    {/* Duraciones seleccionadas */}
-                    {formData.available_durations.length > 0 && (
-                      <div className="pt-2 space-y-2">
-                        <span className="text-xs text-gray-500">
-                          Duraciones seleccionadas
-                        </span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {formData.available_durations.sort((a, b) => a - b).map((duration) => (
-                            <div
-                              key={duration}
-                              className={cn(
-                                "group inline-flex items-center gap-1.5",
-                                "h-7 pl-2.5 pr-1.5 rounded-md",
-                                "bg-gray-50 text-gray-700 text-sm",
-                                "border border-gray-200",
-                                "transition-all duration-200"
-                              )}
-                            >
-                              <span>{duration} min</span>
-                              <button
-                                onClick={() => {
+                      {/* Duraciones predefinidas */}
+                      <div className="flex flex-wrap gap-2">
+                        {durationOptions.map((duration) => (
+                          <button
+                            key={duration}
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                available_durations: prev.available_durations.includes(duration)
+                                  ? prev.available_durations.filter(d => d !== duration)
+                                  : [...prev.available_durations, duration].sort((a, b) => a - b)
+                              }))
+                            }}
+                            className={cn(
+                              "h-9 px-4 rounded-md text-sm transition-all duration-200",
+                              "border hover:border-gray-400",
+                              formData.available_durations.includes(duration)
+                                ? "bg-gray-900 text-white border-transparent hover:bg-gray-800"
+                                : "bg-white text-gray-700 border-gray-200"
+                            )}
+                          >
+                            {duration} min
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Duración personalizada */}
+                      <div className="space-y-1">
+                        <div className="relative">
+                          <input
+                            type="number"
+                            placeholder="Añadir duración personalizada"
+                            value={newDuration || ''}
+                            onChange={(e) => setNewDuration(parseInt(e.target.value) || null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && newDuration) {
+                                e.preventDefault()
+                                // Validar que la duración sea válida
+                                if (newDuration >= 1) {
                                   setFormData(prev => ({
                                     ...prev,
-                                    available_durations: prev.available_durations.filter(d => d !== duration)
+                                    available_durations: prev.available_durations.includes(newDuration)
+                                      ? prev.available_durations
+                                      : [...prev.available_durations, newDuration].sort((a, b) => a - b)
                                   }))
-                                }}
+                                  setNewDuration(null) // Limpiar el input
+                                }
+                              }
+                            }}
+                            className={cn(
+                              "w-full px-3 py-2 rounded-lg",
+                              "border border-gray-200 bg-white",
+                              "focus:outline-none focus:border-gray-300",
+                              "transition-colors duration-200",
+                              "placeholder:text-gray-400",
+                              "text-sm",
+                              "[appearance:textfield]",
+                              "[&::-webkit-outer-spin-button]:appearance-none",
+                              "[&::-webkit-inner-spin-button]:appearance-none",
+                              "pr-12"
+                            )}
+                            min="1"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+                            min
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 pl-1">
+                          Presiona ENTER para agregar
+                        </p>
+                      </div>
+
+                      {/* Duraciones seleccionadas */}
+                      {formData.available_durations.length > 0 && (
+                        <div className="pt-2 space-y-2">
+                          <span className="text-xs text-gray-500">
+                            Duraciones seleccionadas
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {formData.available_durations.sort((a, b) => a - b).map((duration) => (
+                              <div
+                                key={duration}
                                 className={cn(
-                                  "w-4 h-4 rounded-sm",
-                                  "inline-flex items-center justify-center",
-                                  "text-gray-400 hover:text-gray-600",
-                                  "transition-colors duration-200"
+                                  "group inline-flex items-center gap-1.5",
+                                  "h-7 pl-2.5 pr-1.5 rounded-md",
+                                  "bg-gray-50 text-gray-700 text-sm",
+                                  "border border-gray-200",
+                                  "transition-all duration-200"
                                 )}
                               >
-                                <span className="sr-only">Eliminar</span>
-                                ×
-                              </button>
-                            </div>
-                          ))}
+                                <span>{duration} min</span>
+                                <button
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      available_durations: prev.available_durations.filter(d => d !== duration)
+                                    }))
+                                  }}
+                                  className={cn(
+                                    "w-4 h-4 rounded-sm",
+                                    "inline-flex items-center justify-center",
+                                    "text-gray-400 hover:text-gray-600",
+                                    "transition-colors duration-200"
+                                  )}
+                                >
+                                  <span className="sr-only">Eliminar</span>
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </motion.div>
             ) : (
               <div className="p-6">
@@ -509,4 +555,4 @@ export function NewCourtModal({
       </AnimatePresence>
     </Modal>
   )
-} 
+}

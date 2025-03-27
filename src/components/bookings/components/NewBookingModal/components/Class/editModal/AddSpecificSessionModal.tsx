@@ -92,6 +92,11 @@ export function AddSpecificSessionModal({
       return false
     }
     
+    if (price <= 0) {
+      toast.error("El precio debe ser mayor a 0")
+      return false
+    }
+    
     if (!selectedCourt) {
       toast.error("Selecciona al menos una cancha")
       return false
@@ -323,7 +328,7 @@ export function AddSpecificSessionModal({
                       type="number"
                       value={price}
                       onChange={(e) => setPrice(Number(e.target.value))}
-                      min={0}
+                      min={1}
                       className="pl-8 h-[30px] text-xs"
                     />
                   </div>

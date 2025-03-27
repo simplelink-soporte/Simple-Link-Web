@@ -76,7 +76,7 @@ export function StepNavigation({
               <span>Guardando...</span>
             </>
           ) : (
-            <span>Guardar y Continuar</span>
+            <span>Guardar y Avanzar</span>
           )}
         </button>
       )}

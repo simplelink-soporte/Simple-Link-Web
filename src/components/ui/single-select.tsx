@@ -17,6 +17,7 @@ interface SingleSelectProps<T = string> {
   options: readonly Option<T>[]
   placeholder?: string
   className?: string
+  disabled?: boolean
 }
 
 export function SingleSelect<T extends string>({ 
@@ -24,7 +25,8 @@ export function SingleSelect<T extends string>({
   onChange,
   options,
   placeholder = "Seleccionar...",
-  className
+  className,
+  disabled = false
 }: SingleSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -49,9 +51,11 @@ export function SingleSelect<T extends string>({
   return (
     <div ref={containerRef} className="relative">
       <div
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         className={cn(
-          "w-full px-3 py-2 rounded-lg border bg-white cursor-pointer",
+          "w-full px-3 py-2 rounded-lg border bg-white",
+          !disabled && "cursor-pointer",
+          disabled && "opacity-70 cursor-not-allowed",
           "focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black",
           "transition-all duration-200",
           "flex items-center justify-between"
@@ -80,7 +84,7 @@ export function SingleSelect<T extends string>({
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
           )}
         >
-          <div className="p-1">
+          <div className="p-1 max-h-48 overflow-y-auto">
             {options.map((option) => (
               <button
                 key={String(option.id)}

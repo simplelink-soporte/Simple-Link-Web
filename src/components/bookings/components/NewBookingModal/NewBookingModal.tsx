@@ -224,7 +224,8 @@ export function NewBookingModal({
         },
         created_by: empresa.auth_user_id,
         min_students: 1,
-        status: 'active'
+        status: 'active',
+        sport: classDetails.sport
       }
 
       const { data, error } = await supabase

@@ -6,6 +6,7 @@ import type { Database } from '@/types/supabase'
 
 interface UseGroupedCourtsProps {
   branchId?: string
+  sportFilter?: string
 }
 
 interface CourtOption {
@@ -18,21 +19,27 @@ interface GroupedCourtOption {
   options: CourtOption[]
 }
 
-export function useGroupedCourts({ branchId }: UseGroupedCourtsProps) {
+export function useGroupedCourts({ branchId, sportFilter }: UseGroupedCourtsProps) {
   const supabase = createClientComponentClient<Database>()
 
   const { data: courts = [], isLoading, error } = useQuery({
-    queryKey: ['courts', branchId],
+    queryKey: ['courts', branchId, sportFilter],
     queryFn: async () => {
       if (!branchId) return []
 
-      console.log('🎾 Obteniendo canchas para sede:', branchId)
-      const { data, error } = await supabase
+      console.log('🎾 Obteniendo canchas para sede:', branchId, sportFilter ? `(filtro: ${sportFilter})` : '')
+      let query = supabase
         .from('courts')
         .select('*')
         .eq('branch_id', branchId)
         .eq('is_active', true)
-        .order('name')
+      
+      // Aplicar filtro de deporte si existe
+      if (sportFilter) {
+        query = query.eq('sport', sportFilter)
+      }
+        
+      const { data, error } = await query.order('name')
 
       if (error) {
         console.error('❌ Error al obtener canchas:', error)

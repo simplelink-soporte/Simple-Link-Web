@@ -3,30 +3,31 @@ import { Button } from "@/components/ui/button"
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 
 interface TableNavigationButtonsProps {
-  totalItems: number
-  visibleItems: number
-  currentStart: number
-  onNavigate: (direction: 'left' | 'right') => void
+  onPrevClick: () => void
+  onNextClick: () => void
+  hasPrev: boolean
+  hasNext: boolean
+  currentPage: number
+  totalPages: number
   className?: string
 }
 
 export function TableNavigationButtons({
-  totalItems,
-  visibleItems,
-  currentStart,
-  onNavigate,
+  onPrevClick,
+  onNextClick,
+  hasPrev,
+  hasNext,
+  currentPage,
+  totalPages,
   className
 }: TableNavigationButtonsProps) {
-  const canNavigateLeft = currentStart > 0
-  const canNavigateRight = currentStart + visibleItems < totalItems
-
   return (
-    <div className={cn("flex justify-center gap-2 px-4", className)}>
+    <div className={cn("flex justify-center gap-2 px-4 border-t border-gray-200 bg-white py-3", className)}>
       <Button
         variant="outline"
         size="icon"
-        onClick={() => onNavigate('left')}
-        disabled={!canNavigateLeft}
+        onClick={onPrevClick}
+        disabled={!hasPrev}
         className="p-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200"
       >
         <IconChevronLeft className="h-5 w-5 text-gray-600" stroke={1.5} />
@@ -35,12 +36,12 @@ export function TableNavigationButtons({
       <Button
         variant="outline"
         size="icon"
-        onClick={() => onNavigate('right')}
-        disabled={!canNavigateRight}
+        onClick={onNextClick}
+        disabled={!hasNext}
         className="p-2 bg-white hover:bg-gray-50 rounded-md border border-gray-200"
       >
         <IconChevronRight className="h-5 w-5 text-gray-600" stroke={1.5} />
       </Button>
     </div>
   )
-} 
+}
