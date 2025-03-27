@@ -161,7 +161,7 @@ class OnboardingCourtService {
           is_active: true,
           available_durations: [60],
           duration_pricing: {
-            "60": "8"
+            "60": 0
           },
           custom_pricing: {}
         },
@@ -175,7 +175,7 @@ class OnboardingCourtService {
           is_active: true,
           available_durations: [60],
           duration_pricing: {
-            "60": "5"
+            "60": 0
           },
           custom_pricing: {}
         }
