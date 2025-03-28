@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -14,50 +14,27 @@ export default function AuthCallbackPage() {
   const { checkEmpresaOnboarding } = useAuth()
 
   useEffect(() => {
-    // Escuchar cambios en el estado de autenticación
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Callback - Estado de autenticación:', event)
-      
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('Usuario autenticado, verificando onboarding...')
+    let retryCount = 0
+    const maxRetries = 3
+    const retryInterval = 1000 // 1 segundo
+
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
         
-        try {
-          const onboardingStatus = await checkEmpresaOnboarding(session.user.id)
-          
-          if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
-            console.log('Usuario requiere onboarding')
-            window.location.href = '/admin/onboarding'
+        if (!session) {
+          if (retryCount < maxRetries) {
+            retryCount++
+            console.log(`Reintentando obtener sesión (${retryCount}/${maxRetries})...`)
+            setTimeout(checkSession, retryInterval)
             return
           }
-
-          console.log('Usuario verificado, redirigiendo al panel...')
-          window.location.href = '/admin/dashboard/bookings/reservations'
-        } catch (error) {
-          console.error('Error al verificar onboarding:', error)
-          toast.error('Error al verificar el estado de tu cuenta')
+          console.error('No se pudo obtener la sesión después de reintentos')
           router.push('/admin/login')
+          return
         }
-      }
 
-      if (event === 'SIGNED_OUT') {
-        console.log('Usuario cerró sesión')
-        router.push('/admin/login')
-      }
-    })
-
-    // Verificar estado inicial
-    const checkInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        console.log('No hay sesión activa')
-        router.push('/admin/login')
-        return
-      }
-
-      try {
+        console.log('Sesión obtenida, verificando onboarding...')
         const onboardingStatus = await checkEmpresaOnboarding(session.user.id)
         
         if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
@@ -69,16 +46,18 @@ export default function AuthCallbackPage() {
         console.log('Usuario verificado, redirigiendo al panel...')
         window.location.href = '/admin/dashboard/bookings/reservations'
       } catch (error) {
-        console.error('Error al verificar onboarding:', error)
+        console.error('Error al verificar sesión:', error)
         toast.error('Error al verificar el estado de tu cuenta')
         router.push('/admin/login')
       }
     }
 
-    checkInitialSession()
+    // Iniciar verificación de sesión
+    checkSession()
 
+    // Cleanup
     return () => {
-      subscription.unsubscribe()
+      retryCount = maxRetries // Detener reintentos si el componente se desmonta
     }
   }, [router, supabase, checkEmpresaOnboarding])
 
