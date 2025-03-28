@@ -34,74 +34,6 @@ function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some(route => pathname === route)
 }
 
-// Función para obtener empresa_id desde diferentes fuentes
-async function getEmpresaId(req: NextRequest, session: any, supabase: any) {
-  // 1. Intentar obtener de los metadatos del usuario
-  const empresaIdFromMeta = session?.user?.app_metadata?.empresa_id || session?.user?.user_metadata?.empresa_id
-  if (empresaIdFromMeta) {
-    console.log('Middleware: Empresa ID encontrada en metadatos:', empresaIdFromMeta)
-    return empresaIdFromMeta
-  }
-
-  // 2. Intentar obtener de las cookies
-  const empresaIdFromCookie = req.cookies.get('empresa_id')?.value
-  if (empresaIdFromCookie) {
-    console.log('Middleware: Empresa ID encontrada en cookie:', empresaIdFromCookie)
-    return empresaIdFromCookie
-  }
-
-  // 3. Si no hay cookie, buscar en la base de datos
-  console.log('Middleware: Buscando empresa en base de datos para usuario:', session.user.id)
-  
-  // Primero buscar en empresas directamente
-  const { data: empresaData } = await supabase
-    .from('empresas')
-    .select('id')
-    .eq('auth_user_id', session.user.id)
-    .single()
-
-  if (empresaData?.id) {
-    console.log('Middleware: Empresa encontrada directamente:', empresaData.id)
-    await persistEmpresaId(empresaData.id, session, supabase)
-    return empresaData.id
-  }
-
-  // Si no se encuentra, buscar en vinculaciones
-  const { data: vinculacionData } = await supabase
-    .from('vinculaciones')
-    .select('empresa_id')
-    .eq('user_id', session.user.id)
-    .eq('estado', 'activo')
-    .single()
-
-  if (vinculacionData?.empresa_id) {
-    console.log('Middleware: Empresa encontrada en vinculaciones:', vinculacionData.empresa_id)
-    await persistEmpresaId(vinculacionData.empresa_id, session, supabase)
-    return vinculacionData.empresa_id
-  }
-
-  return null
-}
-
-// Función para persistir el empresa_id
-async function persistEmpresaId(empresaId: string, session: any, supabase: any) {
-  // 1. Actualizar metadatos del usuario
-  await supabase.auth.updateUser({
-    data: { empresa_id: empresaId }
-  })
-
-  // 2. Devolver la respuesta con la cookie actualizada
-  const response = NextResponse.next()
-  response.cookies.set('empresa_id', empresaId, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60 // 30 días
-  })
-  
-  return response
-}
-
 // Middleware principal
 export const config = {
   matcher: [
@@ -125,27 +57,19 @@ export default async function middleware(req: NextRequest) {
     const supabase = createMiddlewareClient<Database>({ req, res: NextResponse.next() })
     const { data: { session } } = await supabase.auth.getSession()
 
-    const userRole = session?.user?.app_metadata?.role || 'client'
-
     console.log('Middleware - Verificación de sesión:', {
       hasSession: !!session,
-      userRole,
       pathname,
       userId: session?.user?.id
     })
 
-    // Verificar acceso según el rol y la ruta
+    // Verificar acceso según la ruta
     if (pathname.startsWith('/admin')) {
       if (!session) {
         console.log('Middleware: No hay sesión, redirigiendo a login admin')
         return NextResponse.redirect(new URL('/admin/login?returnUrl=' + pathname, req.url))
       }
-
-      // Para rutas admin, verificar específicamente el rol de administrador
-      if (userRole !== 'admin' && userRole !== 'superadmin') {
-        console.log('Middleware: Usuario sin rol admin')
-        return NextResponse.redirect(new URL('/unauthorized', req.url))
-      }
+      return NextResponse.next()
     }
 
     // Manejo específico para rutas de clases
@@ -162,15 +86,8 @@ export default async function middleware(req: NextRequest) {
         return NextResponse.redirect(loginUrl)
       }
 
-      // Para rutas de clases, permitir tanto clientes como administradores
-      const allowedRoles = ['client', 'admin', 'superadmin']
-      if (!allowedRoles.includes(userRole)) {
-        console.log('Middleware: Usuario sin acceso a clases, rol:', userRole)
-        return NextResponse.redirect(new URL('/unauthorized', req.url))
-      }
-
-      // Si el usuario está autenticado y tiene permisos, permitir acceso
-      console.log('Middleware: Usuario autenticado con acceso a clases, rol:', userRole)
+      // Si el usuario está autenticado, permitir acceso
+      console.log('Middleware: Usuario autenticado con acceso a clases')
       return NextResponse.next()
     }
 
@@ -188,27 +105,14 @@ export default async function middleware(req: NextRequest) {
         return NextResponse.redirect(loginUrl)
       }
 
-      // Para rutas de reservas, permitir tanto clientes como administradores
-      const allowedRoles = ['client', 'admin', 'superadmin']
-      if (!allowedRoles.includes(userRole)) {
-        console.log('Middleware: Usuario sin acceso a reservas, rol:', userRole)
-        return NextResponse.redirect(new URL('/unauthorized', req.url))
-      }
-
-      // Si el usuario está autenticado y tiene permisos, permitir acceso
-      console.log('Middleware: Usuario autenticado con acceso a reservas, rol:', userRole)
+      // Si el usuario está autenticado, permitir acceso
+      console.log('Middleware: Usuario autenticado con acceso a reservas')
       return NextResponse.next()
     }
 
-    // Rutas protegidas que requieren autenticación
-    const protectedPaths = ['/clases', '/f/']
-    const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path))
-
-    if (isProtectedPath && !session) {
-      // Guardar la URL original para redireccionar después del login
-      const redirectUrl = new URL('/login', req.url)
-      redirectUrl.searchParams.set('redirectTo', pathname)
-      return NextResponse.redirect(redirectUrl)
+    if (!session) {
+      console.log('Middleware: No hay sesión, redirigiendo a login')
+      return NextResponse.redirect(new URL('/login?returnUrl=' + pathname, req.url))
     }
 
     return NextResponse.next()
@@ -216,4 +120,4 @@ export default async function middleware(req: NextRequest) {
     console.error('Error en middleware:', error)
     return NextResponse.redirect(new URL('/error', req.url))
   }
-} 
+}

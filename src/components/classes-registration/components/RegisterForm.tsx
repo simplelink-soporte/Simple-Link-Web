@@ -102,7 +102,6 @@ export function RegisterForm({ onBack, onSuccess }: RegisterFormProps) {
           data: {
             name: formData.nombre,
             phone: formData.telefono,
-            role: 'client',
             nombre_original: formData.nombre,
             telefono_original: formData.telefono
           },
@@ -126,7 +125,6 @@ export function RegisterForm({ onBack, onSuccess }: RegisterFormProps) {
           empresa_id: empresaId,
           estado: 'activo',
           metadata: {
-            role: 'client',
             created_through: 'class_registration'
           }
         })

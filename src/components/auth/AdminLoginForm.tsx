@@ -58,20 +58,26 @@ export function AdminLoginForm() {
         throw new Error('Error al iniciar sesión')
       }
 
-      // Verificar si el usuario es admin
-      if (result.user.role !== 'admin') {
-        // Cerrar la sesión inmediatamente si no es admin
-        await signOut()
-        setFormError('root', { 
-          type: 'manual',
-          message: 'No tienes permisos de administrador para acceder a esta sección'
-        })
+      // Verificar estado de la empresa y onboarding
+      if (!result.onboarding.hasEmpresa) {
+        console.log('Usuario sin empresa, redirigiendo a onboarding')
+        toast.info('Por favor, complete el registro de su empresa')
+        window.location.href = '/admin/onboarding'
         return
       }
 
+      if (!result.onboarding.isOnboardingComplete) {
+        console.log('Onboarding incompleto, redirigiendo a onboarding')
+        toast.info('Por favor, complete el proceso de configuración inicial')
+        window.location.href = '/admin/onboarding'
+        return
+      }
+
+      console.log('Login exitoso, redirigiendo al dashboard')
       toast.success('Inicio de sesión exitoso')
-      router.push('/admin/dashboard/bookings/reservations')
+      router.replace('/admin/dashboard/bookings/reservations')
     } catch (error: any) {
+      console.error('Error en login:', error)
       const errorMessage = error.message === 'Invalid login credentials'
         ? 'Credenciales inválidas'
         : error.message || 'Error al iniciar sesión'

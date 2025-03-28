@@ -30,7 +30,7 @@ const ClientSideProviders = dynamic(
   { ssr: false }
 )
 
-const AUTH_ROUTES = ['/admin/login', '/admin/auth/callback']
+const AUTH_ROUTES = ['/admin/login', '/admin/auth/callback', '/admin/onboarding']
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()

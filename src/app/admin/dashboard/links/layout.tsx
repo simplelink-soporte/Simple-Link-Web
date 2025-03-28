@@ -23,17 +23,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  // Verificar si el usuario tiene permisos de administrador
-  if (!isLoading && user) {
-    const hasAdminAccess = user.role === 'admin' || user.role === 'superadmin';
-    
-    if (!hasAdminAccess) {
-      console.log('AuthGuard - Usuario sin permisos de administrador:', user.role);
-      router.push('/unauthorized');
-      return null;
-    }
-  }
-
   // Renderizar el contenedor con el estado de carga o el contenido
   return (
     <div className="fixed inset-0 overflow-hidden z-0">

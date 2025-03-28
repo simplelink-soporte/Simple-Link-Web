@@ -63,12 +63,6 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
         throw new Error('Error al iniciar sesión')
       }
 
-      // Verificar que el usuario tenga un rol válido para acceder a turnos
-      const userRole = result.user.role
-      if (!['client', 'admin', 'superadmin'].includes(userRole)) {
-        throw new Error('No tienes permisos para acceder a esta sección')
-      }
-
       // Obtener el slug del returnUrl
       let slug = ''
       if (returnUrl) {
