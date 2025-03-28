@@ -24,19 +24,6 @@ export async function GET(request: Request) {
     
     // Exchange the code for a session
     await supabase.auth.exchangeCodeForSession(code)
-
-    // Verificar el rol del usuario según el contexto
-    const { data: { user } } = await supabase.auth.getUser()
-    const userRole = user?.app_metadata?.role
-
-    // Si el rol no coincide con el contexto, redirigir a unauthorized
-    if (clientType === 'admin' && userRole !== 'admin' && userRole !== 'staff') {
-      return NextResponse.redirect(new URL(config.routes.unauthorized, requestUrl.origin))
-    }
-
-    if (clientType === 'client' && userRole !== 'client') {
-      return NextResponse.redirect(new URL(config.routes.unauthorized, requestUrl.origin))
-    }
   }
 
   // URL to redirect to after sign in process completes

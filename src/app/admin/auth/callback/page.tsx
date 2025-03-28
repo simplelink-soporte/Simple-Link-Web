@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 export default function AuthCallbackPage() {
@@ -19,18 +18,7 @@ export default function AuthCallbackPage() {
       console.log('Callback - Estado de autenticación:', event)
       
       if (event === 'SIGNED_IN') {
-        // Verificar que el usuario tenga rol de admin
-        const userRole = session?.user?.app_metadata?.role || 'client'
-        
-        if (userRole !== 'admin') {
-          console.log('Usuario sin permisos de admin')
-          await supabase.auth.signOut()
-          toast.error('No tienes permisos de administrador')
-          router.push('/admin/login')
-          return
-        }
-
-        console.log('Redirigiendo al panel...')
+        console.log('Usuario autenticado, redirigiendo al panel...')
         window.location.href = '/admin/dashboard/bookings/reservations'
       }
 
@@ -50,39 +38,31 @@ export default function AuthCallbackPage() {
         return
       }
 
-      const userRole = session.user?.app_metadata?.role || 'client'
-      if (userRole !== 'admin') {
-        console.log('Usuario sin permisos de admin')
-        await supabase.auth.signOut()
-        toast.error('No tienes permisos de administrador')
-        router.push('/admin/login')
-        return
-      }
-
-      console.log('Sesión activa, redirigiendo...')
+      // Si hay sesión activa, redirigir al panel
+      console.log('Sesión activa, redirigiendo al panel...')
       window.location.href = '/admin/dashboard/bookings/reservations'
     }
 
-    // Verificar sesión después de un breve delay
-    const timer = setTimeout(checkInitialSession, 1000)
+    checkInitialSession()
 
     return () => {
       subscription.unsubscribe()
-      clearTimeout(timer)
     }
-  }, [supabase, router])
+  }, [router, supabase])
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-4 max-w-sm mx-auto p-6">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">
-          Verificando autenticación...
-        </p>
-        <p className="text-xs text-gray-400">
-          Serás redirigido automáticamente...
-        </p>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+        <h1 className="text-2xl font-semibold mb-2">Verificando autenticación</h1>
+        <p className="text-gray-500 mb-4">Por favor, espere un momento...</p>
+        <Button
+          variant="outline"
+          onClick={() => router.push('/admin/login')}
+        >
+          Volver al inicio de sesión
+        </Button>
       </div>
     </div>
   )
-} 
+}
