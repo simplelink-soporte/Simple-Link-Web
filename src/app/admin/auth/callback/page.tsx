@@ -14,28 +14,16 @@ export default function AuthCallbackPage() {
   const { checkEmpresaOnboarding } = useAuth()
 
   useEffect(() => {
-    let retryCount = 0
-    const maxRetries = 3
-    const retryInterval = 1000 // 1 segundo
+    let isProcessing = false
 
-    const checkSession = async () => {
+    // Función para procesar la autenticación
+    const processAuth = async (userId: string) => {
+      if (isProcessing) return
+      isProcessing = true
+
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) {
-          if (retryCount < maxRetries) {
-            retryCount++
-            console.log(`Reintentando obtener sesión (${retryCount}/${maxRetries})...`)
-            setTimeout(checkSession, retryInterval)
-            return
-          }
-          console.error('No se pudo obtener la sesión después de reintentos')
-          router.push('/admin/login')
-          return
-        }
-
-        console.log('Sesión obtenida, verificando onboarding...')
-        const onboardingStatus = await checkEmpresaOnboarding(session.user.id)
+        console.log('Verificando onboarding para usuario:', userId)
+        const onboardingStatus = await checkEmpresaOnboarding(userId)
         
         if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
           console.log('Usuario requiere onboarding')
@@ -46,18 +34,48 @@ export default function AuthCallbackPage() {
         console.log('Usuario verificado, redirigiendo al panel...')
         window.location.href = '/admin/dashboard/bookings/reservations'
       } catch (error) {
-        console.error('Error al verificar sesión:', error)
+        console.error('Error al verificar onboarding:', error)
         toast.error('Error al verificar el estado de tu cuenta')
+        router.push('/admin/login')
+      } finally {
+        isProcessing = false
+      }
+    }
+
+    // Escuchar cambios en el estado de autenticación
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Callback - Estado de autenticación:', event)
+      
+      if (event === 'SIGNED_IN' && session?.user) {
+        await processAuth(session.user.id)
+      }
+
+      if (event === 'SIGNED_OUT') {
+        console.log('Usuario cerró sesión')
+        router.push('/admin/login')
+      }
+    })
+
+    // Verificar estado inicial después de un breve delay
+    const checkInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session?.user) {
+        await processAuth(session.user.id)
+      } else {
+        console.log('No hay sesión activa')
         router.push('/admin/login')
       }
     }
 
-    // Iniciar verificación de sesión
-    checkSession()
+    // Dar tiempo para que la sesión se establezca
+    const timer = setTimeout(checkInitialSession, 1000)
 
-    // Cleanup
     return () => {
-      retryCount = maxRetries // Detener reintentos si el componente se desmonta
+      subscription.unsubscribe()
+      clearTimeout(timer)
     }
   }, [router, supabase, checkEmpresaOnboarding])
 
@@ -66,7 +84,7 @@ export default function AuthCallbackPage() {
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
         <h1 className="text-2xl font-semibold mb-2">Verificando cuenta</h1>
-        <p className="text-gray-500 mb-4">Esto tomará solo un momento...</p>
+        <p className="text-gray-500 mb-4">Esto puede tomar unos momentos...</p>
         <Button
           variant="outline"
           onClick={() => router.push('/admin/login')}
