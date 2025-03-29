@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     }
 
     // Asegurarnos de que la sesión se guarde correctamente
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     // URL to redirect to after sign in process completes
     return NextResponse.redirect(new URL(config.routes.afterSignIn, requestUrl.origin))

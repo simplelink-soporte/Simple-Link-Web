@@ -368,15 +368,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Determinar si estamos en el contexto de clases o admin
       const isClassesContext = window.location.pathname.startsWith('/clases')
-      const redirectPath = isClassesContext ? '/auth/callback' : '/auth/callback'
       
       // Agregar parámetro para identificar el tipo de cliente
       const clientType = isClassesContext ? 'client' : 'admin'
       
+      // Usar URL absoluta para forzar la redirección al dominio correcto
+      const redirectUrl = `https://app.simple-link.com/auth/callback?client_type=${clientType}`
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${redirectPath}?client_type=${clientType}`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
