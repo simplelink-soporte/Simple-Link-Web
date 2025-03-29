@@ -16,6 +16,7 @@ export async function GET(request: Request) {
     console.log('Auth callback iniciado:', { 
       url: request.url,
       origin: requestUrl.origin,
+      hostname: requestUrl.hostname,
       clientType,
       hasCode: !!code
     })
@@ -53,8 +54,17 @@ export async function GET(request: Request) {
     // Asegurarnos de que la sesión se guarde correctamente
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // Redirigir a la ruta después del inicio de sesión, manteniendo el dominio actual
-    const redirectUrl = new URL(config.routes.afterSignIn, requestUrl.origin)
+    // Determinar la URL de redirección basada en el tipo de cliente
+    let redirectUrl: URL;
+    
+    if (clientType === 'admin') {
+      // Para admin, redirigir al callback específico de admin que maneja el onboarding
+      redirectUrl = new URL('/admin/auth/callback', requestUrl.origin)
+    } else {
+      // Para clientes, usar la ruta configurada
+      redirectUrl = new URL(config.routes.afterSignIn, requestUrl.origin)
+    }
+
     console.log('Redirigiendo a:', redirectUrl.toString())
     
     return NextResponse.redirect(redirectUrl)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2 } from 'lucide-react'
@@ -12,6 +12,7 @@ export default function AuthCallbackPage() {
   const router = useRouter()
   const supabase = createClientComponentClient()
   const { checkEmpresaOnboarding } = useAuth()
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let isProcessing = false
@@ -25,18 +26,36 @@ export default function AuthCallbackPage() {
         console.log('Verificando onboarding para usuario:', userId)
         const onboardingStatus = await checkEmpresaOnboarding(userId)
         
+        // Recuperar la URL de redirección guardada en localStorage
+        const savedReturnUrl = typeof window !== 'undefined' 
+          ? localStorage.getItem('auth_return_url') 
+          : null
+        
+        console.log('URL de redirección recuperada:', savedReturnUrl)
+        
         if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
           console.log('Usuario requiere onboarding')
           router.push('/admin/onboarding')
           return
         }
 
+        // Limpiar el returnUrl del localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_return_url')
+        }
+
         console.log('Usuario verificado, redirigiendo al panel...')
-        router.push('/admin/dashboard/bookings/reservations')
+        
+        // Usar la URL guardada o la ruta por defecto
+        const redirectTo = savedReturnUrl || '/admin/dashboard/bookings/reservations'
+        console.log('Redirigiendo a:', redirectTo)
+        
+        // Usar router.push para navegar sin recargar la página
+        router.push(redirectTo)
       } catch (error) {
         console.error('Error al verificar onboarding:', error)
+        setError('Error al verificar el estado de tu cuenta')
         toast.error('Error al verificar el estado de tu cuenta')
-        router.push('/admin/login')
       } finally {
         isProcessing = false
       }
@@ -66,7 +85,10 @@ export default function AuthCallbackPage() {
         await processAuth(session.user.id)
       } else {
         console.log('No hay sesión activa')
-        router.push('/admin/login')
+        setError('No se pudo iniciar sesión. Por favor, intenta nuevamente.')
+        setTimeout(() => {
+          router.push('/admin/login')
+        }, 2000)
       }
     }
 
@@ -85,6 +107,9 @@ export default function AuthCallbackPage() {
         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
         <h1 className="text-2xl font-semibold mb-2">Verificando cuenta</h1>
         <p className="text-gray-500 mb-4">Esto puede tomar unos momentos...</p>
+        {error && (
+          <p className="text-red-500 mb-4">{error}</p>
+        )}
         <Button
           variant="outline"
           onClick={() => router.push('/admin/login')}

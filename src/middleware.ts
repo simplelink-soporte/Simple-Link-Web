@@ -31,6 +31,10 @@ function isStaticAsset(pathname: string): boolean {
 }
 
 function isPublicRoute(pathname: string): boolean {
+  // Verificación más precisa para rutas de callback
+  if (pathname === '/auth/callback' || pathname === '/admin/auth/callback') {
+    return true
+  }
   return PUBLIC_ROUTES.some(route => pathname === route)
 }
 
@@ -48,8 +52,16 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  // Log para depuración
+  console.log('Middleware ejecutándose en:', {
+    pathname,
+    url: req.url,
+    host: req.headers.get('host')
+  })
+
   // Permitir acceso a rutas públicas
   if (isStaticAsset(pathname) || isPublicRoute(pathname)) {
+    console.log('Middleware: Ruta pública o asset estático, permitiendo acceso')
     return NextResponse.next()
   }
 
@@ -67,8 +79,9 @@ export default async function middleware(req: NextRequest) {
     if (pathname.startsWith('/admin')) {
       if (!session) {
         console.log('Middleware: No hay sesión, redirigiendo a login admin')
-        return NextResponse.redirect(new URL('/admin/login?returnUrl=' + pathname, req.url))
+        return NextResponse.redirect(new URL('/admin/login?returnUrl=' + encodeURIComponent(pathname), req.url))
       }
+      console.log('Middleware: Usuario autenticado con acceso a admin')
       return NextResponse.next()
     }
 
@@ -112,7 +125,7 @@ export default async function middleware(req: NextRequest) {
 
     if (!session) {
       console.log('Middleware: No hay sesión, redirigiendo a login')
-      return NextResponse.redirect(new URL('/login?returnUrl=' + pathname, req.url))
+      return NextResponse.redirect(new URL('/login?returnUrl=' + encodeURIComponent(pathname), req.url))
     }
 
     return NextResponse.next()

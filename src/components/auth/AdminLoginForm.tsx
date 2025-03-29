@@ -94,6 +94,17 @@ export function AdminLoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true)
+      console.log('Iniciando autenticación con Google desde AdminLoginForm')
+      
+      // Obtener la URL actual para usarla en el returnUrl
+      const currentUrl = window.location.href
+      const returnUrl = new URLSearchParams(window.location.search).get('returnUrl') || '/admin/dashboard/bookings/reservations'
+      
+      // Guardar el returnUrl en localStorage para recuperarlo después de la autenticación
+      localStorage.setItem('auth_return_url', returnUrl)
+      
+      console.log('Guardando returnUrl para después de la autenticación:', returnUrl)
+      
       await signInWithGoogle()
       // La redirección y verificación se manejan en el callback
     } catch (error: any) {

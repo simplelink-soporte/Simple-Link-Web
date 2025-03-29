@@ -37,7 +37,7 @@ interface AuthSession {
 interface OnboardingCheckResult {
   hasEmpresa: boolean
   isOnboardingComplete: boolean
-  empresa_id?: string
+  empresa?: any
 }
 
 interface AuthContextType {
@@ -277,41 +277,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [checkSession, clearSession, isInitialized])
 
-  // Función para verificar el onboarding de la empresa
-  const checkEmpresaOnboarding = async (userId: string): Promise<OnboardingCheckResult> => {
+  // Función para verificar el estado de onboarding de una empresa
+  const checkEmpresaOnboarding = async (userId: string) => {
     try {
-      // Primero verificamos si el usuario existe y tiene una empresa asociada
-      const { data: empresa, error } = await supabase
-        .from('empresas')
-        .select('id, onboarding, auth_user_id')
-        .eq('auth_user_id', userId)
+      console.log('Verificando onboarding para usuario:', userId)
+      
+      // Obtener el perfil del usuario
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
         .single()
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No se encontró empresa para este usuario
-          console.log('No se encontró empresa para el usuario:', userId)
-          return { hasEmpresa: false, isOnboardingComplete: false }
-        }
-        // Otros errores
-        console.error('Error al verificar empresa:', error.message)
-        return { hasEmpresa: false, isOnboardingComplete: false }
-      }
-
-      if (!empresa) {
-        console.log('No se encontró empresa para el usuario:', userId)
-        return { hasEmpresa: false, isOnboardingComplete: false }
-      }
-
-      console.log('Empresa encontrada:', empresa)
+      
+      if (profileError) throw profileError
+      
+      // Verificar si el usuario tiene una empresa asociada
+      const { data: empresas, error: empresasError } = await supabase
+        .from('empresas')
+        .select('*')
+        .eq('user_id', userId)
+      
+      if (empresasError) throw empresasError
+      
+      const hasEmpresa = empresas && empresas.length > 0
+      const empresa = hasEmpresa ? empresas[0] : null
+      
+      console.log('Resultado de verificación de onboarding:', {
+        hasEmpresa,
+        isOnboardingComplete: empresa?.is_onboarding_complete || false
+      })
+      
       return {
-        hasEmpresa: true,
-        isOnboardingComplete: empresa.onboarding === 'Completo',
-        empresa_id: empresa.id
+        hasEmpresa,
+        isOnboardingComplete: empresa?.is_onboarding_complete || false,
+        empresa
       }
     } catch (error) {
       console.error('Error al verificar onboarding:', error)
-      return { hasEmpresa: false, isOnboardingComplete: false }
+      return {
+        hasEmpresa: false,
+        isOnboardingComplete: false,
+        empresa: null
+      }
     }
   }
 
@@ -336,7 +343,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         metadata: data.user.user_metadata,
         app_metadata: {
           provider: data.user.app_metadata?.provider,
-          empresa_id: onboardingStatus.empresa_id
+          empresa_id: onboardingStatus.empresa?.id
         }
       }
 
