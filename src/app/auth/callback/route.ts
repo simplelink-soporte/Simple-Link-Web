@@ -6,12 +6,18 @@ import { AUTH_CONFIG } from '@/config/auth.config'
 import type { ClientType } from '@/config/auth.config'
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get('code')
-  const clientType = (requestUrl.searchParams.get('client_type') || 'client') as ClientType
-  const config = AUTH_CONFIG[clientType]
+  try {
+    const requestUrl = new URL(request.url)
+    const code = requestUrl.searchParams.get('code')
+    const clientType = (requestUrl.searchParams.get('client_type') || 'client') as ClientType
+    const config = AUTH_CONFIG[clientType]
 
-  if (code) {
+    // Si no hay código, redirigir al login
+    if (!code) {
+      console.error('No se encontró código de autorización')
+      return NextResponse.redirect(new URL(config.routes.signIn, requestUrl.origin))
+    }
+
     const cookieStore = cookies()
     const supabase = createRouteHandlerClient<Database>({ 
       cookies: () => cookieStore
@@ -23,22 +29,20 @@ export async function GET(request: Request) {
     })
     
     // Exchange the code for a session
-    await supabase.auth.exchangeCodeForSession(code)
-
-    // Verificar el rol del usuario según el contexto
-    const { data: { user } } = await supabase.auth.getUser()
-    const userRole = user?.app_metadata?.role
-
-    // Si el rol no coincide con el contexto, redirigir a unauthorized
-    if (clientType === 'admin' && userRole !== 'admin' && userRole !== 'staff') {
-      return NextResponse.redirect(new URL(config.routes.unauthorized, requestUrl.origin))
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (error || !data.session) {
+      console.error('Error al intercambiar código por sesión:', error)
+      return NextResponse.redirect(new URL(`${config.routes.signIn}?error=callback`, requestUrl.origin))
     }
 
-    if (clientType === 'client' && userRole !== 'client') {
-      return NextResponse.redirect(new URL(config.routes.unauthorized, requestUrl.origin))
-    }
+    // Asegurarnos de que la sesión se guarde correctamente
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // URL to redirect to after sign in process completes
+    return NextResponse.redirect(new URL(config.routes.afterSignIn, requestUrl.origin))
+  } catch (error) {
+    console.error('Error en el callback de autenticación:', error)
+    return NextResponse.redirect(new URL('/admin/login?error=callback', request.url))
   }
-
-  // URL to redirect to after sign in process completes
-  return NextResponse.redirect(new URL(config.routes.afterSignIn, requestUrl.origin))
-} 
+}
