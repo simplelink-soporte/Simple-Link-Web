@@ -18,9 +18,9 @@ export const AUTH_CONFIG = {
       ]
     },
     cookies: {
-      name: 'sb-admin-auth-token',
+      name: 'sb-auth-token', // Nombre unificado para todas las cookies
       options: {
-        path: '/admin',
+        path: '/',  // Path global para que funcione en todas las rutas
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
@@ -31,9 +31,9 @@ export const AUTH_CONFIG = {
     storage: {
       prefix: 'sl-admin',
       keys: {
-        session: 'sl-admin-session',
-        user: 'sl-admin-user',
-        organization: 'sl-admin-organization',
+        session: 'sl-session', // Clave unificada
+        user: 'sl-user', // Clave unificada
+        organization: 'sl-organization', // Clave unificada
         currentBranch: 'currentBranchId',
         empresa: {
           id: 'current_empresa_id',
@@ -54,9 +54,9 @@ export const AUTH_CONFIG = {
       protected: ['/clases/*']
     },
     cookies: {
-      name: 'sb-client-auth-token',
+      name: 'sb-auth-token', // Mismo nombre que admin para unificar
       options: {
-        path: '/clases',
+        path: '/', // Path global
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
@@ -67,9 +67,9 @@ export const AUTH_CONFIG = {
     storage: {
       prefix: 'sl-client',
       keys: {
-        session: 'sl-client-session',
-        user: 'sl-client-user',
-        organization: 'sl-client-organization'
+        session: 'sl-session', // Clave unificada
+        user: 'sl-user', // Clave unificada
+        organization: 'sl-organization' // Clave unificada
       }
     }
   }
@@ -99,4 +99,4 @@ export const PUBLIC_ROUTES = [
   '/clases/registro',
   '/clases/auth/callback',
   '/unauthorized'
-] as const 
+] as const

@@ -11,6 +11,14 @@ export async function GET(request: Request) {
     const code = requestUrl.searchParams.get('code')
     const clientType = (requestUrl.searchParams.get('client_type') || 'client') as ClientType
     const config = AUTH_CONFIG[clientType]
+    
+    // Log para depuración
+    console.log('Auth callback iniciado:', { 
+      url: request.url,
+      origin: requestUrl.origin,
+      clientType,
+      hasCode: !!code
+    })
 
     // Si no hay código, redirigir al login
     if (!code) {
@@ -36,13 +44,36 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL(`${config.routes.signIn}?error=callback`, requestUrl.origin))
     }
 
+    // Log para depuración
+    console.log('Sesión creada exitosamente:', { 
+      userId: data.session.user.id,
+      redirectTo: config.routes.afterSignIn
+    })
+
     // Asegurarnos de que la sesión se guarde correctamente
     await new Promise(resolve => setTimeout(resolve, 1000))
 
+    // Determinar la URL de redirección basada en el origen de la solicitud
+    let redirectUrl: URL;
+    
+    // Si estamos en el subdominio app, usar la configuración correspondiente
+    if (requestUrl.hostname.startsWith('app.')) {
+      redirectUrl = new URL(config.routes.afterSignIn, requestUrl.origin)
+    } 
+    // Si estamos en www o el dominio principal, redirigir según el tipo de cliente
+    else {
+      // Para la landing page, redirigir al subdominio app con la ruta correcta
+      const appDomain = `https://app.${requestUrl.hostname.replace('www.', '')}`
+      redirectUrl = new URL(config.routes.afterSignIn, appDomain)
+    }
+
+    console.log('Redirigiendo a:', redirectUrl.toString())
+    
     // URL to redirect to after sign in process completes
-    return NextResponse.redirect(new URL(config.routes.afterSignIn, requestUrl.origin))
+    return NextResponse.redirect(redirectUrl)
   } catch (error) {
     console.error('Error en el callback de autenticación:', error)
+    // Redirigir a la página de login con un mensaje de error
     return NextResponse.redirect(new URL('/admin/login?error=callback', request.url))
   }
 }
