@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { stripeConnectionService, StripeConnection } from '@/services/stripeConnectionService';
 
 interface StripeConfig {
   stripeAccountId: string | null;
@@ -10,25 +10,22 @@ interface StripeConfig {
   error: Error | null;
   charges_enabled: boolean;
   is_active: boolean;
-}
-
-interface StripeConnectionResponse {
-  id?: string;
-  stripe_account_id?: string;
-  charges_enabled?: boolean;
-  account_status?: string;
-  is_active?: boolean;
+  isArgentina?: boolean;
+  requiresStripeVerification?: boolean;
+  countryCode?: string | null;
 }
 
 export function useStripeConfig(empresaId: string | null) {
-  const supabase = createClientComponentClient();
   const [config, setConfig] = useState<StripeConfig>({
     stripeAccountId: null,
     isConnected: false,
     isLoading: true,
     error: null,
     charges_enabled: false,
-    is_active: false
+    is_active: false,
+    isArgentina: false,
+    requiresStripeVerification: true,
+    countryCode: null
   });
 
   useEffect(() => {
@@ -49,36 +46,56 @@ export function useStripeConfig(empresaId: string | null) {
       }
 
       try {
-        console.log('[StripeConfig] Iniciando búsqueda de configuración:', { empresaId });
-
-        // Usar la función RPC pública
-        const { data, error } = await supabase
-          .rpc('get_public_stripe_connection', {
-            p_empresa_id: empresaId
-          });
-
-        if (error) throw error;
-
-        if (!data || data.error) {
-          throw new Error(data?.error || 'No se encontró configuración de Stripe');
+        console.log('[StripeConfig] Iniciando verificación con servicio centralizado:', { empresaId });
+        
+        // Usamos el servicio centralizado para obtener la conexión
+        // Este servicio verifica primero el país y sólo consulta Stripe si no es Argentina
+        const connection = await stripeConnectionService.getConnection(empresaId);
+        
+        if (!connection) {
+          throw new Error('No se encontró conexión Stripe activa');
         }
-
-        console.log('[StripeConfig] Configuración encontrada:', {
+        
+        // Si es Argentina, el servicio devuelve un objeto especial con valores predeterminados
+        if (connection.isArgentina) {
+          console.log('[StripeConfig] Empresa argentina confirmada, no se requiere Stripe:', { empresaId });
+          
+          if (mounted) {
+            setConfig({
+              stripeAccountId: null,
+              isConnected: false,
+              isLoading: false,
+              error: null,
+              charges_enabled: false,
+              is_active: false,
+              isArgentina: true,
+              requiresStripeVerification: false,
+              countryCode: connection.country || null
+            });
+          }
+          return;
+        }
+        
+        // Para empresas no-argentinas, configuramos Stripe normalmente
+        console.log('[StripeConfig] Configuración de Stripe encontrada para empresa no-argentina:', {
           empresaId,
-          stripeAccountId: data.stripe_account_id,
-          status: data.account_status,
-          charges_enabled: data.charges_enabled,
-          is_active: data.is_active
+          stripeAccountId: connection.stripe_account_id,
+          status: connection.account_status,
+          charges_enabled: connection.charges_enabled,
+          is_active: connection.account_status === 'active'
         });
 
         if (mounted) {
           setConfig({
-            stripeAccountId: data.stripe_account_id,
+            stripeAccountId: connection.stripe_account_id,
             isConnected: true,
             isLoading: false,
             error: null,
-            charges_enabled: data.charges_enabled,
-            is_active: data.is_active
+            charges_enabled: connection.charges_enabled,
+            is_active: connection.account_status === 'active',
+            isArgentina: false,
+            requiresStripeVerification: true,
+            countryCode: connection.country || null
           });
         }
 
@@ -106,7 +123,7 @@ export function useStripeConfig(empresaId: string | null) {
       mounted = false;
       clearTimeout(timeoutId);
     };
-  }, [empresaId, supabase]);
+  }, [empresaId]);
 
   return config;
-} 
+}

@@ -1,0 +1,208 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Pasarela de pago activa:",
+      {
+        "activeGateway": "stripe",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "mercadoPagoUserId": null,
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Pasarela de pago activa:",
+      {
+        "activeGateway": "stripe",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "mercadoPagoUserId": null,
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-29T10:03:15.993Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-29T10:03:16.212Z",
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [
+          {
+            "id": "pm_1R3JMZC4oQv4vCtFtcQO3lNA",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 9,
+            "expYear": 2060
+          },
+          {
+            "id": "pm_1R1MaQC4oQv4vCtFcCNCgIee",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 2,
+            "expYear": 2033
+          },
+          {
+            "id": "pm_1Qy2jKC4oQv4vCtFbLHgXCs5",
+            "brand": "mastercard",
+            "last4": "4444",
+            "expMonth": 5,
+            "expYear": 2032
+          },
+          {
+            "id": "pm_1QtY3rC4oQv4vCtF9xVlSf3x",
+            "brand": "visa",
+            "last4": "4242",
+            "expMonth": 4,
+            "expYear": 2029
+          }
+        ],
+        "count": 4,
+        "customerData": {
+          "stripeCustomerId": "cus_Rn8J5Wbe3ag16g",
+          "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+          "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a",
+          "lastUsed": "2025-03-29T10:03:16.125Z",
+          "status": "active"
+        },
+        "customerId": "cus_Rn8J5Wbe3ag16g",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] Actualizando customerId desde payment-methods:",
+      "cus_Rn8J5Wbe3ag16g"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 4,
+        "customerId": "cus_Rn8J5Wbe3ag16g"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 4,
+        "lastUpdate": "2025-03-29T10:03:16.349Z",
+        "retryCount": 0
+      }
+    ]
+  }
+]

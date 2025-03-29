@@ -1,0 +1,92 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener customer_id de MercadoPago:",
+      {}
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    ]
+  }
+]

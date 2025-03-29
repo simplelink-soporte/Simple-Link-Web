@@ -20,6 +20,7 @@ import {
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Slider } from "@/components/ui/slider"
+import { usePaymentGatewaysVerification } from '@/hooks/usePaymentGatewaysVerification'
 
 interface CustomSlugInputPopoverProps {
   onUpdate: (slug: string, paymentOptions?: string[], paymentPercentages?: Record<string, number>) => void
@@ -44,54 +45,34 @@ export function CustomSlugInputPopover({
   const [isOpen, setIsOpen] = useState(false)
   const [paymentOptions, setPaymentOptions] = useState<string[]>(defaultPaymentOptions)
   const [paymentPercentages, setPaymentPercentages] = useState<Record<string, number>>(defaultPaymentPercentages)
-  const { loadStripeConnection } = useOrganization()
-  const [stripeConnection, setStripeConnection] = useState<{
-    stripe_account_id: string;
-    charges_enabled: boolean;
-    account_status: string;
-  } | null>(null);
-  const [isLoadingStripe, setIsLoadingStripe] = useState(false);
-  const [stripeError, setStripeError] = useState<string | null>(null);
-  const [stripeVerified, setStripeVerified] = useState(false);
+  
+  // Usar el hook de verificación de pasarelas de pago
+  const {
+    hasValidPaymentGateway,
+    isLoadingPaymentGateway,
+    paymentGatewayError,
+    checkStripeConnection,
+    checkMercadoPagoConnection,
+    resetVerifications,
+    verifyAll
+  } = usePaymentGatewaysVerification();
 
   const basePath = linkType === 'classes' ? '/clases/' : '/reservas/'
 
-  const checkStripeConnection = async () => {
-    // Si ya verificamos anteriormente y no hay conexión válida, no necesitamos verificar de nuevo
-    if (stripeVerified && !isValidStripeConnection(stripeConnection)) {
-      return false;
+  // Efecto para gestionar la verificación de conexiones basado en el estado del popover
+  useEffect(() => {
+    // Cuando el popover se abre y es de tipo bookings, verificar ambas conexiones
+    if (isOpen && linkType === 'bookings') {
+      console.log(" Verificando conexiones de pago al abrir popover");
+      verifyAll();
     }
     
-    // Si ya verificamos anteriormente y hay conexión válida, no necesitamos verificar de nuevo
-    if (stripeVerified && isValidStripeConnection(stripeConnection)) {
-      return true;
+    // Cuando el popover se cierra, reiniciar los estados de verificación
+    if (!isOpen) {
+      console.log(" Reiniciando estados de verificación al cerrar popover");
+      resetVerifications();
     }
-    
-    setIsLoadingStripe(true);
-    setStripeError(null);
-    
-    try {
-      const connection = await loadStripeConnection();
-      setStripeConnection(connection);
-      setStripeVerified(true);
-      
-      return isValidStripeConnection(connection);
-    } catch (error) {
-      console.error("Error al verificar la conexión de Stripe:", error);
-      setStripeError("Error al verificar la conexión de Stripe");
-      setStripeConnection(null);
-      return false;
-    } finally {
-      setIsLoadingStripe(false);
-    }
-  };
-
-  const isValidStripeConnection = (connection: any) => {
-    return connection && 
-           connection.stripe_account_id && 
-           connection.charges_enabled && 
-           connection.account_status === 'active';
-  };
+  }, [isOpen, linkType, verifyAll, resetVerifications]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,7 +87,7 @@ export function CustomSlugInputPopover({
     }
   }
 
-  const optionsRequiringStripe = ["garantia", "sena", "completo"];
+  const optionsRequiringPaymentGateway = ["garantia", "sena", "completo"];
 
   const togglePaymentOption = async (value: string) => {
     // Si está intentando desmarcar una opción, permitirlo siempre
@@ -115,11 +96,16 @@ export function CustomSlugInputPopover({
       return;
     }
     
-    // Si está intentando marcar una opción que requiere Stripe
-    if (optionsRequiringStripe.includes(value)) {
-      const isValid = await checkStripeConnection();
+    // Si está intentando marcar una opción que requiere pasarela de pago
+    if (optionsRequiringPaymentGateway.includes(value)) {
+      // Verificar ambas conexiones en paralelo
+      const [stripeValid, mercadoPagoValid] = await Promise.all([
+        checkStripeConnection(),
+        checkMercadoPagoConnection()
+      ]);
       
-      if (!isValid) {
+      // Permitir la opción si al menos una conexión es válida
+      if (!stripeValid && !mercadoPagoValid) {
         // No permitir seleccionar la opción si no hay conexión válida
         return;
       }
@@ -201,27 +187,27 @@ export function CustomSlugInputPopover({
                   <p className="text-xs text-gray-500">Puedes seleccionar múltiples opciones</p>
                 </div>
                 
-                {isLoadingStripe && (
+                {isLoadingPaymentGateway && (
                   <div className="flex items-center justify-center space-x-2 py-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-500" />
-                    <p className="text-xs text-gray-500">Verificando configuración de Stripe...</p>
+                    <p className="text-xs text-gray-500">Verificando configuración de pasarelas de pago...</p>
                   </div>
                 )}
 
-                {stripeError && (
+                {paymentGatewayError && (
                   <Alert variant="destructive" className="py-2">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="text-xs">
-                      {stripeError}
+                      {paymentGatewayError}
                     </AlertDescription>
                   </Alert>
                 )}
 
-                {stripeVerified && !isValidStripeConnection(stripeConnection) && !isLoadingStripe && (
+                {!isLoadingPaymentGateway && !hasValidPaymentGateway && (
                   <Alert className="bg-amber-50 text-amber-800 border-amber-200 py-2">
                     <AlertCircle className="h-4 w-4 text-amber-600" />
                     <AlertDescription className="text-xs">
-                      Para habilitar opciones de pago con tarjeta, debe conectar su cuenta de Stripe en la configuración.
+                      Para habilitar opciones de pago con tarjeta, debe conectar su cuenta de Stripe o Mercado Pago en la configuración.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -261,13 +247,13 @@ export function CustomSlugInputPopover({
                         checked={paymentOptions.includes("garantia")}
                         onCheckedChange={() => togglePaymentOption("garantia")}
                         className="mt-1"
-                        disabled={stripeVerified && !isValidStripeConnection(stripeConnection) || isLoadingStripe}
+                        disabled={!hasValidPaymentGateway || isLoadingPaymentGateway}
                       />
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center justify-between">
                           <Label 
                             htmlFor="garantia" 
-                            className={`text-sm font-medium ${stripeVerified && !isValidStripeConnection(stripeConnection) ? 'text-gray-400' : ''}`}
+                            className={`text-sm font-medium ${!hasValidPaymentGateway ? 'text-gray-400' : ''}`}
                           >
                             Garantía con tarjeta
                           </Label>
@@ -279,8 +265,8 @@ export function CustomSlugInputPopover({
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-72 text-xs">
                               <p>Se solicita tarjeta como garantía que se cobrará en caso de no asistencia</p>
-                              {stripeVerified && !isValidStripeConnection(stripeConnection) && (
-                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe conectada</p>
+                              {!hasValidPaymentGateway && !isLoadingPaymentGateway && (
+                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe o Mercado Pago conectada</p>
                               )}
                             </TooltipContent>
                           </Tooltip>
@@ -317,13 +303,13 @@ export function CustomSlugInputPopover({
                         checked={paymentOptions.includes("sena")}
                         onCheckedChange={() => togglePaymentOption("sena")}
                         className="mt-1"
-                        disabled={stripeVerified && !isValidStripeConnection(stripeConnection) || isLoadingStripe}
+                        disabled={!hasValidPaymentGateway || isLoadingPaymentGateway}
                       />
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center justify-between">
                           <Label 
                             htmlFor="sena" 
-                            className={`text-sm font-medium ${stripeVerified && !isValidStripeConnection(stripeConnection) ? 'text-gray-400' : ''}`}
+                            className={`text-sm font-medium ${!hasValidPaymentGateway ? 'text-gray-400' : ''}`}
                           >
                             Pago de seña
                           </Label>
@@ -335,8 +321,8 @@ export function CustomSlugInputPopover({
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-72 text-xs">
                               <p>El cliente paga un porcentaje por adelantado como reserva</p>
-                              {stripeVerified && !isValidStripeConnection(stripeConnection) && (
-                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe conectada</p>
+                              {!hasValidPaymentGateway && !isLoadingPaymentGateway && (
+                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe o Mercado Pago conectada</p>
                               )}
                             </TooltipContent>
                           </Tooltip>
@@ -373,13 +359,13 @@ export function CustomSlugInputPopover({
                         checked={paymentOptions.includes("completo")}
                         onCheckedChange={() => togglePaymentOption("completo")}
                         className="mt-1"
-                        disabled={stripeVerified && !isValidStripeConnection(stripeConnection) || isLoadingStripe}
+                        disabled={!hasValidPaymentGateway || isLoadingPaymentGateway}
                       />
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center justify-between">
                           <Label 
                             htmlFor="completo" 
-                            className={`text-sm font-medium ${stripeVerified && !isValidStripeConnection(stripeConnection) ? 'text-gray-400' : ''}`}
+                            className={`text-sm font-medium ${!hasValidPaymentGateway ? 'text-gray-400' : ''}`}
                           >
                             Pago completo
                           </Label>
@@ -391,8 +377,8 @@ export function CustomSlugInputPopover({
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-72 text-xs">
                               <p>El cliente paga el monto total por adelantado</p>
-                              {stripeVerified && !isValidStripeConnection(stripeConnection) && (
-                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe conectada</p>
+                              {!hasValidPaymentGateway && !isLoadingPaymentGateway && (
+                                <p className="text-amber-600 mt-1">Requiere cuenta de Stripe o Mercado Pago conectada</p>
                               )}
                             </TooltipContent>
                           </Tooltip>

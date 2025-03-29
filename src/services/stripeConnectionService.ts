@@ -12,14 +12,100 @@ export interface StripeConnection {
   created_at: string
   updated_at: string
   last_webhook_received_at: string | null
+  country?: string | null
+  isArgentina?: boolean
+}
+
+export interface CountryVerificationResult {
+  country: string | null
+  isArgentina: boolean
+  requiresStripeVerification: boolean
 }
 
 class StripeConnectionService {
   /**
+   * Verifica el país de una empresa y determina si requiere integración con Stripe
+   * @param empresaId ID de la empresa
+   * @returns Resultado de la verificación con información del país
+   */
+  async verifyCountry(empresaId: string): Promise<CountryVerificationResult> {
+    try {
+      console.log('[StripeConnectionService] Verificando país de empresa:', { empresaId });
+      
+      const { data, error } = await supabase
+        .from('empresas')
+        .select('country')
+        .eq('id', empresaId)
+        .single();
+        
+      if (error) {
+        console.error('[StripeConnectionService] Error al verificar país:', error);
+        // Si hay error, asumimos que necesita verificación por seguridad
+        return {
+          country: null,
+          isArgentina: false,
+          requiresStripeVerification: true
+        };
+      }
+      
+      const country = data?.country || null;
+      const isArgentina = country?.toLowerCase() === 'argentina';
+      const requiresStripeVerification = !isArgentina;
+      
+      console.log('[StripeConnectionService] Resultado verificación de país:', {
+        empresaId,
+        country,
+        isArgentina,
+        requiresStripeVerification
+      });
+      
+      return {
+        country,
+        isArgentina,
+        requiresStripeVerification
+      };
+    } catch (error) {
+      console.error('[StripeConnectionService] Error en verifyCountry:', error);
+      // Si hay excepción, asumimos que necesita verificación por seguridad
+      return {
+        country: null,
+        isArgentina: false,
+        requiresStripeVerification: true
+      };
+    }
+  }
+
+  /**
    * Obtiene la conexión de Stripe para una empresa específica
+   * SOLO SI no es de Argentina, caso contrario retorna null
    */
   async getConnection(empresaId: string): Promise<StripeConnection | null> {
     try {
+      // PRIMERO verificamos el país
+      const { isArgentina, country, requiresStripeVerification } = await this.verifyCountry(empresaId);
+      
+      // Si es Argentina, NO consultamos Stripe y retornamos null
+      if (isArgentina) {
+        console.log('[StripeConnectionService] Empresa argentina detectada, omitiendo consulta a Stripe:', { empresaId });
+        return {
+          id: 'no-stripe-for-argentina',
+          empresa_id: empresaId,
+          stripe_account_id: 'no-stripe-required',
+          stripe_account_email: null,
+          account_status: 'disabled', // No aplicable para Argentina
+          charges_enabled: false,
+          payouts_enabled: false,
+          requirements: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          last_webhook_received_at: null,
+          country,
+          isArgentina: true
+        };
+      }
+      
+      console.log('[StripeConnectionService] Consultando conexión Stripe para empresa no-argentina:', { empresaId });
+      
       const { data, error } = await supabase
         .from('stripe_connections')
         .select('*')
@@ -27,13 +113,18 @@ class StripeConnectionService {
         .single()
 
       if (error) {
-        console.error('Error al obtener la conexión de Stripe:', error)
+        console.error('[StripeConnectionService] Error al obtener la conexión de Stripe:', error)
         return null
       }
 
-      return data
+      // Añadir información de país al resultado
+      return {
+        ...data,
+        country,
+        isArgentina: false
+      }
     } catch (error) {
-      console.error('Error en getConnection:', error)
+      console.error('[StripeConnectionService] Error en getConnection:', error)
       return null
     }
   }
@@ -49,13 +140,13 @@ class StripeConnectionService {
         .eq('id', connectionId)
 
       if (error) {
-        console.error('Error al eliminar la conexión de Stripe:', error)
+        console.error('[StripeConnectionService] Error al eliminar la conexión de Stripe:', error)
         return false
       }
 
       return true
     } catch (error) {
-      console.error('Error en deleteConnection:', error)
+      console.error('[StripeConnectionService] Error en deleteConnection:', error)
       return false
     }
   }
@@ -74,16 +165,16 @@ class StripeConnectionService {
         .eq('id', connectionId)
 
       if (error) {
-        console.error('Error al actualizar el estado de la conexión:', error)
+        console.error('[StripeConnectionService] Error al actualizar el estado de la conexión:', error)
         return false
       }
 
       return true
     } catch (error) {
-      console.error('Error en updateConnectionStatus:', error)
+      console.error('[StripeConnectionService] Error en updateConnectionStatus:', error)
       return false
     }
   }
 }
 
-export const stripeConnectionService = new StripeConnectionService() 
+export const stripeConnectionService = new StripeConnectionService()

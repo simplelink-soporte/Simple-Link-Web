@@ -1,0 +1,184 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { CardSetupForm } from '@/components/preview/steps/summary/components/CardSetupForm';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { CardItem } from './shared/CardItem';
+import { AddCardButton } from './shared/AddCardButton';
+import { StripeCardListProps, StoredCard } from './shared/types';
+
+// Clave pública de Stripe
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string;
+
+/**
+ * Implementación de CardList específica para Stripe
+ * Este componente maneja la lógica y UI de tarjetas de Stripe
+ */
+export function StripeCardList({
+  cards = [],
+  selectedCardId,
+  onSelect,
+  onAddCard,
+  onDeleteCard,
+  isExpanded = false,
+  isLoading = false,
+  showCardForm = false,
+  onCardSetupSuccess,
+  onCardSetupError,
+  onCardSetupBack,
+  theme = 'light',
+  stripeAccountId,
+  viewType = 'desktop'
+}: StripeCardListProps) {
+  // Estado local para controlar la animación de expansión
+  const [height, setHeight] = useState<number | 'auto'>(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Efecto para controlar la altura del contenedor para la animación
+  useEffect(() => {
+    if (contentRef.current && isExpanded) {
+      setHeight(contentRef.current.scrollHeight);
+    } else {
+      setHeight(0);
+    }
+  }, [isExpanded, cards.length, showCardForm]);
+
+  // Componente para el Stripe Card Setup Form
+  function CardSetupWrapper({
+    onSuccess,
+    onError,
+    onBack,
+    stripeAccountId,
+    theme = 'light',
+    viewType = 'desktop'
+  }: {
+    onSuccess: (paymentMethodId: string) => void;
+    onError: (error: any) => void;
+    onBack: () => void;
+    stripeAccountId?: string;
+    theme?: 'light' | 'dark';
+    viewType?: 'mobile' | 'desktop';
+  }) {
+    const stripePromise = loadStripe(stripeKey, stripeAccountId ? {
+      stripeAccount: stripeAccountId
+    } : undefined);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className={cn(
+          "p-4 rounded-lg border",
+          viewType === 'mobile' ? "w-full" : "",
+          theme === 'dark'
+            ? "bg-neutral-900 border-neutral-800"
+            : "bg-white border-gray-200"
+        )}
+      >
+        <Elements stripe={stripePromise}>
+          <div className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <h3 className={cn(
+                "text-base font-medium",
+                theme === 'dark' ? "text-gray-200" : "text-gray-700"
+              )}>
+                Agregar Nueva Tarjeta
+              </h3>
+              <p className={cn(
+                "text-xs",
+                theme === 'dark' ? "text-gray-400" : "text-gray-500"
+              )}>
+                Completa los datos de tu tarjeta para guardarla de forma segura
+              </p>
+            </div>
+            
+            <CardSetupForm 
+              onSuccess={onSuccess}
+              onError={onError}
+              onBack={onBack}
+              theme={theme}
+            />
+            
+            <Button
+              onClick={onBack}
+              size="sm"
+              variant="ghost"
+              className="mt-2 text-xs"
+            >
+              <ArrowLeft className="h-3 w-3 mr-1" />
+              Volver
+            </Button>
+          </div>
+        </Elements>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="relative w-full">
+      {/* Lista de tarjetas */}
+      <motion.div
+        className="overflow-hidden"
+        style={{ height: isExpanded ? 'auto' : '0px' }}
+      >
+        <AnimatePresence>
+          <motion.div
+            ref={contentRef}
+            initial={false}
+            className="space-y-1"
+          >
+            {/* Mostrar Stripe Card Setup Form cuando es necesario */}
+            {showCardForm && onCardSetupSuccess && onCardSetupError && onCardSetupBack && (
+              <CardSetupWrapper
+                onSuccess={onCardSetupSuccess}
+                onError={onCardSetupError}
+                onBack={onCardSetupBack}
+                stripeAccountId={stripeAccountId}
+                theme={theme}
+                viewType={viewType}
+              />
+            )}
+            
+            {/* Mostrar tarjetas guardadas */}
+            {!showCardForm && (
+              <>
+                {cards.map((card) => (
+                  <CardItem
+                    key={card.id}
+                    card={card}
+                    isSelected={card.id === selectedCardId}
+                    onClick={() => onSelect(card)}
+                    onDelete={onDeleteCard ? () => onDeleteCard(card.id) : undefined}
+                    theme={theme}
+                    viewType={viewType}
+                  />
+                ))}
+                
+                {/* Botón para agregar tarjeta */}
+                <AddCardButton
+                  onClick={onAddCard}
+                  theme={theme}
+                  viewType={viewType}
+                />
+              </>
+            )}
+            
+            {/* Estado de carga */}
+            {isLoading && (
+              <div className="flex justify-center items-center py-4">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="ml-2 text-sm text-gray-500">Cargando tarjetas...</span>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+    </div>
+  );
+}

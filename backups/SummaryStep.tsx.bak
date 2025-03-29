@@ -461,7 +461,7 @@ export function SummaryStep({
           empresaId: empresaId || '',
           paymentMethod,
           paymentStatus,
-          paymentType: selectedPaymentMethod as any, 
+          paymentType: selectedPaymentMethod,
           stripePaymentMethodId: selectedCardMethod?.id,
           guaranteePercentage: selectedPaymentMethod === 'guarantee' ? guaranteePercentage : undefined,
           depositAmount: paymentAmount,  
@@ -760,8 +760,6 @@ export function SummaryStep({
                   viewType={isMobile ? "mobile" : "desktop"}
                   expandCardList={!selectedCardMethod}
                   stripeAccountId={stripeAccountId || ''}
-                  mercadoPagoUserId={mercadoPagoUserId || ''}
-                  empresaId={empresaId || ''}
                 />
               </div>
             </>
@@ -769,7 +767,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef, stripeAccountId, mercadoPagoUserId, empresaId]);
+  }, [selectedPaymentMethod, selectedCardMethod, isMobile, containerRef, stripeAccountId]);
 
   return (
     <div>
