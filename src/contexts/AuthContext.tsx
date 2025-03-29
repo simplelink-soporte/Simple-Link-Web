@@ -372,8 +372,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Agregar parámetro para identificar el tipo de cliente
       const clientType = isClassesContext ? 'client' : 'admin'
       
-      // Usar URL absoluta para forzar la redirección al dominio correcto
-      const redirectUrl = `https://app.simple-link.com/auth/callback?client_type=${clientType}`
+      // Usar URL relativa para que funcione en cualquier dominio
+      const redirectUrl = `/auth/callback?client_type=${clientType}`
+      
+      console.log('Iniciando autenticación con Google, redirigiendo a:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

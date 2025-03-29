@@ -27,12 +27,12 @@ export default function AuthCallbackPage() {
         
         if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
           console.log('Usuario requiere onboarding')
-          window.location.href = '/admin/onboarding'
+          router.push('/admin/onboarding')
           return
         }
 
         console.log('Usuario verificado, redirigiendo al panel...')
-        window.location.href = '/admin/dashboard/bookings/reservations'
+        router.push('/admin/dashboard/bookings/reservations')
       } catch (error) {
         console.error('Error al verificar onboarding:', error)
         toast.error('Error al verificar el estado de tu cuenta')
