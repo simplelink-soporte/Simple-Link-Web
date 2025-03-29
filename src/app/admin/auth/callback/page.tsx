@@ -1,55 +1,37 @@
-"use client"
+'use client'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const { checkEmpresaOnboarding } = useAuth()
 
   useEffect(() => {
-    let isProcessing = false
-
-    // Función para procesar la autenticación
-    const processAuth = async (userId: string) => {
-      if (isProcessing) return
-      isProcessing = true
-
-      try {
-        console.log('Verificando onboarding para usuario:', userId)
-        const onboardingStatus = await checkEmpresaOnboarding(userId)
-        
-        if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
-          console.log('Usuario requiere onboarding')
-          window.location.href = '/admin/onboarding'
-          return
-        }
-
-        console.log('Usuario verificado, redirigiendo al panel...')
-        window.location.href = '/admin/dashboard/bookings/reservations'
-      } catch (error) {
-        console.error('Error al verificar onboarding:', error)
-        toast.error('Error al verificar el estado de tu cuenta')
-        router.push('/admin/login')
-      } finally {
-        isProcessing = false
-      }
-    }
-
     // Escuchar cambios en el estado de autenticación
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Callback - Estado de autenticación:', event)
       
-      if (event === 'SIGNED_IN' && session?.user) {
-        await processAuth(session.user.id)
+      if (event === 'SIGNED_IN') {
+        // Verificar que el usuario tenga rol de admin
+        const userRole = session?.user?.app_metadata?.role || 'client'
+        
+        if (userRole !== 'admin') {
+          console.log('Usuario sin permisos de admin')
+          await supabase.auth.signOut()
+          toast.error('No tienes permisos de administrador')
+          router.push('/admin/login')
+          return
+        }
+
+        console.log('Redirigiendo al panel...')
+        window.location.href = '/admin/dashboard/bookings/reservations'
       }
 
       if (event === 'SIGNED_OUT') {
@@ -58,40 +40,49 @@ export default function AuthCallbackPage() {
       }
     })
 
-    // Verificar estado inicial después de un breve delay
+    // Verificar estado inicial
     const checkInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       
-      if (session?.user) {
-        await processAuth(session.user.id)
-      } else {
+      if (!session) {
         console.log('No hay sesión activa')
         router.push('/admin/login')
+        return
       }
+
+      const userRole = session.user?.app_metadata?.role || 'client'
+      if (userRole !== 'admin') {
+        console.log('Usuario sin permisos de admin')
+        await supabase.auth.signOut()
+        toast.error('No tienes permisos de administrador')
+        router.push('/admin/login')
+        return
+      }
+
+      console.log('Sesión activa, redirigiendo...')
+      window.location.href = '/admin/dashboard/bookings/reservations'
     }
 
-    // Dar tiempo para que la sesión se establezca
+    // Verificar sesión después de un breve delay
     const timer = setTimeout(checkInitialSession, 1000)
 
     return () => {
       subscription.unsubscribe()
       clearTimeout(timer)
     }
-  }, [router, supabase, checkEmpresaOnboarding])
+  }, [supabase, router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-        <h1 className="text-2xl font-semibold mb-2">Verificando cuenta</h1>
-        <p className="text-gray-500 mb-4">Esto puede tomar unos momentos...</p>
-        <Button
-          variant="outline"
-          onClick={() => router.push('/admin/login')}
-        >
-          Volver al inicio de sesión
-        </Button>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-4 max-w-sm mx-auto p-6">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">
+          Verificando autenticación...
+        </p>
+        <p className="text-xs text-gray-400">
+          Serás redirigido automáticamente...
+        </p>
       </div>
     </div>
   )
-}
+} 
