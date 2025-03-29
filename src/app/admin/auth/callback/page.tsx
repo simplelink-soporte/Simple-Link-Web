@@ -4,118 +4,103 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
-import { toast } from 'sonner'
+import { useAppStore } from '@/store/appStore'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
   const supabase = createClientComponentClient()
   const { checkEmpresaOnboarding } = useAuth()
-  const [error, setError] = useState<string | null>(null)
+  const { initialize, isInitialized } = useAppStore()
+  const [isProcessing, setIsProcessing] = useState(true)
 
   useEffect(() => {
-    let isProcessing = false
+    // Evitar múltiples ejecuciones
+    if (!isProcessing) return
 
-    // Función para procesar la autenticación
-    const processAuth = async (userId: string) => {
-      if (isProcessing) return
-      isProcessing = true
-
+    const processAuth = async () => {
       try {
-        console.log('Verificando onboarding para usuario:', userId)
-        const onboardingStatus = await checkEmpresaOnboarding(userId)
+        // Obtener la sesión actual
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          console.error('No se encontró sesión activa')
+          router.replace('/admin/login')
+          setIsProcessing(false)
+          return
+        }
+
+        // Recuperar la acción de autenticación (registro o login)
+        const searchParams = new URLSearchParams(window.location.search)
+        const urlAction = searchParams.get('action')
+        const authAction = urlAction || 
+          (typeof window !== 'undefined' ? localStorage.getItem('auth_action') || 'login' : 'login')
+          
+        console.log('Procesando autenticación:', { 
+          userId: session.user.id, 
+          authAction,
+          provider: session.user.app_metadata.provider 
+        })
+        
+        // Verificar onboarding
+        const onboardingStatus = await checkEmpresaOnboarding(session.user.id)
         
         // Recuperar la URL de redirección guardada en localStorage
         const savedReturnUrl = typeof window !== 'undefined' 
           ? localStorage.getItem('auth_return_url') 
           : null
         
-        console.log('URL de redirección recuperada:', savedReturnUrl)
+        // Limpiar localStorage para evitar problemas en futuras autenticaciones
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_return_url')
+          localStorage.removeItem('auth_action')
+        }
         
-        if (!onboardingStatus.hasEmpresa || !onboardingStatus.isOnboardingComplete) {
-          console.log('Usuario requiere onboarding')
-          router.push('/admin/onboarding')
+        // Si es un registro nuevo o no tiene empresa, redirigir a onboarding
+        if (authAction === 'register' || !onboardingStatus.hasEmpresa) {
+          router.replace('/admin/onboarding')
+          setIsProcessing(false)
+          return
+        }
+        
+        // Si el onboarding está incompleto, redirigir a onboarding
+        if (!onboardingStatus.isOnboardingComplete) {
+          router.replace('/admin/onboarding')
+          setIsProcessing(false)
           return
         }
 
-        // Limpiar el returnUrl del localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('auth_return_url')
+        // Inicializar la aplicación antes de redirigir
+        if (!isInitialized) {
+          try {
+            await initialize(session.user.id)
+          } catch (error) {
+            console.error('Error al inicializar la aplicación:', error)
+            // Continuar con la redirección a pesar del error
+          }
         }
 
-        console.log('Usuario verificado, redirigiendo al panel...')
-        
         // Usar la URL guardada o la ruta por defecto
         const redirectTo = savedReturnUrl || '/admin/dashboard/bookings/reservations'
-        console.log('Redirigiendo a:', redirectTo)
         
-        // Usar router.push para navegar sin recargar la página
-        router.push(redirectTo)
+        // Usar router.replace en lugar de window.location.replace para evitar recargas completas
+        router.replace(redirectTo)
+        setIsProcessing(false)
       } catch (error) {
-        console.error('Error al verificar onboarding:', error)
-        setError('Error al verificar el estado de tu cuenta')
-        toast.error('Error al verificar el estado de tu cuenta')
-      } finally {
-        isProcessing = false
+        console.error('Error al procesar autenticación:', error)
+        router.replace('/admin/login')
+        setIsProcessing(false)
       }
     }
 
-    // Escuchar cambios en el estado de autenticación
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Callback - Estado de autenticación:', event)
-      
-      if (event === 'SIGNED_IN' && session?.user) {
-        await processAuth(session.user.id)
-      }
-
-      if (event === 'SIGNED_OUT') {
-        console.log('Usuario cerró sesión')
-        router.push('/admin/login')
-      }
-    })
-
-    // Verificar estado inicial después de un breve delay
-    const checkInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (session?.user) {
-        await processAuth(session.user.id)
-      } else {
-        console.log('No hay sesión activa')
-        setError('No se pudo iniciar sesión. Por favor, intenta nuevamente.')
-        setTimeout(() => {
-          router.push('/admin/login')
-        }, 2000)
-      }
-    }
-
-    // Dar tiempo para que la sesión se establezca
-    const timer = setTimeout(checkInitialSession, 1000)
-
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timer)
-    }
-  }, [router, supabase, checkEmpresaOnboarding])
+    // Procesar autenticación inmediatamente para evitar retrasos
+    processAuth()
+  }, [router, supabase, checkEmpresaOnboarding, initialize, isInitialized, isProcessing])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-        <h1 className="text-2xl font-semibold mb-2">Verificando cuenta</h1>
-        <p className="text-gray-500 mb-4">Esto puede tomar unos momentos...</p>
-        {error && (
-          <p className="text-red-500 mb-4">{error}</p>
-        )}
-        <Button
-          variant="outline"
-          onClick={() => router.push('/admin/login')}
-        >
-          Volver al inicio de sesión
-        </Button>
+      <div className="flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     </div>
   )

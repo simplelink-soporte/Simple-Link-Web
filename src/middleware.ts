@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = [
   '/auth/callback',
   '/unauthorized',
   '/admin/login',
+  '/admin/register',
   '/admin/auth/callback',
   '/admin/auth/error',
   '/clases/login',
@@ -51,6 +52,7 @@ export const config = {
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+  const res = NextResponse.next()
 
   // Log para depuración
   console.log('Middleware ejecutándose en:', {
@@ -59,78 +61,123 @@ export default async function middleware(req: NextRequest) {
     host: req.headers.get('host')
   })
 
-  // Permitir acceso a rutas públicas
+  // Permitir acceso a rutas públicas y assets estáticos
   if (isStaticAsset(pathname) || isPublicRoute(pathname)) {
     console.log('Middleware: Ruta pública o asset estático, permitiendo acceso')
-    return NextResponse.next()
+    return res
   }
 
   try {
-    const supabase = createMiddlewareClient<Database>({ req, res: NextResponse.next() })
-    const { data: { session } } = await supabase.auth.getSession()
+    // Crear cliente de Supabase con cookies actualizadas
+    const supabase = createMiddlewareClient<Database>({ req, res })
+    
+    // IMPORTANTE: Usar getUser en lugar de getSession para validar la sesión
+    // getUser hace una llamada al servidor de Supabase para validar el token
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error) {
+      console.error('Middleware - Error al obtener usuario:', error.message)
+      throw error
+    }
 
-    console.log('Middleware - Verificación de sesión:', {
-      hasSession: !!session,
+    // Verificar si hay un token de acceso en las cookies
+    const hasAccessToken = req.cookies.has('sb-access-token') || 
+                          req.cookies.has('supabase-auth-token')
+
+    console.log('Middleware - Verificación de usuario:', {
+      hasUser: !!user,
+      hasAccessToken,
       pathname,
-      userId: session?.user?.id
+      userId: user?.id,
+      host: req.headers.get('host')
     })
 
     // Verificar acceso según la ruta
     if (pathname.startsWith('/admin')) {
-      if (!session) {
-        console.log('Middleware: No hay sesión, redirigiendo a login admin')
-        return NextResponse.redirect(new URL('/admin/login?returnUrl=' + encodeURIComponent(pathname), req.url))
+      // Si es la ruta de callback, permitir siempre
+      if (pathname === '/admin/auth/callback') {
+        console.log('Middleware: Permitiendo acceso a callback de autenticación')
+        return res
       }
+      
+      // Si no hay usuario pero hay token, podría ser un problema de sincronización
+      // Permitir el acceso y dejar que la aplicación maneje la redirección si es necesario
+      if (!user && hasAccessToken && (pathname.startsWith('/admin/dashboard'))) {
+        console.log('Middleware: Token presente pero usuario no validado, permitiendo acceso condicional')
+        return res
+      }
+      
+      if (!user) {
+        console.log('Middleware: No hay usuario, redirigiendo a login admin')
+        const returnUrl = encodeURIComponent(pathname)
+        const host = req.headers.get('host') || ''
+        
+        // Determinar si estamos en un subdominio específico
+        const isAppSubdomain = host.startsWith('app.')
+        const isWwwSubdomain = host.startsWith('www.')
+        
+        // Construir la URL de redirección manteniendo el mismo dominio/subdominio
+        const loginUrl = new URL(`/admin/login?returnUrl=${returnUrl}`, req.url)
+        
+        return NextResponse.redirect(loginUrl)
+      }
+      
       console.log('Middleware: Usuario autenticado con acceso a admin')
-      return NextResponse.next()
+      return res
     }
 
     // Manejo específico para rutas de clases
     if (pathname.startsWith('/clases/')) {
       // Excluir rutas públicas de clases de manera más explícita
       if (['/clases/login', '/clases/registro'].includes(pathname)) {
-        return NextResponse.next()
+        return res
       }
 
-      if (!session) {
-        console.log('Middleware: No hay sesión, redirigiendo a login de clases')
+      if (!user) {
+        console.log('Middleware: No hay usuario, redirigiendo a login de clases')
         const returnUrl = encodeURIComponent(pathname)
-        const loginUrl = new URL(`/clases/login?returnUrl=${returnUrl}`, req.url)
-        return NextResponse.redirect(loginUrl)
+        console.log('Middleware: returnUrl generado:', returnUrl)
+        
+        // Crear URL completa con el returnUrl
+        const url = new URL('/clases/login', req.url)
+        url.searchParams.set('returnUrl', returnUrl)
+        
+        console.log('Middleware: URL de redirección completa:', url.toString())
+        return NextResponse.redirect(url)
       }
-
-      // Si el usuario está autenticado, permitir acceso
-      console.log('Middleware: Usuario autenticado con acceso a clases')
-      return NextResponse.next()
     }
 
     // Manejo específico para rutas de reservas
     if (pathname.startsWith('/reservas/')) {
-      // Excluir rutas públicas de reservas
-      if (['/reservas/login'].includes(pathname)) {
-        return NextResponse.next()
-      }
-
-      if (!session) {
-        console.log('Middleware: No hay sesión, redirigiendo a login de reservas')
+      if (!user) {
+        console.log('Middleware: No hay usuario, redirigiendo a login de reservas')
         const returnUrl = encodeURIComponent(pathname)
         const loginUrl = new URL(`/reservas/login?returnUrl=${returnUrl}`, req.url)
         return NextResponse.redirect(loginUrl)
       }
-
-      // Si el usuario está autenticado, permitir acceso
-      console.log('Middleware: Usuario autenticado con acceso a reservas')
-      return NextResponse.next()
     }
 
-    if (!session) {
-      console.log('Middleware: No hay sesión, redirigiendo a login')
-      return NextResponse.redirect(new URL('/login?returnUrl=' + encodeURIComponent(pathname), req.url))
-    }
-
-    return NextResponse.next()
+    // Si llegamos aquí, el usuario está autenticado y tiene acceso a la ruta
+    return res
   } catch (error) {
-    console.error('Error en middleware:', error)
-    return NextResponse.redirect(new URL('/error', req.url))
+    console.error('Middleware - Error:', error)
+    
+    // En caso de error, redirigir a la página de login correspondiente
+    if (pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/admin/login', req.url))
+    } else if (pathname.startsWith('/clases')) {
+      const returnUrl = encodeURIComponent(pathname)
+      const url = new URL('/clases/login', req.url)
+      url.searchParams.set('returnUrl', returnUrl)
+      return NextResponse.redirect(url)
+    } else if (pathname.startsWith('/reservas')) {
+      const returnUrl = encodeURIComponent(pathname)
+      const url = new URL('/reservas/login', req.url)
+      url.searchParams.set('returnUrl', returnUrl)
+      return NextResponse.redirect(url)
+    }
+    
+    // Para otras rutas, redirigir a la página principal
+    return NextResponse.redirect(new URL('/', req.url))
   }
 }

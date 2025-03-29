@@ -21,7 +21,7 @@ export const AUTH_CONFIG = {
       name: 'sb-auth-token', // Nombre unificado para todas las cookies
       options: {
         path: '/',  // Path global para que funcione en todas las rutas
-        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 días

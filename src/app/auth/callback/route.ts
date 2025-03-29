@@ -1,76 +1,52 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import type { Database } from '@/types/supabase'
-import { AUTH_CONFIG } from '@/config/auth.config'
-import type { ClientType } from '@/config/auth.config'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
+  const clientType = requestUrl.searchParams.get('client_type') || 'admin'
+  const action = requestUrl.searchParams.get('action') || 'login'
+  
+  // Si no hay código, redirigir a la página de error
+  if (!code) {
+    return NextResponse.redirect(
+      new URL(`/${clientType === 'admin' ? 'admin/login' : 'clases/login'}`, requestUrl.origin)
+    )
+  }
+
   try {
-    const requestUrl = new URL(request.url)
-    const code = requestUrl.searchParams.get('code')
-    const clientType = (requestUrl.searchParams.get('client_type') || 'client') as ClientType
-    const config = AUTH_CONFIG[clientType]
-    
-    // Log para depuración
-    console.log('Auth callback iniciado:', { 
-      url: request.url,
-      origin: requestUrl.origin,
-      hostname: requestUrl.hostname,
-      clientType,
-      hasCode: !!code
-    })
-
-    // Si no hay código, redirigir al login
-    if (!code) {
-      console.error('No se encontró código de autorización')
-      return NextResponse.redirect(new URL(config.routes.signIn, requestUrl.origin))
-    }
-
+    // Crear cliente de Supabase con cookies
     const cookieStore = cookies()
-    const supabase = createRouteHandlerClient<Database>({ 
-      cookies: () => cookieStore
-    }, {
-      cookieOptions: {
-        name: config.cookies.name,
-        ...config.cookies.options
-      }
-    })
+    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
     
-    // Exchange the code for a session
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    // Intercambiar el código por una sesión
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
     
-    if (error || !data.session) {
-      console.error('Error al intercambiar código por sesión:', error)
-      return NextResponse.redirect(new URL(`${config.routes.signIn}?error=callback`, requestUrl.origin))
+    if (error) {
+      throw error
     }
 
-    // Log para depuración
-    console.log('Sesión creada exitosamente:', { 
-      userId: data.session.user.id,
-      redirectTo: config.routes.afterSignIn
-    })
-
-    // Asegurarnos de que la sesión se guarde correctamente
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // Determinar la URL de redirección basada en el tipo de cliente
-    let redirectUrl: URL;
+    // Determinar la URL de redirección según el tipo de cliente
+    let redirectTo = '/'
     
     if (clientType === 'admin') {
-      // Para admin, redirigir al callback específico de admin que maneja el onboarding
-      redirectUrl = new URL('/admin/auth/callback', requestUrl.origin)
-    } else {
-      // Para clientes, usar la ruta configurada
-      redirectUrl = new URL(config.routes.afterSignIn, requestUrl.origin)
+      redirectTo = `/admin/auth/callback?action=${action}`
+    } else if (clientType === 'classes') {
+      redirectTo = `/clases/auth/callback?action=${action}`
     }
-
-    console.log('Redirigiendo a:', redirectUrl.toString())
     
-    return NextResponse.redirect(redirectUrl)
+    // Asegurar que la URL de redirección use el mismo origen que la solicitud
+    const fullRedirectUrl = new URL(redirectTo, requestUrl.origin)
+    
+    // Redirigir al usuario a la página de callback correspondiente
+    return NextResponse.redirect(fullRedirectUrl)
   } catch (error) {
-    console.error('Error en el callback de autenticación:', error)
-    // Redirigir a la página de login con un mensaje de error
-    return NextResponse.redirect(new URL('/admin/login?error=callback', request.url))
+    // En caso de error, redirigir a la página de login correspondiente
+    return NextResponse.redirect(
+      new URL(`/${clientType === 'admin' ? 'admin/login' : 'clases/login'}`, requestUrl.origin)
+    )
   }
 }

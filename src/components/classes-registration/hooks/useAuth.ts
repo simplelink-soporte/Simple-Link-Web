@@ -6,7 +6,7 @@ interface UserData {
   id: string
   email: string
   name: string
-  role: string
+  role?: string
 }
 
 export function useClassRegistrationAuth() {
@@ -17,11 +17,14 @@ export function useClassRegistrationAuth() {
       id: auth.user.id,
       email: auth.user.email,
       name: auth.user.metadata.name || auth.user.email,
-      role: auth.user.role
+      // El campo role puede no existir en AuthUser
+      role: auth.user.metadata.role
     } as UserData : null,
     isLoading: auth.isLoading,
     error: auth.error,
     signIn: auth.signIn,
+    signUp: auth.signUp,
+    signInWithGoogle: auth.signInWithGoogle,
     signOut: auth.signOut
   }
 } 
