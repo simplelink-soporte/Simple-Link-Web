@@ -462,26 +462,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const isClassesContext = window.location.pathname.startsWith('/clases')
       
       // Agregar parámetro para identificar el tipo de cliente
-      const clientType = isClassesContext ? 'client' : 'admin'
+      const clientType = isClassesContext ? 'classes' : 'admin'
       
-      // Verificar si es registro o inicio de sesión
-      const isRegistering = typeof window !== 'undefined' 
-        ? localStorage.getItem('auth_action') === 'register'
-        : false
-        
-      // Usar URL relativa para que funcione en cualquier dominio
-      const redirectUrl = `/auth/callback?client_type=${clientType}&action=${isRegistering ? 'register' : 'login'}`
+      // Verificar si es registro o inicio de sesión basado en el contexto
+      let isRegistering = false
+      
+      if (isClassesContext) {
+        // Para clases, usar la clave específica de clases
+        isRegistering = typeof window !== 'undefined' 
+          ? localStorage.getItem('classes_auth_action') === 'register'
+          : false
+      } else {
+        // Para admin, usar la clave general
+        isRegistering = typeof window !== 'undefined' 
+          ? localStorage.getItem('auth_action') === 'register'
+          : false
+      }
+      
+      // Construir la URL de redirección basada en el contexto
+      let redirectUrl = ''
+      
+      if (isClassesContext) {
+        // Para clases, usar la ruta específica de clases
+        redirectUrl = `/clases/auth/callback?client_type=${clientType}&action=${isRegistering ? 'register' : 'login'}`
+      } else {
+        // Para admin, usar la ruta general
+        redirectUrl = `/auth/callback?client_type=${clientType}&action=${isRegistering ? 'register' : 'login'}`
+      }
       
       console.log('Iniciando autenticación con Google:', { 
         clientType, 
         isRegistering, 
-        redirectUrl 
+        redirectUrl,
+        isClassesContext
       })
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}${redirectUrl}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

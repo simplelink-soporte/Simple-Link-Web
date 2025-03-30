@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -30,14 +30,24 @@ interface AuthStepProps {
 }
 
 export function AuthStep({ onLoginSuccess }: AuthStepProps) {
+  const searchParams = useSearchParams()
+  const returnUrl = searchParams.get('returnUrl')
+  const authError = searchParams.get('error')
+  const authErrorDescription = searchParams.get('error_description')
+
   return (
     <Suspense fallback={<div>Cargando...</div>}>
-      <AuthStepContent onLoginSuccess={onLoginSuccess} />
+      <AuthStepContent 
+        onLoginSuccess={onLoginSuccess} 
+        returnUrl={returnUrl} 
+        authError={authError} 
+        authErrorDescription={authErrorDescription} 
+      />
     </Suspense>
   )
 }
 
-function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
+function AuthStepContent({ onLoginSuccess, returnUrl, authError, authErrorDescription }: AuthStepProps & { returnUrl: string | null, authError: string | null, authErrorDescription: string | null }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -45,7 +55,6 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
   const { signIn, signInWithGoogle } = useClassRegistrationAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const returnUrl = searchParams.get('returnUrl')
   
   const {
     register,
@@ -54,6 +63,21 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   })
+
+  useEffect(() => {
+    if (authError) {
+      let errorMessage = 'Error al iniciar sesión con Google'
+      
+      if (authError === 'access_denied') {
+        errorMessage = 'Acceso denegado. La autenticación con Google fue cancelada o rechazada.'
+      } else if (authErrorDescription) {
+        errorMessage = `Error: ${authErrorDescription}`
+      }
+      
+      toast.error(errorMessage)
+      console.error('Error de autenticación con Google:', authError, authErrorDescription)
+    }
+  }, [authError, authErrorDescription])
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -134,7 +158,56 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
       console.log('Iniciando autenticación con Google desde AuthStep')
       
       // Obtener la URL actual para usarla en el returnUrl
-      const currentReturnUrl = returnUrl || window.location.pathname
+      let currentReturnUrl = '/clases'
+      
+      // Si hay un returnUrl en los parámetros de la URL, usarlo
+      if (returnUrl) {
+        try {
+          currentReturnUrl = decodeURIComponent(returnUrl)
+          console.log('URL de retorno obtenida de parámetro URL:', currentReturnUrl)
+        } catch (e) {
+          console.error('Error al decodificar returnUrl:', e)
+        }
+      } else {
+        // Intentar extraer el slug de la URL actual
+        const pathSegments = window.location.pathname.split('/')
+        if (pathSegments.length >= 3 && pathSegments[1] === 'clases') {
+          const possibleSlug = pathSegments[2]
+          if (possibleSlug && possibleSlug !== 'login' && possibleSlug !== 'auth') {
+            currentReturnUrl = `/clases/${possibleSlug}`
+            console.log('URL de retorno construida a partir de la URL actual:', currentReturnUrl)
+          } else {
+            console.log('No se pudo extraer un slug válido de la URL actual')
+          }
+        } else {
+          console.log('No se pudo extraer información útil de la URL actual')
+        }
+      }
+      
+      // Decodificar el returnUrl si está codificado
+      if (currentReturnUrl !== '/clases') {
+        try {
+          if (currentReturnUrl.includes('%')) {
+            currentReturnUrl = decodeURIComponent(currentReturnUrl)
+          }
+        } catch (e) {
+          console.error('Error al decodificar returnUrl:', e)
+        }
+      }
+      
+      // Si la URL de retorno es la página de callback o login, usar la página principal
+      if (currentReturnUrl.includes('/auth/callback') || 
+          currentReturnUrl === '/clases/login' ||
+          currentReturnUrl === '/clases') {
+        console.log('URL de retorno no válida, usando /clases como fallback')
+        currentReturnUrl = '/clases'
+      }
+      
+      // Asegurarse de que la URL comience con /clases/
+      if (!currentReturnUrl.startsWith('/clases/') && currentReturnUrl !== '/clases') {
+        console.log('URL de retorno no comienza con /clases/, prefijando')
+        currentReturnUrl = `/clases/${currentReturnUrl.replace(/^\//, '')}`
+      }
       
       // Guardar el returnUrl en localStorage para recuperarlo después de la autenticación
       console.log('Guardando returnUrl en localStorage:', currentReturnUrl)
@@ -154,35 +227,14 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
       // Mostrar mensaje de redirección
       toast.info('Redirigiendo a Google para autenticación...')
       
-      // Usar URL absoluta para evitar problemas con subdominios
-      const origin = window.location.origin
-      const redirectUrl = `${origin}/auth/callback?client_type=classes&action=${authView === 'register' ? 'register' : 'login'}`
-      
-      // Llamar directamente a Supabase para evitar problemas de redirección
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          scopes: 'email profile',
-          skipBrowserRedirect: false // Asegurar que Supabase maneje la redirección
-        }
-      })
-
-      if (error) throw error
-      
-      // No necesitamos hacer nada más aquí, ya que Supabase manejará la redirección
-      // y el callback se encargará del resto del proceso
+      // Redirigir a la página de autenticación de Google usando el contexto de autenticación
+      // La función signInWithGoogle no acepta parámetros según la implementación en AuthContext
+      await signInWithGoogle()
     } catch (error: any) {
-      const errorMessage = error.message || 'Error al iniciar sesión con Google'
-      toast.error(errorMessage)
-      console.error('Error en inicio de sesión con Google:', error)
-      setIsGoogleLoading(false) // Asegurarse de desactivar el estado de carga en caso de error
+      console.error('Error al iniciar autenticación con Google:', error)
+      toast.error(error.message || 'Error al conectar con Google')
+      setIsGoogleLoading(false)
     }
-    // Nota: No usamos finally aquí porque la redirección de Supabase interrumpirá la ejecución
   }
 
   return (
@@ -342,37 +394,35 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
                   </div>
                 </div>
 
-                {/* Botón de Google - Temporalmente oculto */}
-                {false && (
-                  <button
-                    type="button"
-                    onClick={handleGoogleSignIn}
-                    disabled={isGoogleLoading || isLoading}
-                    className={cn(
-                      "w-full flex items-center justify-center gap-2",
-                      "px-4 py-2 rounded-md",
-                      "bg-white text-gray-800",
-                      "text-sm font-medium",
-                      "border border-gray-200",
-                      "hover:bg-gray-50",
-                      "focus:outline-none focus:ring-2 focus:ring-gray-900/10",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "transition-colors duration-200"
-                    )}
-                  >
-                    {isGoogleLoading ? (
-                      <>
-                        <IconLoader2 className="w-4 h-4 animate-spin" />
-                        <span>Conectando con Google...</span>
-                      </>
-                    ) : (
-                      <>
-                        <IconBrandGoogle className="w-4 h-4" />
-                        <span>Continuar con Google</span>
-                      </>
-                    )}
-                  </button>
-                )}
+                {/* Botón de Google */}
+                <button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={isGoogleLoading || isLoading}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2",
+                    "px-4 py-2 rounded-md",
+                    "bg-white text-gray-800",
+                    "text-sm font-medium",
+                    "border border-gray-200",
+                    "hover:bg-gray-50",
+                    "focus:outline-none focus:ring-2 focus:ring-gray-900/10",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                    "transition-colors duration-200"
+                  )}
+                >
+                  {isGoogleLoading ? (
+                    <>
+                      <IconLoader2 className="w-4 h-4 animate-spin" />
+                      <span>Conectando con Google...</span>
+                    </>
+                  ) : (
+                    <>
+                      <IconBrandGoogle className="w-4 h-4" />
+                      <span>Continuar con Google</span>
+                    </>
+                  )}
+                </button>
               </motion.div>
             </div>
           </>

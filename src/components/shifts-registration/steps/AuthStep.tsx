@@ -1,20 +1,21 @@
 "use client"
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
-import { IconMail, IconLock, IconLoader2 } from '@tabler/icons-react'
+import { IconMail, IconLock, IconLoader2, IconBrandGoogle, IconEye, IconEyeOff } from '@tabler/icons-react'
 import { useShiftRegistrationAuth } from '../hooks/useAuth'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { RegisterForm } from '@/components/classes-registration/components/RegisterForm'
+import { RegisterForm } from '../components/RegisterForm'
 import { vinculacionService } from '@/services/vinculacionService'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { Database } from '@/types/supabase'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -28,20 +29,51 @@ interface AuthStepProps {
 }
 
 function AuthStep({ onLoginSuccess }: AuthStepProps) {
+  const searchParams = useSearchParams()
+  const returnUrl = searchParams.get('returnUrl')
+  const authError = searchParams.get('error')
+  const authErrorDescription = searchParams.get('error_description')
+
   return (
     <Suspense fallback={<div>Cargando...</div>}>
-      <AuthStepContent onLoginSuccess={onLoginSuccess} />
+      <AuthStepContent 
+        onLoginSuccess={onLoginSuccess}
+        returnUrl={returnUrl}
+        authError={authError}
+        authErrorDescription={authErrorDescription}
+      />
     </Suspense>
   )
 }
 
-function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
+function AuthStepContent({ onLoginSuccess, returnUrl, authError, authErrorDescription }: AuthStepProps & { returnUrl: string | null, authError: string | null, authErrorDescription: string | null }) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [authView, setAuthView] = useState<'login' | 'register'>('login')
   const { signIn } = useShiftRegistrationAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const returnUrl = searchParams.get('returnUrl')
+  
+  // Verificar si viene de una autenticación exitosa con Google
+  const authSuccess = searchParams.get('auth_success') === 'true'
+  const authAction = searchParams.get('action')
+  
+  // Mostrar mensaje de error si viene de un error de autenticación con Google
+  useEffect(() => {
+    if (authError) {
+      let errorMessage = 'Error al iniciar sesión con Google'
+      
+      if (authError === 'access_denied') {
+        errorMessage = 'Acceso denegado. La autenticación con Google fue cancelada o rechazada.'
+      } else if (authErrorDescription) {
+        errorMessage = `Error: ${authErrorDescription}`
+      }
+      
+      toast.error(errorMessage)
+      console.error('Error de autenticación con Google:', authError, authErrorDescription)
+    }
+  }, [authError, authErrorDescription])
   
   const {
     register,
@@ -137,6 +169,90 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
   const handleForgotPassword = () => {
     window.location.href = 'https://www.simple-link.com/reset'
   }
+  
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsGoogleLoading(true)
+      console.log('Iniciando autenticación con Google desde AuthStep de reservas')
+      
+      // Obtener la URL actual para usarla en el returnUrl
+      let currentReturnUrl = returnUrl || window.location.pathname
+      
+      // Decodificar el returnUrl si está codificado
+      if (returnUrl) {
+        try {
+          currentReturnUrl = decodeURIComponent(returnUrl)
+        } catch (e) {
+          console.error('Error al decodificar returnUrl:', e)
+        }
+      }
+      
+      // Si la URL de retorno es la página de callback o login, usar la página principal
+      if (currentReturnUrl.includes('/auth/callback') || 
+          currentReturnUrl === '/reservas/login' ||
+          currentReturnUrl === '/reservas') {
+        console.log('URL de retorno no válida, usando /reservas como fallback')
+        currentReturnUrl = '/reservas'
+      }
+      
+      // Asegurarse de que la URL comience con /reservas/
+      if (!currentReturnUrl.startsWith('/reservas/') && currentReturnUrl !== '/reservas') {
+        console.log('URL de retorno no comienza con /reservas/, prefijando')
+        currentReturnUrl = `/reservas/${currentReturnUrl.replace(/^\//, '')}`
+      }
+      
+      // Guardar el returnUrl en localStorage para recuperarlo después de la autenticación
+      console.log('Guardando returnUrl en localStorage:', currentReturnUrl)
+      
+      // Usar un nombre de clave más específico para evitar conflictos
+      localStorage.setItem('reservas_auth_return_url', currentReturnUrl)
+      
+      // Guardar si es registro o inicio de sesión con un nombre más específico
+      localStorage.setItem('reservas_auth_action', authView === 'register' ? 'register' : 'login')
+      
+      // También guardar la marca de tiempo para verificar la frescura de los datos
+      localStorage.setItem('reservas_auth_timestamp', Date.now().toString())
+      
+      console.log('Guardando returnUrl para después de la autenticación:', currentReturnUrl)
+      console.log('Acción de autenticación:', authView === 'register' ? 'register' : 'login')
+      
+      // Mostrar mensaje de redirección
+      toast.info('Redirigiendo a Google para autenticación...')
+      
+      // Usar URL absoluta para evitar problemas con subdominios
+      const origin = window.location.origin
+      
+      // Asegurarse de que la URL de redirección sea correcta y completa
+      const redirectUrl = `${origin}/reservas/auth/callback?client_type=reservas&action=${authView === 'register' ? 'register' : 'login'}`
+      
+      console.log('URL de redirección para OAuth:', redirectUrl)
+      
+      // Llamar directamente a Supabase para evitar problemas de redirección
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          scopes: 'email profile',
+          skipBrowserRedirect: false // Asegurar que Supabase maneje la redirección
+        }
+      })
+
+      if (error) throw error
+      
+      // No necesitamos hacer nada más aquí, ya que Supabase manejará la redirección
+      // y el callback se encargará del resto del proceso
+    } catch (error: any) {
+      const errorMessage = error.message || 'Error al iniciar sesión con Google'
+      toast.error(errorMessage)
+      console.error('Error en inicio de sesión con Google:', error)
+      setIsGoogleLoading(false) // Asegurarse de desactivar el estado de carga en caso de error
+    }
+    // Nota: No usamos finally aquí porque la redirección de Supabase interrumpirá la ejecución
+  }
 
   return (
     <div className="min-h-[80vh] w-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -200,25 +316,34 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
                       />
                     </div>
                     {errors.email && (
-                      <p className="text-sm text-red-600">{errors.email.message}</p>
+                      <p className="text-xs text-red-500">{errors.email.message}</p>
                     )}
                   </div>
 
-                  {/* Contraseña */}
+                  {/* Password */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">
-                      Contraseña
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700">
+                        Contraseña
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleForgotPassword}
+                        className="text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <IconLock className="h-4 w-4 text-gray-400" />
                       </div>
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
                         disabled={isLoading}
                         className={cn(
-                          "block w-full pl-9 pr-3 py-2 text-sm rounded-md",
+                          "block w-full pl-9 pr-9 py-2 text-sm rounded-md",
                           "bg-white border border-gray-200",
                           "focus:ring-1 focus:ring-gray-200 focus:border-gray-400",
                           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -228,95 +353,87 @@ function AuthStepContent({ onLoginSuccess }: AuthStepProps) {
                         placeholder="••••••"
                         {...register('password')}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? (
+                          <IconEyeOff className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <IconEye className="h-4 w-4 text-gray-400" />
+                        )}
+                      </button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-red-600">{errors.password.message}</p>
+                      <p className="text-xs text-red-500">{errors.password.message}</p>
                     )}
                   </div>
 
-                  {/* Olvidé mi contraseña */}
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={handleForgotPassword}
-                      className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
-                    >
-                      ¿Olvidaste tu contraseña?
-                    </button>
-                  </div>
-
-                  {/* Botón de inicio de sesión */}
-                  <motion.button
+                  {/* Submit */}
+                  <button
                     type="submit"
                     disabled={isLoading}
                     className={cn(
                       "w-full flex items-center justify-center",
-                      "px-4 py-2 rounded-md",
-                      "bg-gray-900 text-white",
-                      "text-sm font-medium",
-                      "hover:bg-gray-800",
-                      "focus:outline-none focus:ring-2 focus:ring-gray-900/10",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "transition-colors duration-200"
+                      "px-4 py-2 text-sm font-medium text-white",
+                      "bg-gray-900 rounded-md",
+                      "hover:bg-gray-800 transition-colors duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
                     )}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
                   >
                     {isLoading ? (
-                      <>
-                        <IconLoader2 className="w-4 h-4 animate-spin mr-2" />
-                        <span>Iniciando sesión...</span>
-                      </>
+                      <IconLoader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <span>Iniciar Sesión</span>
+                      'Iniciar sesión'
                     )}
-                  </motion.button>
+                  </button>
+                  
+                  {/* Separador */}
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">O continúa con</span>
+                    </div>
+                  </div>
+                  
+                  {/* Botón de Google */}
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    disabled={isGoogleLoading}
+                    className={cn(
+                      "w-full flex items-center justify-center",
+                      "px-4 py-2 text-sm font-medium text-gray-700",
+                      "bg-white border border-gray-200 rounded-md",
+                      "hover:bg-gray-50 transition-colors duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
+                    )}
+                  >
+                    {isGoogleLoading ? (
+                      <IconLoader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <IconBrandGoogle className="h-4 w-4 mr-2" />
+                        Google
+                      </>
+                    )}
+                  </button>
                 </form>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">o</span>
-                  </div>
-                </div>
-
-                {/* Botón de Google */}
-                <button
-                  type="button"
-                  onClick={() => toast.info('Funcionalidad en desarrollo')}
-                  className={cn(
-                    "w-full flex items-center justify-center gap-2",
-                    "px-4 py-2 rounded-md",
-                    "bg-white text-gray-700 border border-gray-200",
-                    "text-sm font-medium",
-                    "hover:bg-gray-50",
-                    "focus:outline-none focus:ring-2 focus:ring-gray-200",
-                    "transition-colors duration-200"
-                  )}
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                  </svg>
-                  <span>Continuar con Google</span>
-                </button>
               </motion.div>
             </div>
           </>
         ) : (
-          <RegisterForm 
-            onBack={() => setAuthView('login')}
+          <RegisterForm
             onSuccess={() => {
-              if (returnUrl) {
-                router.push(returnUrl)
-              } else {
-                onLoginSuccess?.()
-              }
+              toast.success('Registro exitoso')
+              setAuthView('login')
             }}
+            onCancel={() => setAuthView('login')}
           />
         )}
       </div>

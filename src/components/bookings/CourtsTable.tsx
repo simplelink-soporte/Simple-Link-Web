@@ -147,18 +147,18 @@ export function CourtsTable() {
 
   const getCourtsBackgroundAndBorder = (sport: Sport) => {
     if (sport === 'racket' || ['padel', 'tennis', 'badminton', 'pickleball', 'squash'].includes(sport)) {
-      return "border-orange-300 bg-orange-50"
+      return "border-gray-200 bg-orange-50/10"
     } else if (sport === 'swimming') {
-      return "border-blue-300 bg-blue-50"
+      return "border-gray-200 bg-blue-50/10"
     }
     return "border-gray-200 bg-white"
   }
 
   const getSportIcon = (sport: Sport) => {
     if (sport === 'racket' || ['padel', 'tennis', 'badminton', 'pickleball', 'squash'].includes(sport)) {
-      return <IconBallTennis className="h-4 w-4 text-orange-600 mr-2" stroke={1.5} />
+      return <IconBallTennis className="h-4 w-4 text-orange-500 mr-2" stroke={1.5} />
     } else if (sport === 'swimming') {
-      return <IconSwimming className="h-4 w-4 text-blue-600 mr-2" stroke={1.5} />
+      return <IconSwimming className="h-4 w-4 text-blue-500 mr-2" stroke={1.5} />
     }
     return null
   }
@@ -226,21 +226,21 @@ export function CourtsTable() {
             <button
               className={cn(
                 "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center", 
-                sportFilter === 'racket' ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-gray-500"
+                sportFilter === 'racket' ? "bg-orange-50/30 text-gray-700" : "bg-white text-gray-500"
               )}
               onClick={() => setSportFilter('racket')}
             >
-              <IconBallTennis className="h-3 w-3 mr-1" stroke={1.5} />
+              <IconBallTennis className="h-3 w-3 mr-1 text-orange-500" stroke={1.5} />
               Raqueta
             </button>
             <button
               className={cn(
                 "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center", 
-                sportFilter === 'swimming' ? "bg-blue-100 text-blue-700 border border-blue-200" : "bg-white text-gray-500"
+                sportFilter === 'swimming' ? "bg-blue-50/30 text-gray-700" : "bg-white text-gray-500"
               )}
               onClick={() => setSportFilter('swimming')}
             >
-              <IconSwimming className="h-3 w-3 mr-1" stroke={1.5} />
+              <IconSwimming className="h-3 w-3 mr-1 text-blue-500" stroke={1.5} />
               Natación
             </button>
           </div>
@@ -268,8 +268,8 @@ export function CourtsTable() {
                 key={court.id}
                 onClick={() => handleCourtClick(court)}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
-                  "hover:shadow-sm transition-all cursor-pointer",
+                  "flex items-center justify-between p-3 rounded-lg border border-gray-200",
+                  "hover:bg-gray-50/50 transition-all cursor-pointer",
                   getCourtsBackgroundAndBorder(court.sport)
                 )}
               >

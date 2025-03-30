@@ -16,7 +16,9 @@ const PUBLIC_ROUTES = [
   '/admin/auth/error',
   '/clases/login',
   '/clases/registro',
-  '/reservas/login'
+  '/clases/auth/callback',
+  '/reservas/login',
+  '/reservas/auth/callback'
 ] as const
 
 // Rutas de assets estáticos
@@ -33,7 +35,10 @@ function isStaticAsset(pathname: string): boolean {
 
 function isPublicRoute(pathname: string): boolean {
   // Verificación más precisa para rutas de callback
-  if (pathname === '/auth/callback' || pathname === '/admin/auth/callback') {
+  if (pathname === '/auth/callback' || 
+      pathname === '/admin/auth/callback' || 
+      pathname === '/clases/auth/callback' ||
+      pathname === '/reservas/auth/callback') {
     return true
   }
   return PUBLIC_ROUTES.some(route => pathname === route)

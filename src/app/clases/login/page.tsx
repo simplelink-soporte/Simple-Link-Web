@@ -29,13 +29,25 @@ function LoginPageContent() {
   // Verificar si viene de una autenticación exitosa con Google
   const authSuccess = searchParams.get('auth_success') === 'true'
   const authAction = searchParams.get('action')
+  const authError = searchParams.get('error')
+  const authErrorDescription = searchParams.get('error_description')
 
   // Manejar redirección después de autenticación con Google
   useEffect(() => {
     console.log('Efecto de redirección ejecutándose')
     console.log('authSuccess:', authSuccess)
     console.log('user:', !!user)
+    console.log('isLoading:', isLoading)
+    console.log('authError:', authError)
+    console.log('authErrorDescription:', authErrorDescription)
     console.log('Todos los parámetros de URL:', Object.fromEntries(searchParams.entries()))
+    
+    // Si hay un error de autenticación, mostrarlo y no intentar redireccionar
+    if (authError) {
+      console.error(`Error de autenticación: ${authError}`, authErrorDescription)
+      // No hacer nada más, el componente AuthStep mostrará el error
+      return
+    }
     
     // Función para manejar la redirección
     const handleRedirection = () => {
@@ -44,15 +56,15 @@ function LoginPageContent() {
         
         // Intentar obtener la URL de retorno guardada en localStorage con la nueva clave específica
         const savedReturnUrl = localStorage.getItem('classes_auth_return_url')
-        const oldSavedReturnUrl = localStorage.getItem('auth_return_url')
         const savedTimestamp = localStorage.getItem('classes_auth_timestamp')
         
         console.log('Auth success detectado, usuario autenticado:', !!user)
-        console.log('URL guardada en localStorage (nueva clave):', savedReturnUrl)
-        console.log('URL guardada en localStorage (clave anterior):', oldSavedReturnUrl)
+        console.log('Usuario ID:', user.id)
+        console.log('Usuario email:', user.email)
+        console.log('URL guardada en localStorage:', savedReturnUrl)
         console.log('Timestamp guardado:', savedTimestamp)
         
-        // Intentar primero con la nueva clave
+        // Verificar si tenemos una URL guardada
         if (savedReturnUrl) {
           // Limpiar localStorage
           localStorage.removeItem('classes_auth_return_url')
@@ -60,27 +72,15 @@ function LoginPageContent() {
           localStorage.removeItem('classes_auth_timestamp')
           
           // Verificar que el returnUrl sea válido (debe empezar con /clases/)
-          if (savedReturnUrl.startsWith('/clases/') && savedReturnUrl !== '/clases/login') {
+          if ((savedReturnUrl.startsWith('/clases/') || savedReturnUrl === '/clases') && 
+              savedReturnUrl !== '/clases/login' && 
+              savedReturnUrl !== '/clases/auth/callback' &&
+              !savedReturnUrl.includes('error=')) {
             console.log('Redirigiendo a URL guardada después de autenticación con Google:', savedReturnUrl)
             router.replace(savedReturnUrl)
             return
           } else {
             console.log('URL guardada no es válida:', savedReturnUrl)
-          }
-        } else if (oldSavedReturnUrl) {
-          // Si no hay datos con la nueva clave, intentar con la clave anterior
-          console.log('No se encontró URL guardada con la nueva clave, intentando con la clave anterior')
-          // Limpiar localStorage
-          localStorage.removeItem('auth_return_url')
-          localStorage.removeItem('auth_action')
-          
-          // Verificar que el returnUrl sea válido (debe empezar con /clases/)
-          if (oldSavedReturnUrl.startsWith('/clases/') && oldSavedReturnUrl !== '/clases/login') {
-            console.log('Redirigiendo a URL guardada después de autenticación con Google:', oldSavedReturnUrl)
-            router.replace(oldSavedReturnUrl)
-            return
-          } else {
-            console.log('URL guardada no es válida:', oldSavedReturnUrl)
           }
         } else {
           console.log('No se encontró URL guardada en localStorage')
@@ -94,13 +94,15 @@ function LoginPageContent() {
     
     // Ejecutar la redirección después de un breve retraso para asegurar que todo esté cargado
     if (authSuccess && user) {
+      console.log('Programando redirección después de la autenticación con Google')
       const timer = setTimeout(() => {
+        console.log('Ejecutando redirección programada')
         handleRedirection()
-      }, 500)
+      }, 1500) // Aumentamos aún más el tiempo de espera para asegurar que todo esté cargado
       
       return () => clearTimeout(timer)
     }
-  }, [authSuccess, user, router, searchParams])
+  }, [authSuccess, user, router, searchParams, isLoading, authError, authErrorDescription])
 
   // Redirigir si ya hay una sesión activa
   useEffect(() => {
