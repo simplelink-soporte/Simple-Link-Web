@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/lib/supabase';
 import { useCurrentEmpresa } from '@/hooks/useCurrentEmpresa';
 import { toast } from 'sonner';
+import { useOrganization } from '@/contexts/OrganizationContext';
 
 export interface CompanyLink {
   id: string;
@@ -16,13 +17,18 @@ export interface CompanyLink {
 
 export function useCompanyLinks() {
   const { empresa, isLoading: isLoadingEmpresa } = useCurrentEmpresa();
+  const { organization } = useOrganization(); // Obtener también el contexto de organización
   const [bookingLink, setBookingLink] = useState<CompanyLink | null>(null);
   const [classesLink, setClassesLink] = useState<CompanyLink | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchCompanyLinks = async () => {
-    if (!empresa?.id) {
+    // Determinar el ID de empresa a usar, priorizando el de useCurrentEmpresa
+    const empresaId = empresa?.id || organization?.id;
+    
+    if (!empresaId) {
+      console.log('No se encontró ID de empresa para buscar links');
       setIsLoading(false);
       return;
     }
@@ -32,12 +38,12 @@ export function useCompanyLinks() {
       setError(null);
       
       const supabase = createSupabaseClient();
-      console.log('Fetching company links for empresa_id:', empresa.id);
+      console.log('Fetching company links for empresa_id:', empresaId);
       
       const { data, error } = await supabase
         .from('company_links')
         .select('*')
-        .eq('empresa_id', empresa.id);
+        .eq('empresa_id', empresaId);
 
       if (error) throw new Error(error.message);
 
@@ -71,10 +77,13 @@ export function useCompanyLinks() {
   };
 
   useEffect(() => {
-    if (empresa?.id) {
+    // Usar tanto empresa?.id como organization?.id para detectar cambios
+    const empresaId = empresa?.id || organization?.id;
+    if (empresaId) {
+      console.log('Empresa ID changed, fetching links for:', empresaId);
       fetchCompanyLinks();
     }
-  }, [empresa?.id]);
+  }, [empresa?.id, organization?.id]);
 
   // Generar un slug más amigable y descriptivo
   const generateSlug = (type: 'bookings' | 'classes', companyName?: string) => {
@@ -111,7 +120,7 @@ export function useCompanyLinks() {
       console.log('Creating new link with slug:', slug);
       
       // Configuración inicial para los settings
-      const initialSettings = {
+      const initialSettings: any = {
         analytics: {
           views: {
             url: "https://rwyrbfilvaomnwumbpxu.supabase.co/rest/v1/rpc/increment",
