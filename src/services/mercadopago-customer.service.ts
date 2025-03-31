@@ -1,6 +1,11 @@
 import { customAlphabet } from 'nanoid';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+// Importar mercadopago correctamente desde la biblioteca que tengas configurada en tu proyecto
 import { mercadopago } from '@/lib/mercadopago';
+// Añadir axios para llamadas API directas
+import axios from 'axios';
+
+// No necesitamos configurar aquí el token, asumimos que ya está configurado en @/lib/mercadopago
 
 // Generador de IDs para clientes
 const nanoid = customAlphabet('1234567890abcdef', 10);
@@ -12,6 +17,7 @@ interface MercadoPagoCustomerCache {
   mercadoPagoCustomerId: string;
   userId: string;
   empresaId: string;
+  mercadoPagoUserId: string;
   lastUsed: string;
   status: 'active' | 'inactive';
 }
@@ -24,17 +30,20 @@ class MercadoPagoCustomerService {
    * Obtiene un cliente existente o crea uno nuevo si no existe
    * @param userId ID del usuario en nuestra aplicación
    * @param empresaId ID de la empresa en nuestra aplicación
+   * @param mercadoPagoUserId ID de usuario de MercadoPago del vendedor (club/empresa)
    * @param userData Datos del usuario (email, metadata) enviados desde el frontend
    * @returns Datos del cliente obtenido/creado
    */
   async getOrCreateCustomer(
     userId: string, 
     empresaId: string,
+    mercadoPagoUserId: string,
     userData?: { email: string; metadata: any }
   ): Promise<MercadoPagoCustomerCache> {
     console.log('[MercadoPagoCustomerService] 🔍 Buscando cliente:', {
       userId,
       empresaId,
+      mercadoPagoUserId,
       hasUserData: !!userData
     });
 
@@ -46,6 +55,7 @@ class MercadoPagoCustomerService {
         .match({
           user_id: userId,
           empresa_id: empresaId,
+          mercadopago_user_id: mercadoPagoUserId,
           status: 'active'
         })
         .single();
@@ -91,6 +101,7 @@ class MercadoPagoCustomerService {
               mercadoPagoCustomerId: activeCustomer.mercadopago_customer_id,
               empresaId,
               userId,
+              mercadoPagoUserId,
               lastUsed: new Date().toISOString(),
               status: 'active' as const
             };
@@ -112,7 +123,7 @@ class MercadoPagoCustomerService {
       }
 
       // Si no encontramos un cliente o no es válido, creamos uno nuevo
-      return await this.createNewCustomer(userId, empresaId, userData);
+      return await this.createNewCustomer(userId, empresaId, mercadoPagoUserId, userData);
     } catch (error) {
       console.error('[MercadoPagoCustomerService] ❌ Error inesperado:', error);
       throw error;
@@ -146,31 +157,37 @@ class MercadoPagoCustomerService {
     try {
       console.log('[MercadoPagoCustomerService] 🔍 Buscando cliente por email:', email);
       
-      // Usando la API moderna de MercadoPago para buscar clientes
-      const searchResponse = await mercadopago.customers.search({
-        filters: {
-          email: email
-        }
+      // Usar axios para llamar directamente a la API de MercadoPago
+      const response = await axios.get('https://api.mercadopago.com/v1/customers/search', {
+        headers: {
+          'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        params: { email }
       });
       
       console.log('[MercadoPagoCustomerService] 📥 Resultado de búsqueda:', 
-        searchResponse ? `Total: ${searchResponse.paging?.total || 0}` : 'No hay respuesta');
+        response.data ? `Total: ${response.data.paging?.total || 0}` : 'No hay respuesta');
 
       // Verificar si hay resultados
-      if (searchResponse && 
-          searchResponse.results && 
-          searchResponse.results.length > 0) {
+      if (response.status === 200 && 
+          response.data?.results && 
+          response.data.results.length > 0) {
         
         console.log('[MercadoPagoCustomerService] ✅ Cliente encontrado por email, ID:', 
-          searchResponse.results[0].id);
+          response.data.results[0].id);
         
-        return searchResponse.results[0];
+        return response.data.results[0];
       }
       
       console.log('[MercadoPagoCustomerService] ℹ️ No se encontró cliente con ese email');
       return null;
-    } catch (error) {
-      console.error('[MercadoPagoCustomerService] ❌ Error al buscar cliente por email:', error);
+    } catch (error: any) {
+      console.error('[MercadoPagoCustomerService] ❌ Error al buscar cliente por email:', {
+        message: error.message,
+        status: error.response?.status,
+        response: error.response?.data || 'No hay datos de respuesta'
+      });
       return null;
     }
   }
@@ -179,114 +196,184 @@ class MercadoPagoCustomerService {
    * Crea un nuevo cliente en MercadoPago y lo registra en nuestra BD
    * @param userId ID del usuario en nuestra aplicación
    * @param empresaId ID de la empresa en nuestra aplicación
+   * @param mercadoPagoUserId ID de usuario de MercadoPago del vendedor (club/empresa)
    * @param userData Datos del usuario (email, metadata) enviados desde el frontend
    * @returns Datos del cliente creado
    */
   private async createNewCustomer(
     userId: string, 
     empresaId: string,
+    mercadoPagoUserId: string,
     userData?: { email: string; metadata: any }
   ): Promise<MercadoPagoCustomerCache> {
     console.log('[MercadoPagoCustomerService] 🆕 Iniciando creación de cliente:', {
       userId,
       empresaId,
+      mercadoPagoUserId,
       hasUserData: !!userData
     });
 
-    // 1. Obtener datos del usuario desde nuestra BD o usar los datos recibidos del frontend
-    let user: { email: string; first_name?: string; last_name?: string } = {
-      email: userData?.email || '',
-      first_name: userData?.metadata?.first_name || userData?.metadata?.name || '',
-      last_name: userData?.metadata?.last_name || ''
-    };
+    let mpCustomerId: string;
+    let user: any = {};
 
-    // Solo intentar consultar la BD si no tenemos el email en userData
-    if (!user.email && userId) {
+    // Intentar obtener información de usuario para la creación
+    if (userData && userData.email) {
+      user = {
+        email: userData.email,
+        ...userData.metadata
+      };
+      
+      console.log('[MercadoPagoCustomerService] ℹ️ Usando datos proporcionados desde el frontend');
+    } else {
       try {
-        const { data: userFromDb, error: userError } = await supabaseAdmin
-          .from('users')
-          .select('email, first_name, last_name')
+        console.log('[MercadoPagoCustomerService] 🔍 Buscando datos de usuario en BD');
+        
+        const { data, error } = await supabaseAdmin
+          .from('auth_users')
+          .select('email, first_name, last_name, metadata')
           .eq('id', userId)
           .single();
-
-        if (userError) {
-          console.error('[MercadoPagoCustomerService] ❌ Error al obtener datos del usuario:', userError);
-          throw userError;
+          
+        if (error || !data) {
+          console.error('[MercadoPagoCustomerService] ❌ Error al buscar usuario en BD:', error);
+          throw new Error('Usuario no encontrado en la base de datos');
         }
-
-        if (userFromDb && userFromDb.email) {
-          user = userFromDb;
-        }
-      } catch (error) {
-        console.error('[MercadoPagoCustomerService] ⚠️ No se pudieron obtener datos del usuario de la BD:', error);
-        // Continuamos con los datos que tenemos
+        
+        console.log('[MercadoPagoCustomerService] ✅ Datos de usuario obtenidos de BD');
+        user = data;
+      } catch (dbError) {
+        console.error('[MercadoPagoCustomerService] ❌ Error al consultar BD:', dbError);
+        throw new Error('Error al obtener datos del usuario');
       }
     }
 
-    console.log('[MercadoPagoCustomerService] ✅ Datos de usuario obtenidos:', {
+    // Verificar que tenemos un email para el cliente
+    if (!user.email) {
+      console.error('[MercadoPagoCustomerService] ❌ No se encontró email para el usuario');
+      throw new Error('Se requiere email para crear un cliente en MercadoPago');
+    }
+
+    console.log('[MercadoPagoCustomerService] 📋 Datos disponibles para crear cliente:', {
       email: user.email,
-      hasName: !!user.first_name
+      hasFirstName: !!user.first_name,
+      hasLastName: !!user.last_name
     });
 
-    // 2. Verificar si ya existe un cliente con ese email en MercadoPago
-    let existingMpCustomer = await this.findCustomerByEmail(user.email);
-    let mpCustomerId;
-
-    if (existingMpCustomer) {
-      console.log('[MercadoPagoCustomerService] 🔍 Cliente ya existe en MercadoPago, reutilizando ID:', existingMpCustomer.id);
-      mpCustomerId = existingMpCustomer.id;
-    } else {
-      // 3. Si no existe, crear nuevo cliente en MercadoPago usando la API moderna
-      try {
-        console.log('[MercadoPagoCustomerService] 🆕 Creando nuevo cliente en MercadoPago');
-        
-        // Preparar el objeto de datos del cliente según la documentación oficial
-        const customerData = {
-          email: userData?.email || user.email,
-          first_name: user.first_name || 'Usuario',
-          last_name: user.last_name || 'Simple Link',
-          description: `Usuario de Simple Link - ID: ${userId}`,
-          default_address: "Home",
-          phone: {
-            area_code: "",
-            number: ""
-          },
-          metadata: {
-            user_id: userId,
-            empresa_id: empresaId,
-            source: 'simple_link_web',
-            created_at: new Date().toISOString(),
-            ...userData?.metadata
+    // Paso 1: Intentar buscar cliente existente por email para evitar duplicados
+    try {
+      const existingCustomer = await this.findCustomerByEmail(user.email);
+      
+      if (existingCustomer && existingCustomer.id) {
+        console.log('[MercadoPagoCustomerService] ✅ Cliente encontrado por email, reutilizando:', existingCustomer.id);
+        mpCustomerId = existingCustomer.id;
+      } else {
+        // Si no existe, crear un nuevo cliente utilizando directamente la API REST
+        try {
+          console.log('[MercadoPagoCustomerService] 🆕 Creando nuevo cliente en MercadoPago mediante API directa');
+          
+          // Preparar datos mínimos necesarios según la documentación
+          const customerData = {
+            email: user.email
+          };
+          
+          // Agregar datos opcionales solo si están disponibles
+          if (user.first_name) {
+            Object.assign(customerData, { first_name: user.first_name });
           }
-        };
-        
-        console.log('[MercadoPagoCustomerService] 📤 Datos para crear cliente:', JSON.stringify({
-          email: customerData.email,
-          first_name: customerData.first_name,
-          metadata: customerData.metadata
-        }));
-        
-        // Realizar la creación del cliente con la API moderna
-        const newCustomer = await mercadopago.customers.create(customerData);
-
-        console.log('[MercadoPagoCustomerService] 📥 Cliente creado:', 
-          newCustomer ? `ID: ${newCustomer.id || 'N/A'}` : 'No hay respuesta');
-        
-        if (!newCustomer || !newCustomer.id) {
-          console.error('[MercadoPagoCustomerService] ❌ Respuesta inválida al crear cliente');
-          throw new Error('Respuesta inválida al crear cliente en MercadoPago');
+          
+          if (user.last_name) {
+            Object.assign(customerData, { last_name: user.last_name });
+          }
+          
+          // Registrar payload para debugging
+          console.log('[MercadoPagoCustomerService] 📤 Datos para crear cliente:', JSON.stringify(customerData, null, 2));
+          
+          // Llamar directamente a la API de MercadoPago en lugar de usar el SDK
+          const response = await axios.post(
+            'https://api.mercadopago.com/v1/customers',
+            customerData,
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          
+          if (response.status >= 200 && response.status < 300 && response.data && response.data.id) {
+            console.log('[MercadoPagoCustomerService] ✅ Cliente creado correctamente vía API directa:', {
+              id: response.data.id,
+              status: response.status
+            });
+            
+            mpCustomerId = response.data.id;
+            
+            // Actualizar los metadatos en una operación separada
+            try {
+              await axios.put(
+                `https://api.mercadopago.com/v1/customers/${mpCustomerId}`,
+                {
+                  metadata: {
+                    user_id: userId,
+                    empresa_id: empresaId,
+                    mercadopago_user_id: mercadoPagoUserId,
+                    source: 'simple_link_web',
+                    created_at: new Date().toISOString()
+                  }
+                },
+                {
+                  headers: {
+                    'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                  }
+                }
+              );
+              console.log('[MercadoPagoCustomerService] ✅ Metadatos actualizados correctamente');
+            } catch (metadataError) {
+              console.warn('[MercadoPagoCustomerService] ⚠️ No se pudieron actualizar metadatos, pero el cliente fue creado:', metadataError);
+            }
+          } else {
+            console.error('[MercadoPagoCustomerService] ❌ Respuesta inesperada de la API:', {
+              status: response.status,
+              data: response.data
+            });
+            throw new Error(`Error al crear cliente: respuesta inesperada (${response.status})`);
+          }
+        } catch (apiError: any) {
+          // Mejorar el registro detallado del error
+          console.error('[MercadoPagoCustomerService] ❌ Error al crear cliente mediante API directa:', {
+            message: apiError.message,
+            response: apiError.response?.data || 'No hay datos de respuesta',
+            status: apiError.response?.status || 'No hay status',
+            request: apiError.request ? 'Request enviado' : 'Request no enviado'
+          });
+          
+          // Si falló la API directa, intentar como último recurso el SDK original
+          console.log('[MercadoPagoCustomerService] 🔄 Intentando como último recurso el SDK');
+          try {
+            // Crear customer con el SDK como último recurso
+            const sdkResponse = await mercadopago.customers.create({ email: user.email } as any);
+            
+            if (sdkResponse && sdkResponse.id) {
+              console.log('[MercadoPagoCustomerService] ✅ Cliente creado vía SDK (último recurso):', sdkResponse.id);
+              mpCustomerId = sdkResponse.id;
+            } else {
+              throw new Error('Respuesta inválida del SDK');
+            }
+          } catch (sdkError: any) {
+            console.error('[MercadoPagoCustomerService] ❌ Todos los intentos de crear cliente fallaron:', sdkError);
+            
+            const errorDetail = apiError.response?.data?.message || 
+                               apiError.message || 
+                               'Error desconocido';
+            
+            throw new Error(`Error al crear cliente en MercadoPago: ${errorDetail}`);
+          }
         }
-
-        console.log('[MercadoPagoCustomerService] ✅ Cliente creado en MercadoPago:', {
-          id: newCustomer.id,
-          email: newCustomer.email
-        });
-        
-        mpCustomerId = newCustomer.id;
-      } catch (mpError) {
-        console.error('[MercadoPagoCustomerService] ❌ Error al crear cliente en MercadoPago:', mpError);
-        throw new Error(`Error al crear cliente en MercadoPago: ${mpError instanceof Error ? mpError.message : 'Error desconocido'}`);
       }
+    } catch (error) {
+      console.error('[MercadoPagoCustomerService] ❌ Error al crear cliente:', error);
+      throw error;
     }
 
     // 4. Registrar cliente en nuestra BD
@@ -294,6 +381,7 @@ class MercadoPagoCustomerService {
       console.log('[MercadoPagoCustomerService] 💾 Guardando cliente en BD:', {
         user_id: userId,
         empresa_id: empresaId,
+        mercadopago_user_id: mercadoPagoUserId,
         mercadopago_customer_id: mpCustomerId
       });
       
@@ -304,7 +392,7 @@ class MercadoPagoCustomerService {
         .match({
           user_id: userId,
           empresa_id: empresaId,
-          mercadopago_customer_id: mpCustomerId
+          mercadopago_user_id: mercadoPagoUserId
         })
         .single();
       
@@ -315,6 +403,7 @@ class MercadoPagoCustomerService {
         const { error: updateError } = await supabaseAdmin
           .from('mercadopago_customers')
           .update({
+            mercadopago_customer_id: mpCustomerId,
             status: 'active',
             last_used: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -336,12 +425,13 @@ class MercadoPagoCustomerService {
           .insert({
             user_id: userId,
             empresa_id: empresaId,
+            mercadopago_user_id: mercadoPagoUserId,
             mercadopago_customer_id: mpCustomerId,
             last_used: new Date().toISOString(),
             metadata: {
               mp_created_at: new Date().toISOString(),
               initial_creation: true,
-              user_email: userData?.email || user.email
+              user_email: user.email
             }
           })
           .select()
@@ -359,6 +449,7 @@ class MercadoPagoCustomerService {
         mercadoPagoCustomerId: mpCustomerId,
         empresaId,
         userId,
+        mercadoPagoUserId,
         lastUsed: new Date().toISOString(),
         status: 'active'
       };

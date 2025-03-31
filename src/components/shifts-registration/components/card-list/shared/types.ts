@@ -67,6 +67,8 @@ export interface MercadoPagoCardListProps extends CardListBaseProps {
   onCardSetupSuccess?: (paymentMethodId: string) => void;
   onCardSetupError?: (error: any) => void;
   mercadoPagoUserId?: string;
+  empresaId: string; // Hacemos que empresaId sea requerido para MercadoPago
+  amount?: number; // Monto total de la operación, utilizado para validar la tarjeta
 }
 
 /**
@@ -77,4 +79,6 @@ export interface CardListProps extends CardListBaseProps {
   onCardSetupError?: (error: any) => void;
   stripeAccountId?: string;
   mercadoPagoUserId?: string;
+  empresaId?: string; // Esto ya existe en CardBaseProps pero lo aclaramos aquí también
+  amount?: number; // Monto total de la operación, pasado desde el componente padre
 }

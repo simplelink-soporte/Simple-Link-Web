@@ -60,7 +60,6 @@ export function SummaryStep({
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentTypeEnum | null>(null);
   const [selectedCardMethod, setSelectedCardMethod] = useState<StripePaymentMethod | null>(null);
   const [showCardMethodModal, setShowCardMethodModal] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(false);
   const [summarySubStep, setSummarySubStep] = useState<'details' | 'payment'>('details');
   const [showPaymentList, setShowPaymentList] = useState(false);
   const [itemsData, setItemsData] = useState<any[]>([]);
@@ -168,7 +167,6 @@ export function SummaryStep({
     }
     
     setIsProcessing(true);
-    setShowOverlay(true);
     
     let paymentAmount = 0;
     
@@ -206,7 +204,6 @@ export function SummaryStep({
             variant: 'destructive'
           });
           setIsProcessing(false);
-          setShowOverlay(false);
           return;
         }
         
@@ -219,7 +216,6 @@ export function SummaryStep({
               variant: 'destructive'
             });
             setIsProcessing(false);
-            setShowOverlay(false);
             return;
           }
           
@@ -231,7 +227,6 @@ export function SummaryStep({
               variant: 'destructive'
             });
             setIsProcessing(false);
-            setShowOverlay(false);
             return;
           }
         }
@@ -245,7 +240,6 @@ export function SummaryStep({
               variant: 'destructive'
             });
             setIsProcessing(false);
-            setShowOverlay(false);
             return;
           }
           
@@ -257,7 +251,6 @@ export function SummaryStep({
               variant: 'destructive'
             });
             setIsProcessing(false);
-            setShowOverlay(false);
             return;
           }
         }
@@ -306,7 +299,8 @@ export function SummaryStep({
                 empresaId: empresaId || '',
                 description: `Seña - Turno en ${shiftDetails.courtName} (MercadoPago)`,
                 stripeCustomerId: stripeCustomerId,
-                stripeAccountId: '' // Vacío cuando se usa MercadoPago
+                stripeAccountId: '', // Vacío cuando se usa MercadoPago
+                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
                 // Se debe modificar el servicio para soportar estas propiedades:
                 // useMercadoPago: true,
                 // mercadoPagoUserId: mercadoPagoUserId || ''
@@ -320,7 +314,8 @@ export function SummaryStep({
                 empresaId: empresaId || '',
                 description: `Seña - Turno en ${shiftDetails.courtName}`,
                 stripeCustomerId: stripeCustomerId,
-                stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : ''
+                stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : '',
+                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
               });
             }
           } else {
@@ -335,10 +330,8 @@ export function SummaryStep({
                 empresaId: empresaId || '',
                 description: `Pago completo - Turno en ${shiftDetails.courtName} (MercadoPago)`,
                 stripeCustomerId: stripeCustomerId,
-                stripeAccountId: '' // Vacío cuando se usa MercadoPago
-                // Se debe modificar el servicio para soportar estas propiedades:
-                // useMercadoPago: true,
-                // mercadoPagoUserId: mercadoPagoUserId || ''
+                stripeAccountId: '', // Vacío cuando se usa MercadoPago
+                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
               });
             } else {
               paymentResult = await fullPaymentService.processPayment({
@@ -347,7 +340,8 @@ export function SummaryStep({
                 empresaId: empresaId || '',
                 description: `Pago completo - Turno en ${shiftDetails.courtName}`,
                 stripeCustomerId: stripeCustomerId,
-                stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : ''
+                stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : '',
+                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
               });
             }
           }
@@ -372,7 +366,6 @@ export function SummaryStep({
               variant: 'destructive'
             });
             setIsProcessing(false);
-            setShowOverlay(false);
             return;
           }
           
@@ -417,7 +410,6 @@ export function SummaryStep({
             variant: 'destructive'
           });
           setIsProcessing(false);
-          setShowOverlay(false);
           return;
         }
       } else {
@@ -479,7 +471,6 @@ export function SummaryStep({
           variant: 'destructive'
         });
         setIsProcessing(false);
-        setShowOverlay(false);
         return;
       }
       
@@ -493,9 +484,15 @@ export function SummaryStep({
         variant: 'default'
       });
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Esperar un tiempo adecuado antes de pasar al siguiente paso
+      // Asegura que el overlay permanezca visible por suficiente tiempo
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
+      // Pasar al siguiente paso solo después de haber esperado
+      // esto evita que haya un momento donde el overlay desaparezca antes de la transición
       onNext();
+      
+      // No desactivamos isProcessing aquí, lo haremos en el useEffect de desmontaje
     } catch (error: any) {
       console.error('Error al procesar la reserva:', error);
       toast({
@@ -503,11 +500,20 @@ export function SummaryStep({
         description: error?.message || 'No se pudo procesar la reserva',
         variant: 'destructive'
       });
-    } finally {
+      // En caso de error, sí desactivamos el procesamiento inmediatamente
       setIsProcessing(false);
-      setShowOverlay(false);
     }
   }, [isProcessing, selectedPaymentMethod, selectedCardMethod, onNext, toast, state.shiftDetails, user, empresaId, stripeAccountId, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      // Esto asegura que si el componente se desmonta mientras está procesando,
+      // no quedarán estados pendientes
+      if (isProcessing) {
+        setIsProcessing(false);
+      }
+    };
+  }, [isProcessing]);
 
   const handleNextSubStep = useCallback(() => {
     if (summarySubStep === 'details') {
@@ -762,6 +768,7 @@ export function SummaryStep({
                   stripeAccountId={stripeAccountId || ''}
                   mercadoPagoUserId={mercadoPagoUserId || ''}
                   empresaId={empresaId || ''}
+                  amount={(state.shiftDetails?.price || 0) + (state.itemsTotalPrice || 0)}
                 />
               </div>
             </>
@@ -780,7 +787,8 @@ export function SummaryStep({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: 0.2
+              duration: 0.3,
+              ease: "easeInOut"
             }}
             className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70 backdrop-blur-sm"
           >
@@ -788,7 +796,10 @@ export function SummaryStep({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
+              transition={{ 
+                duration: 0.3,
+                ease: "easeInOut" 
+              }}
               className="text-center"
             >
               <div className="flex items-center justify-center">

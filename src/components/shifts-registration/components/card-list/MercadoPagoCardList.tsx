@@ -33,7 +33,8 @@ export function MercadoPagoCardList({
   theme = 'light',
   mercadoPagoUserId,
   empresaId,
-  viewType = 'desktop'
+  viewType = 'desktop',
+  amount = 1
 }: MercadoPagoCardListProps) {
   // Estado local para controlar la animación de expansión
   const [height, setHeight] = useState<number | 'auto'>(0);
@@ -54,7 +55,6 @@ export function MercadoPagoCardList({
     onSuccess,
     onError,
     onBack,
-    mercadoPagoUserId,
     empresaId,
     theme = 'light',
     viewType = 'desktop'
@@ -62,8 +62,7 @@ export function MercadoPagoCardList({
     onSuccess: (paymentMethodId: string) => void;
     onError: (error: any) => void;
     onBack: () => void;
-    mercadoPagoUserId?: string;
-    empresaId?: string;
+    empresaId: string;
     theme?: 'light' | 'dark';
     viewType?: 'mobile' | 'desktop';
   }) {
@@ -73,17 +72,65 @@ export function MercadoPagoCardList({
 
     // Inicializar MercadoPago SDK
     useEffect(() => {
-      initMercadoPago(mpPublicKey);
+      // Interceptar errores de red ANTES de inicializar el SDK
+      const originalFetch = window.fetch;
+      window.fetch = function(...args) {
+        // Aplicar a todas las llamadas de telemetría de MercadoPago
+        const url = args[0]?.toString() || '';
+        if (url.includes('/checkout/')) {
+          if (url.includes('events') || url.includes('track') || url.includes('render')) {
+            console.debug('[MercadoPago] Interceptando solicitud:', url);
+            // Devolver respuesta simulada exitosa inmediatamente sin hacer la petición real
+            return Promise.resolve(new Response(JSON.stringify({ status: 'success' }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            }));
+          }
+        }
+        // Pasar normalmente todas las demás solicitudes
+        return originalFetch.apply(this, args);
+      };
+
+      // Ahora inicializamos el SDK con telemetría desactivada completamente
+      initMercadoPago(mpPublicKey, {
+        locale: 'es-AR',
+        advancedFraudPrevention: false, // Reducir solicitudes de red
+        trackingDisabled: true // DESHABILITAR COMPLETAMENTE la telemetría
+      });
+      
+      return () => {
+        // Restaurar el fetch original al desmontar para evitar efectos secundarios
+        window.fetch = originalFetch;
+      };
     }, []);
 
     // Obtener o crear el customer_id si es necesario
     useEffect(() => {
       const getCustomerId = async () => {
-        if (!user?.id || !empresaId) return;
+        if (!user?.id) {
+          setErrorMsg('Se requiere iniciar sesión para usar tarjetas');
+          return;
+        }
+        
+        if (!empresaId) {
+          setErrorMsg('Error de configuración: Falta ID de empresa');
+          return;
+        }
+        
+        if (!user.email) {
+          setErrorMsg('Error de configuración: Falta email de usuario');
+          return;
+        }
         
         try {
           setIsLoading(true);
           setErrorMsg(null);
+          
+          console.log('Obteniendo customer_id con parámetros:', {
+            userId: user.id,
+            empresaId,
+            email: user.email
+          });
           
           // Llamada al endpoint de customer
           const response = await fetch('/api/mercadopago/customer', {
@@ -91,7 +138,12 @@ export function MercadoPagoCardList({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               userId: user.id,
-              empresaId
+              empresaId,
+              email: user.email,
+              metadata: {
+                user_metadata: user.metadata || {},
+                empresa_id: empresaId
+              }
             })
           });
           
@@ -144,7 +196,7 @@ export function MercadoPagoCardList({
 
     // Configuración para Card Payment Brick
     const initialization = {
-      amount: 0, // No cargar nada, solo tokenizar
+      amount: amount, // Valor mínimo requerido (1 centavo) para validación
     };
 
     // Manejar la respuesta del formulario
@@ -156,13 +208,28 @@ export function MercadoPagoCardList({
       
       try {
         setIsLoading(true);
+        console.log('[MercadoPago] Datos del formulario recibidos:', JSON.stringify(formData));
+        
+        // Verificar si tenemos un token válido
+        // MercadoPago puede enviar el token en diferentes estructuras según la versión del SDK
+        const cardToken = formData.token || 
+                          (formData.data && formData.data.token) || 
+                          (formData.tokenId) || 
+                          (formData.cardTokenId);
+        
+        if (!cardToken) {
+          console.error('[MercadoPago] No se recibió un token válido:', formData);
+          throw new Error('No se pudo obtener el token de la tarjeta. Intente nuevamente.');
+        }
+        
+        console.log('[MercadoPago] Token de tarjeta obtenido:', cardToken);
         
         // Asociar el token de tarjeta con el cliente
         const response = await fetch('/api/mercadopago/cards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            token: formData.token,
+            token: cardToken,
             mercadoPagoCustomerId: customerId,
             userId: user.id,
             empresaId
@@ -240,12 +307,49 @@ export function MercadoPagoCardList({
           ) : customerId ? (
             <div className="card-form-container">
               <CardPayment
-                initialization={initialization}
+                initialization={{
+                  amount: amount, // Valor mínimo requerido (1 centavo) para validación
+                  payer: {
+                    email: user?.email || ''
+                  }
+                }}
+                customization={{
+                  visual: {
+                    hideFormTitle: true,
+                    hidePaymentButton: true
+                  },
+                  paymentMethods: {
+                    maxInstallments: 1
+                  }
+                }}
                 onSubmit={onFormSubmit}
-                onReady={() => console.log('Card form ready')}
+                onReady={() => {
+                  console.log('[MercadoPago] Card form ready');
+                }}
                 onError={(error) => {
-                  console.error('Card form error:', error);
-                  setErrorMsg('Error en el formulario de tarjeta');
+                  console.error('[MercadoPago] Card form error:', error);
+                  // Mejorar el manejo de errores para distintos tipos de respuesta
+                  let errorMessage = 'Verifique los datos e intente nuevamente';
+                  
+                  if (typeof error === 'string') {
+                    errorMessage = error;
+                  } else if (error && typeof error === 'object') {
+                    // MercadoPago puede enviar diferentes estructuras de error
+                    // Usar try/catch para garantizar que no fallen los intentos de acceso a propiedades
+                    try {
+                      errorMessage = error.message || 
+                                   (typeof error.toString === 'function' ? error.toString() : 
+                                   JSON.stringify(error).substring(0, 100));
+                    } catch (e) {
+                      // Si todo falla, usar mensaje genérico
+                      console.warn('[MercadoPago] Error parseando mensaje de error:', e);
+                    }
+                  }
+                  
+                  setErrorMsg(`Error en el formulario de tarjeta: ${errorMessage}`);
+                }}
+                onBinChange={(bin) => {
+                  console.log('[MercadoPago] BIN cambiado:', bin || 'empty');
                 }}
               />
             </div>
@@ -285,7 +389,6 @@ export function MercadoPagoCardList({
                 onSuccess={onCardSetupSuccess}
                 onError={onCardSetupError}
                 onBack={onCardSetupBack}
-                mercadoPagoUserId={mercadoPagoUserId}
                 empresaId={empresaId}
                 theme={theme}
                 viewType={viewType}

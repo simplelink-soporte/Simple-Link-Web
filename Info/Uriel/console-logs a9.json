@@ -1,0 +1,177 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Pasarela de pago activa:",
+      {
+        "activeGateway": "mercadopago",
+        "stripeAccountId": null,
+        "mercadoPagoUserId": "2350138911",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Pasarela de pago activa:",
+      {
+        "activeGateway": "mercadopago",
+        "stripeAccountId": null,
+        "mercadoPagoUserId": "2350138911",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] ✅ Customer ID obtenido:",
+      "2361363266-SgHGKpihumiLaF"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] ✅ Customer ID obtenido:",
+      "2361363266-SgHGKpihumiLaF"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 0,
+        "customerId": "2361363266-SgHGKpihumiLaF",
+        "lastUpdate": "2025-03-29T22:19:51.192Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 💾 Estado actualizado:",
+      {
+        "cardCount": 0,
+        "customerId": "2361363266-SgHGKpihumiLaF",
+        "lastUpdate": "2025-03-29T22:19:51.230Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Obteniendo customer_id con parámetros:",
+      {
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c",
+        "email": "pais@gmail.com"
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "/checkout/bricks/render",
+      "Could not send event id 8f0a283d-295e-4a0e-b52e-4253983b8746. Error: [object ProgressEvent]"
+    ]
+  }
+]

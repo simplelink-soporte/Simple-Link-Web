@@ -80,6 +80,7 @@ export function useMercadoPagoStoredCards(
         body: JSON.stringify({ 
           userId: user.id,
           empresaId,
+          mercadoPagoUserId, // Pasamos explícitamente el mercadoPagoUserId
           email: user.email, // Añadimos el email directamente desde el frontend
           metadata: {        // Incluimos metadata relevante 
             user_metadata: user.metadata || {},

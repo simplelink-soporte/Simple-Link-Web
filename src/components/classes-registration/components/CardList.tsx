@@ -35,6 +35,8 @@ interface CardListProps {
   onCardSetupBack?: () => void
   theme?: 'light' | 'dark'
   stripeAccountId?: string
+  mercadoPagoUserId?: string
+  empresaId?: string
   viewType?: 'mobile' | 'desktop'
 }
 
@@ -157,6 +159,8 @@ function CardSetupWrapper({
   onError,
   onBack,
   stripeAccountId,
+  mercadoPagoUserId,
+  empresaId,
   theme = 'light',
   viewType = 'desktop'
 }: {
@@ -164,12 +168,25 @@ function CardSetupWrapper({
   onError: (error: any) => void;
   onBack: () => void;
   stripeAccountId?: string;
+  mercadoPagoUserId?: string;
+  empresaId?: string;
   theme?: 'light' | 'dark';
   viewType?: 'mobile' | 'desktop';
 }) {
-  const stripePromise = loadStripe(stripeKey, stripeAccountId ? {
+  // Determine which payment gateway to use
+  const useStripe = !!stripeAccountId;
+  const useMercadoPago = !!mercadoPagoUserId && !!empresaId;
+  
+  // Initialize Stripe if it's the active payment gateway
+  const stripePromise = useStripe ? loadStripe(stripeKey, stripeAccountId ? {
     stripeAccount: stripeAccountId
-  } : undefined);
+  } : undefined) : null;
+
+  // Define a handler that will adapt the form submission based on payment gateway
+  const handleSuccess = (paymentMethodId: string, gateway: 'stripe' | 'mercadopago' = 'stripe') => {
+    console.log(`[CardSetupWrapper] Card setup success with ${gateway}:`, paymentMethodId);
+    onSuccess(paymentMethodId);
+  };
 
   return (
     <motion.div
@@ -184,14 +201,42 @@ function CardSetupWrapper({
           : "bg-white border-gray-200"
       )}
     >
-      <Elements stripe={stripePromise}>
+      {useStripe ? (
+        // Stripe payment form
+        <Elements stripe={stripePromise}>
+          <div className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <h3 className={cn(
+                "text-base font-medium",
+                theme === 'dark' ? "text-gray-200" : "text-gray-700"
+              )}>
+                Agregar Nueva Tarjeta
+              </h3>
+              <p className={cn(
+                "text-xs",
+                theme === 'dark' ? "text-gray-400" : "text-gray-500"
+              )}>
+                Completa los datos de tu tarjeta para guardarla de forma segura
+              </p>
+            </div>
+            
+            <CardSetupForm 
+              onSuccess={(paymentMethodId) => handleSuccess(paymentMethodId, 'stripe')}
+              onError={onError}
+              onBack={onBack}
+              theme={theme}
+            />
+          </div>
+        </Elements>
+      ) : useMercadoPago ? (
+        // MercadoPago payment form
         <div className="space-y-4">
           <div className="flex flex-col space-y-1">
             <h3 className={cn(
               "text-base font-medium",
               theme === 'dark' ? "text-gray-200" : "text-gray-700"
             )}>
-              Agregar Nueva Tarjeta
+              Agregar Nueva Tarjeta (MercadoPago)
             </h3>
             <p className={cn(
               "text-xs",
@@ -201,14 +246,40 @@ function CardSetupWrapper({
             </p>
           </div>
           
+          {/* TODO: Implement MercadoPago card form */}
           <CardSetupForm 
-            onSuccess={onSuccess}
+            onSuccess={(paymentMethodId) => handleSuccess(paymentMethodId, 'mercadopago')}
             onError={onError}
             onBack={onBack}
             theme={theme}
+            mercadoPagoMode={true}
+            mercadoPagoUserId={mercadoPagoUserId}
+            empresaId={empresaId}
           />
         </div>
-      </Elements>
+      ) : (
+        // No payment gateway configured
+        <div className="space-y-4">
+          <div className="flex flex-col space-y-1">
+            <h3 className={cn(
+              "text-base font-medium text-red-500",
+              theme === 'dark' ? "text-red-400" : "text-red-500"
+            )}>
+              Error de Configuración
+            </h3>
+            <p className={cn(
+              "text-xs",
+              theme === 'dark' ? "text-gray-400" : "text-gray-500"
+            )}>
+              No se ha configurado correctamente la pasarela de pagos.
+            </p>
+          </div>
+          <Button onClick={onBack} variant="outline" size="sm" className="w-full">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver
+          </Button>
+        </div>
+      )}
     </motion.div>
   )
 }
@@ -227,6 +298,8 @@ export function CardList({
   onCardSetupBack,
   theme = 'light',
   stripeAccountId,
+  mercadoPagoUserId,
+  empresaId,
   viewType
 }: CardListProps) {
   const [showAddForm, setShowAddForm] = useState(false)
@@ -279,6 +352,8 @@ export function CardList({
           onBack={handleCardSetupBack}
           theme={theme}
           stripeAccountId={stripeAccountId}
+          mercadoPagoUserId={mercadoPagoUserId}
+          empresaId={empresaId}
           viewType={viewType}
         />
       </div>

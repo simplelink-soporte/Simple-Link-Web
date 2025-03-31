@@ -30,6 +30,9 @@ interface CardListModalProps {
   onCardSetupBack?: () => void
   theme?: 'light' | 'dark'
   stripeAccountId?: string
+  mercadoPagoUserId?: string
+  empresaId?: string
+  amount?: number // Monto total para validación en pasarelas de pago
 }
 
 export function CardListModal({
@@ -46,7 +49,10 @@ export function CardListModal({
   onCardSetupError,
   onCardSetupBack,
   theme = 'light',
-  stripeAccountId
+  stripeAccountId,
+  mercadoPagoUserId,
+  empresaId,
+  amount
 }: CardListModalProps) {
   // Función para manejar la selección de tarjeta
   const handleCardSelect = (card: StoredCard) => {
@@ -123,13 +129,16 @@ export function CardListModal({
                     onAddCard={onAddCard}
                     onDeleteCard={onDeleteCard}
                     isExpanded={true}
-                    isLoading={false}
+                    isLoading={isLoading}
                     showCardForm={showCardForm}
                     onCardSetupSuccess={onCardSetupSuccess}
                     onCardSetupError={onCardSetupError}
                     onCardSetupBack={onCardSetupBack}
                     theme={theme}
                     stripeAccountId={stripeAccountId}
+                    mercadoPagoUserId={mercadoPagoUserId}
+                    empresaId={empresaId}
+                    amount={amount} // Pasar el monto total al CardList
                     viewType="mobile"
                   />
                 )}

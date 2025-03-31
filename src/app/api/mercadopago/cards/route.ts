@@ -3,6 +3,7 @@ import { mercadopago } from '@/lib/mercadopago';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { mercadoPagoCustomerService } from '@/services/mercadopago-customer.service';
 import { StoredCard } from '@/components/shifts-registration/components/card-list/shared/types';
+import axios from 'axios';
 
 /**
  * POST: Obtener tarjetas o guardar una nueva
@@ -65,11 +66,22 @@ export async function POST(request: Request) {
       
       // Obtener las tarjetas del cliente
       try {
+        console.log(`🔍 [${requestId}] Intentando obtener tarjetas con MercadoPago para cliente: ${mpCustomerId}`);
+        
         const mpCardsResponse = await mercadopago.card.all({
           customer_id: mpCustomerId
         });
         
-        const mpCards = mpCardsResponse.response || [];
+        console.log(`📄 [${requestId}] Respuesta de MercadoPago:`, {
+          status: mpCardsResponse?.status || 'unknown',
+          dataType: mpCardsResponse?.response ? typeof mpCardsResponse.response : 'undefined'
+        });
+        
+        // Verificar si tenemos un array o directamente el array
+        const mpCards = Array.isArray(mpCardsResponse.response) 
+          ? mpCardsResponse.response 
+          : (mpCardsResponse.response || []);
+        
         console.log(`✅ [${requestId}] Tarjetas obtenidas: ${mpCards.length}`);
         
         // Transformar al formato esperado por el frontend
@@ -98,83 +110,192 @@ export async function POST(request: Request) {
         return NextResponse.json({ cards });
       } catch (cardError: any) {
         console.error(`❌ [${requestId}] Error al obtener tarjetas:`, cardError);
-        return NextResponse.json(
-          { 
-            error: cardError.message || 'Error al obtener tarjetas',
-            details: cardError.cause || cardError.stack
-          },
-          { status: 500 }
-        );
+        
+        // Si hay un error específico del SDK, intentar directamente con la API
+        try {
+          console.log(`🔄 [${requestId}] Intentando obtener tarjetas directamente con la API REST`);
+          
+          const response = await axios.get(
+            `https://api.mercadopago.com/v1/customers/${mpCustomerId}/cards`,
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          
+          console.log(`✅ [${requestId}] Tarjetas obtenidas vía API REST: ${response.data?.length || 0}`);
+          
+          // Transformar al formato esperado por el frontend
+          const cards: StoredCard[] = (response.data || []).map((card: any) => ({
+            id: card.id,
+            brand: card.payment_method?.name?.toLowerCase() || 'unknown',
+            last4: card.last_four_digits,
+            expMonth: parseInt(card.expiration_month, 10),
+            expYear: parseInt(card.expiration_year, 10),
+            customerId: mpCustomerId
+          }));
+          
+          // Actualizar el contador de tarjetas en la BD
+          if (userId && empresaId) {
+            await supabaseAdmin
+              .from('mercadopago_customers')
+              .update({
+                payment_methods_count: cards.length,
+                last_used: new Date().toISOString()
+              })
+              .match({
+                mercadopago_customer_id: mpCustomerId
+              });
+          }
+          
+          return NextResponse.json({ cards });
+          
+        } catch (apiError: any) {
+          console.error(`❌ [${requestId}] Error al obtener tarjetas con API REST:`, {
+            message: apiError.message,
+            status: apiError.response?.status,
+            data: apiError.response?.data
+          });
+          
+          return NextResponse.json(
+            { error: 'Error al obtener tarjetas de MercadoPago', details: apiError.message },
+            { status: apiError.response?.status || 500 }
+          );
+        }
       }
     } else if (token && (mercadoPagoCustomerId || customerId)) {
       // CASO 2: Guardar una nueva tarjeta
-      // Esta es la implementación original para guardar tarjeta
-      const actualCustomerId = mercadoPagoCustomerId || customerId;
-      
-      console.log(`📝 [${requestId}] Guardando tarjeta para cliente:`, {
-        customerId: actualCustomerId,
-        token: token ? '...present...' : 'missing'
+      console.log(`📝 [${requestId}] Guardando nueva tarjeta para cliente:`, {
+        customerId: mercadoPagoCustomerId || customerId,
+        tokenExists: !!token,
+        tokenType: typeof token,
+        tokenLength: typeof token === 'string' ? token.length : 'N/A'
       });
-
-      if (!token || !actualCustomerId || !userId || !empresaId) {
-        console.error(`❌ [${requestId}] Faltan datos requeridos`);
+      
+      const mpCustomerId = mercadoPagoCustomerId || customerId;
+      
+      if (!mpCustomerId) {
+        console.error(`❌ [${requestId}] Falta customerId para guardar la tarjeta`);
         return NextResponse.json(
-          { error: 'Se requieren token, customerId, userId y empresaId' },
+          { error: 'Se requiere customerId para guardar la tarjeta' },
           { status: 400 }
         );
       }
-
-      // 1. Asociar tarjeta al cliente en MercadoPago
-      console.log(`📍 [${requestId}] Asociando tarjeta al cliente: ${actualCustomerId}`);
-      const cardResponse = await mercadopago.card.create({
-        token,
-        customer_id: actualCustomerId
-      });
-
-      if (!cardResponse || !cardResponse.response) {
-        throw new Error('Error al crear la tarjeta en MercadoPago');
-      }
-
-      const card = cardResponse.response;
-      console.log(`✅ [${requestId}] Tarjeta guardada en MercadoPago:`, {
-        cardId: card.id,
-        last4: card.last_four_digits
-      });
-
-      // 2. Actualizar contador de tarjetas en la tabla
-      await supabaseAdmin
-        .from('mercadopago_customers')
-        .update({
-          payment_methods_count: parseInt(card.payment_methods_count || '0', 10) + 1,
-          last_used: new Date().toISOString()
-        })
-        .match({
-          user_id: userId,
-          empresa_id: empresaId,
-          mercadopago_customer_id: actualCustomerId
+      
+      try {
+        // Guardar la tarjeta usando mercadopago
+        console.log(`⏳ [${requestId}] Intentando guardar tarjeta con SDK usando token:`, token);
+        
+        const savedCard = await mercadopago.card.create({
+          token,
+          customer_id: mpCustomerId
         });
-
-      return NextResponse.json({
-        success: true,
-        paymentMethodId: card.id,
-        last4: card.last_four_digits,
-        brand: card.payment_method?.name || 'unknown'
-      });
-
+        
+        console.log(`✅ [${requestId}] Tarjeta guardada correctamente:`, {
+          cardId: savedCard.response?.id
+        });
+        
+        // Actualizar contador en BD
+        if (userId && empresaId) {
+          // Primero obtener cantidad actualizada
+          const mpCardsResponse = await mercadopago.card.all({
+            customer_id: mpCustomerId
+          });
+          
+          const cardsCount = mpCardsResponse.response 
+            ? (Array.isArray(mpCardsResponse.response) 
+                ? mpCardsResponse.response.length 
+                : 1) 
+            : 1;
+          
+          await supabaseAdmin
+            .from('mercadopago_customers')
+            .update({
+              payment_methods_count: cardsCount,
+              last_used: new Date().toISOString()
+            })
+            .match({
+              mercadopago_customer_id: mpCustomerId
+            });
+        }
+        
+        return NextResponse.json({
+          success: true,
+          card: {
+            id: savedCard.response?.id,
+            brand: savedCard.response?.payment_method?.name?.toLowerCase() || 'unknown',
+            last4: savedCard.response?.last_four_digits,
+            expMonth: parseInt(savedCard.response?.expiration_month, 10),
+            expYear: parseInt(savedCard.response?.expiration_year, 10),
+            customerId: mpCustomerId
+          }
+        });
+        
+      } catch (cardError: any) {
+        console.error(`❌ [${requestId}] Error al guardar tarjeta:`, {
+          message: cardError.message,
+          status: cardError.response?.status,
+          data: cardError.response?.data
+        });
+        
+        // Si hay un error específico del SDK, intentar directamente con la API
+        try {
+          console.log(`🔄 [${requestId}] Intentando guardar tarjeta directamente con la API REST`);
+          
+          const response = await axios.post(
+            `https://api.mercadopago.com/v1/customers/${mpCustomerId}/cards`,
+            { token },
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          
+          console.log(`✅ [${requestId}] Tarjeta guardada vía API REST: ${response.status}`);
+          
+          return NextResponse.json({
+            success: true,
+            card: {
+              id: response.data?.id,
+              brand: response.data?.payment_method?.name?.toLowerCase() || 'unknown',
+              last4: response.data?.last_four_digits,
+              expMonth: parseInt(response.data?.expiration_month, 10),
+              expYear: parseInt(response.data?.expiration_year, 10),
+              customerId: mpCustomerId
+            }
+          });
+          
+        } catch (apiError: any) {
+          console.error(`❌ [${requestId}] Error al guardar tarjeta con API REST:`, {
+            message: apiError.message,
+            status: apiError.response?.status,
+            data: apiError.response?.data
+          });
+          
+          return NextResponse.json(
+            { 
+              error: 'Error al guardar tarjeta en MercadoPago',
+              details: apiError.response?.data?.message || apiError.message
+            },
+            { status: apiError.response?.status || 500 }
+          );
+        }
+      }
     } else {
-      console.error(`❌ [${requestId}] Solicitud inválida`);
+      console.error(`❌ [${requestId}] Solicitud inválida: faltan datos requeridos`);
       return NextResponse.json(
-        { error: 'Solicitud inválida' },
+        { error: 'Faltan datos requeridos para la operación' },
         { status: 400 }
       );
     }
   } catch (error: any) {
-    console.error(`❌ [${requestId}] Error al procesar solicitud:`, error);
+    console.error(`❌ [${requestId}] Error general:`, error);
     return NextResponse.json(
-      { 
-        error: error.message || 'Error al procesar solicitud',
-        details: error.cause || error.stack
-      },
+      { error: 'Error interno del servidor', details: error.message },
       { status: 500 }
     );
   }
@@ -185,80 +306,117 @@ export async function POST(request: Request) {
  * Query params: empresaId, userId
  */
 export async function GET(request: Request) {
-  const requestId = `req_mp_cards_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  console.log(`📝 [${requestId}] Iniciando solicitud para obtener tarjetas`);
-
-  const { searchParams } = new URL(request.url);
-  const empresaId = searchParams.get('empresaId');
-  const userId = searchParams.get('userId');
+  const requestId = `req_mp_cards_get_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  console.log(`📝 [${requestId}] Iniciando solicitud GET de tarjetas`);
   
-  if (!empresaId || !userId) {
-    console.error(`❌ [${requestId}] Faltan parámetros requeridos`);
-    return NextResponse.json(
-      { error: 'Faltan parámetros requeridos' },
-      { status: 400 }
-    );
-  }
-
   try {
-    console.log(`📍 [${requestId}] Obteniendo cliente para:`, {
-      empresaId: empresaId ? '...present...' : 'missing',
-      userId: userId ? '...present...' : 'missing'
-    });
-
-    // 1. Obtener el customer_id
+    const url = new URL(request.url);
+    const empresaId = url.searchParams.get('empresaId');
+    const userId = url.searchParams.get('userId');
+    
+    if (!empresaId || !userId) {
+      console.error(`❌ [${requestId}] Faltan parámetros requeridos (empresaId, userId)`);
+      return NextResponse.json(
+        { error: 'Se requieren empresaId y userId como parámetros' },
+        { status: 400 }
+      );
+    }
+    
+    // Obtener el customer_id desde el servicio
     const customerData = await mercadoPagoCustomerService.getOrCreateCustomer(
       userId,
       empresaId
     );
-
+    
     if (!customerData || customerData.status !== 'active') {
-      console.error(`❌ [${requestId}] No se encontró un cliente activo`);
-      return NextResponse.json(
-        { error: 'No se encontró un cliente activo' },
-        { status: 404 }
-      );
+      console.warn(`⚠️ [${requestId}] No se encontró un cliente activo`);
+      // No es un error crítico, simplemente no hay tarjetas
+      return NextResponse.json({ cards: [] });
     }
-
-    console.log(`✅ [${requestId}] Cliente obtenido:`, {
-      customerId: customerData.mercadoPagoCustomerId
+    
+    const mpCustomerId = customerData.mercadoPagoCustomerId;
+    
+    console.log(`✅ [${requestId}] Cliente identificado:`, {
+      customerId: mpCustomerId
     });
-
-    // 2. Obtener las tarjetas del cliente
-    const mpCardsResponse = await mercadopago.card.all({
-      customer_id: customerData.mercadoPagoCustomerId
-    });
-
-    const mpCards = mpCardsResponse.response || [];
-    console.log(`✅ [${requestId}] Tarjetas obtenidas: ${mpCards.length}`);
-
-    // 3. Transformar al formato esperado por el frontend
-    const cards: StoredCard[] = mpCards.map((card: any) => ({
-      id: card.id,
-      brand: card.payment_method?.name?.toLowerCase() || 'unknown',
-      last4: card.last_four_digits,
-      expMonth: parseInt(card.expiration_month, 10),
-      expYear: parseInt(card.expiration_year, 10),
-      customerId: customerData.mercadoPagoCustomerId
-    }));
-
-    // 4. Actualizar el contador de tarjetas en la BD
-    await supabaseAdmin
-      .from('mercadopago_customers')
-      .update({
-        payment_methods_count: cards.length,
-        last_used: new Date().toISOString()
-      })
-      .match({
-        mercadopago_customer_id: customerData.mercadoPagoCustomerId
+    
+    // Obtener las tarjetas del cliente
+    try {
+      const mpCardsResponse = await mercadopago.card.all({
+        customer_id: mpCustomerId
       });
-
-    return NextResponse.json({ cards });
-
+      
+      console.log(`📄 [${requestId}] Respuesta de MercadoPago:`, {
+        status: mpCardsResponse?.status || 'unknown',
+        dataType: typeof mpCardsResponse?.response
+      });
+      
+      // Verificar si tenemos un array o directamente el array
+      const mpCards = Array.isArray(mpCardsResponse.response) 
+        ? mpCardsResponse.response 
+        : (mpCardsResponse.response || []);
+      
+      console.log(`✅ [${requestId}] Tarjetas obtenidas: ${mpCards.length}`);
+      
+      // Transformar al formato esperado por el frontend
+      const cards: StoredCard[] = mpCards.map((card: any) => ({
+        id: card.id,
+        brand: card.payment_method?.name?.toLowerCase() || 'unknown',
+        last4: card.last_four_digits,
+        expMonth: parseInt(card.expiration_month, 10),
+        expYear: parseInt(card.expiration_year, 10),
+        customerId: mpCustomerId
+      }));
+      
+      return NextResponse.json({ cards });
+    } catch (cardError: any) {
+      console.error(`❌ [${requestId}] Error al obtener tarjetas:`, cardError);
+      
+      // Si hay un error específico del SDK, intentar directamente con la API
+      try {
+        console.log(`🔄 [${requestId}] Intentando obtener tarjetas directamente con la API REST`);
+        
+        const response = await axios.get(
+          `https://api.mercadopago.com/v1/customers/${mpCustomerId}/cards`,
+          {
+            headers: {
+              'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        console.log(`✅ [${requestId}] Tarjetas obtenidas vía API REST: ${response.data?.length || 0}`);
+        
+        // Transformar al formato esperado por el frontend
+        const cards: StoredCard[] = (response.data || []).map((card: any) => ({
+          id: card.id,
+          brand: card.payment_method?.name?.toLowerCase() || 'unknown',
+          last4: card.last_four_digits,
+          expMonth: parseInt(card.expiration_month, 10),
+          expYear: parseInt(card.expiration_year, 10),
+          customerId: mpCustomerId
+        }));
+        
+        return NextResponse.json({ cards });
+        
+      } catch (apiError: any) {
+        console.error(`❌ [${requestId}] Error al obtener tarjetas con API REST:`, {
+          message: apiError.message,
+          status: apiError.response?.status,
+          data: apiError.response?.data
+        });
+        
+        return NextResponse.json(
+          { error: 'Error al obtener tarjetas de MercadoPago', details: apiError.message },
+          { status: apiError.response?.status || 500 }
+        );
+      }
+    }
   } catch (error: any) {
-    console.error(`❌ [${requestId}] Error al obtener tarjetas:`, error);
+    console.error(`❌ [${requestId}] Error general:`, error);
     return NextResponse.json(
-      { error: error.message || 'Error al obtener tarjetas' },
+      { error: 'Error interno del servidor', details: error.message },
       { status: 500 }
     );
   }
@@ -269,62 +427,84 @@ export async function GET(request: Request) {
  * Query params: cardId, customerId
  */
 export async function DELETE(request: Request) {
-  const requestId = `req_mp_cards_delete_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  console.log(`📝 [${requestId}] Iniciando solicitud para eliminar tarjeta`);
-
-  const { searchParams } = new URL(request.url);
-  const cardId = searchParams.get('cardId');
-  const mercadoPagoCustomerId = searchParams.get('customerId');
+  const requestId = `req_mp_cards_del_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  console.log(`📝 [${requestId}] Iniciando solicitud DELETE de tarjeta`);
   
-  if (!cardId || !mercadoPagoCustomerId) {
-    console.error(`❌ [${requestId}] Faltan parámetros requeridos`);
-    return NextResponse.json(
-      { error: 'Faltan parámetros requeridos' },
-      { status: 400 }
-    );
-  }
-
   try {
-    console.log(`📍 [${requestId}] Eliminando tarjeta:`, {
+    const url = new URL(request.url);
+    const cardId = url.searchParams.get('cardId');
+    const customerId = url.searchParams.get('customerId');
+    
+    if (!cardId || !customerId) {
+      console.error(`❌ [${requestId}] Faltan parámetros requeridos (cardId, customerId)`);
+      return NextResponse.json(
+        { error: 'Se requieren cardId y customerId como parámetros' },
+        { status: 400 }
+      );
+    }
+    
+    console.log(`🗑️ [${requestId}] Eliminando tarjeta:`, {
       cardId,
-      customerId: mercadoPagoCustomerId
+      customerId
     });
-
-    // Eliminar tarjeta en MercadoPago
-    await mercadopago.card.delete(mercadoPagoCustomerId, cardId);
-
-    console.log(`✅ [${requestId}] Tarjeta eliminada correctamente`);
-
-    // Actualizar contador de tarjetas
-    await supabaseAdmin
-      .from('mercadopago_customers')
-      .update({
-        payment_methods_count: Math.max(0, 
-          // Resta 1 al contador actual, asegurando que nunca sea menor que 0
-          parseInt((await supabaseAdmin
-            .from('mercadopago_customers')
-            .select('payment_methods_count')
-            .eq('mercadopago_customer_id', mercadoPagoCustomerId)
-            .single()).data?.payment_methods_count || '1', 10) - 1
-        ),
-        last_used: new Date().toISOString()
-      })
-      .match({
-        mercadopago_customer_id: mercadoPagoCustomerId
+    
+    try {
+      // Eliminar la tarjeta en MercadoPago
+      await mercadopago.card.delete({
+        id: cardId,
+        customer_id: customerId
       });
-
-    return NextResponse.json({ 
-      success: true,
-      message: 'Tarjeta eliminada correctamente'
-    });
-
+      
+      console.log(`✅ [${requestId}] Tarjeta eliminada correctamente`);
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Tarjeta eliminada correctamente'
+      });
+    } catch (cardError: any) {
+      console.error(`❌ [${requestId}] Error al eliminar tarjeta:`, cardError);
+      
+      // Si hay un error específico del SDK, intentar directamente con la API
+      try {
+        console.log(`🔄 [${requestId}] Intentando eliminar tarjeta directamente con la API REST`);
+        
+        await axios.delete(
+          `https://api.mercadopago.com/v1/customers/${customerId}/cards/${cardId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        console.log(`✅ [${requestId}] Tarjeta eliminada vía API REST`);
+        
+        return NextResponse.json({
+          success: true,
+          message: 'Tarjeta eliminada correctamente'
+        });
+        
+      } catch (apiError: any) {
+        console.error(`❌ [${requestId}] Error al eliminar tarjeta con API REST:`, {
+          message: apiError.message,
+          status: apiError.response?.status,
+          data: apiError.response?.data
+        });
+        
+        return NextResponse.json(
+          { 
+            error: 'Error al eliminar tarjeta en MercadoPago',
+            details: apiError.response?.data?.message || apiError.message
+          },
+          { status: apiError.response?.status || 500 }
+        );
+      }
+    }
   } catch (error: any) {
-    console.error(`❌ [${requestId}] Error al eliminar tarjeta:`, error);
+    console.error(`❌ [${requestId}] Error general:`, error);
     return NextResponse.json(
-      { 
-        error: error.message || 'Error al eliminar tarjeta',
-        success: false
-      },
+      { error: 'Error interno del servidor', details: error.message },
       { status: 500 }
     );
   }

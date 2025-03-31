@@ -16,6 +16,7 @@ interface DepositPaymentParams {
   stripeCustomerId: string;
   stripeAccountId: string;
   off_session?: boolean;      // Default: false porque el usuario está presente durante el pago
+  customerEmail?: string;     // Email del cliente para facturación
 }
 
 interface DepositPaymentResult {
@@ -87,7 +88,8 @@ class DepositPaymentService {
           description: params.description || 'Pago de seña para reserva',
           stripeCustomerId: params.stripeCustomerId,
           stripeAccountId: params.stripeAccountId,
-          off_session: params.off_session !== undefined ? params.off_session : false
+          off_session: params.off_session !== undefined ? params.off_session : false,
+          customerEmail: params.customerEmail || '' // Añadir el email del cliente para facturación
         }),
       });
 

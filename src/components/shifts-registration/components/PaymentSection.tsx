@@ -37,6 +37,7 @@ export interface PaymentSectionProps {
   empresaId?: string 
   expandCardList?: boolean
   className?: string
+  amount?: number  // Monto total para validación en pasarelas de pago
 }
 
 export function PaymentSection({
@@ -50,7 +51,8 @@ export function PaymentSection({
   empresaId,
   expandCardList = false,
   className = "",
-  theme = 'light'
+  theme = 'light',
+  amount,
 }: PaymentSectionProps) {
   const { user } = useAuth()
   const [isListExpanded, setIsListExpanded] = useState(expandCardList)
@@ -409,6 +411,7 @@ export function PaymentSection({
           mercadoPagoUserId={mercadoPagoUserId}
           empresaId={empresaId}
           viewType={viewType}
+          amount={amount} // Monto total para validación en pasarelas de pago
         />
       )}
 
@@ -438,6 +441,9 @@ export function PaymentSection({
           onCardSetupBack={handleCardSetupBack}
           theme={theme}
           stripeAccountId={stripeAccountId}
+          mercadoPagoUserId={mercadoPagoUserId}
+          empresaId={empresaId}
+          amount={amount} // Monto total para validación en pasarelas de pago
         />
       )}
     </motion.div>

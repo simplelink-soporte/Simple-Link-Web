@@ -49,10 +49,30 @@ export function CardList(props: CardListProps) {
         />
       );
     case 'mercadopago':
+      // Validamos que tengamos empresaId antes de renderizar el componente
+      if (!props.empresaId) {
+        console.error('Error: Se requiere empresaId para usar MercadoPago');
+        return (
+          <div className="p-4 rounded-lg border border-red-200 bg-red-50 text-red-800">
+            <p className="text-sm">
+              Error de configuración: Falta el ID de empresa para MercadoPago.
+              Por favor, contacta al administrador.
+            </p>
+          </div>
+        );
+      }
+      
+      // Si hay un monto definido, registrarlo para debug
+      if (props.amount && props.amount > 1) {
+        console.log('[CardList] Pasando monto para validación de MercadoPago:', props.amount);
+      }
+      
       return (
         <MercadoPagoCardList
           {...props}
           mercadoPagoUserId={mercadoPagoUserId || props.mercadoPagoUserId}
+          empresaId={props.empresaId}
+          amount={props.amount || 1}
         />
       );
     case 'none':
