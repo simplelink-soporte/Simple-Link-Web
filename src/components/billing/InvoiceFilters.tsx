@@ -28,7 +28,7 @@ export function InvoiceFilters({
     { value: 'paid', label: 'Pagadas', color: '#22896F' },
     { value: 'deposit', label: 'Señas', color: '#F0A92E' },
     { value: 'guarantee', label: 'Garantía', color: '#8A4EBC' },
-    { value: 'pending', label: 'Pendientes', color: '#E67E22' },
+    // Se eliminó la opción 'Pendientes'
   ]
 
   // Encontrar la opción actual seleccionada

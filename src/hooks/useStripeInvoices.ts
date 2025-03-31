@@ -4,7 +4,7 @@ import { Invoice } from '@/services/billingService';
 interface UseStripeInvoicesParams {
   empresaId?: string;
   branchId?: string;
-  status?: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void';
+  status?: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void' | 'deposit' | 'guarantee' | 'pending';
   limit?: number;
   customerId?: string;
   enabled?: boolean;
@@ -30,11 +30,13 @@ export const useStripeInvoices = (params: UseStripeInvoicesParams = {}): UseQuer
     queryKey: ['stripe-invoices', empresaId, branchId, status, limit, customerId],
     queryFn: async () => {
       try {
-        // Construir la URL con los paru00e1metros de consulta
+        // Construir la URL con los parámetros de consulta
         const queryParams = new URLSearchParams();
+        
         if (empresaId) queryParams.append('empresaId', empresaId);
         if (limit) queryParams.append('limit', limit.toString());
-        if (status) queryParams.append('status', status);
+        // Sólo añadir el status si tiene un valor válido (no undefined, null o cadena vacía)
+        if (status && status.trim() !== '') queryParams.append('status', status);
         if (customerId) queryParams.append('customer', customerId);
 
         // Llamar al endpoint de la API
@@ -48,11 +50,29 @@ export const useStripeInvoices = (params: UseStripeInvoicesParams = {}): UseQuer
         const data = await response.json();
         const invoices = data.invoices;
         
-        // Filtrar por branchId si es necesario (suponiendo que este dato estu00e1 en los metadatos)
+        console.log(`📊 Total de facturas recibidas de Stripe: ${invoices.length}`);
+        console.log(`📊 Branch ID actual: "${branchId || 'no especificado'}"`);
+        
+        // Inspeccionar los branch_id de las facturas
+        if (invoices.length > 0) {
+          const branchIds = invoices.map((inv: Invoice) => inv.branch_id).filter(Boolean);
+          const uniqueBranchIds = Array.from(new Set(branchIds));
+          console.log(`📊 Branch IDs en las facturas: ${uniqueBranchIds.length ? JSON.stringify(uniqueBranchIds) : 'ninguno'}`);
+          
+          // Verificar el primer elemento para depuración
+          console.log('📊 Muestra de la primera factura:', {
+            id: invoices[0].id,
+            branch_id: invoices[0].branch_id || 'no definido',
+            invoice_number: invoices[0].invoice_number
+          });
+        }
+        
         const filteredInvoices = branchId
           ? invoices.filter((invoice: Invoice) => invoice.branch_id === branchId)
           : invoices;
           
+        console.log(`📊 Facturas después del filtrado: ${filteredInvoices.length}`);
+        
         return filteredInvoices;
       } catch (error) {
         console.error('Error al obtener facturas de Stripe:', error);

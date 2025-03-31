@@ -22,6 +22,32 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       });
     }
     
+    // Si no se proporcionaron datos del cliente, intentar obtenerlos de la reserva
+    if (!payload.customerEmail || !payload.customerName) {
+      console.log(`🔍 [${requestId}] Buscando datos del cliente en la reserva:`, payload.bookingId);
+      
+      const { data: booking } = await supabaseAdmin
+        .from('bookings')
+        .select('*, customer:customer_id(*)')
+        .eq('id', payload.bookingId)
+        .single();
+      
+      if (booking) {
+        console.log(`✅ [${requestId}] Datos de reserva encontrados`);
+        // Extraer datos del cliente de la reserva
+        payload.customerEmail = booking.customer?.email || booking.customer_email || payload.customerEmail;
+        payload.customerName = booking.customer?.name || booking.customer_name || payload.customerName;
+        
+        console.log(`👤 [${requestId}] Datos de cliente extraídos:`, {
+          hasEmail: Boolean(payload.customerEmail),
+          hasName: Boolean(payload.customerName),
+          customerId: booking.customer_id || 'N/A'
+        });
+      } else {
+        console.warn(`⚠️ [${requestId}] No se encontraron datos de la reserva:`, payload.bookingId);
+      }
+    }
+    
     // Crear instancia del servicio
     const validationService = new ValidationService(supabaseAdmin);
     const noShowService = new NoShowService({
@@ -36,7 +62,9 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       amount: payload.amount,
       reason: payload.reason,
       empresaId: payload.empresaId,
-      stripeData: payload.stripeData // Pasar los datos de Stripe si están disponibles
+      stripeData: payload.stripeData, // Pasar los datos de Stripe si están disponibles
+      customerEmail: payload.customerEmail,
+      customerName: payload.customerName
     });
 
     if (!result.success) {
@@ -65,4 +93,4 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       { status: 500 }
     );
   }
-} 
+}

@@ -21,6 +21,9 @@ interface CancelBookingModalProps {
   booking: {
     id: string
     stripe_payment_method_id?: string
+    customer_name?: string
+    customer_email?: string
+    customer_id?: string
   }
 }
 
@@ -46,6 +49,12 @@ export function CancelBookingModal({
 
   // Usamos el porcentaje de garantía de la BD o el valor predeterminado si no está disponible
   const effectiveGuaranteePercentage = guaranteePercentage || 40;
+
+  // Estado para almacenar los datos del cliente
+  const [customerDetails, setCustomerDetails] = useState<{
+    name?: string;
+    email?: string;
+  }>({});
 
   // Log inicial de props
   useEffect(() => {
@@ -126,6 +135,81 @@ export function CancelBookingModal({
     }
   }, [isOpen, hasGuarantee, loadAttempted, loadStripeConnection, booking?.id]);
 
+  // Obtener datos del cliente cuando se abre el modal
+  useEffect(() => {
+    if (isOpen && booking?.id) {
+      // Extraer datos del cliente directamente del objeto booking
+      const bookingCustomerEmail = booking.customer_email;
+      const bookingCustomerName = booking.customer_name;
+      
+      // Si no hay datos en el booking, intentar obtenerlos de la base de datos
+      if (!bookingCustomerEmail || !bookingCustomerName) {
+        const fetchCustomerDetails = async () => {
+          try {
+            console.log('🔍 Buscando datos del cliente para reserva:', booking.id);
+            // Corregir la consulta: no buscar customer:customer_id(*) porque no existe esa relación
+            const { data, error } = await supabase
+              .from('bookings')
+              .select('*')
+              .eq('id', booking.id)
+              .single();
+            
+            if (error) {
+              console.error('❌ Error al obtener datos del cliente:', error);
+              return;
+            }
+            
+            if (data) {
+              console.log('✅ Datos del cliente encontrados en BD:', {
+                hasCustomerEmail: Boolean(data.customer_email),
+                hasCustomerName: Boolean(data.customer_name)
+              });
+              
+              // Si tenemos un customer_id, intentar obtener más datos
+              if (data.customer_id) {
+                try {
+                  const { data: customerData } = await supabase
+                    .from('customers')
+                    .select('*')
+                    .eq('id', data.customer_id)
+                    .single();
+                  
+                  if (customerData) {
+                    console.log('✅ Datos adicionales del cliente obtenidos de tabla customers');
+                    setCustomerDetails({
+                      name: customerData.name || data.customer_name,
+                      email: customerData.email || data.customer_email
+                    });
+                    return;
+                  }
+                } catch (customerError) {
+                  console.warn('⚠️ No se pudieron obtener datos adicionales del cliente:', customerError);
+                }
+              }
+              
+              // Si no pudimos obtener más datos o no hay customer_id, usar lo que tenemos
+              setCustomerDetails({
+                name: data.customer_name,
+                email: data.customer_email
+              });
+            }
+          } catch (error) {
+            console.error('❌ Error al buscar cliente:', error);
+          }
+        };
+        
+        fetchCustomerDetails();
+      } else {
+        // Usar los datos disponibles directamente
+        console.log('✅ Usando datos de cliente disponibles en el objeto booking');
+        setCustomerDetails({
+          name: bookingCustomerName,
+          email: bookingCustomerEmail
+        });
+      }
+    }
+  }, [isOpen, booking]);
+
   // Establecer cargo por defecto solo cuando se complete la carga
   useEffect(() => {
     if (isOpen && hasGuarantee && !isLoadingStripe && stripeEnabled) {
@@ -186,23 +270,35 @@ export function CancelBookingModal({
           bookingId: booking.id,
           amount: totalAmount * (effectiveGuaranteePercentage / 100),
           reason,
-          empresaId: organization?.id
+          empresaId: organization?.id,
+          customerEmail: customerDetails.email || booking.customer_email,
+          customerName: customerDetails.name || booking.customer_name
         };
 
         // Si tenemos los datos de Stripe, incluirlos directamente para evitar problemas en el servidor
         if (stripeAccountId && stripePaymentMethodId) {
           console.log('✅ Enviando datos Stripe al servidor:', {
             hasAccountId: Boolean(stripeAccountId),
-            hasPaymentMethodId: Boolean(stripePaymentMethodId)
+            hasPaymentMethodId: Boolean(stripePaymentMethodId),
+            hasCustomerId: Boolean(stripeCustomerId),
+            hasCustomerEmail: Boolean(customerDetails.email || booking.customer_email)
           });
 
           Object.assign(requestData, {
             stripeData: {
               accountId: stripeAccountId,
-              paymentMethodId: stripePaymentMethodId
+              paymentMethodId: stripePaymentMethodId,
+              customerId: stripeCustomerId
             }
           });
         }
+
+        console.log('📤 Enviando solicitud de cargo con datos:', {
+          ...requestData,
+          hasCustomerEmail: Boolean(requestData.customerEmail),
+          hasCustomerName: Boolean(requestData.customerName),
+          timestamp: new Date().toISOString()
+        });
 
         const response = await fetch('/api/stripe/charge-no-show', {
           method: 'POST',

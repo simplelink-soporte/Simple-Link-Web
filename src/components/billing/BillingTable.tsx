@@ -12,7 +12,6 @@ import { useStripeInvoices } from "@/hooks/useStripeInvoices"
 // Componentes modularizados
 import { InvoiceCard } from "./InvoiceCard"
 import { InvoiceFilters } from "./InvoiceFilters"
-import { NewInvoiceModal } from "./NewInvoiceModal"
 import { getInvoiceStatusText } from "./utils"
 
 // Componente principal
@@ -20,59 +19,25 @@ export function BillingTable() {
   const { currentBranch } = useBranches()
   const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
-  const [isNewInvoiceModalOpen, setIsNewInvoiceModalOpen] = useState(false)
-  const [editingInvoice, setEditingInvoice] = useState<Invoice | undefined>()
   const [popoverOpen, setPopoverOpen] = useState<Record<string, boolean>>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | Invoice['status']>('all')
-  const [useRealStripeInvoices, setUseRealStripeInvoices] = useState(true)
-
-  // Query de facturas de prueba (mantenemos esta lógica para compatibilidad)
-  const mockInvoicesQuery = useInvoices({ 
-    branchId: currentBranch?.id,
-    onlyActive: false
-  })
-
-  // Query de facturas reales de Stripe
-  const stripeInvoicesQuery = useStripeInvoices({
-    branchId: currentBranch?.id,
-    // Mapeamos los estados internos a los estados de Stripe
+  
+  // Query de facturas reales de Stripe (ahora siempre usamos Stripe)
+  const invoicesQuery = useStripeInvoices({
+    empresaId: currentBranch?.empresa_id || '',
+    // Mapeamos los estados internos a los estados de Stripe,
+    // incluyendo ahora los estados personalizados (deposit, guarantee)
     status: statusFilter === 'all' ? undefined :
             statusFilter === 'paid' ? 'paid' :
             statusFilter === 'pending' ? 'open' :
             statusFilter === 'overdue' ? 'uncollectible' :
-            statusFilter === 'cancelled' ? 'void' : undefined,
-    enabled: !!currentBranch?.id && useRealStripeInvoices
+            statusFilter === 'cancelled' ? 'void' :
+            statusFilter === 'deposit' ? 'deposit' :
+            statusFilter === 'guarantee' ? 'guarantee' : 
+            undefined,
+    enabled: true // Siempre habilitado
   })
-
-  // Determinar qué facturas usar (reales o simuladas)
-  const invoicesQuery = useRealStripeInvoices ? stripeInvoicesQuery : mockInvoicesQuery
-
-  const handleNewInvoice = async (invoiceData: any) => {
-    setIsLoading(true)
-    try {
-      if (editingInvoice) {
-        // Simulamos actualización (sin llamar realmente al servicio)
-        toast.success('Factura actualizada exitosamente')
-      } else {
-        // Verificamos que currentBranch no sea null
-        if (!currentBranch) {
-          throw new Error('No hay una sede seleccionada')
-        }
-        
-        // Simulamos creación (sin llamar realmente al servicio)
-        toast.success('Factura creada exitosamente')
-      }
-      setIsNewInvoiceModalOpen(false)
-      setEditingInvoice(undefined)
-      invoicesQuery.refetch()
-    } catch (error) {
-      console.error('Error:', error)
-      toast.error('Error al guardar la factura')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleStatusChange = async (invoiceId: string, newStatus: Invoice['status']) => {
     try {
@@ -80,7 +45,7 @@ export function BillingTable() {
       
       // Invalidar todas las queries de facturas para esta sede
       await queryClient.invalidateQueries({
-        queryKey: useRealStripeInvoices ? ['stripe-invoices'] : ['invoices']
+        queryKey: ['stripe-invoices']
       })
 
       toast.success(`Factura ${getInvoiceStatusText(newStatus).toLowerCase()} exitosamente`)
@@ -100,18 +65,15 @@ export function BillingTable() {
       // Simulamos eliminación (sin llamar realmente al servicio)
       toast.success('Factura eliminada exitosamente')
       queryClient.invalidateQueries({
-        queryKey: useRealStripeInvoices ? ['stripe-invoices'] : ['invoices']
+        queryKey: ['stripe-invoices']
       })
-      setIsNewInvoiceModalOpen(false)
-      setEditingInvoice(undefined)
     } catch (error: any) {
       toast.error(error.message || 'Error al eliminar la factura')
     }
   }
 
   const handleInvoiceClick = (invoice: Invoice) => {
-    setEditingInvoice(invoice)
-    setIsNewInvoiceModalOpen(true)
+    // No hacer nada al hacer clic en una factura
   }
 
   const invoices = invoicesQuery.data || []
@@ -123,11 +85,7 @@ export function BillingTable() {
       invoice.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customer_name.toLowerCase().includes(searchTerm.toLowerCase())
     
-    // Si estamos usando Stripe, el filtrado por estado ya se hace en la API
-    // pero aún así podemos filtrar localmente para estar seguros
-    const matchesStatus = useRealStripeInvoices ? true : (statusFilter === 'all' || invoice.status === statusFilter)
-    
-    return matchesSearch && matchesStatus
+    return matchesSearch
   })
 
   // Renderizado condicional mejorado
@@ -174,22 +132,6 @@ export function BillingTable() {
         {/* Componente modularizado de filtros */}
         <div className="flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className={`text-xs px-3 py-1 h-auto ${useRealStripeInvoices ? 'bg-blue-50 text-blue-500 border-blue-200' : ''}`}
-              onClick={() => setUseRealStripeInvoices(true)}
-            >
-              Facturas de Stripe
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className={`text-xs px-3 py-1 h-auto ${!useRealStripeInvoices ? 'bg-gray-50 text-gray-500 border-gray-200' : ''}`}
-              onClick={() => setUseRealStripeInvoices(false)}
-            >
-              Datos de prueba
-            </Button>
             <InvoiceFilters 
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
@@ -200,14 +142,12 @@ export function BillingTable() {
         </div>
       </div>
 
-      {/* Lista de Facturas */}
+      {/* Lista de Facturas (diseño original restaurado) */}
       <div className="grid grid-cols-1">
         {filteredInvoices.length === 0 ? (
           <div className="text-left">
             <p className="text-gray-500">
-              {useRealStripeInvoices 
-                ? 'No hay facturas de Stripe registradas para esta sede.' 
-                : 'No hay facturas registradas'}
+              No hay facturas registradas para esta empresa.
             </p>
           </div>
         ) : (
@@ -223,34 +163,8 @@ export function BillingTable() {
         )}
       </div>
 
-      {/* Botones de acción */}
-      <div className="flex justify-end">
-        <Button 
-          onClick={() => {
-            setEditingInvoice(undefined)
-            setIsNewInvoiceModalOpen(true)
-          }}
-          disabled={useRealStripeInvoices} // Deshabilitamos la creación manual cuando usamos Stripe
-          className="text-xs"
-        >
-          Nueva Factura
-        </Button>
-      </div>
-
-      {/* Modal para crear/editar facturas */}
-      {isNewInvoiceModalOpen && (
-        <NewInvoiceModal 
-          invoice={editingInvoice}
-          isOpen={isNewInvoiceModalOpen}
-          onClose={() => {
-            setIsNewInvoiceModalOpen(false)
-            setEditingInvoice(undefined)
-          }}
-          onSave={handleNewInvoice}
-          isLoading={isLoading}
-          branchId={currentBranch.id}
-        />
-      )}
+      {/* Espacio vacío donde estaba el botón "Nueva Factura" */}
+      <div className="mt-4"></div>
     </div>
   )
 }

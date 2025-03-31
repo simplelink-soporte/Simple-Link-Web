@@ -106,6 +106,18 @@ interface InvoiceCardProps {
 }
 
 export function InvoiceCard({ invoice, onClick }: InvoiceCardProps) {
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Si hay URL de Stripe, abrirla directamente
+    if (invoice.stripe_hosted_url) {
+      window.open(invoice.stripe_hosted_url, '_blank');
+    } else {
+      // Si no hay URL de Stripe, usar el comportamiento estándar
+      onClick(invoice);
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-between p-3 rounded-lg border hover:shadow-sm transition-all bg-white"
@@ -143,16 +155,12 @@ export function InvoiceCard({ invoice, onClick }: InvoiceCardProps) {
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Botón con color neutro */}
-        <div className="text-right">
+        <div className="text-right flex flex-col items-end">
           <Button 
             size="sm" 
             variant="ghost"
             className="hover:bg-transparent font-normal text-xs text-gray-500 hover:text-gray-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(invoice);
-            }}
+            onClick={handleCardClick}
           >
             Ver detalle
           </Button>
