@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import type { AuthError, ClientUser, BaseAuthSession } from '@/types/supabase-auth'
+import type { AuthError, AdminUser, ClientUser, BaseAuthSession } from '@/types/supabase-auth'
 import { AUTH_CONFIG } from '@/config/auth.config'
 import { useAppStore } from '@/store/appStore'
 import { clearAllStorage } from '@/lib/storage-utils'
@@ -20,10 +20,11 @@ export interface AuthUserMetadata {
 interface AuthUser {
   id: string
   email: string
+  role: 'admin' | 'staff' | 'client'
   metadata: AuthUserMetadata
   app_metadata: {
+    role: 'admin' | 'staff'
     provider?: string
-    empresa_id?: string
   }
 }
 
@@ -34,24 +35,15 @@ interface AuthSession {
   expires_at: number
 }
 
-interface OnboardingCheckResult {
-  hasEmpresa: boolean
-  isOnboardingComplete: boolean
-  empresa?: any
-}
-
 interface AuthContextType {
   user: AuthUser | null
   session: AuthSession | null
   isLoading: boolean
   error: AuthError | null
-  signIn: (credentials: { email: string; password: string }) => Promise<{ user: AuthUser; session: AuthSession; onboarding: OnboardingCheckResult } | null>
-  signUp: (credentials: { email: string; password: string }) => Promise<{ user: AuthUser; session: AuthSession; onboarding: OnboardingCheckResult } | null>
+  signIn: (credentials: { email: string; password: string }) => Promise<{ user: AuthUser; session: AuthSession } | null>
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   clearError: () => void
-  checkEmpresaOnboarding: (userId: string) => Promise<OnboardingCheckResult>
-  refreshSession: () => Promise<AuthSession | null>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -93,10 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Referencias para el canal y el ID de pestaña
   const authChannelRef = useRef<BroadcastChannel | null>(null)
   const tabIdRef = useRef<string>(Math.random().toString(36).slice(2))
-
-  // Variable para controlar el tiempo entre refrescos de token
-  const [lastRefreshTime, setLastRefreshTime] = useState<number>(0)
-  const MIN_REFRESH_INTERVAL = 5000 // 5 segundos mínimo entre refrescos
 
   // Función para obtener o crear el canal de manera segura
   const getAuthChannel = useCallback(() => {
@@ -212,24 +200,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (sessionError) throw sessionError
 
-      if (currentSession) {
-        const sessionData: AuthSession = {
-          user: {
-            id: currentSession.user.id,
-            email: currentSession.user.email!,
-            metadata: currentSession.user.user_metadata,
-            app_metadata: {
-              provider: currentSession.user.app_metadata?.provider
-            }
-          },
+      if (currentSession?.user) {
+        const role = currentSession.user.app_metadata?.role || 'client'
+        
+        // Verificar el contexto de la ruta actual
+        const isAdminRoute = window.location.pathname.startsWith('/admin')
+        
+        // Solo verificar rol de admin en rutas de admin
+        if (isAdminRoute && role !== 'admin') {
+          await signOut()
+          throw new Error('No tienes permisos de administrador')
+        }
+
+        // Para rutas de clases, permitir roles de client y admin
+        if (!isAdminRoute && !['client', 'admin', 'superadmin'].includes(role)) {
+          await signOut()
+          throw new Error('No tienes permisos para acceder a esta sección')
+        }
+
+        // Crear el objeto de usuario autenticado
+        const authUser: AuthUser = {
+          id: currentSession.user.id,
+          email: currentSession.user.email || '',
+          role: role as AuthUser['role'],
+          metadata: currentSession.user.user_metadata,
+          app_metadata: {
+            role: role as 'admin' | 'staff',
+            provider: currentSession.user.app_metadata?.provider
+          }
+        }
+
+        const authSession: AuthSession = {
+          user: authUser,
           access_token: currentSession.access_token,
           refresh_token: currentSession.refresh_token,
           expires_at: currentSession.expires_at || 0
         }
 
-        setSession(sessionData)
-        setUser(sessionData.user)
-        persistSession(sessionData)
+        setUser(authUser)
+        setSession(authSession)
+        persistSession(authSession)
         updateLastSessionCheck()
       } else {
         setUser(null)
@@ -246,7 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
       setIsInitialized(true)
     }
-  }, [supabase, persistSession, clearSession])
+  }, [supabase, signOut, persistSession, clearSession])
 
   // Efecto para verificar y restaurar la sesión
   useEffect(() => {
@@ -274,178 +284,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [checkSession, clearSession, isInitialized])
 
-  // Función para verificar el estado de onboarding de una empresa
-  const checkEmpresaOnboarding = async (userId: string) => {
+  const signIn = async ({ email, password }: { email: string; password: string }) => {
     try {
-      console.log('Verificando onboarding para usuario:', userId)
+      setError(null)
+      setIsLoading(true)
       
-      // Obtener la empresa asociada al usuario directamente
-      // No usamos la tabla 'profiles' que no existe
-      const { data: empresa, error: empresaError } = await supabase
-        .from('empresas')
-        .select('*')
-        .eq('auth_user_id', userId)
-        .single()
-      
-      if (empresaError && empresaError.code !== 'PGRST116') {
-        // PGRST116 significa que no se encontró ningún registro, lo cual es normal para usuarios nuevos
-        console.warn('Error al obtener empresa:', empresaError)
-      }
-      
-      // Verificar si el usuario tiene una empresa asociada
-      const hasEmpresa = empresa !== null
-      // Verificar si el onboarding está completo basado en el campo 'onboarding' de la tabla empresas
-      // El onboarding está completo si el valor es 'COMPLETED' o 'Completo'
-      const isOnboardingComplete = empresa?.onboarding === 'COMPLETED' || empresa?.onboarding === 'Completo'
-      
-      console.log('Resultado de verificación de onboarding:', {
-        hasEmpresa,
-        isOnboardingComplete,
-        onboardingValue: empresa?.onboarding
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
-      
-      return {
-        hasEmpresa,
-        isOnboardingComplete,
-        empresa
-      }
-    } catch (error) {
-      console.error('Error al verificar onboarding:', error)
-      return {
-        hasEmpresa: false,
-        isOnboardingComplete: false,
-        empresa: null
-      }
-    }
-  }
 
-  // Función para refrescar la sesión
-  const refreshSession = async (): Promise<AuthSession | null> => {
-    try {
-      setIsLoading(true)
-      
-      // Refrescar la sesión
-      const { data, error } = await supabase.auth.refreshSession()
-      
-      if (error) {
-        console.error('Error al refrescar sesión:', error)
-        throw error
-      }
-      
-      if (!data.session) {
-        console.warn('No se pudo refrescar la sesión')
-        return null
-      }
-      
-      // Convertir la sesión de Supabase a nuestro tipo AuthSession
-      const authSession: AuthSession = {
-        ...data.session,
-        expires_at: data.session.expires_at || Math.floor(Date.now() / 1000) + 3600, // Si no hay expires_at, establecer 1 hora por defecto
-        user: {
-          ...data.session.user,
-          email: data.session.user.email || '',  // Asegurar que email nunca sea undefined
-          metadata: data.session.user.user_metadata || {}
+      if (error) throw error
+
+      if (data.user && data.session) {
+        const authUser: AuthUser = {
+          id: data.user.id,
+          email: data.user.email || '',
+          role: data.user.app_metadata?.role || 'client',
+          metadata: data.user.user_metadata,
+          app_metadata: {
+            role: data.user.app_metadata?.role || 'admin',
+            provider: data.user.app_metadata?.provider
+          }
         }
+
+        const authSession: AuthSession = {
+          user: authUser,
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at || 0
+        }
+
+        setUser(authUser)
+        setSession(authSession)
+        persistSession(authSession)
+
+        // No redirigimos aquí, dejamos que la página de login maneje la redirección
+        return { user: authUser, session: authSession }
       }
-      
-      // Actualizar el estado
-      setSession(authSession)
-      setUser(authSession.user)
-      
-      return authSession
-    } catch (error) {
-      console.error('Error en refreshSession:', error)
       return null
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const signIn = async (credentials: { email: string; password: string }) => {
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const { data, error } = await supabase.auth.signInWithPassword(credentials)
-      if (error) throw error
-
-      if (!data.user) {
-        throw new Error('No se encontró información del usuario')
-      }
-
-      // Verificar onboarding
-      const onboardingStatus = await checkEmpresaOnboarding(data.user.id)
-
-      const authUser: AuthUser = {
-        id: data.user.id,
-        email: data.user.email || '',
-        metadata: data.user.user_metadata,
-        app_metadata: {
-          provider: data.user.app_metadata?.provider,
-          empresa_id: onboardingStatus.empresa?.id
-        }
-      }
-
-      const authSession: AuthSession = {
-        user: authUser,
-        access_token: data.session!.access_token,
-        refresh_token: data.session!.refresh_token,
-        expires_at: data.session!.expires_at || 0
-      }
-
-      setUser(authUser)
-      setSession(authSession)
-      persistSession(authSession)
-
-      return { user: authUser, session: authSession, onboarding: onboardingStatus }
     } catch (error) {
-      console.error('Error en signIn:', error)
-      setError(error as AuthError)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const signUp = async (credentials: { email: string; password: string }) => {
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const { data, error } = await supabase.auth.signUp(credentials)
-      if (error) throw error
-
-      if (!data.user) {
-        throw new Error('No se encontró información del usuario')
-      }
-
-      // Verificar onboarding
-      const onboardingStatus = await checkEmpresaOnboarding(data.user.id)
-
-      const authUser: AuthUser = {
-        id: data.user.id,
-        email: data.user.email || '',
-        metadata: data.user.user_metadata,
-        app_metadata: {
-          provider: data.user.app_metadata?.provider,
-          empresa_id: onboardingStatus.empresa?.id
-        }
-      }
-
-      const authSession: AuthSession = {
-        user: authUser,
-        access_token: data.session!.access_token,
-        refresh_token: data.session!.refresh_token,
-        expires_at: data.session!.expires_at || 0
-      }
-
-      setUser(authUser)
-      setSession(authSession)
-      persistSession(authSession)
-
-      return { user: authUser, session: authSession, onboarding: onboardingStatus }
-    } catch (error) {
-      console.error('Error en signUp:', error)
       setError(error as AuthError)
       throw error
     } finally {
@@ -458,49 +336,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null)
       setIsLoading(true)
       
-      // Determinar si estamos en el contexto de clases o admin
-      const isClassesContext = window.location.pathname.startsWith('/clases')
-      
-      // Agregar parámetro para identificar el tipo de cliente
-      const clientType = isClassesContext ? 'classes' : 'admin'
-      
-      // Verificar si es registro o inicio de sesión basado en el contexto
-      let isRegistering = false
-      
-      if (isClassesContext) {
-        // Para clases, usar la clave específica de clases
-        isRegistering = typeof window !== 'undefined' 
-          ? localStorage.getItem('classes_auth_action') === 'register'
-          : false
-      } else {
-        // Para admin, usar la clave general
-        isRegistering = typeof window !== 'undefined' 
-          ? localStorage.getItem('auth_action') === 'register'
-          : false
-      }
-      
-      // Construir la URL de redirección basada en el contexto
-      let redirectUrl = ''
-      
-      if (isClassesContext) {
-        // Para clases, usar la ruta específica de clases
-        redirectUrl = `/clases/auth/callback?client_type=${clientType}&action=${isRegistering ? 'register' : 'login'}`
-      } else {
-        // Para admin, usar la ruta general
-        redirectUrl = `/auth/callback?client_type=${clientType}&action=${isRegistering ? 'register' : 'login'}`
-      }
-      
-      console.log('Iniciando autenticación con Google:', { 
-        clientType, 
-        isRegistering, 
-        redirectUrl,
-        isClassesContext
-      })
-      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${redirectUrl}`,
+          redirectTo: `${window.location.origin}/admin/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -510,7 +349,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) throw error
-      // La redirección la maneja Supabase automáticamente
 
     } catch (error: any) {
       console.error('Error en inicio de sesión con Google:', error)
@@ -521,23 +359,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Función para verificar y actualizar el rol de administrador
+  const verifyAndUpdateAdminRole = async (user: AuthUser) => {
+    try {
+      // Verificar si ya tiene rol de admin
+      if (user.app_metadata?.role === 'admin') {
+        return true
+      }
+
+      // Si no tiene rol, intentar actualizar a admin
+      const { data: { user: updatedUser }, error } = await supabase.auth.updateUser({
+        data: {
+          role: 'admin',
+          provider: 'google',
+          providers: ['google']
+        }
+      })
+
+      if (error) throw error
+      return updatedUser.app_metadata?.role === 'admin'
+
+    } catch (error) {
+      console.error('Error al verificar/actualizar rol:', error)
+      return false
+    }
+  }
+
   const clearError = () => setError(null)
 
   const updateUserMetadata = useCallback(async (metadata: Partial<AuthUserMetadata>) => {
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      setIsLoading(true)
+      
+      const { data: { user: updatedUser }, error } = await supabase.auth.updateUser({
         data: metadata
       })
 
-      if (error) {
-        return { error: error as AuthError }
+      if (error) throw error
+      
+      const currentUser = user
+      if (currentUser && updatedUser) {
+        const updatedAuthUser: AuthUser = {
+          ...currentUser,
+          metadata: {
+            ...currentUser.metadata,
+            ...metadata
+          }
+        }
+        setUser(updatedAuthUser)
       }
 
       return { error: null }
     } catch (error) {
-      return { error: error as AuthError }
+      console.error('Error al actualizar metadatos:', error)
+      return { error }
+    } finally {
+      setIsLoading(false)
     }
-  }, [supabase])
+  }, [supabase, user])
 
   const value = {
     user,
@@ -545,12 +424,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     error,
     signIn,
-    signUp,
     signInWithGoogle,
     signOut,
     clearError,
-    checkEmpresaOnboarding,
-    refreshSession
+    updateUserMetadata
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

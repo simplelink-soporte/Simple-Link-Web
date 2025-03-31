@@ -44,7 +44,8 @@ class AvailabilityService {
   
     const query = supabase.from('courts')
       .select('*')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .neq('sport', 'swimming'); // Excluir pistas de tipo 'swimming'
     
     if (params?.branchId) {
       query.eq('branch_id', params.branchId);

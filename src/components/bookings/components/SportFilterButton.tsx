@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { IconSwimming, IconBallTennis } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export type SportType = "racket" | "swimming"
 
@@ -20,49 +21,72 @@ export function SportFilterButton({
     onSportChange(nextSport)
   }
 
-  // Estilos condicionales basados en el deporte seleccionado
-  const buttonStyles = {
-    racket: "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100 hover:border-orange-400",
-    swimming: "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-400"
+  // Colores sutiles para los iconos
+  const iconColors = {
+    racket: "text-orange-500",
+    swimming: "text-blue-500"
   }
 
-  // El contenido interno del botón (icono y texto)
-  const buttonContent = currentSport === "racket" 
-    ? { 
-        icon: <IconBallTennis className="h-4 w-4 mr-1.5" stroke={1.5} />, 
-        text: "Raqueta",
-        color: "text-orange-700" 
-      }
-    : { 
-        icon: <IconSwimming className="h-4 w-4 mr-1.5" stroke={1.5} />, 
-        text: "Natación",
-        color: "text-blue-700" 
-      };
+  // Fondos extremadamente sutiles
+  const bgColors = {
+    racket: "bg-orange-50/10",
+    swimming: "bg-blue-50/10"
+  }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      className={cn(
-        "h-10 px-3 text-sm font-medium",
-        "transition-all duration-300 ease-in-out",
-        "flex items-center gap-1",
-        "shadow-sm",
-        buttonStyles[currentSport]
-      )}
-      onClick={handleClick}
-    >
-      <motion.div 
-        key={currentSport}
-        initial={{ scale: 0.8, opacity: 0 }} 
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex items-center"
-      >
-        {buttonContent.icon}
-        <span className={buttonContent.color}>{buttonContent.text}</span>
-      </motion.div>
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div 
+            className="inline-flex h-10 rounded-md border border-gray-200 bg-white overflow-hidden cursor-pointer"
+            onClick={handleClick}
+          >
+            {/* Opción Raqueta */}
+            <div 
+              className={cn(
+                "flex items-center px-3 transition-all duration-200 h-full",
+                currentSport === "racket" 
+                  ? `${bgColors.racket} text-gray-700 font-medium` 
+                  : "text-gray-500 hover:text-gray-700"
+              )}
+            >
+              <IconBallTennis 
+                className={cn(
+                  "h-4 w-4 mr-1.5",
+                  currentSport === "racket" ? iconColors.racket : "text-gray-400"
+                )} 
+                stroke={1.5} 
+              />
+              <span className="text-xs">Raqueta</span>
+            </div>
+
+            {/* Separador */}
+            <div className="w-px h-full bg-gray-200"></div>
+
+            {/* Opción Natación */}
+            <div 
+              className={cn(
+                "flex items-center px-3 transition-all duration-200 h-full",
+                currentSport === "swimming" 
+                  ? `${bgColors.swimming} text-gray-700 font-medium` 
+                  : "text-gray-500 hover:text-gray-700"
+              )}
+            >
+              <IconSwimming 
+                className={cn(
+                  "h-4 w-4 mr-1.5",
+                  currentSport === "swimming" ? iconColors.swimming : "text-gray-400"
+                )} 
+                stroke={1.5} 
+              />
+              <span className="text-xs">Natación</span>
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">
+          <p>Cambiar entre vistas de deportes</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }

@@ -48,9 +48,16 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
 
   useEffect(() => {
     if (show) {
+      // Verificar si el tutorial ya se ha visto
+      const tutorialShown = localStorage.getItem('dashboard_tutorial_shown')
+      if (tutorialShown === 'true') {
+        onClose?.()
+        return
+      }
+      
       const showTimer = setTimeout(() => {
         setShouldRender(true)
-      }, 500)
+      }, 300) // Reducido de 500ms a 300ms para que aparezca más rápido
 
       setIsVisible(true)
       return () => clearTimeout(showTimer)
@@ -58,11 +65,13 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
       setShouldRender(false)
       setIsVisible(false)
     }
-  }, [show])
+  }, [show, onClose])
 
   const handleClose = () => {
     setIsVisible(false)
     setTimeout(() => {
+      // Guardar en localStorage que el tutorial ha sido visto
+      localStorage.setItem('dashboard_tutorial_shown', 'true')
       onClose?.()
     }, 300)
   }
@@ -85,134 +94,140 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
     handleClose()
   }
 
-  if (!shouldRender || !isVisible) return null
-
-  const currentTutorialStep = tutorialSteps[currentStep]
+  if (!shouldRender) return null
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-      >
-        <div className="w-[550px] bg-white rounded-2xl shadow-xl border border-zinc-100/50 max-h-[90vh] overflow-hidden">
-          <div className="p-6 space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-shrink-0">
-                <Image
-                  src={currentTutorialStep.imageUrl}
-                  alt="Tutorial illustration"
-                  width={80}
-                  height={80}
-                  className="object-contain"
-                />
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[2px]"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+            className="w-[550px] bg-white rounded-2xl shadow-xl border border-zinc-100/50 max-h-[90vh] overflow-hidden"
+          >
+            <div className="p-6 space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-shrink-0">
+                  <Image
+                    src={tutorialSteps[currentStep].imageUrl}
+                    alt="Tutorial illustration"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
+                </div>
+                
+                <div className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">
+                  Paso {currentStep + 1} de {tutorialSteps.length}
+                </div>
               </div>
               
-              <div className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">
-                Paso {currentStep + 1} de {tutorialSteps.length}
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <motion.div 
-                key={`title-${currentStep}`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h3 className="text-lg font-medium text-zinc-900 font-mono tracking-tight">
-                  {currentTutorialStep.title}
-                </h3>
-              </motion.div>
+              <div className="space-y-3">
+                <motion.div 
+                  key={`title-${currentStep}`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h3 className="text-lg font-medium text-zinc-900 font-mono tracking-tight">
+                    {tutorialSteps[currentStep].title}
+                  </h3>
+                </motion.div>
 
-              <motion.div 
-                key={`description-${currentStep}`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="space-y-3"
-              >
-                <p className="text-sm text-zinc-600 leading-relaxed">
-                  {currentTutorialStep.description}
-                </p>
-                
-                {currentStep === 1 && (
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="inline-flex items-center px-3 py-1.5 text-sm font-medium border border-orange-300 bg-orange-50 text-orange-700 rounded-md">
-                      <IconBallTennis className="mr-1.5 h-4 w-4" stroke={1.5} />
-                      <span>Raqueta</span>
+                <motion.div 
+                  key={`description-${currentStep}`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="space-y-3"
+                >
+                  <p className="text-sm text-zinc-600 leading-relaxed">
+                    {tutorialSteps[currentStep].description}
+                  </p>
+                  
+                  {currentStep === 1 && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <div className="inline-flex items-center px-3 py-1.5 text-sm font-medium border border-orange-300 bg-orange-50 text-orange-700 rounded-md">
+                        <IconBallTennis className="mr-1.5 h-4 w-4" stroke={1.5} />
+                        <span>Raqueta</span>
+                      </div>
+                      
+                      <div className="inline-flex items-center px-3 py-1.5 text-sm font-medium border border-blue-300 bg-blue-50 text-blue-700 rounded-md">
+                        <IconSwimming className="mr-1.5 h-4 w-4" stroke={1.5} />
+                        <span>Natación</span>
+                      </div>
                     </div>
-                    
-                    <div className="inline-flex items-center px-3 py-1.5 text-sm font-medium border border-blue-300 bg-blue-50 text-blue-700 rounded-md">
-                      <IconSwimming className="mr-1.5 h-4 w-4" stroke={1.5} />
-                      <span>Natación</span>
-                    </div>
-                  </div>
-                )}
-                
-                <p className="text-xs text-zinc-500 mt-1">
-                  Del equipo de SimpleLink
-                </p>
-              </motion.div>
+                  )}
+                  
+                  <p className="text-xs text-zinc-500 mt-1">
+                    Del equipo de SimpleLink
+                  </p>
+                </motion.div>
 
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="flex justify-between pt-3"
-              >
-                <div>
-                  {currentStep > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex justify-between pt-3"
+                >
+                  <div>
+                    {currentStep > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePrevious}
+                        className="text-xs text-gray-600 mr-2"
+                      >
+                        Anterior
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={handlePrevious}
-                      className="text-xs text-gray-600 mr-2"
+                      onClick={handleSkip}
+                      className="text-xs text-gray-600"
                     >
-                      Anterior
+                      Omitir
                     </Button>
-                  )}
+                  </div>
                   <Button
-                    variant="outline"
+                    variant="default"
                     size="sm"
-                    onClick={handleSkip}
-                    className="text-xs text-gray-600"
+                    onClick={handleNext}
+                    className="text-xs"
                   >
-                    Omitir
+                    {currentStep < tutorialSteps.length - 1 ? "Siguiente" : "Finalizar"}
                   </Button>
-                </div>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleNext}
-                  className="text-xs"
-                >
-                  {currentStep < tutorialSteps.length - 1 ? "Siguiente" : "Finalizar"}
-                </Button>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-          
-          {/* Progress indicators */}
-          <div className="flex justify-center space-x-1 pb-4">
-            {tutorialSteps.map((_, index) => (
-              <div 
-                key={index}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  index === currentStep 
-                    ? "w-6 bg-blue-500" 
-                    : "w-3 bg-gray-200"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </motion.div>
+            
+            {/* Progress indicators */}
+            <div className="flex justify-center space-x-1 pb-4">
+              {tutorialSteps.map((_, index) => (
+                <div 
+                  key={index}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    index === currentStep 
+                      ? "w-6 bg-blue-500" 
+                      : "w-3 bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </AnimatePresence>
   )
 }

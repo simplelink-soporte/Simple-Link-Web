@@ -1,88 +1,107 @@
-'use client'
+"use client"
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/AuthContext'
+import { useAppStore } from '@/store/appStore'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
   const supabase = createClientComponentClient()
+  const { checkEmpresaOnboarding } = useAuth()
+  const { initialize, isInitialized } = useAppStore()
+  const [isProcessing, setIsProcessing] = useState(true)
 
   useEffect(() => {
-    // Escuchar cambios en el estado de autenticación
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Callback - Estado de autenticación:', event)
-      
-      if (event === 'SIGNED_IN') {
-        // Verificar que el usuario tenga rol de admin
-        const userRole = session?.user?.app_metadata?.role || 'client'
+    // Evitar múltiples ejecuciones
+    if (!isProcessing) return
+
+    const processAuth = async () => {
+      try {
+        // Obtener la sesión actual
+        const { data: { session } } = await supabase.auth.getSession()
         
-        if (userRole !== 'admin') {
-          console.log('Usuario sin permisos de admin')
-          await supabase.auth.signOut()
-          toast.error('No tienes permisos de administrador')
-          router.push('/admin/login')
+        if (!session) {
+          console.error('No se encontró sesión activa')
+          router.replace('/admin/login')
+          setIsProcessing(false)
           return
         }
 
-        console.log('Redirigiendo al panel...')
-        window.location.href = '/admin/dashboard/bookings/reservations'
-      }
+        // Recuperar la acción de autenticación (registro o login)
+        const searchParams = new URLSearchParams(window.location.search)
+        const urlAction = searchParams.get('action')
+        const authAction = urlAction || 
+          (typeof window !== 'undefined' ? localStorage.getItem('auth_action') || 'login' : 'login')
+          
+        console.log('Procesando autenticación:', { 
+          userId: session.user.id, 
+          authAction,
+          provider: session.user.app_metadata.provider 
+        })
+        
+        // Verificar onboarding
+        const onboardingStatus = await checkEmpresaOnboarding(session.user.id)
+        
+        // Recuperar la URL de redirección guardada en localStorage
+        const savedReturnUrl = typeof window !== 'undefined' 
+          ? localStorage.getItem('auth_return_url') 
+          : null
+        
+        // Limpiar localStorage para evitar problemas en futuras autenticaciones
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_return_url')
+          localStorage.removeItem('auth_action')
+        }
+        
+        // Si es un registro nuevo o no tiene empresa, redirigir a onboarding
+        if (authAction === 'register' || !onboardingStatus.hasEmpresa) {
+          router.replace('/admin/onboarding')
+          setIsProcessing(false)
+          return
+        }
+        
+        // Si el onboarding está incompleto, redirigir a onboarding
+        if (!onboardingStatus.isOnboardingComplete) {
+          router.replace('/admin/onboarding')
+          setIsProcessing(false)
+          return
+        }
 
-      if (event === 'SIGNED_OUT') {
-        console.log('Usuario cerró sesión')
-        router.push('/admin/login')
-      }
-    })
+        // Inicializar la aplicación antes de redirigir
+        if (!isInitialized) {
+          try {
+            await initialize(session.user.id)
+          } catch (error) {
+            console.error('Error al inicializar la aplicación:', error)
+            // Continuar con la redirección a pesar del error
+          }
+        }
 
-    // Verificar estado inicial
-    const checkInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        console.log('No hay sesión activa')
-        router.push('/admin/login')
-        return
+        // Usar la URL guardada o la ruta por defecto
+        const redirectTo = savedReturnUrl || '/admin/dashboard/bookings/reservations'
+        
+        // Usar router.replace en lugar de window.location.replace para evitar recargas completas
+        router.replace(redirectTo)
+        setIsProcessing(false)
+      } catch (error) {
+        console.error('Error al procesar autenticación:', error)
+        router.replace('/admin/login')
+        setIsProcessing(false)
       }
-
-      const userRole = session.user?.app_metadata?.role || 'client'
-      if (userRole !== 'admin') {
-        console.log('Usuario sin permisos de admin')
-        await supabase.auth.signOut()
-        toast.error('No tienes permisos de administrador')
-        router.push('/admin/login')
-        return
-      }
-
-      console.log('Sesión activa, redirigiendo...')
-      window.location.href = '/admin/dashboard/bookings/reservations'
     }
 
-    // Verificar sesión después de un breve delay
-    const timer = setTimeout(checkInitialSession, 1000)
-
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timer)
-    }
-  }, [supabase, router])
+    // Procesar autenticación inmediatamente para evitar retrasos
+    processAuth()
+  }, [router, supabase, checkEmpresaOnboarding, initialize, isInitialized, isProcessing])
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-4 max-w-sm mx-auto p-6">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">
-          Verificando autenticación...
-        </p>
-        <p className="text-xs text-gray-400">
-          Serás redirigido automáticamente...
-        </p>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     </div>
   )
-} 
+}
