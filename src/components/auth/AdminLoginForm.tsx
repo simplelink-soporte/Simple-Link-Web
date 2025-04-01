@@ -193,7 +193,7 @@ export function AdminLoginForm() {
           <h1 className="text-xl font-semibold text-gray-900">
             {isRegistering 
               ? 'Crear Cuenta - SimpleLink Admin' 
-              : 'SimpleLink - Panel Administrativo'}
+              : 'Iniciar Sesión - Administrador'}
           </h1>
           <p className="text-sm text-gray-600 mt-1">
             {isRegistering 
@@ -205,7 +205,7 @@ export function AdminLoginForm() {
         {/* Link de contacto para acceso administrativo */}
         <button
           type="button"
-          onClick={() => toast.info('Por favor, contacta con el equipo de soporte para solicitar acceso administrativo')}
+          onClick={() => window.open('https://www.simple-link.com', '_blank')}
           className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 mb-8"
         >
           ¿Necesitas ayuda? <span className="text-gray-900 font-medium">Contacta con soporte</span>

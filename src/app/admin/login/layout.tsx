@@ -10,5 +10,9 @@ export default function AdminLoginLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <div className="flex h-screen w-full overflow-hidden">
+      {children}
+    </div>
+  )
 } 
