@@ -1,0 +1,38 @@
+-- Crear el tipo enum para el estado del cliente si no existe
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'customer_status') THEN
+    CREATE TYPE customer_status AS ENUM ('active', 'inactive');
+  END IF;
+END $$;
+
+-- Crear tabla de clientes de MercadoPago
+CREATE TABLE public.mercadopago_customers (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    mercadopago_customer_id text NOT NULL,
+    empresa_id text NOT NULL,             -- Equivalente a stripe_account_id en la tabla original
+    status customer_status DEFAULT 'active'::customer_status,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone DEFAULT timezone('utc'::text, now()),
+    updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()),
+    last_used timestamp with time zone,
+    payment_methods_count integer DEFAULT 0,
+    last_payment_error text,
+    
+    PRIMARY KEY (id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES auth.users(id),
+    CONSTRAINT unique_customer_per_empresa UNIQUE (user_id, empresa_id)
+);
+
+-- Crear índices para optimizar consultas
+CREATE INDEX idx_mp_customer_id ON public.mercadopago_customers (mercadopago_customer_id);
+CREATE INDEX idx_mp_empresa_id ON public.mercadopago_customers (empresa_id);
+
+-- Comentarios para documentar la tabla
+COMMENT ON TABLE public.mercadopago_customers IS 'Almacena los IDs de clientes de MercadoPago para cada usuario y empresa';
+COMMENT ON COLUMN public.mercadopago_customers.id IS 'Identificador único de la tabla';
+COMMENT ON COLUMN public.mercadopago_customers.user_id IS 'ID del usuario en el sistema';
+COMMENT ON COLUMN public.mercadopago_customers.mercadopago_customer_id IS 'ID del cliente en MercadoPago';
+COMMENT ON COLUMN public.mercadopago_customers.empresa_id IS 'ID de la empresa en el sistema (equivalente a stripe_account_id)';
+COMMENT ON COLUMN public.mercadopago_customers.payment_methods_count IS 'Número de métodos de pago asociados a este cliente';

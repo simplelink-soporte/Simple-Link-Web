@@ -7,6 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { OrganizationProvider } from '@/contexts/OrganizationContext'
 import { BranchProvider } from '@/contexts/BranchContext'
 import { FormItemsProvider } from '@/contexts/FormItemsContext'
+import { PaymentGatewayProvider } from '@/providers/PaymentGatewayProvider'
 import { useEffect } from 'react'
 import { initEmailJS, checkEmailJSConfig } from '@/lib/emailjs'
 
@@ -68,13 +69,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <OrganizationProvider>
-          <BranchProvider>
-            <FormItemsProvider>
-              {children}
-            </FormItemsProvider>
-          </BranchProvider>
-        </OrganizationProvider>
+        <PaymentGatewayProvider>
+          <OrganizationProvider>
+            <BranchProvider>
+              <FormItemsProvider>
+                {children}
+              </FormItemsProvider>
+            </BranchProvider>
+          </OrganizationProvider>
+        </PaymentGatewayProvider>
       </AuthProvider>
       <Toaster 
         position="bottom-right"

@@ -4,7 +4,7 @@ import { X, CreditCard, ChevronDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { useState, useEffect, useCallback, useRef } from "react"
-import { CardList } from "./CardList"
+import { CardList } from "./card-list" 
 import { CardListModal } from "../../classes-registration/components/CardListModal"
 import { useStoredCards } from "@/hooks/useStoredCards"
 import { StripeProvider } from "@/contexts/StripeContext"
@@ -33,8 +33,11 @@ export interface PaymentSectionProps {
   onRemoveMethod: () => void
   viewType?: "mobile" | "desktop"
   stripeAccountId?: string
+  mercadoPagoUserId?: string 
+  empresaId?: string 
   expandCardList?: boolean
   className?: string
+  amount?: number  // Monto total para validación en pasarelas de pago
 }
 
 export function PaymentSection({
@@ -44,9 +47,12 @@ export function PaymentSection({
   onRemoveMethod,
   viewType = "desktop",
   stripeAccountId,
+  mercadoPagoUserId,
+  empresaId,
   expandCardList = false,
   className = "",
-  theme = 'light'
+  theme = 'light',
+  amount,
 }: PaymentSectionProps) {
   const { user } = useAuth()
   const [isListExpanded, setIsListExpanded] = useState(expandCardList)
@@ -68,9 +74,17 @@ export function PaymentSection({
   }
   
   // Hook para cargar las tarjetas guardadas
-  const { cards = [], isLoading: isCardsLoading, error: cardsError, deleteCard } = useStoredCards(refreshTrigger, {
-    autoLoad: true // Siempre cargar las tarjetas independientemente del estado de expandCardList
-  })
+  const { 
+    cards = [], 
+    isLoading: isCardsLoading, 
+    error: cardsError, 
+    deleteCard,
+    gatewayInfo 
+  } = useStoredCards(
+    empresaId || null, // Pasar el ID de empresa para determinar la pasarela
+    refreshTrigger,
+    { autoLoad: true } // Siempre cargar las tarjetas independientemente del estado de expandCardList
+  )
 
   // Actualizar método seleccionado cuando cambia desde props
   useEffect(() => {
@@ -175,13 +189,32 @@ export function PaymentSection({
 
   // Manejar la adición de una tarjeta
   const handleAddCard = () => {
-    if (!isStripeAvailable) {
-      console.error('El sistema de pagos no está disponible');
-      return;
-    }
+    // Obtener información sobre la pasarela activa
+    const activeGateway = gatewayInfo?.activeGateway;
+    
+    // Verificar según la pasarela activa
+    if (activeGateway === 'stripe') {
+      // Solo verificar Stripe si es la pasarela activa
+      if (!isStripeAvailable) {
+        console.error('El sistema de pagos (Stripe) no está disponible');
+        return;
+      }
 
-    if (!stripeContext?.isConnected) {
-      console.error('La cuenta de Stripe no está configurada correctamente');
+      if (!stripeContext?.isConnected) {
+        console.error('La cuenta de Stripe no está configurada correctamente');
+        return;
+      }
+    } else if (activeGateway === 'mercadopago') {
+      // Verificaciones específicas para MercadoPago si fuera necesario
+      if (!mercadoPagoUserId) {
+        console.error('El ID de usuario de MercadoPago no está configurado');
+        return;
+      }
+    } else if (activeGateway === 'loading') {
+      console.error('Aún detectando la pasarela de pago...');
+      return;
+    } else {
+      console.error('No hay una pasarela de pago configurada');
       return;
     }
 
@@ -375,6 +408,10 @@ export function PaymentSection({
           onCardSetupBack={handleCardSetupBack}
           theme={theme}
           stripeAccountId={stripeAccountId}
+          mercadoPagoUserId={mercadoPagoUserId}
+          empresaId={empresaId}
+          viewType={viewType}
+          amount={amount} // Monto total para validación en pasarelas de pago
         />
       )}
 
@@ -404,6 +441,9 @@ export function PaymentSection({
           onCardSetupBack={handleCardSetupBack}
           theme={theme}
           stripeAccountId={stripeAccountId}
+          mercadoPagoUserId={mercadoPagoUserId}
+          empresaId={empresaId}
+          amount={amount} // Monto total para validación en pasarelas de pago
         />
       )}
     </motion.div>

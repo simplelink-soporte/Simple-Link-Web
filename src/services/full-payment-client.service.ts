@@ -7,6 +7,7 @@ interface FullPaymentRequest {
   description?: string;
   stripeCustomerId?: string;
   stripeAccountId?: string;
+  customerEmail?: string; // Email para facturación
 }
 
 interface FullPaymentResponse {
@@ -106,7 +107,8 @@ export class FullPaymentClientService {
           empresaId: params.empresaId,
           description: params.description || 'Pago completo de reserva',
           paymentType: 'booking',
-          off_session: false // Cambiar a false porque el cliente está presente (on-session)
+          off_session: false, // Cambiar a false porque el cliente está presente (on-session)
+          customerEmail: params.customerEmail // Agregar el correo electrónico del cliente
         })
       });
       

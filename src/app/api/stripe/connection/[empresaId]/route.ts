@@ -18,8 +18,9 @@ export async function GET(
   { params }: { params: { empresaId: string } }
 ) {
   try {
-    // Asegurarse de que params es una promesa resuelta
-    const empresaId = await Promise.resolve(params.empresaId)
+    // Await params completamente antes de acceder a sus propiedades
+    const resolvedParams = await params;
+    const empresaId = resolvedParams.empresaId;
     
     if (!empresaId) {
       console.error('❌ empresaId no proporcionado en la ruta')

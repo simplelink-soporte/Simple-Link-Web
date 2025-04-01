@@ -7,6 +7,11 @@ import { timeToMinutes } from '@/lib/time-utils'
 import type { RentalSelection } from '@/types/items'
 import { formatInTimeZone } from 'date-fns-tz'
 import { DateTime } from 'luxon'
+import { StripeInvoiceService } from './stripe-invoice.service'
+import { Stripe } from 'stripe'
+
+// Instanciar el servicio de facturas
+const stripeInvoiceService = new StripeInvoiceService();
 
 // Crear una instancia de Supabase memoizada
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null;
@@ -135,16 +140,15 @@ const transformBookingDataForDB = (data: BookingCreationData): CreateBookingPara
     'booking'
   ) as PaymentTypeEnum;
 
-  // Transformar participantes - usando exactamente la lógica antigua
+  // Transformar participantes
   const transformedParticipants = data.participants?.map(p => ({
-    user_id: p.userId || p.id,
+    user_id: p.user_id || p.id,
     role: p.role
   })) || [];
 
   console.log('Participantes transformados:', {
     original: data.participants,
-    transformed: transformedParticipants,
-    count: transformedParticipants.length
+    transformed: transformedParticipants
   });
 
   // Asegurar que los rentals estén presentes y transformarlos
@@ -170,7 +174,7 @@ const transformBookingDataForDB = (data: BookingCreationData): CreateBookingPara
     p_description: data.description,
     p_participants: transformedParticipants,
     p_rental_items: transformedRentals,
-    p_empresa_id: data.empresa_id,
+    p_empresa_id: data.empresaId,
     p_stripe_payment_method_id: data.stripe_payment_method_id
   };
 
@@ -856,7 +860,7 @@ export const bookingService = {
       // Convertir a UTC manteniendo la fecha original
       const startTimeUTC = localStartDateTime.toUTC().toFormat('HH:mm:ss');
       const endTimeUTC = localEndDateTime.toUTC().toFormat('HH:mm:ss');
-      const bookingDateUTC = data.date; // Usar la fecha original
+      const bookingDateUTC = data.date; // Usar siempre la fecha original seleccionada
 
       // Verificar si la hora de fin es 00:00:00 o si la hora de fin es menor que la hora de inicio
       // Esto indica que la reserva cruza la medianoche en UTC
@@ -904,7 +908,7 @@ export const bookingService = {
       
       // Transformar participantes
       const transformedParticipants = data.participants?.map(p => ({
-        user_id: p.userId || p.id,
+        user_id: p.user_id || p.id,
         role: p.role
       })) || [];
 
@@ -937,7 +941,7 @@ export const bookingService = {
         p_description: data.description || null,
         p_participants: transformedParticipants,
         p_rental_items: transformedRentals,
-        p_empresa_id: data.empresa_id,
+        p_empresa_id: data.empresaId,
         p_stripe_payment_method_id: data.stripe_payment_method_id,
         // Nuevos parámetros para reservas de clase
         p_reservation_type: data.reservationType || 'booking',
@@ -950,17 +954,236 @@ export const bookingService = {
         p_participants: transformedParticipants
       });
 
-      const { data: result, error } = await this.getSupabase()
-        .rpc('create_booking_v2', bookingParams);
+      let result;
+      let error;
+      
+      try {
+        // Añadir un log justo antes de la llamada a RPC para mejor diagnóstico
+        console.log('🔄 Llamando al procedimiento create_booking_v2 con los parámetros mostrados');
+        
+        const response = await this.getSupabase()
+          .rpc('create_booking_v2', bookingParams);
+          
+        result = response.data;
+        error = response.error;
+        
+        // Log detallado de la respuesta completa
+        console.log('📊 Respuesta completa del procedimiento create_booking_v2:', {
+          success: !response.error,
+          statusCode: response.status,
+          errorMessage: response.error?.message,
+          errorDetails: response.error?.details,
+          resultType: typeof result,
+          resultValue: result
+        });
+      } catch (unexpectedError) {
+        // Capturar y registrar cualquier error que ocurra durante la llamada
+        console.error('❌ Excepción al llamar create_booking_v2:', {
+          errorType: typeof unexpectedError,
+          errorMessage: unexpectedError instanceof Error ? unexpectedError.message : String(unexpectedError),
+          errorStack: unexpectedError instanceof Error ? unexpectedError.stack : undefined,
+          errorObject: unexpectedError instanceof Object 
+            ? JSON.stringify(unexpectedError, Object.getOwnPropertyNames(unexpectedError), 2) 
+            : String(unexpectedError)
+        });
+        
+        // Re-lanzar para continuar con el flujo normal de manejo de errores
+        throw unexpectedError;
+      }
 
+      // El resultado puede ser directamente el UUID como string o un objeto
+      let bookingId = null;
+      
       if (error) {
         console.error('❌ Error al crear reserva:', error);
         return {
           error: this.getDBErrorMessage(error)
         };
       }
+      
+      // Determinar bookingId basado en el tipo de resultado
+      if (typeof result === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(result)) {
+        // El resultado es directamente un UUID
+        bookingId = result;
+        console.log('✅ UUID de reserva obtenido directamente:', bookingId);
+      } else if (result && typeof result === 'object' && 'id' in result) {
+        // El resultado es un objeto con propiedad id
+        bookingId = result.id;
+        console.log('✅ ID de reserva obtenido del objeto:', bookingId);
+      } else if (typeof result === 'number' || (typeof result === 'string' && !isNaN(Number(result)))) {
+        // El resultado es un número o string numérico
+        bookingId = result;
+        console.log('✅ ID de reserva obtenido como valor numérico:', bookingId);
+      } else {
+        console.warn('⚠️ No se pudo determinar ID directamente del resultado:', result);
+        
+        // En caso de que no podamos obtener el ID del resultado, buscar la reserva recién creada
+        try {
+          console.log('🔍 Buscando la reserva recién creada por criterios únicos...');
+          
+          const { data: recentBookings, error: searchError } = await this.getSupabase()
+            .from('bookings')
+            .select('id')
+            .eq('court_id', data.courtId)
+            .eq('date', data.date)
+            .eq('start_time', bookingParams.p_start_time)
+            .eq('end_time', bookingParams.p_end_time)
+            .order('created_at', { ascending: false })
+            .limit(1);
+            
+          if (searchError || !recentBookings || recentBookings.length === 0) {
+            console.error('❌ Error al buscar la reserva recién creada:', searchError || 'No se encontró ninguna reserva');
+            return { data: { success: true } }; // Indicamos éxito genérico sin ID
+          }
+          
+          bookingId = recentBookings[0].id;
+          console.log('✅ ID de reserva encontrado mediante búsqueda:', bookingId);
+        } catch (searchError) {
+          console.error('❌ Error durante la búsqueda de reserva recién creada:', searchError);
+          return { data: { success: true } }; // Indicamos éxito genérico sin ID
+        }
+      }
 
-      return { data: result };
+      // Si no pudimos obtener un ID de reserva pero la creación fue exitosa
+      if (!bookingId) {
+        console.warn('⚠️ No se pudo determinar el ID de la reserva, pero parece que se creó correctamente');
+        return { data: { success: true } };
+      }
+
+      // Generar factura automáticamente si:
+      // 1. El pago es completo (type='booking', status='completed')
+      // 2. Es un pago con seña (type='deposit', status='partial')
+      const shouldGenerateInvoice = 
+        (data.paymentType === 'booking' && data.paymentStatus === 'completed') || 
+        (data.paymentType === 'deposit' && data.paymentStatus === 'partial');
+      
+      if (shouldGenerateInvoice && bookingId) {
+        console.log('🧾 Intentando generar factura para reserva:', {
+          bookingId: bookingId,
+          paymentType: data.paymentType,
+          paymentStatus: data.paymentStatus,
+          empresaId: data.empresaId,
+          isDepositPayment: data.paymentType === 'deposit'
+        });
+        
+        try {
+          // Obtener información necesaria de la cancha (siempre la necesitaremos para el nombre)
+          const { data: courtDetails, error: courtDetailsError } = await this.getSupabase()
+            .from('courts')
+            .select('name, branch_id, sedes:branch_id(id, name, empresa_id)')
+            .eq('id', data.courtId)
+            .single();
+          
+          if (courtDetailsError || !courtDetails) {
+            console.error('❌ Error al obtener detalles de la cancha para factura:', courtDetailsError);
+            return { data: { id: bookingId } }; // Devolvemos el ID que encontramos
+          }
+          
+          // Asegurarnos de que tenemos un ID de empresa
+          if (!data.empresaId) {
+            console.warn('⚠️ No se proporcionó empresaId en los datos de la reserva, obteniendo de la cancha');
+            
+            // Determinar el ID de la empresa desde los datos de la cancha
+            data.empresaId = courtDetails.sedes?.empresa_id;
+            
+            console.log('✅ ID de empresa obtenido desde la cancha:', {
+              empresaId: data.empresaId,
+              courtId: data.courtId,
+              branchId: courtDetails.branch_id
+            });
+          }
+          
+          // Verificar explícitamente si ya tenemos un empresaId
+          if (!data.empresaId) {
+            console.error('❌ No se pudo determinar el ID de la empresa');
+            return { data: { id: bookingId } }; // Devolvemos el ID que encontramos
+          }
+          
+          // Obtener la conexión de Stripe para esta empresa desde la tabla stripe_connections
+          const { data: stripeConnection, error: stripeConnectionError } = await this.getSupabase()
+            .from('stripe_connections')
+            .select('stripe_account_id')
+            .eq('empresa_id', data.empresaId)
+            .single();
+            
+          if (stripeConnectionError || !stripeConnection || !stripeConnection.stripe_account_id) {
+            console.error('❌ Error al obtener cuenta Stripe de la empresa:', stripeConnectionError || 'No se encontró conexión de Stripe');
+            return { data: { id: bookingId } }; // Devolvemos el ID que encontramos
+          }
+          
+          // Obtener información del cliente para la factura
+          const clientInfo = await this.getClientInfoForInvoice(data, bookingId);
+          
+          // Determinar el monto a facturar según el tipo de pago
+          let amount = data.courtPrice + (data.rentalItemsPrice || 0);
+          let description = `Reserva: ${courtDetails.name || 'Cancha'}`;
+          
+          // Parámetros adicionales para indicar si es pago parcial o completo
+          let paymentType: 'booking' | 'deposit' = 'booking';
+          let isPartialPayment = false;
+          
+          // Si es un pago con seña, ajustar el monto y la descripción
+          if (data.paymentType === 'deposit') {
+            amount = data.depositAmount || 0;
+            description = `Seña para reserva: ${courtDetails.name || 'Cancha'}`;
+            paymentType = 'deposit';
+            isPartialPayment = true;
+            
+            console.log('💵 Generando factura por pago de SEÑA:', {
+              fullAmount: data.courtPrice + (data.rentalItemsPrice || 0),
+              depositAmount: amount,
+              isPartialPayment: true
+            });
+          } else {
+            console.log('💵 Generando factura por pago COMPLETO:', {
+              amount: amount,
+              isPartialPayment: false
+            });
+          }
+          
+          // Ahora crear la factura directamente
+          const invoiceService = new StripeInvoiceService();
+          const invoiceResult = await invoiceService.createManualBookingInvoice({
+            stripeAccountId: stripeConnection.stripe_account_id,
+            customerId: clientInfo.stripeCustomerId,
+            customerEmail: clientInfo.email,
+            customerName: clientInfo.name,
+            amount: amount,
+            description: description,
+            bookingId: bookingId,
+            empresaId: data.empresaId,
+            courtId: data.courtId,
+            branchId: courtDetails.branch_id,
+            paymentType: paymentType,
+            isPartialPayment: isPartialPayment
+          });
+          
+          console.log('✅ Resultado de generación de factura directa:', invoiceResult);
+          
+          // No actualizamos la reserva con datos de factura ya que las columnas no existen
+          // El ID y URL de factura estarán disponibles en la respuesta pero no se guardan en BD
+          if (invoiceResult.success && invoiceResult.invoiceId) {
+            console.log('✅ Factura generada correctamente pero no almacenada en BD:', {
+              invoiceId: invoiceResult.invoiceId,
+              invoiceUrl: invoiceResult.invoiceUrl || null
+            });
+          }
+        } catch (invoiceError) {
+          console.error('❌ Error al generar factura para reserva:', {
+            error: invoiceError,
+            bookingId: bookingId
+          });
+          // No fallamos la creación de la reserva si hay error en la factura
+        }
+      } else {
+        console.log('ℹ️ No se genera factura. Tipo de pago o estado no elegible:', {
+          paymentType: data.paymentType,
+          paymentStatus: data.paymentStatus,
+          shouldGenerate: shouldGenerateInvoice
+        });
+      }
+
+      return { data: { id: bookingId } };
     } catch (error) {
       console.error('Error inesperado al crear reserva:', error);
       return {
@@ -1189,5 +1412,237 @@ export const bookingService = {
   async deleteBooking(id: string) {
     const supabase = this.getSupabase()
     // ... existing code ...
+  },
+
+  // Método para obtener información del cliente para la factura
+  async getClientInfoForInvoice(data: BookingCreationData, bookingId: string): Promise<{
+    email: string;
+    name: string;
+    stripeCustomerId?: string;
+  }> {
+    console.log('🔍 Buscando información de cliente para factura:', {
+      bookingData: data,
+      bookingId
+    });
+
+    // 1. Primero verificar si hay participantes en los datos de reserva
+    if (data.participants && data.participants.length > 0) {
+      const participant = data.participants[0]; // Tomar el primer participante
+      
+      // Si tenemos un userId, intentar obtener datos del usuario desde la base de datos
+      if ('userId' in participant && participant.userId || 'id' in participant && participant.id) {
+        const userId = ('userId' in participant ? participant.userId : '') || ('id' in participant ? participant.id : '');
+        const { data: usuario, error } = await this.getSupabase()
+          .from('usuarios')
+          .select('id, email, nombre')
+          .eq('id', userId)
+          .single();
+          
+        if (!error && usuario) {
+          console.log('✅ Cliente encontrado en datos del participante (usuario):', usuario);
+          
+          // Buscar o crear cliente en Stripe
+          const stripeCustomer = await this.findOrCreateStripeCustomer({
+            email: usuario.email as string,
+            name: usuario.nombre as string,
+            empresaId: data.empresaId
+          });
+          
+          return {
+            email: usuario.email as string,
+            name: usuario.nombre as string,
+            stripeCustomerId: stripeCustomer?.id
+          };
+        } else {
+          console.warn('⚠️ No se encontró usuario para el participante:', {
+            userId,
+            error
+          });
+        }
+      }
+      
+      // Si no tenemos datos de usuario pero el participante tiene email (para el caso de participantes añadidos directamente)
+      if ('email' in participant && participant.email) {
+        console.log('✅ Cliente encontrado en datos del participante directo');
+        
+        // Determinar el nombre a partir de diferentes propiedades disponibles
+        let name = 'Cliente';
+        if ('firstName' in participant && 'lastName' in participant && participant.firstName && participant.lastName) {
+          name = `${participant.firstName as string} ${participant.lastName as string}`;
+        } else if ('firstName' in participant && participant.firstName) {
+          name = participant.firstName as string;
+        } else if ('name' in participant && participant.name) {
+          name = participant.name as string;
+        }
+        
+        // Buscar o crear cliente en Stripe
+        const stripeCustomer = await this.findOrCreateStripeCustomer({
+          email: participant.email as string,
+          name,
+          empresaId: data.empresaId
+        });
+        
+        return {
+          email: participant.email as string,
+          name,
+          stripeCustomerId: stripeCustomer?.id
+        };
+      }
+    }
+    
+    // 2. Si no hay participantes, buscar en booking_participants de la reserva recién creada
+    const { data: participants, error: participantsError } = await this.getSupabase()
+      .from('booking_participants')
+      .select(`
+        id,
+        user_id,
+        role,
+        usuarios:user_id(id, email, nombre)
+      `)
+      .eq('booking_id', bookingId)
+      .limit(1);
+      
+    if (!participantsError && participants && participants.length > 0) {
+      const participant = participants[0];
+      const usuarioData = participant.usuarios;
+      
+      if (usuarioData && typeof usuarioData === 'object' && 'email' in usuarioData && usuarioData.email) {
+        console.log('✅ Cliente encontrado en booking_participants:', usuarioData);
+        
+        const email = usuarioData.email as string;
+        const nombre = ('nombre' in usuarioData && usuarioData.nombre) ? (usuarioData.nombre as string) : 'Cliente';
+        
+        // Buscar o crear cliente en Stripe
+        const stripeCustomer = await this.findOrCreateStripeCustomer({
+          email,
+          name: nombre,
+          empresaId: data.empresaId
+        });
+        
+        return {
+          email,
+          name: nombre,
+          stripeCustomerId: stripeCustomer?.id
+        };
+      }
+    }
+    
+    // 3. Si todavía no tenemos cliente, buscar en stripe_customers asociados a la empresa
+    if (data.empresaId) {
+      const { data: stripeCustomers, error: stripeError } = await this.getSupabase()
+        .from('stripe_customers')
+        .select('*')
+        .eq('empresa_id', data.empresaId)
+        .limit(1);
+        
+      if (!stripeError && stripeCustomers && stripeCustomers.length > 0) {
+        const customer = stripeCustomers[0];
+        console.log('✅ Cliente encontrado en stripe_customers:', customer);
+        
+        return {
+          email: (customer.email as string) || 'cliente@example.com',
+          name: (customer.name as string) || 'Cliente',
+          stripeCustomerId: customer.stripe_customer_id as string
+        };
+      }
+    }
+    
+    // 4. Si no encontramos ninguna información de cliente, usar valores predeterminados
+    console.warn('⚠️ No se encontró información de cliente, usando valores predeterminados');
+    
+    // Intentar crear un cliente genérico en Stripe
+    const defaultEmail = 'cliente@example.com';
+    const defaultName = 'Cliente';
+    
+    // Buscar o crear cliente en Stripe
+    const stripeCustomer = await this.findOrCreateStripeCustomer({
+      email: defaultEmail,
+      name: defaultName,
+      empresaId: data.empresaId
+    });
+    
+    return {
+      email: defaultEmail,
+      name: defaultName,
+      stripeCustomerId: stripeCustomer?.id
+    };
+  },
+  
+  // Método para buscar o crear un cliente en Stripe
+  async findOrCreateStripeCustomer({
+    email,
+    name,
+    empresaId
+  }: {
+    email: string;
+    name: string;
+    empresaId?: string;
+  }): Promise<{id: string} | null> {
+    try {
+      if (!empresaId) {
+        console.warn('⚠️ No se proporcionó empresaId para buscar/crear cliente Stripe');
+        return null;
+      }
+      
+      // Obtener la conexión de Stripe para esta empresa
+      const { data: stripeConnection, error: stripeConnectionError } = await this.getSupabase()
+        .from('stripe_connections')
+        .select('stripe_account_id')
+        .eq('empresa_id', empresaId)
+        .single();
+        
+      if (stripeConnectionError || !stripeConnection || !stripeConnection.stripe_account_id) {
+        console.error('❌ Error al obtener cuenta Stripe de la empresa:', stripeConnectionError || 'No se encontró conexión de Stripe');
+        return null;
+      }
+
+      // Generar un ID temporal para simular un usuario
+      // En un flujo real, debería ser el ID del usuario autenticado
+      const tempUserId = `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Utilizar el endpoint de API para crear/obtener el cliente en lugar de Stripe directamente
+      console.log('🔄 Buscando/creando cliente en Stripe mediante API:', {
+        email,
+        name,
+        stripeAccountId: stripeConnection.stripe_account_id
+      });
+      
+      // Crear customer a través del endpoint seguro
+      const response = await fetch('/api/stripe/customers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          name,
+          stripeAccountId: stripeConnection.stripe_account_id,
+          userId: tempUserId,
+          metadata: { 
+            empresaId,
+            source: 'booking_creation'
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error al crear cliente: ${errorData.error || response.statusText}`);
+      }
+      
+      const customerData = await response.json();
+      
+      if (!customerData || !customerData.stripeCustomerId) {
+        console.error('❌ Respuesta de API sin ID de cliente:', customerData);
+        return null;
+      }
+      
+      console.log('✅ Cliente Stripe obtenido mediante API:', customerData);
+      
+      return { id: customerData.stripeCustomerId };
+    } catch (error) {
+      console.error('❌ Error al buscar/crear cliente en Stripe:', error);
+      return null;
+    }
   }
-} 
+}

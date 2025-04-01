@@ -8,200 +8,248 @@
   {
     "type": "log",
     "message": [
-      "🔍 Buscando link de empresa con slug:",
-      "default"
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "🔍 Verificando disponibilidad para sesión:",
+      "[CardList] Pasarela de pago activa:",
       {
-        "classId": "8c93e907-f8e2-49cd-b176-9c5e3b303bac",
-        "sessionDate": "2025-03-22",
-        "startTime": "09:00",
-        "endTime": "10:00"
-      }
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "✅ Zona horaria de la sede:",
-      "Europe/Madrid"
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "🕒 Conversión de horarios para verificación de disponibilidad:",
-      {
-        "local": {
-          "date": "2025-03-22",
-          "start": "09:00",
-          "end": "10:00",
-          "timezone": "Europe/Madrid",
-          "localStart": "2025-03-22T09:00:00.000+01:00",
-          "localEnd": "2025-03-22T10:00:00.000+01:00"
-        },
-        "utc": {
-          "date": "2025-03-22",
-          "start": "2025-03-22 08:00:00.000",
-          "end": "2025-03-22 09:00:00.000",
-          "fullStartUTC": "2025-03-22T08:00:00.000Z",
-          "fullEndUTC": "2025-03-22T09:00:00.000Z"
-        }
-      }
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "🔎 Consultando reservas existentes para clase con parámetros:",
-      {
-        "class_id": "8c93e907-f8e2-49cd-b176-9c5e3b303bac",
-        "date": "2025-03-22",
-        "start_time": "2025-03-22 08:00:00.000",
-        "end_time": "2025-03-22 09:00:00.000",
-        "error": null
-      }
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "✅ Disponibilidad de sesión regular:",
-      {
-        "classId": "8c93e907-f8e2-49cd-b176-9c5e3b303bac",
-        "sessionDate": "2025-03-22",
-        "startTime": "09:00",
-        "endTime": "10:00",
-        "totalCapacity": 4,
-        "bookedSpots": 0,
-        "availableSpots": 4,
-        "isAvailable": true
-      }
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "🔒 Registrando sesión 8c93e907-f8e2-49cd-b176-9c5e3b303bac-2025-03-22-09:00-562b18bd-612d-4c20-b9ad-c31a1aea44a2 con stock validado: 4"
-    ]
-  },
-  {
-    "type": "log",
-    "message": [
-      "[SummaryStep] IDs disponibles:",
-      {
-        "clientOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "activeGateway": "mercadopago",
         "stripeAccountId": null,
-        "isConnected": false,
-        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+        "mercadoPagoUserId": "2350138911",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c"
       }
     ]
   },
   {
     "type": "log",
     "message": [
-      "[SummaryStep] IDs disponibles:",
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
       {
-        "clientOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardList] Pasarela de pago activa:",
+      {
+        "activeGateway": "mercadopago",
         "stripeAccountId": null,
-        "isConnected": false,
-        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+        "mercadoPagoUserId": "2350138911",
+        "empresaId": "d7cadf98-56ac-48cb-8468-079fdc239f3c"
       }
     ]
   },
   {
     "type": "log",
     "message": [
-      "[StripeConfig] Iniciando búsqueda de configuración:",
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
       {
-        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 0
       }
     ]
   },
   {
     "type": "log",
     "message": [
-      "[StripeConfig] Configuración encontrada:",
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al obtener/crear customer:",
       {
-        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
-        "status": "active",
-        "charges_enabled": true,
-        "is_active": true
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "body": "{\"error\":\"Error al crear cliente en MercadoPago: Error desconocido\",\"stack\":\"Error: Error al crear cliente en MercadoPago: Error desconocido\\n    at MercadoPagoCustomerService.createNewCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:219:23)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async MercadoPagoCustomerService.getOrCreateCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:86:20)\\n    at async POST (webpack-internal:///(rsc)/./src/app/api/mercadopago/customer/route.ts:48:34)\\n    at async AppRouteRouteModule.do (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:33911)\\n    at async AppRouteRouteModule.handle (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:41240)\\n    at async doRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1517:42)\\n    at async responseGenerator (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1906:28)\\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1917:28)\\n    at async DevServer.renderPageComponent (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2365:24)\\n    at async DevServer.renderToResponseImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2402:32)\\n    at async DevServer.pipeImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1009:25)\\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\next-server.js:301:17)\\n    at async DevServer.handleRequestImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:898:17)\\n    at async C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:371:20\\n    at async Span.traceAsyncFn (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\trace\\\\trace.js:157:20)\\n    at async DevServer.handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:368:24)\\n    at async invokeRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:234:21)\\n    at async handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:422:24)\\n    at async requestHandlerImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:446:13)\\n    at async Server.requestListener (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\start-server.js:158:13)\",\"details\":\"{}\"}"
       }
     ]
   },
   {
-    "type": "log",
+    "type": "error",
     "message": [
-      "[SummaryStep] IDs disponibles:",
+      "[MercadoPagoStoredCards] ❌ Error al cargar las tarjetas:",
       {
-        "clientOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
-        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
-        "isConnected": true,
-        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+        "message": "Error al obtener/crear el cliente en MercadoPago: 500 Internal Server Error",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "retryCount": 0
       }
     ]
   },
   {
     "type": "log",
     "message": [
-      "[PaymentTypeList] Seleccionando tipo de pago: booking"
+      "[MercadoPagoStoredCards] 🔄 Reintentando en 1000ms (intento 1/3)"
     ]
   },
   {
-    "type": "log",
+    "type": "error",
     "message": [
-      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      "[MercadoPagoStoredCards] ❌ Error al obtener/crear customer:",
       {
-        "id": "booking",
-        "name": "Pago en el Club",
-        "description": "Pagar al llegar al club",
-        "requiresCard": false,
-        "paymentConfig": {
-          "status": "pending",
-          "currency": "EUR"
-        }
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "body": "{\"error\":\"Error al crear cliente en MercadoPago: Error desconocido\",\"stack\":\"Error: Error al crear cliente en MercadoPago: Error desconocido\\n    at MercadoPagoCustomerService.createNewCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:219:23)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async MercadoPagoCustomerService.getOrCreateCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:86:20)\\n    at async POST (webpack-internal:///(rsc)/./src/app/api/mercadopago/customer/route.ts:48:34)\\n    at async AppRouteRouteModule.do (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:33911)\\n    at async AppRouteRouteModule.handle (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:41240)\\n    at async doRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1517:42)\\n    at async responseGenerator (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1906:28)\\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1917:28)\\n    at async DevServer.renderPageComponent (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2365:24)\\n    at async DevServer.renderToResponseImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2402:32)\\n    at async DevServer.pipeImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1009:25)\\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\next-server.js:301:17)\\n    at async DevServer.handleRequestImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:898:17)\\n    at async C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:371:20\\n    at async Span.traceAsyncFn (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\trace\\\\trace.js:157:20)\\n    at async DevServer.handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:368:24)\\n    at async invokeRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:234:21)\\n    at async handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:422:24)\\n    at async requestHandlerImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:446:13)\\n    at async Server.requestListener (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\start-server.js:158:13)\",\"details\":\"{}\"}"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al cargar las tarjetas:",
+      {
+        "message": "Error al obtener/crear el cliente en MercadoPago: 500 Internal Server Error",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "retryCount": 1
       }
     ]
   },
   {
     "type": "log",
     "message": [
-      "📢 Tipo de pago seleccionado:",
-      "booking",
-      ""
+      "[MercadoPagoStoredCards] 🔄 Reintentando en 2000ms (intento 2/3)"
     ]
   },
   {
     "type": "log",
     "message": [
-      "Ejecutando navegación al siguiente paso"
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 2
+      }
     ]
   },
   {
     "type": "log",
     "message": [
-      "📌 Emitiendo evento para crear reserva desde StepNavigation"
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al obtener/crear customer:",
+      {
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "body": "{\"error\":\"Error al crear cliente en MercadoPago: Error desconocido\",\"stack\":\"Error: Error al crear cliente en MercadoPago: Error desconocido\\n    at MercadoPagoCustomerService.createNewCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:219:23)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async MercadoPagoCustomerService.getOrCreateCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:86:20)\\n    at async POST (webpack-internal:///(rsc)/./src/app/api/mercadopago/customer/route.ts:48:34)\\n    at async AppRouteRouteModule.do (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:33911)\\n    at async AppRouteRouteModule.handle (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:41240)\\n    at async doRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1517:42)\\n    at async responseGenerator (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1906:28)\\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1917:28)\\n    at async DevServer.renderPageComponent (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2365:24)\\n    at async DevServer.renderToResponseImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2402:32)\\n    at async DevServer.pipeImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1009:25)\\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\next-server.js:301:17)\\n    at async DevServer.handleRequestImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:898:17)\\n    at async C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:371:20\\n    at async Span.traceAsyncFn (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\trace\\\\trace.js:157:20)\\n    at async DevServer.handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:368:24)\\n    at async invokeRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:234:21)\\n    at async handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:422:24)\\n    at async requestHandlerImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:446:13)\\n    at async Server.requestListener (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\start-server.js:158:13)\",\"details\":\"{}\"}"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al cargar las tarjetas:",
+      {
+        "message": "Error al obtener/crear el cliente en MercadoPago: 500 Internal Server Error",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "retryCount": 2
+      }
     ]
   },
   {
     "type": "log",
     "message": [
-      "📣 Evento de creación de reserva recibido"
+      "[MercadoPagoStoredCards] 🔄 Reintentando en 3000ms (intento 3/3)"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 3
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al obtener/crear customer:",
+      {
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "body": "{\"error\":\"Error al crear cliente en MercadoPago: Error desconocido\",\"stack\":\"Error: Error al crear cliente en MercadoPago: Error desconocido\\n    at MercadoPagoCustomerService.createNewCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:219:23)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async MercadoPagoCustomerService.getOrCreateCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:86:20)\\n    at async POST (webpack-internal:///(rsc)/./src/app/api/mercadopago/customer/route.ts:48:34)\\n    at async AppRouteRouteModule.do (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:33911)\\n    at async AppRouteRouteModule.handle (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:41240)\\n    at async doRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1517:42)\\n    at async responseGenerator (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1906:28)\\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1917:28)\\n    at async DevServer.renderPageComponent (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2365:24)\\n    at async DevServer.renderToResponseImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2402:32)\\n    at async DevServer.pipeImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1009:25)\\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\next-server.js:301:17)\\n    at async DevServer.handleRequestImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:898:17)\\n    at async C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:371:20\\n    at async Span.traceAsyncFn (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\trace\\\\trace.js:157:20)\\n    at async DevServer.handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:368:24)\\n    at async invokeRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:234:21)\\n    at async handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:422:24)\\n    at async requestHandlerImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:446:13)\\n    at async Server.requestListener (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\start-server.js:158:13)\",\"details\":\"{}\"}"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al cargar las tarjetas:",
+      {
+        "message": "Error al obtener/crear el cliente en MercadoPago: 500 Internal Server Error",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "retryCount": 3
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "refreshTrigger": 0,
+        "retryCount": 3
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[MercadoPagoStoredCards] 📋 Obteniendo customer ID de MercadoPago"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al obtener/crear customer:",
+      {
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "body": "{\"error\":\"Error al crear cliente en MercadoPago: Error desconocido\",\"stack\":\"Error: Error al crear cliente en MercadoPago: Error desconocido\\n    at MercadoPagoCustomerService.createNewCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:219:23)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async MercadoPagoCustomerService.getOrCreateCustomer (webpack-internal:///(rsc)/./src/services/mercadopago-customer.service.ts:86:20)\\n    at async POST (webpack-internal:///(rsc)/./src/app/api/mercadopago/customer/route.ts:48:34)\\n    at async AppRouteRouteModule.do (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:33911)\\n    at async AppRouteRouteModule.handle (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\compiled\\\\next-server\\\\app-route.runtime.dev.js:24:41240)\\n    at async doRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1517:42)\\n    at async responseGenerator (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1906:28)\\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1917:28)\\n    at async DevServer.renderPageComponent (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2365:24)\\n    at async DevServer.renderToResponseImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:2402:32)\\n    at async DevServer.pipeImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:1009:25)\\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\next-server.js:301:17)\\n    at async DevServer.handleRequestImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\base-server.js:898:17)\\n    at async C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:371:20\\n    at async Span.traceAsyncFn (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\trace\\\\trace.js:157:20)\\n    at async DevServer.handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\dev\\\\next-dev-server.js:368:24)\\n    at async invokeRender (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:234:21)\\n    at async handleRequest (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:422:24)\\n    at async requestHandlerImpl (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\router-server.js:446:13)\\n    at async Server.requestListener (C:\\\\Users\\\\uriel03\\\\Documents\\\\GitHub\\\\Simple-Link-Web\\\\node_modules\\\\next\\\\dist\\\\server\\\\lib\\\\start-server.js:158:13)\",\"details\":\"{}\"}"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "[MercadoPagoStoredCards] ❌ Error al cargar las tarjetas:",
+      {
+        "message": "Error al obtener/crear el cliente en MercadoPago: 500 Internal Server Error",
+        "mercadoPagoUserId": "2350138911",
+        "userId": "57cafc67-beff-4fcf-8624-be867993c594",
+        "retryCount": 3
+      }
     ]
   }
 ]

@@ -8,6 +8,7 @@ export interface StripeContextType {
   isLoading: boolean;
   error: Error | null;
   charges_enabled: boolean;
+  isArgentina?: boolean;
 }
 
 const StripeContext = createContext<StripeContextType | undefined>(undefined);
@@ -19,6 +20,7 @@ interface StripeProviderProps {
   isLoading: boolean;
   error: Error | null;
   charges_enabled: boolean;
+  isArgentina?: boolean;
 }
 
 export function StripeProvider({ 
@@ -27,14 +29,16 @@ export function StripeProvider({
   isConnected,
   isLoading,
   error,
-  charges_enabled
+  charges_enabled,
+  isArgentina = false
 }: StripeProviderProps) {
   const value: StripeContextType = {
     stripeAccountId: empresaId,
     isConnected,
     isLoading,
     error,
-    charges_enabled
+    charges_enabled,
+    isArgentina
   };
 
   return (
@@ -50,4 +54,4 @@ export function useStripe() {
     throw new Error('useStripe debe usarse dentro de un StripeProvider');
   }
   return context;
-} 
+}

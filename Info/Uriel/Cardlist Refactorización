@@ -1,0 +1,93 @@
+Análisis y Plan de Refactorización para Integrar MercadoPago en CardList
+Tras analizar el código existente, detecto que efectivamente CardList.tsx está fuertemente acoplado a Stripe, lo que dificulta la incorporación de MercadoPago. A continuación, presento un plan detallado para refactorizar la arquitectura manteniendo la estética actual pero separando la lógica de las pasarelas de pago.
+
+Situación Actual
+CardList.tsx:
+Componente específico para Stripe que muestra tarjetas guardadas
+Integra directamente dependencias de Stripe (@stripe/react-stripe-js, @stripe/stripe-js)
+Maneja formulario de configuración de tarjetas específico para Stripe
+useStoredCards.ts:
+Hook diseñado específicamente para tarjetas de Stripe
+Depende del contexto de Stripe (useStripe)
+No está preparado para otras pasarelas de pago
+SummaryStep.tsx:
+Ya utiliza usePaymentGatewayByCountry para determinar la pasarela según el país
+Tiene lógica condicional para procesar pagos con Stripe o MercadoPago
+No tiene un enfoque modular para la visualización de tarjetas
+Plan de Refactorización
+
+1. Crear una Arquitectura de Componentes Modular
+CopyInsert
+components/
+  └── shifts-registration/
+      └── components/
+          ├── card-list/
+          │   ├── CardList.tsx (Componente Wrapper)
+          │   ├── StripeCardList.tsx
+          │   ├── MercadoPagoCardList.tsx
+          │   └── shared/
+          │       ├── CardItem.tsx (Componente compartido)
+          │       └── AddCardButton.tsx (Componente compartido)
+
+2. Refactorizar los Hooks para Soportar Ambas Pasarelas
+CopyInsert
+hooks/
+  ├── useStoredCards.ts (Hook abstracto que delega a implementaciones específicas)
+  ├── payment-gateways/
+  │   ├── useStripeStoredCards.ts
+  │   └── useMercadoPagoStoredCards.ts
+
+3. Plan de Implementación Detallado
+Paso 1: Extraer Componentes Compartidos
+Mover CardItem y AddCardButton a archivos separados en card-list/shared/
+Asegurar que estos componentes sean agnósticos de la pasarela de pago
+Paso 2: Crear Versiones Específicas del CardList
+StripeCardList.tsx:
+Contiene la lógica específica de Stripe
+Reutiliza los componentes compartidos
+Incorpora CardSetupForm específico para Stripe
+MercadoPagoCardList.tsx:
+Implementa la lógica específica para MercadoPago
+Reutiliza los componentes compartidos
+Incorpora un formulario de configuración específico para MercadoPago
+Paso 3: Crear un Wrapper CardList Unificado
+typescript
+CopyInsert
+// CardList.tsx (Wrapper)
+export function CardList(props: CardListProps) {
+  const { activeGateway } = usePaymentGatewayByCountry(props.empresaId || null);
+
+  if (activeGateway === 'stripe') {
+    return <StripeCardList {...props} />;
+  } else if (activeGateway === 'mercadopago') {
+    return <MercadoPagoCardList {...props} />;
+  } else {
+    // Fallback o mensaje de error
+    return <div>No hay pasarela de pago disponible</div>;
+  }
+}
+Paso 4: Refactorizar los Hooks de Tarjetas Almacenadas
+useStoredCards.ts (hook maestro):
+Determina la pasarela adecuada usando usePaymentGatewayByCountry
+Delega a hooks específicos según la pasarela
+useStripeStoredCards.ts:
+Conserva la funcionalidad actual de useStoredCards
+Se enfoca específicamente en Stripe
+useMercadoPagoStoredCards.ts:
+Implementación análoga para MercadoPago
+Misma interfaz que useStripeStoredCards pero con lógica propia
+Paso 5: Actualizar SummaryStep.tsx
+Modificar el SummaryStep para utilizar el nuevo CardList wrapper, que internamente determinará qué implementación específica mostrar.
+
+4. Ventajas de Este Enfoque
+Modularidad: Clara separación de responsabilidades por pasarela de pago
+Mantenibilidad: Facilita incorporar nuevas pasarelas en el futuro
+Consistencia visual: Mantiene la estética unificada al compartir componentes de UI base
+Experiencia de usuario coherente: Comportamiento consistente independientemente de la pasarela
+Principio SOLID: Sigue los principios de responsabilidad única y sustitución de Liskov
+
+5. Consideraciones Técnicas
+Interfaz de datos unificada: Estandarizar la estructura de las tarjetas entre pasarelas
+Manejo de errores consistente: Asegurar que los errores se manejen de manera uniforme
+Pruebas: Implementar pruebas para cada módulo específico y para la integración
+Tipos compartidos: Crear interfaces TypeScript compartidas para garantizar consistencia

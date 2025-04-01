@@ -1,6 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { z } from 'zod';
 import { Stripe } from 'stripe';
+import { createInvoiceService } from '@/services/stripe-invoice.service';
 
 // Esquema optimizado para la solicitud de pago
 const fullPaymentSchema = z.object({
@@ -11,7 +12,8 @@ const fullPaymentSchema = z.object({
   empresaId: z.string().optional(),
   description: z.string().optional(),
   paymentType: z.string().optional().default('booking'),
-  off_session: z.boolean().optional().default(true)
+  off_session: z.boolean().optional().default(true),
+  customerEmail: z.string().optional() // Nuevo campo para guardar email para facturación
 });
 
 /**
@@ -69,8 +71,33 @@ export async function POST(request: Request) {
     // Inicializar Stripe sin dependencia de Supabase
     console.log(`🔧 [${requestId}] Inicializando Stripe para pago ${data.off_session ? 'off-session' : 'on-session'}`);
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    
+    let invoiceResult = null;
+
     try {
+      // Si hay email de cliente, preparar la factura primero antes de cobrar
+      // Esto permite integrar todo en una sola operación conceptual
+      if (data.customerEmail) {
+        console.log(`📝 [${requestId}] Preparando facturación con email: ${data.customerEmail}`);
+        
+        // Asegurarse que el cliente tenga email en Stripe (requisito para facturas)
+        try {
+          console.log(`📝 [${requestId}] Actualizando cliente de Stripe con email:`, data.customerEmail);
+          await stripe.customers.update(
+            data.stripeCustomerId,
+            {
+              email: data.customerEmail
+            },
+            {
+              stripeAccount: data.stripeAccountId
+            }
+          );
+          console.log(`✔️ [${requestId}] Cliente actualizado con email exitosamente`);
+        } catch (updateError) {
+          console.error(`⚠️ [${requestId}] Error al actualizar email del cliente:`, updateError);
+          // Continuamos aunque haya error, por si acaso el email ya estaba configurado
+        }
+      }
+      
       // Crear PaymentIntent directamente con confirm=true para procesamiento inmediato
       console.log(`💳 [${requestId}] Creando y confirmando PaymentIntent ${data.off_session ? 'off-session' : 'on-session'}:`, {
         amount: data.amount,
@@ -79,7 +106,7 @@ export async function POST(request: Request) {
       });
       
       // Configuración para pagos según documentación de Stripe
-      // Usar off_session: false cuando el cliente está presente (on-session)
+      // Usar off_session: false cuando el cliente esté presente (on-session)
       const paymentIntentConfig: Stripe.PaymentIntentCreateParams = {
         amount: Math.round(data.amount * 100), // Centavos
         currency: 'eur',
@@ -92,7 +119,10 @@ export async function POST(request: Request) {
           request_id: requestId,
           payment_type: data.paymentType,
           description: data.description || 'Pago completo de reserva',
-          empresa_id: data.empresaId || ''
+          empresa_id: data.empresaId || '',
+          customer_email: data.customerEmail || '', // Agregar email del cliente a la metadata
+          empresa_stripe_id: data.stripeAccountId, // ID de cuenta Stripe para el webhook
+          invoice_auto_generate: 'true' // Flag para generar factura automáticamente
         },
         description: data.description || 'Pago completo de reserva',
         confirmation_method: 'automatic',
@@ -111,7 +141,7 @@ export async function POST(request: Request) {
         }
       );
       
-      console.log(`✅ [${requestId}] PaymentIntent creado y confirmado:`, {
+      console.log(`✔️ [${requestId}] PaymentIntent creado y confirmado:`, {
         id: paymentIntent.id,
         status: paymentIntent.status,
         amount: paymentIntent.amount / 100, // Convertir de centavos
@@ -119,10 +149,40 @@ export async function POST(request: Request) {
         timestamp: new Date().toISOString()
       });
       
+      // Generar factura profesional si hay email y el pago fue exitoso
+      if (data.customerEmail && paymentIntent.status === 'succeeded') {
+        try {
+          console.log(`📄 [${requestId}] Generando factura profesional...`);
+          invoiceResult = await createInvoiceService.createAndSendInvoice({
+            paymentIntentId: paymentIntent.id,
+            stripeAccountId: data.stripeAccountId,
+            customerId: data.stripeCustomerId,
+            amount: data.amount,
+            description: data.description || 'Pago completo de reserva',
+            metadata: {
+              payment_type: data.paymentType,
+              customer_email: data.customerEmail
+            }
+          });
+          
+          console.log(`📄 [${requestId}] Factura generada:`, {
+            success: invoiceResult.success,
+            invoiceId: invoiceResult.invoiceId || 'N/A',
+            invoiceUrl: invoiceResult.invoiceUrl || 'N/A',
+            pdfUrl: invoiceResult.pdfUrl || 'N/A'
+          });
+        } catch (invoiceError) {
+          // Si falla la generación de la factura, no afecta el resultado del pago
+          console.error(`⚠️ [${requestId}] Error al generar factura profesional:`, invoiceError);
+        }
+      }
+      
       return Response.json({
         success: true,
         paymentIntentId: paymentIntent.id,
-        chargeStatus: paymentIntent.status
+        chargeStatus: paymentIntent.status,
+        invoiceUrl: invoiceResult?.invoiceUrl,
+        pdfUrl: invoiceResult?.pdfUrl
       });
       
     } catch (stripeError: any) {
@@ -170,9 +230,9 @@ export async function POST(request: Request) {
       success: false,
       error: {
         code: 'server_error',
-        message: error.message || 'Error en el servidor',
-        details: errorDetails
+        message: 'Error interno del servidor',
+        details: error.message
       }
     }, { status: 500 });
   }
-} 
+}

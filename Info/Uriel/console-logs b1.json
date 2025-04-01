@@ -1,0 +1,429 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Iniciando verificación de pasarelas de pago..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "isStripeConnected": null,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": false,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de ítems cargados del localStorage:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Iniciando verificación de pasarelas de pago..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "99f78081-24fa-4892-aae2-823816e7d132"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "isStripeConnected": null,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": false,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de ítems cargados del localStorage:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "isStripeConnected": null,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": false,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1QddDLC4oQv4vCtF",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Iniciando verificación de pasarelas de pago..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1QddDLC4oQv4vCtF",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Iniciando verificación de pasarelas de pago..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al verificar la conexión de Mercado Pago:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Resultado de verificación de pasarelas:",
+      {
+        "stripeConnected": true,
+        "mercadoPagoConnected": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Pasarelas de pago verificadas:",
+      {
+        "stripe": "Conectada",
+        "mercadoPago": "No conectada"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": false,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": false,
+          "mercadoPagoAvailable": false,
+          "verified": false
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": true,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": true,
+          "mercadoPagoAvailable": false,
+          "verified": true
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al verificar la conexión de Mercado Pago:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Resultado de verificación de pasarelas:",
+      {
+        "stripeConnected": true,
+        "mercadoPagoConnected": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Pasarelas de pago verificadas:",
+      {
+        "stripe": "Conectada",
+        "mercadoPago": "No conectada"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": true,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": true,
+          "mercadoPagoAvailable": false,
+          "verified": true
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al verificar la conexión de Mercado Pago:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Resultado de verificación de pasarelas:",
+      {
+        "stripeConnected": true,
+        "mercadoPagoConnected": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Pasarelas de pago verificadas:",
+      {
+        "stripe": "Conectada",
+        "mercadoPago": "No conectada"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": true,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": true,
+          "mercadoPagoAvailable": false,
+          "verified": true
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al verificar la conexión de Mercado Pago:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Resultado de verificación de pasarelas:",
+      {
+        "stripeConnected": true,
+        "mercadoPagoConnected": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Pasarelas de pago verificadas:",
+      {
+        "stripe": "Conectada",
+        "mercadoPago": "No conectada"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep-Shifts] IDs disponibles:",
+      {
+        "adminOrgId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "userMetadataEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "selectedEmpresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "stripeAccountId": "acct_1QddDLC4oQv4vCtF",
+        "isStripeConnected": true,
+        "isMercadoPagoConnected": null,
+        "hasValidPaymentGateway": true,
+        "paymentGatewaysVerified": true,
+        "paymentGatewaysStatus": {
+          "stripeAvailable": true,
+          "mercadoPagoAvailable": false,
+          "verified": true
+        },
+        "userId": "3860596c-080b-416c-a3a0-5070ea0bbd5a"
+      }
+    ]
+  }
+]

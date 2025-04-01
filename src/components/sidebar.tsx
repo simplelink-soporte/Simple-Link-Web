@@ -144,6 +144,10 @@ const menuItems = [
         href: "/admin/dashboard/pricing/courts",
       },
       {
+        title: "Facturación",
+        href: "/admin/dashboard/pricing/billing",
+      },
+      {
         title: "Cupones",
         href: "/admin/dashboard/pricing/coupons",
         soon: true // Marcador para indicar que esta funcionalidad es "Proximamente"
