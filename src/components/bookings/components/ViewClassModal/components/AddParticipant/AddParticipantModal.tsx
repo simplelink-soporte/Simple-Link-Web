@@ -33,6 +33,7 @@ interface AddParticipantModalProps {
   startTime?: string
   endTime?: string
   courtId?: string
+  classTitle?: string
 }
 
 type Step = "select" | "summary" | "payment" | "success"
@@ -51,7 +52,8 @@ export function AddParticipantModal({
   date,
   startTime,
   endTime,
-  courtId
+  courtId,
+  classTitle
 }: AddParticipantModalProps) {
   const [step, setStep] = useState<Step>("select")
   const [selectedParticipants, setSelectedParticipants] = useState<SectionParticipant[]>([])
@@ -91,6 +93,7 @@ export function AddParticipantModal({
     paymentMethod: PaymentMethodEnum
     paymentStatus: PaymentStatusEnum
     depositAmount?: number
+    generateInvoice?: boolean
   }) => {
     setBookingDetails(paymentDetails)
     
@@ -130,7 +133,11 @@ export function AddParticipantModal({
           // Incluir el ID de la pista si está disponible
           courtId: courtId,
           // Añadir el precio de la sesión que viene como prop
-          sessionPrice: sessionPrice
+          sessionPrice: sessionPrice,
+          // Asegurar que el título de la clase esté disponible para las facturas manuales
+          classTitle: classTitle || '',
+          // Opción para controlar si se genera factura
+          generateInvoice: paymentDetails.generateInvoice !== false
         }
 
         // Log para depuración

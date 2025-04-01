@@ -9,6 +9,7 @@ import type {
 import { v4 as uuidv4 } from 'uuid'
 import { DateTime } from 'luxon'
 import { ClassBookingTransformService } from './classBookingTransformService'
+import { ClassInvoiceService } from './class-invoice.service'
 
 // Definición del participante
 export interface Participant {
@@ -42,10 +43,16 @@ interface ManualBookingOptions {
   endTime?: string
   courtId?: string
   sessionPrice?: number
+  classTitle?: string
+  branchId?: string
+  className?: string
+  stripeAccountId?: string
+  generateInvoice?: boolean // Nueva opción para controlar si se genera factura
 }
 
 export class ManualClassBookingService {
   private supabase = createSupabaseClient()
+  private classInvoiceService = new ClassInvoiceService()
 
   /**
    * Convierte los horarios locales a UTC basado en la zona horaria de la sede
@@ -626,6 +633,101 @@ export class ManualClassBookingService {
       }
 
       console.log('✅ Reserva manual creada exitosamente:', bookingId);
+      
+      // Verificar si se debe generar factura
+      if (options.generateInvoice !== false) {
+        try {
+          // Utilizar el título de clase proporcionado directamente en las opciones
+          const sessionTitle = options.classTitle || 'Clase';
+          const formattedDate = options.date ? new Date(options.date).toLocaleDateString() : '';
+          
+          // Determinar tipo de pago
+          const isDeposit = !!options.depositAmount;
+          const depositPercentage = options.depositAmount 
+            ? Math.round((options.depositAmount / (options.sessionPrice || 1)) * 100) 
+            : 0;
+
+          // Obtener la conexión Stripe del club si no se proporciona en las opciones
+          let stripeAccountId = options.stripeAccountId;
+          if (!stripeAccountId) {
+            try {
+              const { data: connection } = await this.supabase
+                .from('stripe_connections')
+                .select('stripe_account_id')
+                .eq('empresa_id', options.empresaId)
+                .single();
+              
+              if (connection?.stripe_account_id) {
+                stripeAccountId = connection.stripe_account_id;
+                console.log('✅ Conexión Stripe encontrada para empresa:', stripeAccountId);
+              } else {
+                console.error('⚠️ No se encontró cuenta Stripe para la empresa:', options.empresaId);
+              }
+            } catch (stripeConnError) {
+              console.error('❌ Error al obtener cuenta Stripe:', stripeConnError);
+            }
+          }
+
+          // Verificar que tengamos una cuenta Stripe antes de intentar crear la factura
+          if (!stripeAccountId) {
+            console.error('❌ No se puede generar factura: falta la cuenta de Stripe');
+            // Continuar sin generar factura
+            return { id: bookingId };
+          }
+          
+          // Crear la factura
+          console.log('📋 Generando factura para la reserva de clase:', {
+            bookingId,
+            sessionTitle,
+            paymentMethod: options.paymentMethod,
+            paymentStatus: options.paymentStatus,
+            isDeposit,
+            stripeAccountId // Log de la cuenta Stripe que se usará
+          });
+          
+          const invoiceData = {
+            customerId: participant.userId,
+            amount: isDeposit ? options.depositAmount || 0 : options.sessionPrice || 0,
+            // Añadir prefijo de Seña en la descripción visible para el cliente
+            description: isDeposit 
+              ? `Seña (${depositPercentage}%): ${sessionTitle}${formattedDate ? ` - ${formattedDate}` : ''}` 
+              : `${sessionTitle}${formattedDate ? ` - ${formattedDate}` : ''}`,
+            // Añadir información completa del cliente para evitar consultas adicionales
+            customerEmail: participant.email,
+            customerName: participant.fullName,
+            // Pasar parámetro de tipo de pago explícitamente
+            paymentType: isDeposit ? 'deposit' as const : 'full' as const,
+            metadata: {
+              resource_type: 'class',
+              is_class_booking: 'true',
+              booking_type: 'class',
+              deposit_percentage: isDeposit ? depositPercentage.toString() : '',
+              // Usar el mismo formato que en las facturas del formulario
+              payment_description: isDeposit 
+                ? `Seña (${depositPercentage}%)` 
+                : 'Pago completo',
+              payment_type: isDeposit ? 'deposit' : 'full',
+              booking_id: bookingId,
+              class_id: options.classId,
+              session_id: options.sessionId
+            },
+            stripeAccountId // Añadir cuenta Stripe del club
+          };
+          
+          const invoiceResult = await this.classInvoiceService.createInvoice(invoiceData);
+          
+          if (invoiceResult.success) {
+            console.log('✅ Factura generada exitosamente:', invoiceResult.invoiceId);
+          } else {
+            console.error('⚠️ Error al generar factura:', invoiceResult.error);
+            // No bloqueamos la creación de reserva por error en factura
+          }
+        } catch (invoiceError) {
+          console.error('⚠️ Error al intentar generar factura:', invoiceError);
+          // No bloqueamos la creación de reserva por error en factura
+        }
+      }
+      
       return {
         id: bookingId
       }

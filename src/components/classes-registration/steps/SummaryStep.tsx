@@ -18,9 +18,10 @@ import { PaymentTypeSection } from '../components/PaymentTypeSection'
 import { PaymentMethodEnum } from '@/types/bookings';
 import { PaymentMethod as BookingPaymentMethod } from '../types/models'
 import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from '../components/payment-types'
-import { PaymentMethod as CardPaymentMethod, PaymentSectionWithStripe } from '../components/PaymentSection'
+import { PaymentMethod as CardPaymentMethod } from '../components/PaymentSection'
+import { PaymentSectionWithStripe } from '../components/PaymentSection'
 import { useClientOrganizationContext } from '@/contexts/ClientOrganizationContext'
-import { useStripeConfig } from '@/hooks/useStripeConfig'
+import { usePaymentGatewayByCountry } from '@/hooks/usePaymentGatewayByCountry'
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Database } from '@/types/supabase'
@@ -28,6 +29,7 @@ import type { UserPackageFromDB, ClassSession } from '../types/models'
 import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 import { requiresCardPayment } from '../components/PaymentTypeSection'
+import { classInvoiceService } from '@/services/class-invoice.service'
 
 // Definición de los métodos de pago disponibles
 const PAYMENT_METHODS: Record<PaymentMethodEnum, {
@@ -49,6 +51,11 @@ const PAYMENT_METHODS: Record<PaymentMethodEnum, {
     icon: IconBuildingBank,
     label: 'Transferencia',
     description: 'Transferencia bancaria'
+  },
+  stripe: {
+    icon: IconCreditCard,
+    label: 'Tarjeta Online',
+    description: 'Pago seguro con tarjeta online'
   }
 }
 
@@ -95,22 +102,41 @@ export function SummaryStep() {
     organization?.id || adminOrganization?.id || user?.metadata?.empresa_id
   , [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id])
   
-  // Obtener la configuración de Stripe usando el ID de empresa correcto
-  const { stripeAccountId, isConnected } = useStripeConfig(empresaId || null)
+  // Usamos el hook unificado de pasarela de pago para mantener consistencia con turnos
+  const { 
+    activeGateway, 
+    isLoading: isLoadingGateway,
+    stripeAccountId, 
+    stripeConnected: isConnected,
+    mercadoPagoUserId
+  } = usePaymentGatewayByCountry(empresaId || null);
 
-  // Log para depuración - uso de useEffect con dependencias específicas
+  // Log mejorado para depuración con más información
   useEffect(() => {
-    console.log('[SummaryStep] IDs disponibles:', {
+    console.log('[SummaryStep] Estado de pasarela de pago:', {
       clientOrgId: organization?.id,
       adminOrgId: adminOrganization?.id,
       userMetadataEmpresaId: user?.metadata?.empresa_id,
       selectedEmpresaId: empresaId,
+      activeGateway,
       stripeAccountId,
       isConnected,
-      userId: user?.id
+      mercadoPagoUserId,
+      userId: user?.id,
+      isLoadingGateway
     });
-  }, [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id, empresaId, stripeAccountId, isConnected, user?.id]);
+  }, [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id, empresaId, activeGateway, stripeAccountId, isConnected, mercadoPagoUserId, user?.id, isLoadingGateway]);
 
+  // Estado local para manejar transiciones
+  const [isPasarelaVerified, setIsPasarelaVerified] = useState(false);
+
+  // Efecto para sincronizar el estado de verificación
+  useEffect(() => {
+    if (!isLoadingGateway) {
+      setIsPasarelaVerified(true);
+    }
+  }, [isLoadingGateway]);
+  
   const userPackageService = new UserPackageService()
   const supabase = createClientComponentClient<Database>()
   const { submitClassBooking } = useClassBooking()
@@ -386,8 +412,8 @@ export function SummaryStep() {
             paymentIntentId: paymentResult.paymentIntentId,
             status: paymentResult.chargeStatus,
             isDepositPayment: isDepositPayment,
-            depositAmount: isDepositPayment ? paymentResult.depositAmount : null,
-            totalAmount: isDepositPayment ? paymentResult.totalAmount : selectedSession.price
+            depositAmount: isDepositPayment ? (paymentResult as any).depositAmount : null,
+            totalAmount: isDepositPayment ? (paymentResult as any).totalAmount : selectedSession.price
           });
           
           toast({
@@ -398,15 +424,20 @@ export function SummaryStep() {
             variant: 'default'
           });
           
+          // Crear y enviar factura después del pago exitoso
+          await createInvoiceAfterPayment(paymentResult, isDepositPayment);
+          
           // Guardar el ID del payment intent como respaldo
           try {
             localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
             localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
             if (isDepositPayment) {
+              // Usamos type assertion para acceder a propiedades específicas de DepositPaymentResult
+              const depositResult = paymentResult as any;
               localStorage.setItem('lastDepositAmount', JSON.stringify({
-                depositAmount: paymentResult.depositAmount,
-                totalAmount: paymentResult.totalAmount,
-                depositPercentage: paymentResult.depositPercentage
+                depositAmount: depositResult.depositAmount || 0,
+                totalAmount: depositResult.totalAmount || 0,
+                depositPercentage: depositResult.depositPercentage || 30
               }));
             }
           } catch (storageError) {
@@ -881,10 +912,12 @@ export function SummaryStep() {
         onRemoveMethod={handleRemovePaymentMethod}
         viewType={isMobile ? 'mobile' : 'desktop'}
         stripeAccountId={stripeAccountId || ''}
+        empresaId={empresaId || ''}
+        amount={selectedSession?.price}
         expandCardList={showCardMethodsList}
       />
     </div>
-  ), [selectedCardMethod, showCardMethodsList, isMobile, handleShowPaymentMethods, handleUpdatePaymentMethod, handleRemovePaymentMethod, stripeAccountId]);
+  ), [selectedCardMethod, showCardMethodsList, isMobile, handleShowPaymentMethods, handleUpdatePaymentMethod, handleRemovePaymentMethod, stripeAccountId, empresaId, selectedSession]);
 
   // Componente de Layout para Desktop
   const DesktopLayout = useCallback(({ children }: { children: React.ReactNode }) => (
@@ -898,6 +931,134 @@ export function SummaryStep() {
       {children}
     </motion.div>
   ), []);
+
+  // Función para crear y enviar factura después de un pago exitoso
+  const createInvoiceAfterPayment = useCallback(async (paymentResult: any, isDepositPayment: boolean) => {
+    if (!paymentResult?.paymentIntentId || !selectedSession || !empresaId || !stripeAccountId || !user?.email) {
+      console.warn('❌ [SummaryStep] No se puede crear factura: faltan datos necesarios');
+      return;
+    }
+
+    try {
+      console.log('🧾 [SummaryStep] Intentando crear factura para el pago:', {
+        paymentIntentId: paymentResult.paymentIntentId,
+        classId: state.selectedClass?.id,
+        sessionId: selectedSession.id,
+        isDepositPayment
+      });
+
+      const amount = isDepositPayment 
+        ? (paymentResult as any).depositAmount 
+        : selectedSession.price;
+
+      // Obtener nombres de manera segura con valores por defecto - usando any para evitar errores de tipado
+      const selectedClass = state.selectedClass as any;
+      // Usar title en lugar de name, ya que en PublicClass el campo se llama title
+      const className = selectedClass?.title || 'Clase';
+      
+      // Crear una descripción legible y amigable, ideal para mostrar en PDF
+      // Formato: "Clase [nombre de la clase] - [fecha]"
+      let sessionTitle = 'Sesión ' + selectedSession.id;
+      
+      // Añadir información de fecha formateada si está disponible
+      if (selectedSession.date) {
+        try {
+          // Crear fecha a partir de string YYYY-MM-DD
+          const [year, month, day] = selectedSession.date.split('-').map(Number);
+          const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+          
+          // Formatear la fecha para ser amigable
+          const formattedDate = format(date, 'd MMMM yyyy', { locale: es });
+          sessionTitle = formattedDate;
+        } catch (error) {
+          console.warn('⚠️ Error al formatear la fecha de sesión:', error);
+        }
+      }
+      
+      // Obtener hora de sesión de manera segura
+      const sessionTime = (selectedSession as any).time || 'Horario no especificado';
+      
+      // La descripción visible en la factura PDF - Usar información más amigable
+      const description = isDepositPayment
+        ? `Seña para clase "${className}" - ${sessionTitle}`
+        : `Pago de clase "${className}" - ${sessionTitle}`;
+
+      // Obtener CustomerId del método de pago seleccionado
+      const customerId = selectedCardMethod?.customerId;
+      
+      if (!customerId) {
+        console.warn('❌ [SummaryStep] No se puede crear factura: falta customerId');
+        return;
+      }
+
+      // Obtener branchId de manera segura usando type assertion
+      const branchId = (selectedClass?.branch_id as string) || undefined;
+
+      // Obtener nombre del cliente de manera segura
+      const customerName = user.email?.split('@')[0] || 'Cliente';
+      
+      // Calcular el porcentaje de depósito para incluirlo en los metadatos
+      const depositPercentage = isDepositPayment 
+        ? String((paymentResult as any).depositPercentage || 30) 
+        : '100';
+
+      const invoiceResult = await classInvoiceService.createAndSendInvoice({
+        paymentIntentId: paymentResult.paymentIntentId,
+        stripeAccountId,
+        customerId,
+        amount,
+        description,
+        customerEmail: user.email,
+        empresaId,
+        classId: state.selectedClass?.id,
+        branchId,
+        paymentType: isDepositPayment ? 'deposit' : 'full',
+        metadata: {
+          // Identificadores técnicos (para filtrado y procesamiento)
+          class_id: state.selectedClass?.id || '',
+          session_id: selectedSession.id,
+          
+          // Información legible (para mostrar al usuario)
+          class_name: className,
+          class_title: selectedClass?.title || 'Clase',  
+          session_title: sessionTitle,
+          session_date: selectedSession.date,
+          session_time: sessionTime,
+          customer_name: customerName,
+          
+          // Información sobre el pago
+          deposit_percentage: depositPercentage,
+          booking_type: 'class',
+          
+          // Otros datos útiles
+          branch_name: selectedClass?.branchName || 'Sucursal principal',  
+          created_at: new Date().toISOString()
+        }
+      });
+
+      if (invoiceResult.success) {
+        console.log('✅ [SummaryStep] Factura creada exitosamente:', {
+          invoiceId: invoiceResult.invoiceId,
+          invoiceUrl: invoiceResult.invoiceUrl
+        });
+
+        // Guardar referencia a la factura en localStorage para futuras consultas
+        localStorage.setItem('lastClassInvoiceId', invoiceResult.invoiceId || '');
+        localStorage.setItem('lastClassInvoiceUrl', invoiceResult.invoiceUrl || '');
+        
+        // Notificar al usuario sobre la factura generada
+        toast({
+          title: 'Factura generada',
+          description: 'Se ha generado una factura para tu pago. Puedes consultarla en tu correo electrónico.',
+          variant: 'default'
+        });
+      } else {
+        console.error('❌ [SummaryStep] Error al crear factura:', invoiceResult.error);
+      }
+    } catch (error) {
+      console.error('❌ [SummaryStep] Error inesperado al crear factura:', error);
+    }
+  }, [empresaId, selectedCardMethod, selectedSession, state.selectedClass, stripeAccountId, toast, user?.email]);
 
   return (
     <StepContainer stepId="summary" centered={false}>

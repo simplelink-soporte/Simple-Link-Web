@@ -4,7 +4,7 @@ import { usePaymentGatewayByCountry } from './usePaymentGatewayByCountry';
 import { useStripeStoredCards } from './payment-gateways/useStripeStoredCards';
 import { useMercadoPagoStoredCards } from './payment-gateways/useMercadoPagoStoredCards';
 import { StoredCard } from '@/components/shifts-registration/components/card-list/shared/types';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 
 /**
  * Hook unificado para gestionar tarjetas almacenadas
@@ -34,6 +34,51 @@ export function useStoredCards(
 
   // Estados propios del hook para manejar errores de gateway
   const [gatewayError, setGatewayError] = useState<Error | null>(null);
+
+  // Estado para evitar cargas múltiples en el primer renderizado
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
+  // Usamos un ref para evitar recargas duplicadas provenientes del mismo origen
+  const lastLoadTimestamp = useRef<number>(Date.now());
+  const lastRefreshTrigger = useRef<number>(refreshTrigger);
+  const MIN_RELOAD_INTERVAL = 10000; // 10 segundos entre recargas
+
+  // Efecto para controlar la inicialización
+  useEffect(() => {
+    if (!hasInitialized && !isLoadingGateway) {
+      setHasInitialized(true);
+    }
+  }, [isLoadingGateway, hasInitialized]);
+
+  // Efecto para controlar las recargas basadas en el refreshTrigger
+  useEffect(() => {
+    // Solo procesamos cambios en el refreshTrigger cuando:
+    // 1. Es diferente al valor anterior
+    // 2. La pasarela ya ha sido determinada
+    // 3. Ha pasado suficiente tiempo desde la última recarga
+    if (
+      refreshTrigger !== lastRefreshTrigger.current && 
+      !isLoadingGateway && 
+      hasInitialized
+    ) {
+      const now = Date.now();
+      if (now - lastLoadTimestamp.current >= MIN_RELOAD_INTERVAL) {
+        console.log('[StoredCards] Procesando cambio en refreshTrigger:', {
+          prevTrigger: lastRefreshTrigger.current,
+          newTrigger: refreshTrigger,
+          timeSinceLastLoad: now - lastLoadTimestamp.current
+        });
+        
+        lastRefreshTrigger.current = refreshTrigger;
+        lastLoadTimestamp.current = now;
+        
+        // No es necesario hacer nada más aquí - los hooks internos
+        // reaccionarán al cambio del refreshTrigger por sus propias dependencias
+      } else {
+        console.log('[StoredCards] Ignorando refreshTrigger muy frecuente');
+      }
+    }
+  }, [refreshTrigger, isLoadingGateway, hasInitialized]);
 
   // Hooks específicos para cada pasarela
   const stripeCards = useStripeStoredCards(refreshTrigger, {
@@ -89,6 +134,13 @@ export function useStoredCards(
 
   // Función unificada para cargar tarjetas
   const loadCards = useCallback(async () => {
+    const now = Date.now();
+    if (now - lastLoadTimestamp.current < MIN_RELOAD_INTERVAL) {
+      console.warn('[StoredCards] No se pueden cargar tarjetas tan frecuentemente');
+      return;
+    }
+    lastLoadTimestamp.current = now;
+
     if (isLoadingGateway) {
       console.warn('[StoredCards] No se pueden cargar tarjetas mientras se verifica la pasarela');
       return;

@@ -9,6 +9,7 @@ interface PaymentDetailsStepProps {
     paymentMethod: PaymentMethodEnum
     paymentStatus: PaymentStatusEnum
     depositAmount?: number
+    generateInvoice?: boolean
   }) => void
   onBack: () => void
   sessionPrice?: number
@@ -16,6 +17,7 @@ interface PaymentDetailsStepProps {
   initialPaymentMethod?: PaymentMethodEnum
   initialPaymentStatus?: PaymentStatusEnum
   initialDepositAmount?: number
+  initialGenerateInvoice?: boolean
 }
 
 export function PaymentDetailsStep({
@@ -25,12 +27,14 @@ export function PaymentDetailsStep({
   isLoading = false,
   initialPaymentMethod = "cash",
   initialPaymentStatus = "completed",
-  initialDepositAmount = 0
+  initialDepositAmount = 0,
+  initialGenerateInvoice = true
 }: PaymentDetailsStepProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(initialPaymentMethod)
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatusEnum>(initialPaymentStatus)
   const [depositAmount, setDepositAmount] = useState<number>(initialDepositAmount)
   const [showDepositField, setShowDepositField] = useState(initialPaymentStatus === "partial")
+  const [generateInvoice, setGenerateInvoice] = useState<boolean>(initialGenerateInvoice)
 
   const handleConfirm = () => {
     if (isLoading) return;
@@ -38,7 +42,8 @@ export function PaymentDetailsStep({
     onConfirm({
       paymentMethod,
       paymentStatus,
-      depositAmount: showDepositField ? depositAmount : undefined
+      depositAmount: showDepositField ? depositAmount : undefined,
+      generateInvoice
     })
   }
 
@@ -218,6 +223,28 @@ export function PaymentDetailsStep({
           </p>
         </motion.div>
       )}
+
+      {/* Generar factura */}
+      <div className="space-y-2">
+        <label className="text-xs font-medium text-gray-700">
+          Generar factura
+        </label>
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={generateInvoice}
+            disabled={isLoading}
+            onChange={(e) => setGenerateInvoice(e.target.checked)}
+            className={cn(
+              "rounded border-gray-200",
+              isLoading && "opacity-50 cursor-not-allowed"
+            )}
+          />
+          <span className="text-xs text-gray-500">
+            Marque esta opción para generar una factura
+          </span>
+        </div>
+      </div>
 
       {/* Botones de acción */}
       <div className="flex items-center justify-between pt-2">

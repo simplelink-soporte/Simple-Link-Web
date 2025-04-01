@@ -4,7 +4,8 @@ import { X, CreditCard, ChevronDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { useState, useEffect, useCallback, useRef } from "react"
-import { CardList } from "./CardList"
+// Actualizar importación para usar la nueva estructura modular
+import { CardList } from "./card-list"
 import { CardListModal } from "./CardListModal"
 import { useStoredCards } from "@/hooks/useStoredCards"
 import { StripeProvider } from "@/contexts/StripeContext"
@@ -35,6 +36,7 @@ export interface PaymentSectionProps {
   stripeAccountId?: string
   expandCardList?: boolean
   className?: string
+  empresaId?: string
 }
 
 export function PaymentSection({
@@ -46,7 +48,8 @@ export function PaymentSection({
   stripeAccountId,
   expandCardList = false,
   className = "",
-  theme = 'light'
+  theme = 'light',
+  empresaId
 }: PaymentSectionProps) {
   const { user } = useAuth()
   const [isListExpanded, setIsListExpanded] = useState(expandCardList)
@@ -68,9 +71,20 @@ export function PaymentSection({
   }
   
   // Hook para cargar las tarjetas guardadas
-  const { cards = [], isLoading: isCardsLoading, error: cardsError, deleteCard } = useStoredCards(refreshTrigger, {
+  const storedCards = useStoredCards(empresaId || null, refreshTrigger, {
     autoLoad: true // Siempre cargar las tarjetas independientemente del estado de expandCardList
-  })
+  });
+
+  const { cards = [], isLoading: isCardsLoading, error: cardsError, deleteCard, gatewayInfo } = storedCards
+
+  // Verificar status empresaId para debugging
+  useEffect(() => {
+    if (stripeAccountId) {
+      console.log('[PaymentSection] stripeAccountId recibido:', stripeAccountId);
+    } else {
+      console.log('[PaymentSection] No se recibió stripeAccountId en props');
+    }
+  }, [stripeAccountId]);
 
   // Actualizar método seleccionado cuando cambia desde props
   useEffect(() => {
@@ -90,7 +104,25 @@ export function PaymentSection({
     if (expandCardList === true && !isListExpanded) {
       setIsListExpanded(true)
     }
+    // No actualizamos cuando expandCardList es false ya que eso podría ser
+    // gestionado por la lógica interna del componente
   }, [expandCardList, isListExpanded])
+
+  // Control para actualizar el refreshTrigger solo cuando sea necesario
+  const lastRefreshTimestamp = useRef<number>(Date.now());
+  const MIN_REFRESH_INTERVAL = 30000; // 30 segundos como mínimo entre recargas
+
+  const refreshCards = useCallback(() => {
+    const now = Date.now();
+    // Solo permitir refrescar si ha pasado suficiente tiempo desde la última recarga
+    if (now - lastRefreshTimestamp.current > MIN_REFRESH_INTERVAL) {
+      console.log('[PaymentSection] Solicitando recarga de tarjetas...');
+      lastRefreshTimestamp.current = now;
+      setRefreshTrigger(prev => prev + 1);
+    } else {
+      console.log('[PaymentSection] Recarga ignorada: demasiado frecuente');
+    }
+  }, []);
 
   // Procesar la selección de una tarjeta
   const processCardSelection = useCallback((card: any) => {
@@ -193,7 +225,7 @@ export function PaymentSection({
   const handleCardSetupSuccess = async (paymentMethodId: string) => {
     try {
       setShowCardForm(false);
-      setRefreshTrigger(prev => prev + 1);
+      refreshCards();
       
       // Esperar a que las tarjetas se recarguen
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -285,6 +317,28 @@ export function PaymentSection({
 
   const hasError = cardsError && cardsError.message;
 
+  // Expandir/colapsar la lista
+  const toggleList = useCallback(() => {
+    setIsListExpanded(prev => !prev)
+  }, [])
+
+  // Manejar la eliminación de una tarjeta
+  const handleDeleteCard = useCallback(async (cardId: string) => {
+    try {
+      await deleteCard(cardId)
+      
+      // Si la tarjeta eliminada es la seleccionada, limpiar la selección
+      if (methodToDisplay?.id === cardId) {
+        handleRemoveMethod()
+      }
+      
+      // No actualizamos el refreshTrigger directamente para evitar recargas en bucle
+      console.log('[PaymentSection] Tarjeta eliminada correctamente');
+    } catch (error) {
+      console.error('[PaymentSection] Error al eliminar tarjeta:', error)
+    }
+  }, [deleteCard, methodToDisplay, handleRemoveMethod])
+
   return (
     <motion.div 
       className={cn("relative", className)}
@@ -374,7 +428,7 @@ export function PaymentSection({
         selectedCardId={methodToDisplay?.id}
         onSelect={handleCardSelect}
         onAddCard={handleAddCard}
-        onDeleteCard={deleteCard}
+        onDeleteCard={handleDeleteCard}
         isExpanded={isListExpanded}
         isLoading={isCardsLoading}
         showCardForm={showCardForm}
@@ -403,7 +457,7 @@ export function PaymentSection({
           selectedCardId={methodToDisplay?.id}
           onSelect={handleCardSelect}
           onAddCard={handleAddCard}
-          onDeleteCard={deleteCard}
+          onDeleteCard={handleDeleteCard}
           isLoading={isCardsLoading}
           showCardForm={showCardForm}
           onCardSetupSuccess={handleCardSetupSuccess}

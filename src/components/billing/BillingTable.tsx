@@ -87,6 +87,10 @@ export function BillingTable() {
     
     return matchesSearch
   })
+  .sort((a, b) => {
+    // Ordenar por fecha en orden descendente (más recientes primero)
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
 
   // Renderizado condicional mejorado
   if (!currentBranch) {

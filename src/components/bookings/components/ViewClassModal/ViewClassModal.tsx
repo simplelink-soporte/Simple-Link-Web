@@ -245,6 +245,7 @@ export function ViewClassModal({
                         startTime={classData.startTime}
                         endTime={classData.endTime}
                         courtId={classData.courtId}
+                        classTitle={classData.title}
                       />
 
                       {/* Modal para ver participantes */}

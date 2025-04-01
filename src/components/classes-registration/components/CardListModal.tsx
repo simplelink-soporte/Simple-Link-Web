@@ -4,16 +4,10 @@ import React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { CardList } from "./CardList"
-
-// Definir la interfaz StoredCard igual que en CardList.tsx
-interface StoredCard {
-  id: string
-  brand: string
-  last4: string
-  expMonth: number
-  expYear: number
-}
+import { StoredCard } from "./card-list/shared/types"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { CardList } from "./card-list"
 
 interface CardListModalProps {
   isOpen: boolean
