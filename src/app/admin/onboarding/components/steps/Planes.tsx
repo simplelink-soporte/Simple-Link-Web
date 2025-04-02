@@ -336,7 +336,7 @@ export function Planes() {
                   ) : (
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-medium">
-                        {plan.prices[billingPeriod]}$
+                        {plan.prices[billingPeriod]}€
                       </span>
                       <span className="text-sm text-muted-foreground">
                         /{billingPeriod === 'monthly' ? 'mes' : billingPeriod === 'quarterly' ? 'trimestre' : 'año'}
