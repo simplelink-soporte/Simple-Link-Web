@@ -269,6 +269,7 @@ const LocationStep: React.FC<StepComponentProps> = ({
         onNext={handleNext}
         onBack={onPrevious}
         isNextDisabled={!selectedLocation}
+        showBackButton={false} // No mostrar el botón volver en este paso
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}

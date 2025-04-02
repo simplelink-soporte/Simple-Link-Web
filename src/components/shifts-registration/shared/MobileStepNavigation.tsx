@@ -44,6 +44,11 @@ export function MobileStepNavigation({
     }
   };
 
+  // Si estamos en el último paso (paso 4, ConfirmationStep), no mostramos ninguna navegación
+  if (currentStep === 4) {
+    return null;
+  }
+
   return (
     <>
       {/* Header con solo botón de volver con icono (sin texto ni borde) */}
