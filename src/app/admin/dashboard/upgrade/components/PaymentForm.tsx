@@ -209,7 +209,7 @@ export function PaymentForm({
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-baseline gap-1">
                           <span className="text-sm font-medium text-zinc-900 font-mono">
-                            €{(option.monthlyPrice || option.price).toFixed(2)}
+                            ${(option.monthlyPrice || option.price).toFixed(2)}
                           </span>
                           <span className="text-[10px] text-zinc-500 font-mono">
                             {option.period}
@@ -217,7 +217,7 @@ export function PaymentForm({
                         </div>
                         {option.monthlyPrice && (
                           <p className="text-[10px] text-zinc-500 text-left font-mono">
-                            Total: €{option.price.toFixed(2)}
+                            Total: ${option.price.toFixed(2)}
                             {option.id === 'quarterly' ? ' / trimestre' : ' / año'}
                           </p>
                         )}

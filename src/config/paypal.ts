@@ -25,16 +25,16 @@ console.log(`Configurando PayPal para entorno: ${isProduction ? 'Producción' : 
 // IDs de planes para producción y desarrollo
 const PLAN_IDS = {
   production: {
-    PRO_MONTHLY: 'P-0N2995358Y537620XM7EH2GY',
-    PRO_QUARTERLY: 'P-3VP556308G528934UM7EH2ZI',
-    PRO_ANNUALLY: 'P-4DN15863T7613990EM7EH3EY'
+    PRO_MONTHLY: 'P-8UD61442NR388412KM7WLTBQ',
+    PRO_QUARTERLY: 'P-4XT04013X4523154JM7WLT4Y',
+    PRO_ANNUALLY: 'P-4D075066SM592694CM7WLUGQ'
   },
   development: {
     // IDs para el entorno de desarrollo/sandbox
     // Si son los mismos, simplemente usa los mismos valores
-    PRO_MONTHLY: 'P-0N2995358Y537620XM7EH2GY',
-    PRO_QUARTERLY: 'P-3VP556308G528934UM7EH2ZI',
-    PRO_ANNUALLY: 'P-4DN15863T7613990EM7EH3EY'
+    PRO_MONTHLY: 'P-8UD61442NR388412KM7WLTBQ',
+    PRO_QUARTERLY: 'P-4XT04013X4523154JM7WLT4Y',
+    PRO_ANNUALLY: 'P-4D075066SM592694CM7WLUGQ'
   }
 }
 
@@ -54,6 +54,6 @@ export const PAYPAL_CONFIG: PayPalConfig = {
     }
   },
   CLIENT_ID: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
-  CURRENCY: 'EUR',
+  CURRENCY: 'USD',
   INTENT: 'subscription'
 } as const
