@@ -261,7 +261,7 @@ export function NewItemModal({
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-gray-500">
-                  Precio (€)
+                  Precio
                 </label>
                 <input
                   type="number"

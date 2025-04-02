@@ -112,12 +112,13 @@ export function BillingTable() {
   if (invoicesQuery.isError) {
     return (
       <div className="text-center py-10">
-        <p className="text-red-500">Error al cargar las facturas</p>
+        <p className="text-gray-600 font-medium">No hay cuenta de Stripe conectada</p>
+        <p className="text-sm text-gray-500 mt-1">Revisa la sección de Integraciones en "Configuración"</p>
         <Button 
           onClick={() => invoicesQuery.refetch()}
           variant="outline"
           size="sm"
-          className="mt-2"
+          className="mt-4"
         >
           Reintentar
         </Button>

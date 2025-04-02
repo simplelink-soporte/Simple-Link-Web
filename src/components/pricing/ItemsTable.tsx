@@ -294,7 +294,7 @@ export function ItemsTable() {
                 </td>
                 <td className="px-6 py-4 border-b border-gray-200 text-center">
                   <span className="text-sm text-gray-500">
-                    {item.requires_deposit ? `${item.deposit_amount}€` : 'No'}
+                    {item.requires_deposit ? item.deposit_amount : 'No'}
                   </span>
                 </td>
                 <td className="px-4 py-4 border-b border-gray-200">
