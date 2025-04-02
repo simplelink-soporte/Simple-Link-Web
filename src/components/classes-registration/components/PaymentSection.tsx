@@ -189,7 +189,8 @@ export function PaymentSection({
     
     // Cerrar modal si estamos en móvil
     if (viewType === 'mobile') {
-      setShowCardModal(false)
+      setShowCardModal(false);
+      setShowCardForm(false);
     }
     
     // Cerrar la lista desplegable
@@ -452,7 +453,10 @@ export function PaymentSection({
       {viewType === 'mobile' && (
         <CardListModal
           isOpen={showCardModal}
-          onClose={() => setShowCardModal(false)}
+          onClose={() => {
+            setShowCardModal(false);
+            setShowCardForm(false);
+          }}
           cards={cards}
           selectedCardId={methodToDisplay?.id}
           onSelect={handleCardSelect}

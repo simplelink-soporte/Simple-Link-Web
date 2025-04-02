@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { CardList } from "./card-list" 
-import { CardListModal } from "../../classes-registration/components/CardListModal"
+import { CardListModal } from "./CardListModal"
 import { useStoredCards } from "@/hooks/useStoredCards"
 import { StripeProvider } from "@/contexts/StripeContext"
 import { useAuth } from "@/contexts/AuthContext"
@@ -171,7 +171,8 @@ export function PaymentSection({
     
     // Cerrar modal si estamos en móvil
     if (viewType === 'mobile') {
-      setShowCardModal(false)
+      setShowCardModal(false);
+      setShowCardForm(false);
     }
     
     // Cerrar la lista desplegable
@@ -428,7 +429,10 @@ export function PaymentSection({
       {viewType === 'mobile' && (
         <CardListModal
           isOpen={showCardModal}
-          onClose={() => setShowCardModal(false)}
+          onClose={() => {
+            setShowCardModal(false);
+            setShowCardForm(false);
+          }}
           cards={cards}
           selectedCardId={methodToDisplay?.id}
           onSelect={handleCardSelect}

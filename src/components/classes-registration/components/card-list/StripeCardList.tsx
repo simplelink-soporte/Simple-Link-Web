@@ -105,15 +105,7 @@ export function StripeCardList({
               theme={theme}
             />
             
-            <Button
-              onClick={onBack}
-              size="sm"
-              variant="ghost"
-              className="mt-2 text-xs"
-            >
-              <ArrowLeft className="h-3 w-3 mr-1" />
-              Volver
-            </Button>
+            {/* El botón de "Volver" ya está incluido en el CardSetupForm */}
           </div>
         </Elements>
       </motion.div>

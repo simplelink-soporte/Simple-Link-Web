@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Elements, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { CardSetupForm } from '@/components/preview/steps/summary/components/CardSetupForm';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,14 @@ import { StripeCardListProps, StoredCard } from './shared/types';
 
 // Clave pública de Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string;
+
+// Obtener una instancia de Stripe de forma memoizada
+const getStripePromise = (accountId?: string) => {
+  if (accountId) {
+    return loadStripe(stripeKey, { stripeAccount: accountId });
+  }
+  return loadStripe(stripeKey);
+};
 
 /**
  * Implementación de CardList específica para Stripe
@@ -38,6 +46,10 @@ export function StripeCardList({
   // Estado local para controlar la animación de expansión
   const [height, setHeight] = useState<number | 'auto'>(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Verificar si ya existe un contexto de Elements
+  const existingElements = useElements();
+  const existingStripe = useStripe();
 
   // Efecto para controlar la altura del contenedor para la animación
   useEffect(() => {
@@ -48,8 +60,8 @@ export function StripeCardList({
     }
   }, [isExpanded, cards.length, showCardForm]);
 
-  // Componente para el Stripe Card Setup Form
-  function CardSetupWrapper({
+  // Componente para el Stripe Card Setup Form con detección de contexto Elements
+  const CardSetupWrapper = useCallback(({
     onSuccess,
     onError,
     onBack,
@@ -63,25 +75,22 @@ export function StripeCardList({
     stripeAccountId?: string;
     theme?: 'light' | 'dark';
     viewType?: 'mobile' | 'desktop';
-  }) {
-    const stripePromise = loadStripe(stripeKey, stripeAccountId ? {
-      stripeAccount: stripeAccountId
-    } : undefined);
-
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        className={cn(
-          "p-4 rounded-lg border",
-          viewType === 'mobile' ? "w-full" : "",
-          theme === 'dark'
-            ? "bg-neutral-900 border-neutral-800"
-            : "bg-white border-gray-200"
-        )}
-      >
-        <Elements stripe={stripePromise}>
+  }) => {
+    // Si ya existe un contexto de Elements y Stripe (proporcionado por el padre)
+    if (existingElements && existingStripe) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className={cn(
+            "p-4 rounded-lg border",
+            viewType === 'mobile' ? "w-full" : "",
+            theme === 'dark'
+              ? "bg-neutral-900 border-neutral-800"
+              : "bg-white border-gray-200"
+          )}
+        >
           <div className="space-y-4">
             <div className="flex flex-col space-y-1">
               <h3 className={cn(
@@ -105,20 +114,63 @@ export function StripeCardList({
               theme={theme}
             />
             
-            <Button
-              onClick={onBack}
-              size="sm"
-              variant="ghost"
-              className="mt-2 text-xs"
-            >
-              <ArrowLeft className="h-3 w-3 mr-1" />
-              Volver
-            </Button>
+            {/* El botón de "Volver" ya está incluido en el CardSetupForm */}
+          </div>
+        </motion.div>
+      );
+    }
+    
+    // Si no hay contexto de Elements (autónomo), inicializamos uno nuevo
+    // Usar opciones para evitar recargas del iframe
+    const stripeOptions = {
+      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap' }],
+    };
+    
+    const stripePromise = getStripePromise(stripeAccountId);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className={cn(
+          "p-4 rounded-lg border",
+          viewType === 'mobile' ? "w-full" : "",
+          theme === 'dark'
+            ? "bg-neutral-900 border-neutral-800"
+            : "bg-white border-gray-200"
+        )}
+      >
+        <Elements stripe={stripePromise} options={stripeOptions}>
+          <div className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <h3 className={cn(
+                "text-base font-medium",
+                theme === 'dark' ? "text-gray-200" : "text-gray-700"
+              )}>
+                Agregar Nueva Tarjeta
+              </h3>
+              <p className={cn(
+                "text-xs",
+                theme === 'dark' ? "text-gray-400" : "text-gray-500"
+              )}>
+                Completa los datos de tu tarjeta para guardarla de forma segura
+              </p>
+            </div>
+            
+            <CardSetupForm 
+              onSuccess={onSuccess}
+              onError={onError}
+              onBack={onBack}
+              theme={theme}
+            />
+            
+            {/* El botón de "Volver" ya está incluido en el CardSetupForm */}
           </div>
         </Elements>
       </motion.div>
     );
-  }
+  }, [existingElements, existingStripe]);
 
   return (
     <div className="relative w-full">
@@ -160,8 +212,20 @@ export function StripeCardList({
                   />
                 ))}
                 
+                {/* Mostrar mensaje si no hay tarjetas */}
+                {cards.length === 0 && !isLoading && (
+                  <div className={cn(
+                    "text-sm py-3 px-4 rounded-lg",
+                    theme === 'dark'
+                      ? "bg-neutral-800 text-gray-300"
+                      : "bg-gray-50 text-gray-500"
+                  )}>
+                    No tienes tarjetas guardadas
+                  </div>
+                )}
+                
                 {/* Botón para agregar tarjeta */}
-                <AddCardButton
+                <AddCardButton 
                   onClick={onAddCard}
                   theme={theme}
                   viewType={viewType}
