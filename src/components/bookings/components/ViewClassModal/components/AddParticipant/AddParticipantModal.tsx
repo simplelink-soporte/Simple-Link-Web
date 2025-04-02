@@ -77,6 +77,10 @@ export function AddParticipantModal({
     })
   }
 
+  const handleParticipantRemove = (participantId: string) => {
+    setSelectedParticipants(prev => prev.filter(p => p.id !== participantId))
+  }
+
   // Adaptador para convertir SectionParticipant a UIParticipant
   const convertToUIParticipant = (participant: SectionParticipant): UIParticipant => {
     return {
@@ -299,7 +303,9 @@ export function AddParticipantModal({
                     exit={{ opacity: 0, x: 20 }}
                   >
                     <AddParticipantSection 
-                      onParticipantAdd={handleParticipantAdd}
+                      onParticipantAdd={handleParticipantAdd} 
+                      onParticipantRemove={handleParticipantRemove}
+                      selectedParticipantIds={selectedParticipants.map(p => p.id)}
                     />
                     {selectedParticipants.length > 0 && (
                       <div className="mt-4 flex justify-end">

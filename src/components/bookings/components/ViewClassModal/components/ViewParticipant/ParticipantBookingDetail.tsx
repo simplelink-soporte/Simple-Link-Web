@@ -38,7 +38,6 @@ export function ParticipantBookingDetail({
 
   // Verificar si la reserva puede ser cancelada
   const canBeCancelled = 
-    participant.bookingDetails?.payment_status !== 'completed' && 
     participant.bookingDetails?.payment_status !== 'cancelled' &&
     !participant.bookingDetails?.cancelled_at &&
     classStatus !== 'completed' &&
@@ -351,8 +350,8 @@ export function ParticipantBookingDetail({
               </div>
             )}
             
-            {/* Botón de edición - visible solo cuando no está inhabilitado y el estado no es completed */}
-            {!isEditingDisabled && participant.bookingDetails.payment_status !== 'completed' && (
+            {/* Botón de edición - visible solo cuando no está inhabilitado */}
+            {!isEditingDisabled && (
               <Button 
                 variant="outline" 
                 size="sm"
@@ -384,7 +383,7 @@ export function ParticipantBookingDetail({
           Volver
         </Button>
         
-        {/* Botón para cancelar reserva (solo visible si la reserva no está completada o cancelada) */}
+        {/* Botón para cancelar reserva */}
         {canBeCancelled && participant.bookingDetails && (
           <Button
             onClick={() => setIsCancelModalOpen(true)}

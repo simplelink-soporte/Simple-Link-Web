@@ -80,7 +80,11 @@ export function NewBranchModal({ isOpen, onClose, onSave }: NewBranchModalProps)
     { id: 'Europe/Madrid', name: 'Europe/Madrid (UTC+1/+2)' },
     { id: 'Europe/London', name: 'Europe/London (UTC+0/+1)' },
     { id: 'America/New_York', name: 'America/New_York (UTC-5/-4)' },
-    { id: 'America/Los_Angeles', name: 'America/Los_Angeles (UTC-8/-7)' }
+    { id: 'America/Los_Angeles', name: 'America/Los_Angeles (UTC-8/-7)' },
+    { id: 'America/Mexico_City', name: 'America/Mexico_City (UTC-6/-5)' },
+    { id: 'America/Tijuana', name: 'America/Tijuana (UTC-8/-7)' },
+    { id: 'America/Chihuahua', name: 'America/Chihuahua (UTC-7/-6)' },
+    { id: 'America/Cancun', name: 'America/Cancun (UTC-5)' }
   ]
   
   const { organization, organizationId } = useOrganization()

@@ -63,8 +63,9 @@ export function ClassBlock({
   const isLast = timeToMinutes(currentTime) === timeToMinutes(endTime) - 15
 
   // Calcular el porcentaje de ocupación
-  const isFull = classData.currentParticipants >= classData.capacity
-  const isNearlyFull = classData.currentParticipants >= (classData.capacity * 0.8)
+  const isOverCapacity = classData.currentParticipants > classData.capacity
+  const isExactlyFull = classData.currentParticipants === classData.capacity
+  const isNearlyFull = classData.currentParticipants >= (classData.capacity * 0.8) && !isExactlyFull && !isOverCapacity
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -138,11 +139,13 @@ export function ClassBlock({
                   "ring-1 ring-gray-100/50", 
                   "text-[10px] font-medium tabular-nums tracking-tight", 
                   "shadow-[0_1px_2px_rgba(0,0,0,0.05)]", 
-                  isFull 
+                  isOverCapacity 
                     ? "text-red-500 font-semibold"
-                    : isNearlyFull 
-                      ? "text-amber-500" 
-                      : "text-gray-500"
+                    : isExactlyFull 
+                      ? "text-green-500 font-semibold"
+                      : isNearlyFull 
+                        ? "text-amber-500" 
+                        : "text-gray-500"
                 )}
               >
                 {classData.currentParticipants}/{classData.capacity}

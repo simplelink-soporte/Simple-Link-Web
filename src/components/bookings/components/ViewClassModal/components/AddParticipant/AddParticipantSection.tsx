@@ -15,9 +15,11 @@ interface Participant {
 
 interface AddParticipantSectionProps {
   onParticipantAdd?: (participant: Participant) => void
+  onParticipantRemove?: (participantId: string) => void
+  selectedParticipantIds?: string[]
 }
 
-export function AddParticipantSection({ onParticipantAdd }: AddParticipantSectionProps) {
+export function AddParticipantSection({ onParticipantAdd, onParticipantRemove, selectedParticipantIds = [] }: AddParticipantSectionProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedParticipants, setSelectedParticipants] = useState<Participant[]>([])
   const { data: searchResults, isLoading } = useParticipantSearch(searchTerm)
@@ -50,6 +52,7 @@ export function AddParticipantSection({ onParticipantAdd }: AddParticipantSectio
 
   const removeParticipant = (participantId: string) => {
     setSelectedParticipants(prev => prev.filter(p => p.id !== participantId))
+    onParticipantRemove?.(participantId)
   }
 
   return (
