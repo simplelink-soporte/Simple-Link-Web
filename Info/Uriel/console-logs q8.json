@@ -1,0 +1,34 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardSetupForm] Obteniendo customerId para:",
+      {
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "stripeAccountId": "acct_1R9An3DhfOYMzeQw"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[CardSetupForm] Customer obtenido:",
+      {
+        "customerId": "cus_S3PrurkcSr8Iaz"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al configurar la tarjeta:",
+      "No such setupintent: 'seti_1R9NlFDhfOYMzeQwzoh4sYvb'; a similar object exists in test mode, but a live mode key was used to make this request."
+    ]
+  }
+]

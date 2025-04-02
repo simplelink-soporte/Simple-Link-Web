@@ -23,6 +23,7 @@ import type { BookingCreationData } from '@/types/bookings';
 import { ShiftBookingTransformService, type ShiftDetails } from './shiftBookingTransformService';
 import type { PaymentMethodEnum, PaymentStatusEnum, PaymentTypeEnum } from '@/types/bookings';
 import { DateTime } from 'luxon'; // Importamos DateTime de Luxon para manejar zonas horarias
+import { StripeInvoiceService } from './stripe-invoice.service'; // Importamos el servicio de facturas
 
 // Interfaces para el servicio
 interface BookingResult {
@@ -46,6 +47,7 @@ interface BookingOptions {
   rentalItems?: Record<string, number>;
   rentalItemsPrice?: number;
   itemsData?: any[];
+  generateInvoice?: boolean;
 }
 
 /**
@@ -53,6 +55,7 @@ interface BookingOptions {
  */
 export class ShiftBookingService {
   private supabase = createSupabaseClient();
+  private invoiceService = new StripeInvoiceService();
 
   /**
    * Convierte horarios locales a UTC basándose en la zona horaria de la sede
@@ -356,7 +359,25 @@ export class ShiftBookingService {
         console.log('✅ [ShiftBookingService] Reserva creada exitosamente con ID:', bookingId);
       }
       
-      // Devolvemos un resultado exitoso incluso si no hay ID
+      // Generar factura después de crear la reserva
+      // Solo intentamos generar factura si está habilitada la opción y no es un pago con tarjeta online,
+      // ya que esos pagos generan factura automáticamente durante el proceso de pago
+      if (options.generateInvoice !== false && options.paymentType !== 'deposit' && options.paymentMethod !== 'card') {
+        const invoiceResult = await this.generateInvoice(bookingId, bookingData, options);
+        
+        if (invoiceResult.error) {
+          console.warn('⚠️ [ShiftBookingService] Error al generar la factura, pero la reserva se creó correctamente:', invoiceResult.error);
+          // No fallamos la creación de reserva por error en factura
+        }
+      } else {
+        if (options.generateInvoice === false) {
+          console.log('ℹ️ [ShiftBookingService] Generación de factura deshabilitada por el usuario');
+        } else {
+          console.log('ℹ️ [ShiftBookingService] Omitiendo generación de factura para pago con tarjeta/seña, ya que se generó durante el procesamiento del pago');
+        }
+      }
+      
+      // Devolvemos un resultado exitoso incluso si hay error en factura
       return { id: bookingId || 'unknown' };
     } catch (error: any) {
       console.error('❌ [ShiftBookingService] Error inesperado al crear la reserva:', error);
@@ -366,6 +387,213 @@ export class ShiftBookingService {
           details: error?.message || 'Error desconocido'
         }
       };
+    }
+  }
+
+  /**
+   * Genera una factura para la reserva creada
+   * 
+   * @param bookingId - ID de la reserva
+   * @param bookingData - Datos de la reserva
+   * @param options - Opciones adicionales
+   * @returns Resultado de la generación de la factura
+   */
+  async generateInvoice(
+    bookingId: string | null,
+    bookingData: BookingCreationData,
+    options: BookingOptions
+  ): Promise<{ error?: { message: string; code?: string } }> {
+    try {
+      if (!bookingId) {
+        console.error('❌ [ShiftBookingService] No se puede generar una factura sin un ID de reserva');
+        return { error: { message: 'No se puede generar una factura sin un ID de reserva' } };
+      }
+
+      // Obtener información necesaria (court name, email) para la factura
+      const { data: courtDetails, error: courtDetailsError } = await this.supabase
+        .from('courts')
+        .select('name, branch_id, sedes:branch_id(id, name, empresa_id)')
+        .eq('id', bookingData.courtId)
+        .single();
+        
+      if (courtDetailsError || !courtDetails) {
+        console.error('❌ [ShiftBookingService] Error al obtener detalles de la cancha para factura:', courtDetailsError);
+        return { error: { message: 'No se pudieron obtener detalles de la cancha para la factura' } };
+      }
+
+      // Obtener información del usuario para la factura (email)
+      const { data: userDetails, error: userDetailsError } = await this.supabase
+        .from('users')
+        .select('email, user_metadata')
+        .eq('id', options.userId)
+        .single();
+        
+      if (userDetailsError || !userDetails || !userDetails.email) {
+        console.error('❌ [ShiftBookingService] Error al obtener detalles del usuario para factura:', userDetailsError);
+        return { error: { message: 'No se pudieron obtener detalles del usuario para la factura' } };
+      }
+
+      // Obtener la conexión de Stripe para esta empresa desde la tabla stripe_connections
+      const { data: stripeConnection, error: stripeConnectionError } = await this.supabase
+        .from('stripe_connections')
+        .select('stripe_account_id')
+        .eq('empresa_id', options.empresaId)
+        .single();
+            
+      if (stripeConnectionError || !stripeConnection || !stripeConnection.stripe_account_id) {
+        console.error('❌ [ShiftBookingService] Error al obtener cuenta Stripe de la empresa:', stripeConnectionError || 'No se encontró conexión de Stripe');
+        return { error: { message: 'No se pudo obtener la configuración de Stripe para la factura' } };
+      }
+
+      // Construir el nombre del cliente a partir de los metadatos o usar el email como alternativa
+      const userName = userDetails.user_metadata?.name || 
+                      (userDetails.user_metadata?.first_name && userDetails.user_metadata?.last_name 
+                        ? `${userDetails.user_metadata.first_name} ${userDetails.user_metadata.last_name}`
+                        : userDetails.email);
+
+      // Generar el customer ID de Stripe si es necesario
+      let stripeCustomerId = options.stripePaymentMethodId 
+                           ? (await this.findOrCreateStripeCustomer({
+                              email: userDetails.email,
+                              name: userName,
+                              empresaId: options.empresaId
+                             }))?.id 
+                           : undefined;
+
+      // Determinar el monto a facturar según el tipo de pago
+      let amount = bookingData.courtPrice + (bookingData.rentalItemsPrice || 0);
+      let description = `Reserva: ${courtDetails.name || 'Cancha'}`;
+      
+      // Parámetros adicionales para indicar si es pago parcial o completo
+      let paymentType: 'booking' | 'deposit' = 'booking';
+      let isPartialPayment = false;
+      
+      // Si es un pago con seña, ajustar el monto y la descripción
+      if (bookingData.paymentType === 'deposit') {
+        amount = bookingData.depositAmount || 0;
+        description = `Seña para reserva: ${courtDetails.name || 'Cancha'}`;
+        paymentType = 'deposit';
+        isPartialPayment = true;
+        
+        console.log('💵 [ShiftBookingService] Generando factura por pago de SEÑA:', {
+          fullAmount: bookingData.courtPrice + (bookingData.rentalItemsPrice || 0),
+          depositAmount: amount,
+          isPartialPayment: true
+        });
+      } else {
+        console.log('💵 [ShiftBookingService] Generando factura por pago COMPLETO:', {
+          amount: amount,
+          isPartialPayment: false
+        });
+      }
+      
+      // Ahora crear la factura utilizando el servicio existente
+      const invoiceResult = await this.invoiceService.createManualBookingInvoice({
+        stripeAccountId: stripeConnection.stripe_account_id,
+        customerId: stripeCustomerId,
+        customerEmail: userDetails.email,
+        customerName: userName,
+        amount: amount,
+        description: description,
+        bookingId: bookingId,
+        empresaId: options.empresaId,
+        courtId: bookingData.courtId,
+        branchId: courtDetails.branch_id,
+        paymentType: paymentType,
+        isPartialPayment: isPartialPayment,
+        totalAmount: bookingData.courtPrice + (bookingData.rentalItemsPrice || 0)
+      });
+      
+      if (!invoiceResult.success) {
+        console.error('❌ [ShiftBookingService] Error al generar factura para reserva:', invoiceResult.error);
+        return { error: { message: 'Error al generar factura', code: invoiceResult.error?.code } };
+      }
+      
+      console.log('✅ [ShiftBookingService] Factura generada exitosamente:', {
+        invoiceId: invoiceResult.invoiceId,
+        invoiceUrl: invoiceResult.invoiceUrl || null
+      });
+      
+      return {};
+    } catch (error: any) {
+      console.error('❌ [ShiftBookingService] Error inesperado al generar la factura:', error);
+      return { error: { message: 'Error inesperado al generar la factura', code: error?.code } };
+    }
+  }
+
+  /**
+   * Busca o crea un cliente en Stripe para generar la factura
+   */
+  private async findOrCreateStripeCustomer({
+    email,
+    name,
+    empresaId
+  }: {
+    email: string;
+    name: string;
+    empresaId?: string;
+  }): Promise<{id: string} | null> {
+    try {
+      console.log('🔍 [ShiftBookingService] Buscando cliente de Stripe por email:', email);
+      
+      // Primero, intentar encontrar la conexión de Stripe para esta empresa
+      const { data: stripeConnection, error: stripeConnectionError } = await this.supabase
+        .from('stripe_connections')
+        .select('stripe_account_id')
+        .eq('empresa_id', empresaId)
+        .single();
+      
+      if (stripeConnectionError || !stripeConnection) {
+        console.error('❌ [ShiftBookingService] No se encontró la conexión de Stripe para la empresa:', empresaId);
+        return null;
+      }
+      
+      // Luego, verificar si ya existe un cliente de Stripe para este email
+      const { data: stripeCustomers, error: customerError } = await this.supabase
+        .from('stripe_customers')
+        .select('customer_id')
+        .eq('email', email)
+        .eq('empresa_id', empresaId)
+        .maybeSingle();
+      
+      if (customerError) {
+        console.error('❌ [ShiftBookingService] Error al buscar cliente de Stripe:', customerError);
+        return null;
+      }
+      
+      // Si ya existe, devolver su ID
+      if (stripeCustomers?.customer_id) {
+        console.log('✅ [ShiftBookingService] Cliente de Stripe encontrado:', stripeCustomers.customer_id);
+        return { id: stripeCustomers.customer_id };
+      }
+      
+      // Si no existe, crear un nuevo cliente en Stripe usando RPC
+      console.log('➕ [ShiftBookingService] Creando nuevo cliente de Stripe para:', email);
+      
+      // Formatear el nombre del cliente
+      const customerName = name || email.split('@')[0];
+      
+      // Utilizar una RPC personalizada para crear el cliente
+      const { data: newCustomer, error: createError } = await this.supabase.rpc(
+        'create_stripe_customer',
+        {
+          p_email: email,
+          p_name: customerName,
+          p_stripe_account_id: stripeConnection.stripe_account_id,
+          p_empresa_id: empresaId
+        }
+      );
+      
+      if (createError || !newCustomer || !newCustomer.customer_id) {
+        console.error('❌ [ShiftBookingService] Error al crear cliente de Stripe mediante RPC:', createError || 'Respuesta sin customer_id');
+        return null;
+      }
+      
+      console.log('✅ [ShiftBookingService] Cliente de Stripe creado exitosamente:', newCustomer.customer_id);
+      return { id: newCustomer.customer_id };
+    } catch (error) {
+      console.error('❌ [ShiftBookingService] Error al buscar o crear cliente de Stripe:', error);
+      return null;
     }
   }
 }

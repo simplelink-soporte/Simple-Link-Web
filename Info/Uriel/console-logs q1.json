@@ -1,0 +1,466 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Seleccionando tipo de pago: guarantee"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[PaymentTypeList] Detalles del tipo seleccionado:",
+      {
+        "id": "guarantee",
+        "name": "Garantía",
+        "description": "Dejar tarjeta como garantía",
+        "requiresCard": true,
+        "paymentConfig": {
+          "status": "active",
+          "currency": "EUR",
+          "guaranteePercentage": 25,
+          "partialPaymentPercentage": 25
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "refreshTrigger": 0,
+        "retryCount": 0
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [],
+        "count": 0,
+        "customerData": {
+          "stripeCustomerId": "cus_S3PrurkcSr8Iaz",
+          "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+          "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+          "lastUsed": "2025-04-02T04:39:03.435Z",
+          "status": "active"
+        },
+        "customerId": "cus_S3PrurkcSr8Iaz",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] Actualizando customerId desde payment-methods:",
+      "cus_S3PrurkcSr8Iaz"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 0,
+        "customerId": "cus_S3PrurkcSr8Iaz"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Reintentando carga:",
+      {
+        "attempt": 1,
+        "maxRetries": 3
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] ✅ Respuesta recibida:",
+      {
+        "paymentMethods": [],
+        "count": 0,
+        "customerData": {
+          "stripeCustomerId": "cus_S3PrurkcSr8Iaz",
+          "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+          "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+          "lastUsed": "2025-04-02T04:39:03.318Z",
+          "status": "active"
+        },
+        "customerId": "cus_S3PrurkcSr8Iaz",
+        "currentStoredCustomerId": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] Actualizando customerId desde payment-methods:",
+      "cus_S3PrurkcSr8Iaz"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Tarjetas con customerId:",
+      {
+        "count": 0,
+        "customerId": "cus_S3PrurkcSr8Iaz"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Reintentando carga:",
+      {
+        "attempt": 2,
+        "maxRetries": 3
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "refreshTrigger": 0,
+        "retryCount": 2
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[StripeStoredCards] 🔄 Iniciando carga de tarjetas:",
+      {
+        "stripeAccountId": "acct_1R9An3DhfOYMzeQw",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "refreshTrigger": 0,
+        "retryCount": 2
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS."
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it."
+    ]
+  }
+]

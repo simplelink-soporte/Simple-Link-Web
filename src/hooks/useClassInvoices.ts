@@ -61,7 +61,9 @@ export const useClassInvoices = (params: UseClassInvoicesParams = {}): UseQueryR
         // (complementando el filtrado que ya podría haber en el endpoint)
         const classInvoices = invoices.filter((invoice: any) => 
           invoice.metadata?.is_class_booking === 'true' || 
-          invoice.metadata?.class_id
+          invoice.metadata?.class_id ||
+          invoice.metadata?.resource_type === 'class' ||
+          invoice.metadata?.invoice_origin === 'manual_class_booking'
         );
         
         console.log(`📊 Facturas de clases después del filtrado: ${classInvoices.length}`);

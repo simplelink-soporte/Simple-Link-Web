@@ -367,7 +367,7 @@ const ShiftsStep: React.FC<StepComponentProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col h-full p-4 md:p-6"
+        className="flex flex-col h-full p-4 md:p-6 pt-8"
       >
         {/* Encabezado */}
         <PageHeader 

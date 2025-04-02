@@ -364,7 +364,7 @@ const LocationStep: React.FC<StepComponentProps> = ({
       </MobileLayout>
     ) : (
       // Layout desktop
-      <div className="py-4">
+      <div className="py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key="location-content"

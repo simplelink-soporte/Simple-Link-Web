@@ -93,7 +93,8 @@ export function BillingSettings() {
 
   // Verificar si el país es compatible con Mercado Pago
   const isMercadoPagoSupported = useMemo(() => {
-    const supportedCountries = ['Argentina', 'Mexico', 'México'];
+    // Solo Argentina es compatible para mostrar la opción de Mercado Pago
+    const supportedCountries = ['Argentina'];
     return organization?.country ? supportedCountries.includes(organization.country) : false;
   }, [organization?.country]);
 

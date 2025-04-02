@@ -17,6 +17,7 @@ interface DepositPaymentParams {
   stripeAccountId: string;
   off_session?: boolean;      // Default: false porque el usuario está presente durante el pago
   customerEmail?: string;     // Email del cliente para facturación
+  metadata?: Record<string, string>; // Metadatos adicionales como el país para la moneda
 }
 
 interface DepositPaymentResult {
@@ -89,7 +90,8 @@ class DepositPaymentService {
           stripeCustomerId: params.stripeCustomerId,
           stripeAccountId: params.stripeAccountId,
           off_session: params.off_session !== undefined ? params.off_session : false,
-          customerEmail: params.customerEmail || '' // Añadir el email del cliente para facturación
+          customerEmail: params.customerEmail || '', // Añadir el email del cliente para facturación
+          metadata: params.metadata || {} // Pasar los metadatos para determinar la moneda
         }),
       });
 

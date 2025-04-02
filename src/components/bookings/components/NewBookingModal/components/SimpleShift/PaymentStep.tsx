@@ -47,7 +47,8 @@ export function PaymentStep({
     deposit: 0,
     paymentStatus: 'completed',
     paymentMethod: 'cash',
-    isPaid: false
+    isPaid: false,
+    generateInvoice: true
   }))
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>('cash')
 
@@ -378,21 +379,18 @@ export function PaymentStep({
   }, [calculateTotalAmount, paymentState.paymentStatus])
 
   useEffect(() => {
-    // Determinar el tipo de pago basado en el estado
-    const paymentType = paymentState.paymentStatus === 'completed' ? 'booking' :
-                       paymentState.paymentStatus === 'partial' ? 'deposit' :
-                       'booking';
-
+    const paymentType = paymentState.paymentStatus === 'partial' ? 'deposit' : 'booking'
     onPaymentChange({
+      ...paymentState,
       totalAmount: calculateTotalAmount(),
-      deposit: calculateDeposit(),
+      deposit: paymentState.paymentStatus === 'partial' ? paymentState.deposit : 0,
       paymentStatus: paymentState.paymentStatus,
       paymentMethod: paymentState.paymentMethod,
-      paymentType,
       isPaid: paymentState.paymentStatus === 'completed',
-      manualPrice: manualPrice || undefined
+      manualPrice: manualPrice || undefined,
+      generateInvoice: paymentState.generateInvoice
     })
-  }, [paymentState.paymentStatus, paymentState.paymentMethod, manualPrice])
+  }, [paymentState.paymentStatus, paymentState.paymentMethod, manualPrice, paymentState.generateInvoice])
 
   const calculateDeposit = () => {
     const total = calculateTotalAmount()
@@ -575,6 +573,27 @@ export function PaymentStep({
                   {label}
                 </button>
               ))}
+            </div>
+            
+            {/* Opción para generar factura */}
+            <div className="flex items-center space-x-2 pt-2">
+              <input
+                type="checkbox"
+                id="generate-invoice"
+                checked={paymentState.generateInvoice !== false}
+                onChange={(e) => {
+                  const newState: PaymentDetails = {
+                    ...paymentState,
+                    generateInvoice: e.target.checked
+                  }
+                  setPaymentState(newState)
+                  onPaymentChange(newState)
+                }}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="generate-invoice" className="text-sm font-medium text-gray-700">
+                Generar factura
+              </label>
             </div>
           </motion.div>
         )}

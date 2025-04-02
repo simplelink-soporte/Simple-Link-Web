@@ -1053,9 +1053,14 @@ export const bookingService = {
       // Generar factura automáticamente si:
       // 1. El pago es completo (type='booking', status='completed')
       // 2. Es un pago con seña (type='deposit', status='partial')
+      // Y siempre respetando la opción del usuario si está definida
       const shouldGenerateInvoice = 
-        (data.paymentType === 'booking' && data.paymentStatus === 'completed') || 
-        (data.paymentType === 'deposit' && data.paymentStatus === 'partial');
+        // Si la bandera generateInvoice está definida explícitamente, usar ese valor
+        data.generateInvoice !== undefined 
+          ? data.generateInvoice 
+          : // Si no está definida, usar la lógica anterior
+            ((data.paymentType === 'booking' && data.paymentStatus === 'completed') || 
+            (data.paymentType === 'deposit' && data.paymentStatus === 'partial'));
       
       if (shouldGenerateInvoice && bookingId) {
         console.log('🧾 Intentando generar factura para reserva:', {
@@ -1063,7 +1068,8 @@ export const bookingService = {
           paymentType: data.paymentType,
           paymentStatus: data.paymentStatus,
           empresaId: data.empresaId,
-          isDepositPayment: data.paymentType === 'deposit'
+          isDepositPayment: data.paymentType === 'deposit',
+          generateInvoice: data.generateInvoice
         });
         
         try {
@@ -1155,7 +1161,8 @@ export const bookingService = {
             courtId: data.courtId,
             branchId: courtDetails.branch_id,
             paymentType: paymentType,
-            isPartialPayment: isPartialPayment
+            isPartialPayment: isPartialPayment,
+            totalAmount: data.courtPrice + (data.rentalItemsPrice || 0) // Añadimos explícitamente el monto total de la reserva
           });
           
           console.log('✅ Resultado de generación de factura directa:', invoiceResult);

@@ -69,6 +69,7 @@ interface PaymentDetails {
   paymentMethod: PaymentMethodEnum
   isPaid: boolean
   manualPrice?: number
+  generateInvoice?: boolean
 }
 
 const initialPaymentDetails: PaymentDetails = {
@@ -258,7 +259,8 @@ export function SimpleShiftBookingModal({
           role: 'player' as ParticipantRoleEnum
         })),
         rentalItems: rentals,
-        empresa_id: organization.id
+        empresa_id: organization.id,
+        generateInvoice: paymentDetails.generateInvoice
       };
 
       console.log('Creando reserva manual con datos:', {

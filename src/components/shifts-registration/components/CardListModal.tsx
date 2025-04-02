@@ -1,25 +1,13 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { StoredCard } from "./card-list/shared/types"
 import { CardList } from "./card-list"
 import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
-
-// Clave pública de Stripe
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
-
-// Inicializar Stripe fuera del componente para evitar reinicios innecesarios
-// Técnica recomendada por la documentación de Stripe
-const getStripePromise = (accountId?: string) => {
-  if (accountId) {
-    return loadStripe(stripeKey, { stripeAccount: accountId })
-  }
-  return loadStripe(stripeKey)
-}
+import { useStripePromise, getDefaultStripeOptions } from '@/hooks/useStripePromise'
 
 interface CardListModalProps {
   isOpen: boolean
@@ -61,8 +49,9 @@ export function CardListModal({
   amount
 }: CardListModalProps) {
   // Memoizar la instancia de Stripe para evitar reinicios frecuentes
-  const [stripePromise] = useState(() => getStripePromise(stripeAccountId))
-  
+  const stripePromise = useStripePromise(stripeAccountId)
+  const stripeOptions = getDefaultStripeOptions()
+
   // Función para manejar la selección de tarjeta
   const handleCardSelect = (card: StoredCard) => {
     onSelect(card)
@@ -90,16 +79,6 @@ export function CardListModal({
       document.body.style.overflow = 'auto'
     }
   }, [isOpen])
-
-  // Opciones para el componente Elements de Stripe
-  // Esto previene rerenders y recargas innecesarias del iframe
-  const stripeOptions = {
-    fonts: [
-      {
-        cssSrc: 'https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap',
-      },
-    ],
-  }
 
   return (
     <AnimatePresence>

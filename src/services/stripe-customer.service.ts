@@ -10,7 +10,7 @@ export class StripeCustomerService {
     isRetry = false
   ): Promise<StripeCustomerCache> {
     try {
-      // 1. Buscar en Supabase
+      // 1. Buscar en Supabase con un enfoque más agresivo para encontrar cualquier registro existente
       const { data: existingCustomers, error: searchError } = await supabaseAdmin
         .from('stripe_customers')
         .select('*')
@@ -25,7 +25,7 @@ export class StripeCustomerService {
         throw searchError;
       }
 
-      // Filtrar por cliente activo o el más reciente
+      // Filtrar por cliente activo o el más reciente, incluso si está marcado como inactivo
       const activeCustomer = existingCustomers?.find(customer => customer.status === 'active') || 
                            existingCustomers?.[0];
       
@@ -67,14 +67,16 @@ export class StripeCustomerService {
           
           // Si no es un reintento, crear nuevo cliente
           if (!isRetry) {
-            return await this.createNewCustomer(userId, stripeAccountId);
+            // Pequeña pausa para reducir colisiones de concurrencia
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return await this.createNewCustomerSafely(userId, stripeAccountId);
           }
         }
       }
 
       // 5. Si no hay cliente o todos están inactivos y no es un reintento, crear uno nuevo
       if (!isRetry) {
-        return await this.createNewCustomer(userId, stripeAccountId);
+        return await this.createNewCustomerSafely(userId, stripeAccountId);
       }
 
       throw new Error('No se pudo recuperar ni crear el cliente después de múltiples intentos');
@@ -82,7 +84,8 @@ export class StripeCustomerService {
     } catch (error: any) {
       if (error.code === '23505' && !isRetry) {
         // Si es un error de duplicado y no es un reintento, esperar un momento y reintentar
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Incrementamos el tiempo de espera para dar más margen a la resolución
+        await new Promise(resolve => setTimeout(resolve, 1500));
         console.log('Detectado cliente duplicado, intentando recuperar...');
         return await this.getOrCreateCustomer(userId, stripeAccountId, true);
       }
@@ -91,41 +94,108 @@ export class StripeCustomerService {
     }
   }
 
-  private async createNewCustomer(userId: string, stripeAccountId: string): Promise<StripeCustomerCache> {
-    const customer = await stripe.customers.create(
-      {
-        metadata: {
-          user_id: userId,
-          created_at: new Date().toISOString()
-        }
-      },
-      { stripeAccount: stripeAccountId }
-    );
-
-    const { data: newCustomer, error } = await supabaseAdmin
+  // Método nuevo para manejar mejor la concurrencia en la creación
+  private async createNewCustomerSafely(userId: string, stripeAccountId: string): Promise<StripeCustomerCache> {
+    // Verificar una vez más si se creó el cliente entre la verificación inicial y ahora
+    // Esto reduce significativamente el riesgo de crear duplicados en situaciones de alta concurrencia
+    const { data: latestCheck } = await supabaseAdmin
       .from('stripe_customers')
-      .insert({
+      .select('*')
+      .match({
         user_id: userId,
-        stripe_customer_id: customer.id,
         stripe_account_id: stripeAccountId,
-        last_used: new Date().toISOString(),
-        metadata: {
-          stripe_created_at: customer.created,
-          initial_creation: true
-        }
+        status: 'active'
       })
-      .select()
-      .single();
+      .limit(1);
 
-    if (error) throw error;
+    // Si encontramos un cliente activo en esta segunda verificación, lo usamos
+    if (latestCheck && latestCheck.length > 0) {
+      console.log('Cliente creado por otro proceso mientras verificábamos, usando el existente');
+      return {
+        stripeCustomerId: latestCheck[0].stripe_customer_id,
+        stripeAccountId,
+        userId,
+        lastUsed: new Date().toISOString(),
+        status: 'active'
+      };
+    }
 
-    return {
-      stripeCustomerId: customer.id,
-      stripeAccountId,
-      userId,
-      lastUsed: new Date().toISOString(),
-      status: 'active'
-    };
+    // Si no hay cliente activo, procedemos a crear uno nuevo
+    try {
+      const customer = await stripe.customers.create(
+        {
+          metadata: {
+            user_id: userId,
+            created_at: new Date().toISOString()
+          }
+        },
+        { stripeAccount: stripeAccountId }
+      );
+      
+      // Generar un UUID único para el registro
+      const recordId = crypto.randomUUID ? crypto.randomUUID() : 
+                       `${userId.substring(0, 8)}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  
+      // Usamos upsert con onConflict para manejar mejor los casos de concurrencia
+      const { data: newCustomer, error } = await supabaseAdmin
+        .from('stripe_customers')
+        .upsert({
+          id: recordId,
+          user_id: userId,
+          stripe_customer_id: customer.id,
+          stripe_account_id: stripeAccountId,
+          last_used: new Date().toISOString(),
+          status: 'active',
+          metadata: {
+            stripe_created_at: customer.created,
+            initial_creation: true
+          }
+        }, { 
+          onConflict: 'user_id,stripe_account_id', 
+          ignoreDuplicates: false 
+        })
+        .select()
+        .single();
+  
+      if (error) {
+        // Si hay error en la inserción pero ya creamos el cliente en Stripe,
+        // intentamos recuperar el registro existente para evitar inconsistencias
+        if (error.code === '23505') {
+          console.log('Conflicto al insertar, buscando registro existente');
+          const { data: existingRecord } = await supabaseAdmin
+            .from('stripe_customers')
+            .select('*')
+            .match({
+              user_id: userId,
+              stripe_account_id: stripeAccountId
+            })
+            .order('created_at', { ascending: false })
+            .limit(1);
+            
+          if (existingRecord && existingRecord.length > 0) {
+            return {
+              stripeCustomerId: existingRecord[0].stripe_customer_id,
+              stripeAccountId,
+              userId,
+              lastUsed: new Date().toISOString(),
+              status: 'active'
+            };
+          }
+        }
+        throw error;
+      }
+  
+      return {
+        stripeCustomerId: customer.id,
+        stripeAccountId,
+        userId,
+        lastUsed: new Date().toISOString(),
+        status: 'active'
+      };
+    } catch (error) {
+      console.error('Error al crear cliente de forma segura:', error);
+      throw error;
+    }
   }
 
   private async updateCustomerLastUsed(id: string) {

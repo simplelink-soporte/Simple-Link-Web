@@ -59,6 +59,26 @@ const PAYMENT_METHODS: Record<PaymentMethodEnum, {
   }
 }
 
+// Función para determinar el símbolo de moneda según el país
+const getCurrencySymbol = (country: string | null): string => {
+  if (!country) return '€'; // Valor por defecto
+  
+  const countryLower = country.toLowerCase();
+  switch (countryLower) {
+    case 'mexico':
+    case 'méxico':
+      return '$'; // Peso mexicano
+    case 'argentina':
+      return '$'; // Peso argentino
+    case 'españa':
+    case 'espana':
+    case 'spain':
+      return '€'; // Euro
+    default:
+      return '€'; // Valor por defecto para otros países
+  }
+};
+
 export function SummaryStep() {
   const { state, updateState, goToStep } = useClassRegistration()
   // Usando type assertion con el operador 'as' para asegurarnos de que activePackage tenga la propiedad 'package'
@@ -108,8 +128,12 @@ export function SummaryStep() {
     isLoading: isLoadingGateway,
     stripeAccountId, 
     stripeConnected: isConnected,
-    mercadoPagoUserId
+    mercadoPagoUserId,
+    country
   } = usePaymentGatewayByCountry(empresaId || null);
+
+  // Obtener el símbolo de moneda según el país
+  const currencySymbol = useMemo(() => getCurrencySymbol(country), [country]);
 
   // Log mejorado para depuración con más información
   useEffect(() => {
@@ -361,36 +385,43 @@ export function SummaryStep() {
           
           if (isDepositPayment) {
             // Procesar pago de seña
-            console.log('🔄 [SummaryStep] Procesando pago de SEÑA con depositPaymentService...');
-            console.log('📋 [SummaryStep] Datos para pago de seña:', {
-              amount: selectedSession.price * 0.3, // 30% por defecto como seña
-              totalAmount: selectedSession.price,
-              depositPercentage: 30,
-              paymentMethodId: selectedCardMethod.id,
-              stripeAccountId,
-              stripeCustomerId
-            });
+            console.log('🔄 [SummaryStep] Procesando PAGO CON SEÑA con depositPaymentService...');
+            // Obtener el país de la cuenta conectada o usar México como valor predeterminado
+            const country = organization?.country || 'Mexico';
+            console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
             
             paymentResult = await depositPaymentService.processPayment({
               paymentMethodId: selectedCardMethod.id,
-              amount: selectedSession.price * 0.3, // 30% por defecto
+              amount: 0, // Usaremos el cálculo en base al porcentaje
               totalAmount: selectedSession.price,
               depositPercentage: 30,
               empresaId: empresaId || '',
               description: `Seña - Clase: ${state.selectedClass?.title}`,
               stripeCustomerId: stripeCustomerId,
-              stripeAccountId: stripeAccountId
+              stripeAccountId: stripeAccountId,
+              customerEmail: user?.email, // Incluir el email para facturación
+              metadata: {
+                country: country // Pasar el país para determinar la moneda
+              }
             });
           } else {
             // Procesar pago completo (como estaba antes)
             console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService...');
+            // Obtener el país de la cuenta conectada o usar México como valor predeterminado
+            const country = organization?.country || 'Mexico';
+            console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
+            
             paymentResult = await fullPaymentService.processPayment({
               paymentMethodId: selectedCardMethod.id,
               amount: selectedSession.price,
               empresaId: empresaId || '',
               description: `Pago completo - Clase: ${state.selectedClass?.title}`,
               stripeCustomerId: stripeCustomerId,
-              stripeAccountId: stripeAccountId
+              stripeAccountId: stripeAccountId,
+              customerEmail: user?.email, // Incluir el email para facturación
+              metadata: {
+                country: country // Pasar el país para determinar la moneda
+              }
             });
           }
           
@@ -724,7 +755,7 @@ export function SummaryStep() {
 
         {/* Precio con decimales estilizados */}
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
-          €{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
+          {currencySymbol}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
         </p>
 
         {/* Indicador de Pago Seguro */}
@@ -736,7 +767,7 @@ export function SummaryStep() {
         </div>
       </div>
     );
-  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config]);
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, currencySymbol]);
 
   // Determinar si el tipo de pago seleccionado requiere tarjeta
   const showCardPaymentSection = useMemo(() => {
@@ -978,9 +1009,9 @@ export function SummaryStep() {
       // Obtener hora de sesión de manera segura
       const sessionTime = (selectedSession as any).time || 'Horario no especificado';
       
-      // La descripción visible en la factura PDF - Usar información más amigable
+      // La descripción visible en la factura PDF - Usar información más amigable y consistente con el formato manual
       const description = isDepositPayment
-        ? `Seña para clase "${className}" - ${sessionTitle}`
+        ? `Seña (${(paymentResult as any).depositPercentage}%): ${className} - ${sessionTitle}`
         : `Pago de clase "${className}" - ${sessionTitle}`;
 
       // Obtener CustomerId del método de pago seleccionado

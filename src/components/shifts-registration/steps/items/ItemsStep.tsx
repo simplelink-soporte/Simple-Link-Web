@@ -511,7 +511,7 @@ export function ItemsStep({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col h-full"
+        className="flex flex-col h-full pt-8"
       >
         {/* Cabecera con título y descripción */}
         <PageHeader 

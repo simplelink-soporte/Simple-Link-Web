@@ -50,6 +50,7 @@ export function useStripeStoredCards(refreshTrigger = 0, options = { autoLoad: t
   const retryCountRef = useRef(0);
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 1000;
+  const customerVerifiedRef = useRef(false);
 
   const loadCards = useCallback(async () => {
     if (!stripeAccountId || !isConnected || !user || !isStripeAvailable) {
@@ -65,39 +66,57 @@ export function useStripeStoredCards(refreshTrigger = 0, options = { autoLoad: t
     }
 
     try {
-      console.log('[StripeStoredCards] 🔄 Iniciando carga de tarjetas:', {
-        stripeAccountId,
-        userId: user.id,
-        refreshTrigger,
-        retryCount: retryCountRef.current
-      });
-      
-      // Primero, asegurarnos de que existe el customer
-      const customerResponse = await fetch('/api/stripe/customer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+      // Evitar logs excesivos en reintentos
+      if (retryCountRef.current === 0) {
+        console.log('[StripeStoredCards] 🔄 Iniciando carga de tarjetas:', {
           stripeAccountId,
           userId: user.id,
-          email: user.email,
-          metadata: {
-            name: user.metadata?.name,
-            empresa_id: user.metadata?.empresa_id
-          }
-        })
-      });
+          refreshTrigger
+        });
+      }
+      
+      // Si ya tenemos un customer verificado, podemos ir directo a cargar las tarjetas
+      if (!customerVerifiedRef.current || !customerId) {
+        // Primero, asegurarnos de que existe el customer
+        const customerResponse = await fetch('/api/stripe/customer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            stripeAccountId,
+            userId: user.id,
+            email: user.email,
+            metadata: {
+              name: user.metadata?.name,
+              empresa_id: user.metadata?.empresa_id
+            }
+          })
+        });
 
-      if (!customerResponse.ok) {
-        throw new Error('Error al obtener/crear el customer de Stripe');
+        if (!customerResponse.ok) {
+          throw new Error('Error al obtener/crear el customer de Stripe');
+        }
+
+        const customerData = await customerResponse.json();
+        
+        // Marcar que ya verificamos el customer para evitar llamadas repetidas
+        customerVerifiedRef.current = true;
+        
+        // Guardar el customerId
+        if (customerData.stripeCustomerId) {
+          setCustomerId(customerData.stripeCustomerId);
+        } else {
+          console.warn('[StripeStoredCards] No se recibió un stripeCustomerId del servidor');
+          // Solo reintentamos si parece ser un error de API
+          if (retryCountRef.current < MAX_RETRIES) {
+            retryCountRef.current += 1;
+            setTimeout(loadCards, RETRY_DELAY);
+            return;
+          }
+        }
       }
 
-      const customerData = await customerResponse.json();
-      
-      // Guardar el customerId - corregir para usar stripeCustomerId
-      setCustomerId(customerData.stripeCustomerId);
-      
       // Luego, cargar las tarjetas
       const response = await fetch('/api/stripe/payment-methods', {
         method: 'POST',
@@ -107,13 +126,12 @@ export function useStripeStoredCards(refreshTrigger = 0, options = { autoLoad: t
         body: JSON.stringify({ 
           stripeAccountId,
           userId: user.id,
-          customerId: customerData.stripeCustomerId
+          customerId: customerId || null // Usar el ID que ya teníamos
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         console.error('[StripeStoredCards] ❌ Error en la respuesta:', {
           status: response.status,
           statusText: response.statusText,
@@ -124,56 +142,52 @@ export function useStripeStoredCards(refreshTrigger = 0, options = { autoLoad: t
 
       if (!mountedRef.current) return;
 
+      const data = await response.json();
+
+      // Verificar si la respuesta parece válida
+      const isValidResponse = data && 
+        (Array.isArray(data.paymentMethods) || Boolean(data.customerId));
+
+      if (!isValidResponse) {
+        console.warn('[StripeStoredCards] ⚠️ Respuesta inválida de la API:', data);
+        
+        // Solo reintentamos si la respuesta es inválida y no hemos excedido los reintentos
+        if (retryCountRef.current < MAX_RETRIES) {
+          retryCountRef.current += 1;
+          console.log('[StripeStoredCards] 🔄 Reintentando por respuesta inválida:', {
+            attempt: retryCountRef.current,
+            maxRetries: MAX_RETRIES
+          });
+          setTimeout(loadCards, RETRY_DELAY);
+          return;
+        }
+      }
+
       console.log('[StripeStoredCards] ✅ Respuesta recibida:', {
         paymentMethods: data.paymentMethods,
         count: data.paymentMethods?.length || 0,
-        customerData: customerData,
-        customerId: data.customerId,
-        currentStoredCustomerId: customerId
+        customerId: data.customerId
       });
 
       const newCards = data.paymentMethods || [];
       
       // Actualizar el customerId de cualquier fuente disponible
       if (data.customerId) {
-        console.log('[StripeStoredCards] Actualizando customerId desde payment-methods:', data.customerId);
         setCustomerId(data.customerId);
-      } else if (customerData?.stripeCustomerId && !customerId) {
-        console.log('[StripeStoredCards] Usando customerData.stripeCustomerId como fallback:', customerData.stripeCustomerId);
-        setCustomerId(customerData.stripeCustomerId);
       }
       
       // Añadir el customerId a cada tarjeta
-      const effectiveCustomerId = data.customerId || customerData?.stripeCustomerId || customerId;
+      const effectiveCustomerId = data.customerId || customerId;
       const cardsWithCustomerId = newCards.map((card: StoredCard) => ({
         ...card,
         customerId: effectiveCustomerId
       }));
       
-      console.log('[StripeStoredCards] 🔄 Tarjetas con customerId:', {
-        count: cardsWithCustomerId.length,
-        customerId: effectiveCustomerId
-      });
+      // Un array vacío es un resultado válido - el usuario simplemente no tiene tarjetas
+      // Eliminamos el reintento automático basado en longitud, y solo reintentamos en caso de errores
       
-      // Solo reintentar si no hay tarjetas Y no hemos excedido los reintentos
-      if (cardsWithCustomerId.length === 0 && retryCountRef.current < MAX_RETRIES) {
-        retryCountRef.current += 1;
-        console.log('[StripeStoredCards] 🔄 Reintentando carga:', {
-          attempt: retryCountRef.current,
-          maxRetries: MAX_RETRIES
-        });
-        setTimeout(loadCards, RETRY_DELAY);
-        return;
-      }
-
       setCards(cardsWithCustomerId);
       setIsLoading(false);
-
-      console.log('[StripeStoredCards] 💾 Estado actualizado:', {
-        cardCount: cardsWithCustomerId.length,
-        lastUpdate: new Date().toISOString(),
-        retryCount: retryCountRef.current
-      });
 
     } catch (err) {
       if (!mountedRef.current) return;
@@ -186,10 +200,21 @@ export function useStripeStoredCards(refreshTrigger = 0, options = { autoLoad: t
         error: err
       });
       
+      // Reintentamos solo en caso de errores reales
+      if (retryCountRef.current < MAX_RETRIES) {
+        retryCountRef.current += 1;
+        console.log('[StripeStoredCards] 🔄 Reintentando debido a error:', {
+          attempt: retryCountRef.current,
+          maxRetries: MAX_RETRIES
+        });
+        setTimeout(loadCards, RETRY_DELAY);
+        return;
+      }
+      
       setError(err as Error);
       setIsLoading(false);
     }
-  }, [stripeAccountId, isConnected, refreshTrigger, user, isStripeAvailable]);
+  }, [stripeAccountId, isConnected, refreshTrigger, user, isStripeAvailable, customerId]);
 
   useEffect(() => {
     mountedRef.current = true;

@@ -127,6 +127,7 @@ export async function POST(request: Request) {
       invoiceId?: string;
       invoiceUrl?: string;
       pdfUrl?: string;
+      emailSent?: boolean;
       error?: any;
     } = { success: false };
 
@@ -148,6 +149,69 @@ export async function POST(request: Request) {
       paymentType: body.paymentType,
       isManualBooking: body.metadata?.is_manual_booking === 'true'
     });
+    
+    // Función para determinar la moneda basada en el país
+    const getCurrencyCodeByCountry = (country?: string | null): string => {
+      if (!country) return 'eur'; // Por defecto
+      
+      const countryLower = country.toLowerCase();
+      switch (countryLower) {
+        case 'mexico':
+        case 'méxico':
+          return 'mxn'; // Peso mexicano
+        case 'argentina':
+          return 'ars'; // Peso argentino
+        case 'españa':
+        case 'espana':
+        case 'spain':
+        case 'europe':
+        case 'europa':
+          return 'eur'; // Euro
+        default:
+          return 'eur'; // Por defecto para otros países
+      }
+    };
+    
+    // Obtener el país de la empresa si no se proporcionó
+    let country = body.metadata?.country;
+    let currencyCode = 'eur';
+    
+    if (!country && body.empresaId) {
+      try {
+        console.log(`🔍 [${requestId}] Buscando país de la empresa: ${body.empresaId}`);
+        const { data: empresaData } = await supabaseServerClient
+          .from('empresas')
+          .select('country')
+          .eq('id', body.empresaId)
+          .single();
+
+        if (empresaData?.country) {
+          country = empresaData.country;
+          console.log(`✅ [${requestId}] País de la empresa encontrado: ${country}`);
+        }
+      } catch (error) {
+        console.error(`❌ [${requestId}] Error al buscar país de la empresa:`, error);
+        // Continuar con el valor por defecto si hay error
+      }
+    }
+    
+    // Determinar la moneda basada en el país
+    currencyCode = getCurrencyCodeByCountry(country);
+    console.log(`🌎 [${requestId}] País detectado: ${country || 'No especificado'}, usando moneda: ${currencyCode}`);
+    
+    // Asegurar que tenemos un monto total para cálculos de seña
+    if (body.paymentType === 'deposit' && !body.metadata?.total_amount) {
+      // Si es seña pero no tenemos monto total, calcularlo basado en el porcentaje de depósito
+      const depositPercentage = parseFloat(body.metadata?.deposit_percentage || '30');
+      if (!isNaN(depositPercentage) && depositPercentage > 0) {
+        const calculatedTotal = (body.amount * 100) / depositPercentage;
+        body.metadata = {
+          ...body.metadata,
+          total_amount: calculatedTotal.toFixed(2)
+        };
+        console.log(`📊 [API] Calculado monto total: ${calculatedTotal.toFixed(2)}€ basado en seña de ${body.amount}€ (${depositPercentage}%)`);
+      }
+    }
     
     // Verificar si es una factura manual o una factura normal
     const isManualInvoice = body.metadata?.is_manual_booking === 'true';
@@ -318,43 +382,131 @@ export async function POST(request: Request) {
           // Crear una factura vacía primero
           const invoice = await stripe.invoices.create({
             customer: stripeCustomerId,
-            collection_method: 'charge_automatically',
+            collection_method: 'send_invoice', // Cambiado de 'charge_automatically' a 'send_invoice' para permitir el envío manual
             description: body.description,
-            currency: 'eur',
-            metadata: enhancedMetadata
+            currency: currencyCode, // Usar la moneda determinada
+            metadata: {
+              ...enhancedMetadata,
+              booking_id: body.metadata?.booking_id || '', // ID de la reserva para el webhook
+              class_id: body.classId || '', // ID de la clase
+              is_partial_payment: body.paymentType === 'deposit' ? 'true' : 'false', // Si es un pago parcial
+              payment_type: body.paymentType || 'booking', // Tipo de pago (seña o completo)
+              invoice_origin: 'manual_class_booking', // Fuente de la factura
+              total_amount: body.metadata?.total_amount || '' // Monto total de la reserva
+            },
+            days_until_due: 30, // Número de días hasta vencimiento
+            footer: body.paymentType === 'deposit' 
+              ? `Esta factura corresponde únicamente al pago de seña. El monto total de la reserva es de ${
+                  body.metadata?.total_amount 
+                    ? `${parseFloat(body.metadata.total_amount).toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}`
+                    : 'un valor mayor'
+                }. Quedan pendientes ${
+                  body.metadata?.total_amount 
+                    ? `${(parseFloat(body.metadata.total_amount) - body.amount).toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}`
+                    : 'pagos adicionales'
+                } por abonar.`
+              : undefined
           });
           
           console.log(`✅ [${requestId}] Factura creada:`, invoice.id);
           
-          // Añadir el item a la factura
-          await stripe.invoiceItems.create({
-            customer: stripeCustomerId,
-            invoice: invoice.id,
-            amount: Math.round(body.amount * 100), // Convertir a centavos
-            currency: 'eur',
-            description: body.description,
-            metadata: enhancedMetadata
-          });
+          // Añadir los items a la factura de manera más clara
+          if (body.paymentType === 'deposit') {
+            // Si es una seña, incluir información más clara sobre el pago parcial
+            const totalAmount = parseFloat(body.metadata?.total_amount || '0');
+            const remainingAmount = Math.max(0, totalAmount - body.amount);
+            
+            // Añadir el item principal (seña)
+            await stripe.invoiceItems.create({
+              customer: stripeCustomerId,
+              invoice: invoice.id,
+              amount: Math.round(body.amount * 100), // Convertir a centavos
+              currency: currencyCode, // Usar la moneda determinada
+              description: `${body.description} - PAGO DE SEÑA`,
+              metadata: {
+                ...enhancedMetadata,
+                item_type: 'deposit'
+              }
+            });
+            
+            // Añadir línea informativa sobre el total y lo pendiente (con precio 0)
+            if (totalAmount > 0) {
+              await stripe.invoiceItems.create({
+                customer: stripeCustomerId,
+                invoice: invoice.id,
+                amount: 0, // No se cobra
+                currency: currencyCode, // Usar la moneda determinada
+                description: `Información: El monto total de la reserva es de ${totalAmount.toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}. Tras este pago de seña, quedarán pendientes ${remainingAmount.toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}.`,
+                metadata: {
+                  ...enhancedMetadata,
+                  item_type: 'info'
+                }
+              });
+            }
+          } else {
+            // Si es pago completo, mantener el formato simple
+            await stripe.invoiceItems.create({
+              customer: stripeCustomerId,
+              invoice: invoice.id,
+              amount: Math.round(body.amount * 100), // Convertir a centavos
+              currency: currencyCode, // Usar la moneda determinada
+              description: body.description,
+              metadata: enhancedMetadata
+            });
+          }
           
-          console.log(`✅ [${requestId}] Item añadido a la factura`);
+          console.log(`✅ [${requestId}] Items añadidos a la factura`);
           
           // Finalizar la factura
           const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
           console.log(`✅ [${requestId}] Factura finalizada`);
           
-          // Marcar como pagada inmediatamente (ya que es una reserva manual)
-          const paidInvoice = await stripe.invoices.pay(finalizedInvoice.id, {
-            paid_out_of_band: true
-          });
+          // Si es un pago de seña o una reserva manual, marcar como pagada inmediatamente
+          // ya que estos pagos ya fueron realizados cuando se hizo la reserva
+          let paidInvoice = finalizedInvoice;
           
-          console.log(`✅ [${requestId}] Factura marcada como pagada`);
+          try {
+            // Cuando se trata de una factura de seña (depósito) o cualquier reserva manual,
+            // la factura debe marcarse como ya pagada, porque el pago ya ocurrió
+            paidInvoice = await stripe.invoices.pay(finalizedInvoice.id, {
+              paid_out_of_band: true
+            });
+            console.log(`✅ [${requestId}] Factura marcada como pagada`);
+          } catch (payError) {
+            console.warn(`⚠️ [${requestId}] Error al marcar como pagada:`, payError);
+            // Continuamos aunque no se pueda marcar como pagada
+          }
+          
+          // Intentar enviar el email de la factura como recibo de pago
+          let emailSent = false;
+          
+          try {
+            // Asegurar que el cliente tenga el email correctamente configurado
+            await stripe.customers.update(stripeCustomerId, {
+              email: userData.email || '',
+              name: userData.nombre || (userData.email || '').split('@')[0]
+            });
+            console.log(`✅ [${requestId}] Cliente actualizado con email: ${userData.email}`);
+            
+            // Enviar la factura por email como recibo
+            try {
+              await stripe.invoices.sendInvoice(paidInvoice.id);
+              console.log(`📧 [${requestId}] Factura enviada por email a: ${userData.email}`);
+              emailSent = true;
+            } catch (sendError) {
+              console.warn(`⚠️ [${requestId}] Error al enviar factura por email:`, sendError);
+            }
+          } catch (emailError) {
+            console.error(`❌ [${requestId}] Error al configurar email:`, emailError);
+          }
           
           // Construir respuesta
           result = {
             success: true,
             invoiceId: paidInvoice.id,
             invoiceUrl: paidInvoice.hosted_invoice_url || undefined,
-            pdfUrl: paidInvoice.invoice_pdf || undefined
+            pdfUrl: paidInvoice.invoice_pdf || undefined,
+            emailSent
           };
         } catch (invoiceError: any) {
           console.error('❌ [API] Error al crear factura:', invoiceError);

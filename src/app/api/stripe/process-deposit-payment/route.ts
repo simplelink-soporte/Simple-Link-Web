@@ -15,7 +15,8 @@ const depositPaymentSchema = z.object({
   description: z.string().optional(),
   paymentType: z.string().optional().default('deposit'),
   off_session: z.boolean().optional().default(false),
-  customerEmail: z.string().optional() // Nuevo campo para guardar email para facturación
+  customerEmail: z.string().optional(), // Nuevo campo para guardar email para facturación
+  metadata: z.record(z.string()).optional() // Campo para metadatos adicionales como país
 });
 
 /**
@@ -105,10 +106,17 @@ export async function POST(request: Request) {
       // Calcular el monto de la seña (por defecto 30% del total)
       const depositAmount = Math.round((data.amount || (data.totalAmount * (data.depositPercentage / 100))) * 100);
       
+      // Determinar la moneda según el país si está en los metadatos
+      const country = data.metadata?.country;
+      const currencyCode = getCurrencyCodeByCountry(country);
+      
+      console.log(`🌎 [${requestId}] País detectado: ${country || 'No especificado'}, usando moneda: ${currencyCode}`);
+      
       console.log(`💰 [${requestId}] Calculando monto de seña:`, {
         totalAmount: data.totalAmount,
         percentage: data.depositPercentage,
-        depositAmount: depositAmount / 100, // Para mostrar en formato decimal
+        depositAmount: depositAmount / 100, // Para mostrar en formato decimal,
+        currency: currencyCode
       });
       
       // Crear PaymentIntent directamente con confirm=true para procesamiento inmediato
@@ -121,7 +129,7 @@ export async function POST(request: Request) {
       // Configuración para pagos según documentación de Stripe
       const paymentIntentConfig: Stripe.PaymentIntentCreateParams = {
         amount: depositAmount, // Ya está en centavos
-        currency: 'eur',
+        currency: currencyCode, // Usar el código de moneda según el país
         customer: data.stripeCustomerId,
         payment_method: data.stripePaymentMethodId,
         off_session: data.off_session,
@@ -136,7 +144,8 @@ export async function POST(request: Request) {
           empresa_id: data.empresaId || '',
           customer_email: data.customerEmail || '',
           empresa_stripe_id: data.stripeAccountId, // ID de cuenta Stripe para el webhook
-          invoice_auto_generate: 'true' // Flag para generar factura automáticamente
+          invoice_auto_generate: 'true', // Flag para generar factura automáticamente
+          country: country || '' // Pasar el país a los metadatos para la factura
         },
         description: data.description || 'Pago de seña para reserva',
         confirmation_method: 'automatic',
@@ -245,3 +254,29 @@ export async function POST(request: Request) {
     }, { status: 500 });
   }
 }
+
+/**
+ * Obtiene el código de moneda según el país
+ * @param country El país, si está disponible
+ * @returns El código de moneda ISO 4217 (MXN para México, EUR para Europa, etc.)
+ */
+const getCurrencyCodeByCountry = (country?: string | null): string => {
+  if (!country) return 'eur'; // Por defecto
+  
+  const countryLower = country.toLowerCase();
+  switch (countryLower) {
+    case 'mexico':
+    case 'méxico':
+      return 'mxn'; // Peso mexicano
+    case 'argentina':
+      return 'ars'; // Peso argentino
+    case 'españa':
+    case 'espana':
+    case 'spain':
+    case 'europe':
+    case 'europa':
+      return 'eur'; // Euro
+    default:
+      return 'eur'; // Por defecto para otros países
+  }
+};

@@ -46,6 +46,26 @@ const formatShiftDate = (dateString: string) => {
   }
 };
 
+// Función para determinar el símbolo de moneda según el país
+const getCurrencySymbol = (country: string | null): string => {
+  if (!country) return '€'; // Valor por defecto
+  
+  const countryLower = country.toLowerCase();
+  switch (countryLower) {
+    case 'mexico':
+    case 'méxico':
+      return '$'; // Peso mexicano
+    case 'argentina':
+      return '$'; // Peso argentino
+    case 'españa':
+    case 'espana':
+    case 'spain':
+      return '€'; // Euro
+    default:
+      return '€'; // Valor por defecto para otros países
+  }
+};
+
 export function SummaryStep({ 
   onNext, 
   onPrevious, 
@@ -80,8 +100,12 @@ export function SummaryStep({
     stripeAccountId, 
     stripeConnected,
     mercadoPagoUserId,
-    mercadoPagoConnected
+    mercadoPagoConnected,
+    country
   } = usePaymentGatewayByCountry(empresaId || null);
+
+  // Obtener el símbolo de moneda según el país
+  const currencySymbol = useMemo(() => getCurrencySymbol(country), [country]);
 
   useEffect(() => {
     console.log('[SummaryStep-Shifts] Verificación de pasarelas de pago:', {
@@ -300,7 +324,10 @@ export function SummaryStep({
                 description: `Seña - Turno en ${shiftDetails.courtName} (MercadoPago)`,
                 stripeCustomerId: stripeCustomerId,
                 stripeAccountId: '', // Vacío cuando se usa MercadoPago
-                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
+                customerEmail: user?.email || '', // Añadir el email del usuario para facturación
+                metadata: {
+                  country: country || '' // Incluir país para determinar la moneda
+                }
                 // Se debe modificar el servicio para soportar estas propiedades:
                 // useMercadoPago: true,
                 // mercadoPagoUserId: mercadoPagoUserId || ''
@@ -315,35 +342,50 @@ export function SummaryStep({
                 description: `Seña - Turno en ${shiftDetails.courtName}`,
                 stripeCustomerId: stripeCustomerId,
                 stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : '',
-                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
+                customerEmail: user?.email || '', // Añadir el email del usuario para facturación
+                metadata: {
+                  country: country || '' // Incluir país para determinar la moneda
+                }
               });
             }
-          } else {
-            console.log(`🔄 [SummaryStep] Procesando PAGO COMPLETO con ${activeGateway === 'mercadopago' ? 'MercadoPago' : 'Stripe'}...`);
+          } else if (selectedPaymentMethod === 'guarantee') {
+            console.log('🔄 [SummaryStep] Procesando cargo de GARANTÍA...');
             const totalAmount = shiftDetails.price + state.itemsTotalPrice;
             
-            if (activeGateway === 'mercadopago') {
-              console.log('⚠️ [SummaryStep] Procesando con MercadoPago - servicios en desarrollo');
-              paymentResult = await fullPaymentService.processPayment({
-                paymentMethodId: selectedCardMethod.id,
-                amount: totalAmount,
-                empresaId: empresaId || '',
-                description: `Pago completo - Turno en ${shiftDetails.courtName} (MercadoPago)`,
-                stripeCustomerId: stripeCustomerId,
-                stripeAccountId: '', // Vacío cuando se usa MercadoPago
-                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
-              });
-            } else {
-              paymentResult = await fullPaymentService.processPayment({
-                paymentMethodId: selectedCardMethod.id,
-                amount: totalAmount,
-                empresaId: empresaId || '',
-                description: `Pago completo - Turno en ${shiftDetails.courtName}`,
-                stripeCustomerId: stripeCustomerId,
-                stripeAccountId: shouldProcessWithStripe && stripeAccountId ? stripeAccountId : '',
-                customerEmail: user?.email || '' // Añadir el email del usuario para facturación
-              });
-            }
+            paymentResult = await fullPaymentService.processPayment({
+              paymentMethodId: selectedCardMethod.id,
+              amount: totalAmount * (guaranteePercentage / 100),
+              empresaId: empresaId || '',
+              description: `Garantía - Turno en ${shiftDetails.courtName}`,
+              stripeCustomerId: stripeCustomerId,
+              stripeAccountId: stripeAccountId || '',
+              customerEmail: user?.email || '', // Email para facturación
+              metadata: {
+                payment_type: 'guarantee',
+                guarantee_percentage: guaranteePercentage.toString(),
+                customer_email: user?.email || '',
+                customer_name: user?.user_metadata?.full_name || '',
+                country: country || '' // Incluir país para determinar la moneda
+              }
+            });
+          } else { // Pago completo con tarjeta
+            console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con tarjeta...');
+            
+            paymentResult = await fullPaymentService.processPayment({
+              paymentMethodId: selectedCardMethod.id,
+              amount: shiftDetails.price + state.itemsTotalPrice,
+              empresaId: empresaId || '',
+              description: `Pago - Turno en ${shiftDetails.courtName}`,
+              stripeCustomerId: stripeCustomerId,
+              stripeAccountId: stripeAccountId || '',
+              customerEmail: user?.email || '', // Email para facturación
+              metadata: {
+                payment_type: 'full',
+                customer_email: user?.email || '',
+                customer_name: user?.user_metadata?.full_name || '',
+                country: country || '' // Incluir país para determinar la moneda
+              }
+            });
           }
           
           console.log('✅ [SummaryStep] Resultado del procesamiento de pago:', paymentResult);
@@ -594,7 +636,7 @@ export function SummaryStep({
         </p>
 
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
-          €{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
+          {currencySymbol}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
         </p>
 
         <div className="flex items-center justify-center gap-2">
@@ -605,7 +647,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [state.shiftDetails, state.itemsTotalPrice]);
+  }, [state.shiftDetails, state.itemsTotalPrice, currencySymbol]);
 
   const ReservationDetails = useCallback(() => {
     if (!state.shiftDetails) return null;
@@ -705,7 +747,7 @@ export function SummaryStep({
                             </span>
                           </div>
                           <span className="text-sm text-gray-600 font-medium">
-                            €{((itemPrice || 0) * quantity).toFixed(2)}
+                            {currencySymbol}{((itemPrice || 0) * quantity).toFixed(2)}
                           </span>
                         </div>
                       );
@@ -718,7 +760,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [state.shiftDetails, state.duration, state.selectedItems, state.itemsTotalPrice, itemsData]);
+  }, [state.shiftDetails, state.duration, state.selectedItems, state.itemsTotalPrice, itemsData, currencySymbol]);
 
   const PaymentMethodsSection = useCallback(() => {
     const requiresCard = selectedPaymentMethod === 'guarantee' 
@@ -872,12 +914,13 @@ export function SummaryStep({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="w-full"
+              className="w-full flex flex-col"
             >
-              <div className="w-full max-w-6xl mx-auto">
-                <div className="flex flex-col w-full h-full">
+              {/* Contenedor principal sin límite de altura para permitir scroll natural de la página */}
+              <div className="w-full max-w-6xl mx-auto pb-28">
+                <div className="flex flex-col w-full">
                   {summarySubStep === 'details' ? (
-                    <div className="w-full py-8 px-6 overflow-y-auto">
+                    <div className="w-full py-8 px-6">
                       <div className="w-full max-w-xl mx-auto">
                         <TotalPriceDisplay />
                         <ReservationDetails />
@@ -885,13 +928,13 @@ export function SummaryStep({
                     </div>
                   ) : (
                     <>
-                      <div className="w-full py-8 px-6 overflow-y-auto">
+                      <div className="w-full py-8 px-6">
                         <div className="w-full max-w-xl mx-auto">
                           <TotalPriceDisplay />
                         </div>
                       </div>
                       
-                      <div className="w-full py-8 px-6 overflow-y-auto">
+                      <div className="w-full py-8 px-6">
                         <div className="w-full max-w-xl mx-auto">
                           <PaymentMethodsSection />
                         </div>
@@ -901,18 +944,21 @@ export function SummaryStep({
                 </div>
               </div>
               
-              <StepNavigation
-                onNext={handleNextSubStep}
-                onBack={handlePreviousSubStep}
-                nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
-                isNextDisabled={
-                  summarySubStep === 'payment' && 
-                  (!selectedPaymentMethod || 
-                  ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
-                  isProcessing)
-                }
-                isProcessing={isProcessing}
-              />
+              {/* Barra de navegación fija en la parte inferior */}
+              <div className="w-full fixed bottom-0 left-0 bg-white border-t border-gray-200 z-10">
+                <StepNavigation
+                  onNext={handleNextSubStep}
+                  onBack={handlePreviousSubStep}
+                  nextLabel={summarySubStep === 'payment' ? "Confirmar Reserva" : "Continuar"}
+                  isNextDisabled={
+                    summarySubStep === 'payment' && 
+                    (!selectedPaymentMethod || 
+                    ((selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'card' || selectedPaymentMethod === 'full' || selectedPaymentMethod === 'deposit') && !selectedCardMethod) || 
+                    isProcessing)
+                  }
+                  isProcessing={isProcessing}
+                />
+              </div>
             </motion.div>
           )
         )}

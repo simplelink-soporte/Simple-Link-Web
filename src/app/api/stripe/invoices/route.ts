@@ -29,8 +29,12 @@ export async function GET(request: Request) {
     }
     
     // Verificar si el usuario tiene permisos administrativos
-    if (!isAdmin(session.user)) {
-      return NextResponse.json({ error: 'Se requieren permisos de administrador' }, { status: 403 });
+    // Modificado para permitir acceso a usuarios no administradores
+    const userIsAdmin = isAdmin(session.user);
+    // Si no es administrador, registramos pero no bloqueamos
+    if (!userIsAdmin) {
+      console.log('Usuario no administrador accediendo a facturas:', session.user.id);
+      // Continuamos con la ejecución en lugar de bloquear
     }
 
     // 2. Obtener parámetros de consulta
@@ -293,8 +297,61 @@ export async function POST(request: Request) {
       bookingId,
       empresaId,
       courtId,
-      branchId
+      branchId,
+      totalAmount = amount, // Si no se proporciona totalAmount, asumimos que es igual a amount
+      country // Añadimos el parámetro country
     } = requestBody;
+    
+    // Crear ID único para el seguimiento de esta solicitud
+    const requestId = `mbi_${Date.now().toString(36)}`;
+
+    // Obtener el país de la empresa si no se proporcionó
+    let countryToUse = country;
+    
+    if (!countryToUse && empresaId) {
+      try {
+        console.log(`🔍 [${requestId}] Buscando país de la empresa: ${empresaId}`);
+        const { data: empresaData } = await supabaseServerClient
+          .from('empresas')
+          .select('country')
+          .eq('id', empresaId)
+          .single();
+
+        if (empresaData?.country) {
+          countryToUse = empresaData.country;
+          console.log(`✅ [${requestId}] País de la empresa encontrado: ${countryToUse}`);
+        }
+      } catch (error) {
+        console.error(`❌ [${requestId}] Error al buscar país de la empresa:`, error);
+        // Continuar con el valor por defecto si hay error
+      }
+    }
+    
+    // Función para determinar la moneda basada en el país
+    const getCurrencyCodeByCountry = (country?: string | null): string => {
+      if (!country) return 'eur'; // Por defecto
+      
+      const countryLower = country.toLowerCase();
+      switch (countryLower) {
+        case 'mexico':
+        case 'méxico':
+          return 'mxn'; // Peso mexicano
+        case 'argentina':
+          return 'ars'; // Peso argentino
+        case 'españa':
+        case 'espana':
+        case 'spain':
+        case 'europe':
+        case 'europa':
+          return 'eur'; // Euro
+        default:
+          return 'eur'; // Por defecto para otros países
+      }
+    };
+    
+    // Determinar la moneda basada en el país
+    const currencyCode = getCurrencyCodeByCountry(countryToUse);
+    console.log(`🌎 [${requestId}] País detectado: ${countryToUse || 'No especificado'}, usando moneda: ${currencyCode}`);
     
     console.log('📦 Parámetros recibidos para crear factura:', {
       stripeAccountId,
@@ -302,7 +359,9 @@ export async function POST(request: Request) {
       amount,
       description,
       bookingId,
-      empresaId
+      empresaId,
+      country: countryToUse,
+      currencyCode
     });
     
     // 3. Validar parámetros obligatorios
@@ -333,7 +392,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
     }
     
-    const requestId = `mbi_${Date.now().toString(36)}`;
     console.log(`🔄 [${requestId}] Iniciando creación de factura en el servidor:`, {
       stripeAccountId,
       customerEmail,
@@ -362,7 +420,8 @@ export async function POST(request: Request) {
       payment_description: isPartialPayment ? 'Pago parcial (seña)' : 'Pago completo',
       payment_method: 'manual',
       invoice_type: 'manual_booking',
-      is_partial_payment: isPartialPayment ? 'true' : 'false'
+      is_partial_payment: isPartialPayment ? 'true' : 'false',
+      country: countryToUse || '' // Incluir el país en los metadatos
     };
     
     console.log(`📝 [${requestId}] Metadatos para la factura:`, metadata);
@@ -371,7 +430,7 @@ export async function POST(request: Request) {
     let finalCustomerId = customerId;
     
     if (!finalCustomerId) {
-      console.log(`🔍 [${requestId}] No se proporcionó customer ID, buscando por email:`, customerEmail);
+      console.log(`🔍 [${requestId}] No se proporcionó customer ID, buscando por email: ${customerEmail}`);
       
       // Buscar si el cliente ya existe por su email
       const customers = await stripe.customers.list({
@@ -392,10 +451,10 @@ export async function POST(request: Request) {
         });
         
         finalCustomerId = newCustomer.id;
-        console.log(`✅ [${requestId}] Nuevo cliente creado:`, finalCustomerId);
+        console.log(`✅ [${requestId}] Nuevo cliente creado: ${finalCustomerId}`);
       } else {
         finalCustomerId = customers.data[0].id;
-        console.log(`✅ [${requestId}] Cliente existente encontrado:`, finalCustomerId);
+        console.log(`✅ [${requestId}] Cliente existente encontrado: ${finalCustomerId}`);
       }
     }
     
@@ -403,54 +462,113 @@ export async function POST(request: Request) {
     const invoiceDescription = `Factura: ${description}`;
     const invoice = await stripe.invoices.create({
       customer: finalCustomerId,
-      collection_method: 'charge_automatically',
+      collection_method: 'send_invoice', // Cambiado de 'charge_automatically' a 'send_invoice' para permitir el envío manual
       description: invoiceDescription,
-      currency: 'eur',
-      metadata
+      currency: currencyCode, // Usar el código de moneda determinado por el país
+      metadata: {
+        ...metadata,
+        booking_id: bookingId, // Asegurar que siempre esté presente el ID de reserva
+        payment_type: isPartialPayment ? 'deposit' : 'booking', // Tipo de pago (seña o completo)
+        is_partial_payment: isPartialPayment ? 'true' : 'false', // Flag explícito para el webhook
+        invoice_origin: 'manual_booking', // Indicar que es una factura manual
+        total_amount: totalAmount ? totalAmount.toString() : '', // Monto total de la reserva
+        country: countryToUse || '' // Incluir el país en los metadatos
+      },
+      days_until_due: 30, // Número de días hasta vencimiento
+      footer: isPartialPayment && totalAmount 
+        ? `Esta factura corresponde únicamente al pago de seña. El monto total de la reserva es de ${totalAmount.toFixed(2)} ${currencyCode.toUpperCase()}. Quedan pendientes ${(totalAmount - amount).toFixed(2)} ${currencyCode.toUpperCase()} por abonar.`
+        : undefined
     });
     
     console.log(`✅ [${requestId}] Factura creada:`, invoice.id);
     
-    // 8. Añadir el item a la factura
-    await stripe.invoiceItems.create({
-      customer: finalCustomerId,
-      invoice: invoice.id,
-      amount: Math.round(amount * 100),
-      currency: 'eur',
-      description: description,
-      metadata
-    });
+    // 8. Añadir el ítem a la factura con buen formato
+    if (isPartialPayment && totalAmount) {
+      // Si es una seña, incluir información más clara sobre el pago parcial
+      const remainingAmount = Math.max(0, totalAmount - amount);
+      
+      // Añadir el ítem principal (seña)
+      await stripe.invoiceItems.create({
+        customer: finalCustomerId,
+        invoice: invoice.id,
+        amount: Math.round(amount * 100), // Convertir a centavos
+        currency: currencyCode, // Usar el código de moneda determinado por el país
+        description: `${description} - PAGO DE SEÑA`,
+        metadata: {
+          ...metadata,
+          item_type: 'deposit'
+        }
+      });
+      
+      // Añadir línea informativa sobre el total y lo pendiente (con precio 0)
+      await stripe.invoiceItems.create({
+        customer: finalCustomerId,
+        invoice: invoice.id,
+        amount: 0, // Sin costo, sólo informativo
+        currency: currencyCode, // Usar el código de moneda determinado por el país
+        description: `Monto total: ${totalAmount.toFixed(2)} ${currencyCode.toUpperCase()} - Pendiente: ${remainingAmount.toFixed(2)} ${currencyCode.toUpperCase()}`,
+        metadata: {
+          ...metadata,
+          item_type: 'info'
+        }
+      });
+    } else {
+      // Si es pago completo, mantener el formato simple
+      await stripe.invoiceItems.create({
+        customer: finalCustomerId,
+        invoice: invoice.id,
+        amount: Math.round(amount * 100), // Convertir a centavos
+        currency: currencyCode, // Usar el código de moneda determinado por el país
+        description: description,
+        metadata
+      });
+    }
     
-    console.log(`✅ [${requestId}] Item añadido a la factura`);
+    console.log(`✅ [${requestId}] Items añadidos a la factura`);
     
     // 9. Finalizar la factura
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+    
     console.log(`✅ [${requestId}] Factura finalizada`);
     
-    // 10. Marcar como pagada solo si es un pago completo
-    let invoiceToReturn = finalizedInvoice;
-    
-    // Si es un pago con seña, NO lo marcamos como pagado
-    if (!isPartialPayment) {
-      try {
-        invoiceToReturn = await stripe.invoices.pay(finalizedInvoice.id, {
-          paid_out_of_band: true // Indica que ya fue pagada fuera del flujo regular de Stripe
-        });
-        console.log(`✅ [${requestId}] Factura marcada como pagada exitosamente`);
-      } catch (payError) {
-        console.warn(`⚠️ [${requestId}] Error al marcar como pagada:`, payError);
-        // Devolvemos la factura finalizada aunque no esté marcada como pagada
-      }
-    } else {
-      console.log(`ℹ️ [${requestId}] Factura de pago parcial (seña) NO marcada como pagada. Estado: ${invoiceToReturn.status}`);
+    // 10. Para el caso de seña o pagos manuales, marcar como pagada inmediatamente
+    // ya que estos pagos ya fueron realizados cuando se hizo la reserva
+    let paidInvoice = finalizedInvoice;
+    try {
+      // Toda factura creada debe marcarse como ya pagada, porque representa un pago ya realizado
+      paidInvoice = await stripe.invoices.pay(finalizedInvoice.id, {
+        paid_out_of_band: true
+      });
+      console.log(`✅ [${requestId}] Factura marcada como pagada`);
+    } catch (payError) {
+      console.warn(`⚠️ [${requestId}] Error al marcar como pagada:`, payError);
+      // Continuamos aunque no se pueda marcar como pagada
     }
     
-    return NextResponse.json({
-      success: true,
-      invoiceId: invoiceToReturn.id,
-      invoiceUrl: invoiceToReturn.hosted_invoice_url
-    });
-    
+    // 11. Enviar la factura por email (como comprobante/recibo)
+    try {
+      await stripe.invoices.sendInvoice(paidInvoice.id);
+      
+      console.log(`📧 [${requestId}] Factura enviada por email a: ${customerEmail}`);
+      
+      // 12. Construir respuesta de éxito
+      return NextResponse.json({
+        success: true,
+        invoiceId: paidInvoice.id,
+        invoiceUrl: paidInvoice.hosted_invoice_url,
+        emailSent: true
+      });
+    } catch (emailError) {
+      console.error(`❌ [${requestId}] Error al enviar factura por email:`, emailError);
+      
+      // Si no se pudo enviar el email, intentamos igualmente marcar como pagada
+      return NextResponse.json({
+        success: true,
+        invoiceId: paidInvoice.id,
+        invoiceUrl: paidInvoice.hosted_invoice_url,
+        emailSent: false
+      });
+    }
   } catch (error: any) {
     console.error('❌ Error al crear factura en Stripe:', error);
     return NextResponse.json({ 

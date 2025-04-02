@@ -4,24 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Elements, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { CardSetupForm } from '@/components/preview/steps/summary/components/CardSetupForm';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CardItem } from './shared/CardItem';
 import { AddCardButton } from './shared/AddCardButton';
 import { StripeCardListProps, StoredCard } from './shared/types';
-
-// Clave pública de Stripe
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string;
-
-// Obtener una instancia de Stripe de forma memoizada
-const getStripePromise = (accountId?: string) => {
-  if (accountId) {
-    return loadStripe(stripeKey, { stripeAccount: accountId });
-  }
-  return loadStripe(stripeKey);
-};
+import { useStripePromise, getDefaultStripeOptions } from '@/hooks/useStripePromise';
 
 /**
  * Implementación de CardList específica para Stripe
@@ -121,12 +110,9 @@ export function StripeCardList({
     }
     
     // Si no hay contexto de Elements (autónomo), inicializamos uno nuevo
-    // Usar opciones para evitar recargas del iframe
-    const stripeOptions = {
-      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap' }],
-    };
-    
-    const stripePromise = getStripePromise(stripeAccountId);
+    // Usar opciones optimizadas para evitar recargas del iframe
+    const stripeOptions = getDefaultStripeOptions();
+    const stripePromise = useStripePromise(stripeAccountId);
 
     return (
       <motion.div

@@ -2,6 +2,32 @@ import { createId } from '@paralleldrive/cuid2';
 import { Stripe } from 'stripe';
 import { createSupabaseClient } from '@/lib/supabase';
 
+/**
+ * Obtiene el código de moneda según el país
+ * @param country El país, si está disponible
+ * @returns El código de moneda ISO 4217 (MXN para México, EUR para Europa, etc.)
+ */
+const getCurrencyCodeByCountry = (country?: string | null): string => {
+  if (!country) return 'eur'; // Por defecto
+  
+  const countryLower = country.toLowerCase();
+  switch (countryLower) {
+    case 'mexico':
+    case 'méxico':
+      return 'mxn'; // Peso mexicano
+    case 'argentina':
+      return 'ars'; // Peso argentino
+    case 'españa':
+    case 'espana':
+    case 'spain':
+    case 'europe':
+    case 'europa':
+      return 'eur'; // Euro
+    default:
+      return 'eur'; // Por defecto para otros países
+  }
+};
+
 interface CreateInvoiceParams {
   paymentIntentId: string;
   stripeAccountId: string;
@@ -24,6 +50,8 @@ interface CreateManualBookingInvoiceParams {
   branchId?: string;
   paymentType?: 'booking' | 'deposit'; // Tipo de pago: completo o seña
   isPartialPayment?: boolean; // Indica si es un pago parcial
+  totalAmount?: number; // Monto total de la reserva, importante para cálculos de seña
+  country?: string; // Añadir país para determinar la moneda
 }
 
 /**
@@ -52,247 +80,239 @@ export class StripeInvoiceService {
         stripeAccount: params.stripeAccountId
       });
 
-      // 2. Determinar el tipo de pago (completo, seña o garantía)
-      const paymentType = params.metadata?.payment_type || 'full';
+      // 5. Verificar el estado del PaymentIntent antes de crear la factura
+      console.log(`🔍 [${requestId}] Obteniendo detalles del PaymentIntent:`, params.paymentIntentId);
+      const paymentIntent = await stripe.paymentIntents.retrieve(params.paymentIntentId);
+      
+      if (!paymentIntent) {
+        console.error(`❌ [${requestId}] No se encontró el PaymentIntent`);
+        return {
+          success: false,
+          error: {
+            message: 'No se encontró el PaymentIntent',
+            code: 'payment_intent_not_found'
+          }
+        };
+      }
+      
+      // Extraer metadatos importantes del PaymentIntent si no están en los params
+      // Esto garantiza que siempre obtenemos la información más actualizada
+      const paymentMetadata = paymentIntent.metadata || {};
+      const updatedMetadata = {
+        ...params.metadata,
+        ...paymentMetadata // Priorizar los metadatos del PaymentIntent
+      };
+      
+      // Obtener el país desde los metadatos actualizados y determinar la moneda
+      const country = updatedMetadata?.country;
+      const currencyCode = getCurrencyCodeByCountry(country);
+      
+      console.log(`🌎 [${requestId}] País detectado: ${country || 'No especificado'}, usando moneda: ${currencyCode}`);
+      
+      // Determinar el tipo de pago (completo, seña o garantía)
+      const paymentType = updatedMetadata?.payment_type || 'full';
       const isDepositPayment = paymentType === 'deposit';
       const isGuaranteePayment = paymentType === 'guarantee';
       
       // Preparamos metadatos específicos sobre el tipo de pago
       const enhancedMetadata = {
-        ...params.metadata,
+        ...updatedMetadata,
         // Mantener el tipo de pago original sin sobrescribirlo
         payment_type: paymentType,
         // Añadir información adicional según el tipo de pago
         payment_description: isDepositPayment 
-          ? `Seña (${params.metadata?.deposit_percentage || '30'}%)`
-          : isGuaranteePayment
-            ? 'Cargo por garantía'
-            : 'Pago completo',
-        payment_date: new Date().toISOString()
+          ? `Seña (${updatedMetadata?.deposit_percentage || '30'}%)`
+          : isGuaranteePayment 
+            ? `Garantía (${updatedMetadata?.guarantee_percentage || '10'}%)`
+            : 'Pago completo'
       };
       
-      // Descripción para la factura (sin mencionar si es seña o pago completo)
-      const invoiceDescription = `Factura: ${params.description}`;
-
-      // 3. Obtener el email del cliente desde los metadatos
-      const customerEmail = params.metadata?.customer_email;
+      // Si es un pago garantía, puede que no hay cobro real
+      if (isGuaranteePayment) {
+        console.log(`ℹ️ [${requestId}] Pago de tipo garantía identificado`);
+      }
       
-      if (!customerEmail) {
-        console.warn(`⚠️ [${requestId}] No se proporcionó email para enviar la factura`);
+      // Crear una descripción específica para la factura según el tipo de pago
+      let invoiceDescription = params.description;
+      
+      if (isDepositPayment) {
+        const percentage = updatedMetadata?.deposit_percentage || '30';
+        invoiceDescription = `Seña (${percentage}%) - ${params.description}`;
+      } else if (isGuaranteePayment) {
+        const percentage = updatedMetadata?.guarantee_percentage || '10'; 
+        invoiceDescription = `Garantía (${percentage}%) - ${params.description}`;
+      }
+      
+      // Verificar que el estado sea 'succeeded' para continuar
+      if (paymentIntent.status !== 'succeeded') {
+        console.error(`❌ [${requestId}] PaymentIntent no está en estado succeeded:`, paymentIntent.status);
         return {
           success: false,
           error: {
-            message: 'No se proporcionó email para la factura',
-            code: 'missing_email'
+            message: `El pago no está en estado succeeded (${paymentIntent.status})`,
+            code: 'invalid_payment_intent_status'
           }
         };
       }
 
+      // 6. Crear la factura formal usando el sistema de Invoices de Stripe
+      console.log(`🧾 [${requestId}] Creando factura profesional para el cliente:`, params.customerId);
+        
       try {
-        // 4. IMPORTANTE: Actualizar el cliente de Stripe con el email
-        // Esto es necesario porque Stripe requiere que el cliente tenga un email
-        // asociado directamente en su objeto Customer para enviar facturas
-        console.log(`📧 [${requestId}] Actualizando cliente de Stripe con email:`, customerEmail);
+        // 6.1. Obtener el cargo (charge) asociado al PaymentIntent
+        console.log(`🔍 [${requestId}] Obteniendo cargos asociados al PaymentIntent`);
+        const charges = await stripe.charges.list({
+          payment_intent: params.paymentIntentId
+        });
         
-        try {
-          await stripe.customers.update(
-            params.customerId,
+        if (!charges.data.length) {
+          console.warn(`⚠️ [${requestId}] No se encontraron cargos asociados al PaymentIntent. Continuando con método alternativo.`);
+        }
+        
+        // 6.2. Crear la factura en modo AUTO_ADVANCE para que Stripe maneje los estados
+        const invoice = await stripe.invoices.create({
+          customer: params.customerId,
+          collection_method: 'charge_automatically',
+          auto_advance: true, // Dejar que Stripe maneje automáticamente el estado de la factura
+          description: invoiceDescription,
+          currency: currencyCode,
+          default_payment_method: paymentIntent.payment_method as string,
+          metadata: {
+            payment_intent_id: params.paymentIntentId,
+            ...enhancedMetadata
+          },
+          custom_fields: [
             {
-              email: customerEmail
+              name: 'Referencia de Pago',
+              value: params.paymentIntentId
             }
-          );
-          console.log(`✅ [${requestId}] Cliente actualizado con email:`, customerEmail);
-        } catch (updateError) {
-          console.error(`⚠️ [${requestId}] Error al actualizar cliente:`, updateError);
-          // Continuamos aunque haya error, por si acaso el email ya estaba configurado
-        }
-        
-        // 5. Obtener información del PaymentIntent para vincularlo correctamente con la factura
-        console.log(`🔍 [${requestId}] Obteniendo detalles del PaymentIntent:`, params.paymentIntentId);
-        const paymentIntent = await stripe.paymentIntents.retrieve(params.paymentIntentId);
-        
-        if (!paymentIntent || paymentIntent.status !== 'succeeded') {
-          console.error(`❌ [${requestId}] El PaymentIntent no está en estado succeeded:`, paymentIntent?.status);
-          return {
-            success: false,
-            error: {
-              message: `El pago no está en estado succeeded (${paymentIntent?.status})`,
-              code: 'invalid_payment_intent_status'
-            }
-          };
-        }
+          ]
+        });
 
-        // 6. Crear la factura formal usando el sistema de Invoices de Stripe
-        console.log(`🧾 [${requestId}] Creando factura profesional para el cliente:`, params.customerId);
+        // 6.3. Añadir el ítem a la factura
+        await stripe.invoiceItems.create({
+          customer: params.customerId,
+          invoice: invoice.id,
+          amount: Math.round(params.amount * 100), // Convertir a centavos
+          currency: currencyCode,
+          description: params.description // Descripción simple sin mencionar tipo de pago
+        });
+
+        // 6.4. Finalizar la factura para que Stripe intente avanzar su estado automáticamente
+        const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
         
-        try {
-          // 6.1. Obtener el cargo (charge) asociado al PaymentIntent
-          console.log(`🔍 [${requestId}] Obteniendo cargos asociados al PaymentIntent`);
-          const charges = await stripe.charges.list({
-            payment_intent: params.paymentIntentId
-          });
-          
-          if (!charges.data.length) {
-            console.warn(`⚠️ [${requestId}] No se encontraron cargos asociados al PaymentIntent. Continuando con método alternativo.`);
-          }
-          
-          // 6.2. Crear la factura en modo AUTO_ADVANCE para que Stripe maneje los estados
-          const invoice = await stripe.invoices.create({
-            customer: params.customerId,
-            collection_method: 'charge_automatically',
-            auto_advance: true, // Dejar que Stripe maneje automáticamente el estado de la factura
-            description: invoiceDescription,
-            currency: 'eur',
-            default_payment_method: paymentIntent.payment_method as string,
-            metadata: {
-              payment_intent_id: params.paymentIntentId,
-              ...enhancedMetadata
-            },
-            custom_fields: [
-              {
-                name: 'Referencia de Pago',
-                value: params.paymentIntentId
-              }
-            ]
-          });
-
-          // 6.3. Añadir el ítem a la factura
-          await stripe.invoiceItems.create({
-            customer: params.customerId,
-            invoice: invoice.id,
-            amount: Math.round(params.amount * 100), // Convertir a centavos
-            currency: 'eur',
-            description: params.description // Descripción simple sin mencionar tipo de pago
-          });
-
-          // 6.4. Finalizar la factura para que Stripe intente avanzar su estado automáticamente
-          const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-          
-          // 6.5. Si la factura no está pagada automáticamente, intentamos marcarla como pagada
-          // Esto puede ocurrir porque el objeto invoice no tiene enlazado directamente el cargo,
-          // aunque hayamos especificado el payment_method
-          let invoiceToReturn = finalizedInvoice;
-          
-          if (finalizedInvoice.status !== 'paid') {
-            console.log(`🔄 [${requestId}] Factura no está pagada automáticamente, intentando marcarla como pagada...`);
+        // 6.5. Si la factura no está pagada automáticamente, intentamos marcarla como pagada
+        // Esto puede ocurrir porque el objeto invoice no tiene enlazado directamente el cargo,
+        // aunque hayamos especificado el payment_method
+        let invoiceToReturn = finalizedInvoice;
+        
+        if (finalizedInvoice.status !== 'paid') {
+          console.log(`🔄 [${requestId}] Factura no está pagada automáticamente, intentando marcarla como pagada...`);
             
+          try {
+            // 6.5.1 Método estándar: pay con paid_out_of_band
+            invoiceToReturn = await stripe.invoices.pay(finalizedInvoice.id, {
+              paid_out_of_band: true // Indica que ya fue pagada fuera del flujo regular de facturación
+            });
+            console.log(`✅ [${requestId}] Factura marcada como pagada exitosamente mediante pay/paid_out_of_band`);
+          } catch (payError) {
+            console.warn(`⚠️ [${requestId}] Error al marcar como pagada con método estándar:`, payError);
+              
+            // 6.5.2 Método alternativo: voidInvoice y luego crear una nueva con estado correcto
+            console.log(`🔄 [${requestId}] Intentando método alternativo...`);
+              
+            // Anular la factura actual que está en estado incorrecto
+            await stripe.invoices.voidInvoice(finalizedInvoice.id);
+              
+            // Crear una nueva factura con metadatos similares pero usando otra estrategia
+            const newInvoice = await stripe.invoices.create({
+              customer: params.customerId,
+              collection_method: 'charge_automatically',
+              // No especificar default_payment_method ya que puede estar causando conflicto
+              description: `${invoiceDescription} [Corregida]`,
+              currency: currencyCode,
+              metadata: {
+                payment_intent_id: params.paymentIntentId,
+                original_invoice_id: finalizedInvoice.id,
+                ...enhancedMetadata
+              }
+            });
+              
+            // Añadir item a la nueva factura
+            await stripe.invoiceItems.create({
+              customer: params.customerId,
+              invoice: newInvoice.id,
+              amount: Math.round(params.amount * 100),
+              currency: currencyCode,
+              description: `${params.description} [Referencia: ${params.paymentIntentId.slice(-8)}]`
+            });
+              
+            // Finalizar la nueva factura
+            const finalNewInvoice = await stripe.invoices.finalizeInvoice(newInvoice.id);
+              
+            // Marcar como pagada usando el método más simple
+            invoiceToReturn = await stripe.invoices.pay(finalNewInvoice.id, {
+              paid_out_of_band: true
+            });
+              
+            console.log(`✅ [${requestId}] Método alternativo exitoso: Nueva factura creada y marcada como pagada`);
+          }
+        } else {
+          console.log(`✅ [${requestId}] Factura marcada como pagada automáticamente por Stripe`);
+        }
+        
+        // 6.6. Obtener la URL de la factura y del PDF
+        const invoiceUrl = invoiceToReturn.hosted_invoice_url;
+        const pdfUrl = invoiceToReturn.invoice_pdf;
+        
+        // 6.7. Como no podemos usar sendInvoice con collection_method='charge_automatically',
+        // creamos una copia de la factura para enviarla por email si es necesario
+        let emailSent = false;
+        try {
+          // Verificar si el cliente tiene email configurado
+          const customer = await stripe.customers.retrieve(params.customerId);
+          if (customer && !customer.deleted && customer.email) {
+            console.log(`📨 [${requestId}] Enviando notificación por email al cliente ${customer.email}...`);
+            
+            // Envío de email mediante la API Stripe Email de receipt_email
+            // Esta es una alternativa al envío manual de facturas que funciona con facturas ya pagadas
             try {
-              // 6.5.1 Método estándar: pay con paid_out_of_band
-              invoiceToReturn = await stripe.invoices.pay(finalizedInvoice.id, {
-                paid_out_of_band: true // Indica que ya fue pagada fuera del flujo regular de facturación
+              // Intentar actualizar el PaymentIntent para asegurar que tenga receipt_email
+              await stripe.paymentIntents.update(params.paymentIntentId, {
+                receipt_email: customer.email
               });
-              console.log(`✅ [${requestId}] Factura marcada como pagada exitosamente mediante pay/paid_out_of_band`);
-            } catch (payError) {
-              console.warn(`⚠️ [${requestId}] Error al marcar como pagada con método estándar:`, payError);
-              
-              // 6.5.2 Método alternativo: voidInvoice y luego crear una nueva con estado correcto
-              console.log(`🔄 [${requestId}] Intentando método alternativo...`);
-              
-              // Anular la factura actual que está en estado incorrecto
-              await stripe.invoices.voidInvoice(finalizedInvoice.id);
-              
-              // Crear una nueva factura con metadatos similares pero usando otra estrategia
-              const newInvoice = await stripe.invoices.create({
-                customer: params.customerId,
-                collection_method: 'charge_automatically',
-                // No especificar default_payment_method ya que puede estar causando conflicto
-                description: `${invoiceDescription} [Corregida]`,
-                currency: 'eur',
-                metadata: {
-                  payment_intent_id: params.paymentIntentId,
-                  original_invoice_id: finalizedInvoice.id,
-                  ...enhancedMetadata
-                }
-              });
-              
-              // Añadir item a la nueva factura
-              await stripe.invoiceItems.create({
-                customer: params.customerId,
-                invoice: newInvoice.id,
-                amount: Math.round(params.amount * 100),
-                currency: 'eur',
-                description: `${params.description} [Referencia: ${params.paymentIntentId.slice(-8)}]`
-              });
-              
-              // Finalizar la nueva factura
-              const finalNewInvoice = await stripe.invoices.finalizeInvoice(newInvoice.id);
-              
-              // Marcar como pagada usando el método más simple
-              invoiceToReturn = await stripe.invoices.pay(finalNewInvoice.id, {
-                paid_out_of_band: true
-              });
-              
-              console.log(`✅ [${requestId}] Método alternativo exitoso: Nueva factura creada y marcada como pagada`);
+              console.log(`✅ [${requestId}] PaymentIntent actualizado con receipt_email para envío de recibo`);
+              emailSent = true;
+            } catch (receiptError) {
+              console.warn(`⚠️ [${requestId}] No se pudo actualizar el PaymentIntent con receipt_email:`, receiptError);
+            }
+            
+            // Si la factura está en estado pagado, informamos que el cliente puede acceder a ella
+            if (invoiceToReturn.status === 'paid' && invoiceUrl) {
+              console.log(`📨 [${requestId}] El cliente puede acceder a la factura pagada mediante la URL: ${invoiceUrl}`);
             }
           } else {
-            console.log(`✅ [${requestId}] Factura marcada como pagada automáticamente por Stripe`);
+            console.warn(`⚠️ [${requestId}] El cliente no tiene email configurado o no se pudo recuperar`);
           }
-          
-          // 6.6. Obtener la URL de la factura y del PDF
-          const invoiceUrl = invoiceToReturn.hosted_invoice_url;
-          const pdfUrl = invoiceToReturn.invoice_pdf;
-          
-          // 6.7. Como no podemos usar sendInvoice con collection_method='charge_automatically',
-          // creamos una copia de la factura para enviarla por email si es necesario
-          let emailSent = false;
-          try {
-            // Verificar si el cliente tiene email configurado
-            const customer = await stripe.customers.retrieve(params.customerId);
-            if (customer && !customer.deleted && customer.email) {
-              console.log(`📨 [${requestId}] Enviando notificación por email al cliente ${customer.email}...`);
-              
-              // Envío de email mediante la API Stripe Email de receipt_email
-              // Esta es una alternativa al envío manual de facturas que funciona con facturas ya pagadas
-              try {
-                // Intentar actualizar el PaymentIntent para asegurar que tenga receipt_email
-                await stripe.paymentIntents.update(params.paymentIntentId, {
-                  receipt_email: customer.email
-                });
-                console.log(`✅ [${requestId}] PaymentIntent actualizado con receipt_email para envío de recibo`);
-                emailSent = true;
-              } catch (receiptError) {
-                console.warn(`⚠️ [${requestId}] No se pudo actualizar el PaymentIntent con receipt_email:`, receiptError);
-              }
-              
-              // Si la factura está en estado pagado, informamos que el cliente puede acceder a ella
-              if (invoiceToReturn.status === 'paid' && invoiceUrl) {
-                console.log(`📨 [${requestId}] El cliente puede acceder a la factura pagada mediante la URL: ${invoiceUrl}`);
-              }
-            } else {
-              console.warn(`⚠️ [${requestId}] El cliente no tiene email configurado o no se pudo recuperar`);
-            }
-          } catch (emailError) {
-            console.warn(`⚠️ [${requestId}] Error al intentar enviar notificación por email:`, emailError);
-          }
-          
-          console.log(`✅ [${requestId}] Factura profesional creada exitosamente:`, {
-            invoiceId: invoiceToReturn.id,
-            invoiceNumber: invoiceToReturn.number,
-            status: invoiceToReturn.status,
-            amount: invoiceToReturn.amount_paid / 100,
-            invoiceUrl: invoiceUrl || 'No disponible',
-            pdfUrl: pdfUrl || 'No disponible'
-          });
-
-          return {
-            success: true,
-            invoiceId: invoiceToReturn.id,
-            invoiceUrl: invoiceUrl || undefined,
-            pdfUrl: pdfUrl || undefined
-          };
-        } catch (invoiceError: any) {
-          // Si falla la creación de la factura, registramos el error y devolvemos los detalles
-          console.error(`❌ [${requestId}] Error al crear la factura profesional:`, invoiceError);
-          
-          return {
-            success: false,
-            error: {
-              message: invoiceError.message || "No se pudo crear la factura profesional",
-              code: invoiceError.code || "invoice_creation_error",
-              type: invoiceError.type || "unknown"
-            }
-          };
+        } catch (emailError) {
+          console.warn(`⚠️ [${requestId}] Error al intentar enviar notificación por email:`, emailError);
         }
+        
+        console.log(`✅ [${requestId}] Factura profesional creada exitosamente:`, {
+          invoiceId: invoiceToReturn.id,
+          invoiceNumber: invoiceToReturn.number,
+          status: invoiceToReturn.status,
+          amount: invoiceToReturn.amount_paid / 100,
+          invoiceUrl: invoiceUrl || 'No disponible',
+          pdfUrl: pdfUrl || 'No disponible'
+        });
+
+        return {
+          success: true,
+          invoiceId: invoiceToReturn.id,
+          invoiceUrl: invoiceUrl || undefined,
+          pdfUrl: pdfUrl || undefined
+        };
       } catch (invoiceError: any) {
         // Si falla la creación de la factura, registramos el error y devolvemos los detalles
         console.error(`❌ [${requestId}] Error al crear la factura profesional:`, invoiceError);
@@ -349,7 +369,9 @@ export class StripeInvoiceService {
         courtId: params.courtId || undefined,
         branchId: params.branchId || undefined,
         paymentType: params.paymentType || undefined,
-        isPartialPayment: params.isPartialPayment || undefined
+        isPartialPayment: params.isPartialPayment || undefined,
+        totalAmount: params.totalAmount || undefined,
+        country: params.country || undefined // Añadir país para determinar la moneda
       };
       
       console.log(`📦 [${requestId}] Parámetros procesados para enviar a la API:`, apiParams);
@@ -429,72 +451,63 @@ export class StripeInvoiceService {
           court_price,
           payment_status,
           payment_method,
-          court:court_id(
-            id, 
-            name, 
-            branch_id
+          courts:court_id (
+            id,
+            name,
+            branch:branch_id (
+              id,
+              name,
+              empresas:empresa_id (
+                id,
+                stripe_account_id,
+                country
+              )
+            )
           )
         `)
         .eq('id', bookingId)
         .single();
 
-      if (bookingError || !booking) {
-        console.error(`❌ [${requestId}] Error al obtener datos de la reserva:`, bookingError);
+      if (!booking) {
+        console.error(`❌ [${requestId}] Reserva no encontrada:`, bookingId);
         return {
           success: false,
           error: {
-            message: 'No se pudo encontrar la reserva',
+            message: 'Reserva no encontrada',
             code: 'BOOKING_NOT_FOUND'
           }
         };
       }
 
-      // Ahora obtenemos los datos de la sede y empresa en consultas separadas
-      const courtId = booking.court_id;
-      const court = booking.court;
-      const branchId = court ? court.branch_id : null;
-
-      if (!branchId) {
-        console.error(`❌ [${requestId}] No se encontró la sede asociada a la cancha:`, {
-          courtId,
-          court: booking.court
+      // Acceder a la primera pista, ya que la consulta devuelve un array
+      const court = booking.courts && booking.courts.length > 0 ? booking.courts[0] : null;
+      
+      // Obtener datos de la sede a partir de la pista
+      const branchId = court?.branch?.id;
+      const sede = court?.branch || null;
+      
+      if (!court || !sede) {
+        console.error(`❌ [${requestId}] No se pudo obtener información de la pista o sede:`, {
+          courtId: booking.court_id,
+          branchId
         });
         return {
           success: false,
           error: {
-            message: 'No se pudo obtener la información de la sede',
-            code: 'BRANCH_NOT_FOUND'
-          }
-        };
-      }
-
-      // Obtener datos de la sede
-      const { data: sede, error: sedeError } = await supabase
-        .from('sedes')
-        .select('id, name, empresa_id')
-        .eq('id', branchId)
-        .single();
-
-      if (sedeError || !sede) {
-        console.error(`❌ [${requestId}] Error al obtener datos de la sede:`, sedeError);
-        return {
-          success: false,
-          error: {
-            message: 'No se pudo obtener información de la sede',
-            code: 'BRANCH_ERROR'
+            message: 'No se pudo obtener información de la pista o sede',
+            code: 'COURT_OR_BRANCH_NOT_FOUND'
           }
         };
       }
 
       // Obtener datos de la empresa
-      const { data: empresa, error: empresaError } = await supabase
-        .from('empresas')
-        .select('id, stripe_account_id')
-        .eq('id', sede.empresa_id)
-        .single();
+      const empresa = sede.empresas || null;
 
-      if (empresaError || !empresa) {
-        console.error(`❌ [${requestId}] Error al obtener datos de la empresa:`, empresaError);
+      if (!empresa) {
+        console.error(`❌ [${requestId}] Error al obtener datos de la empresa:`, {
+          sede,
+          empresa
+        });
         return {
           success: false,
           error: {
@@ -504,62 +517,18 @@ export class StripeInvoiceService {
         };
       }
 
-      // Obtener los datos del usuario que hizo la reserva (participantes)
-      const { data: participants, error: participantsError } = await supabase
-        .from('booking_participants')
-        .select(`
-          id,
-          user_id,
-          role,
-          usuarios:user_id(id, email, nombre)
-        `)
-        .eq('booking_id', bookingId)
-        .limit(1);
-
-      // Si no hay participantes, intentar obtener el cliente de otras fuentes
-      let userInfo: { email: string, nombre: string } = {
-        email: 'cliente@example.com',
-        nombre: 'Cliente'
-      };
-      
-      if (participantsError || !participants || participants.length === 0) {
-        console.warn(`⚠️ [${requestId}] No se encontraron participantes para la reserva:`, {
-          bookingId,
-          error: participantsError
-        });
-        
-        // Intentar obtener información del cliente buscando en otras reservas o en stripe_customers
-        const { data: stripeCustomers, error: stripeError } = await supabase
-          .from('stripe_customers')
-          .select('*')
-          .eq('empresa_id', sede.empresa_id)
-          .limit(1);
-          
-        if (!stripeError && stripeCustomers && stripeCustomers.length > 0) {
-          userInfo = {
-            email: stripeCustomers[0].email || 'cliente@example.com',
-            nombre: stripeCustomers[0].name || 'Cliente'
-          };
-          console.log(`✅ [${requestId}] Se encontró información de cliente en stripe_customers`);
-        } else {
-          console.warn(`⚠️ [${requestId}] No se encontró información de cliente, usando valores por defecto`);
-        }
-      } else {
-        // Usar el primer participante como cliente
-        const participant = participants[0];
-        if (participant.usuarios) {
-          userInfo = {
-            email: participant.usuarios.email || 'cliente@example.com',
-            nombre: participant.usuarios.nombre || 'Cliente'
-          };
-          console.log(`✅ [${requestId}] Se encontró información de cliente en participant`);
-        } else {
-          console.warn(`⚠️ [${requestId}] Participante encontrado pero sin datos de usuario, usando valores por defecto`);
-        }
-      }
-
       // 2. Extraer información necesaria para la factura
       const stripeAccountId = empresa.stripe_account_id;
+      
+      // Obtener el país de la empresa para la moneda correcta
+      let country = 'España'; // Valor por defecto
+      
+      // Intentar obtener el país de los metadatos de la empresa si está disponible
+      if (empresa && typeof empresa === 'object' && 'country' in empresa) {
+        country = empresa.country || country;
+      }
+      
+      console.log(`🌎 [${requestId}] País de la empresa:`, country);
       
       if (!stripeAccountId) {
         console.error(`❌ [${requestId}] La empresa no tiene cuenta de Stripe configurada`);
@@ -579,62 +548,80 @@ export class StripeInvoiceService {
 
       // Buscar o crear cliente en Stripe
       let customerId: string | undefined;
-      const customerEmail = userInfo.email;
-      const customerName = userInfo.nombre;
+      const customerEmail = 'cliente@example.com';
+      const customerName = 'Cliente';
       
-      if (!customerEmail) {
-        console.error(`❌ [${requestId}] No se encontró email del cliente para la reserva`);
-        return {
-          success: false,
-          error: {
-            message: 'No se encontró email del cliente',
-            code: 'CUSTOMER_EMAIL_NOT_FOUND'
-          }
-        };
-      }
+      // Obtener los datos del usuario que hizo la reserva (participantes)
+      const { data: participants, error: participantsError } = await supabase
+        .from('booking_participants')
+        .select(`
+          id,
+          user_id,
+          role,
+          usuarios:user_id(id, email, nombre)
+        `)
+        .eq('booking_id', bookingId)
+        .limit(1);
+
+      // Si no hay participantes, intentar obtener el cliente de otras fuentes
+      let userInfo: { email: string, nombre: string } = {
+        email: customerEmail,
+        nombre: customerName
+      };
       
-      // Buscar si el cliente ya existe en Stripe
-      try {
-        const customers = await stripe.customers.list({
-          email: customerEmail,
-          limit: 1
+      if (participantsError || !participants || participants.length === 0) {
+        console.warn(`⚠️ [${requestId}] No se encontraron participantes para la reserva:`, {
+          bookingId,
+          error: participantsError
         });
         
-        if (customers.data.length > 0) {
-          customerId = customers.data[0].id;
-          console.log(`✅ [${requestId}] Cliente encontrado en Stripe:`, customerId);
+        // Intentar obtener información del cliente buscando en otras reservas o en stripe_customers
+        const { data: stripeCustomers, error: stripeError } = await supabase
+          .from('stripe_customers')
+          .select('*')
+          .eq('empresa_id', sede.id)
+          .limit(1);
+          
+        if (!stripeError && stripeCustomers && stripeCustomers.length > 0) {
+          userInfo = {
+            email: stripeCustomers[0].email || customerEmail,
+            nombre: stripeCustomers[0].name || customerName
+          };
+          console.log(`✅ [${requestId}] Se encontró información de cliente en stripe_customers`);
         } else {
-          // Crear nuevo cliente en Stripe
-          const newCustomer = await stripe.customers.create({
-            email: customerEmail,
-            name: customerName || customerEmail,
-            metadata: {
-              empresaId: sede.empresa_id
-            }
-          });
-          customerId = newCustomer.id;
-          console.log(`✅ [${requestId}] Nuevo cliente creado en Stripe:`, customerId);
+          console.warn(`⚠️ [${requestId}] No se encontró información de cliente, usando valores por defecto`);
         }
-      } catch (stripeError) {
-        console.error(`❌ [${requestId}] Error al buscar/crear cliente en Stripe:`, stripeError);
-        // Continuamos sin cliente ID si hay error
+      } else {
+        // Usar el primer participante como cliente
+        const participant = participants[0];
+        if (participant.usuarios) {
+          userInfo = {
+            email: participant.usuarios.email || customerEmail,
+            nombre: participant.usuarios.nombre || customerName
+          };
+          console.log(`✅ [${requestId}] Se encontró información de cliente en participant`);
+        } else {
+          console.warn(`⚠️ [${requestId}] Participante encontrado pero sin datos de usuario, usando valores por defecto`);
+        }
       }
-      
+
       // 4. Crear la factura para la reserva manual
       const courtName = court ? court.name : 'Pista';
       const invoiceResult = await this.createManualBookingInvoice({
         stripeAccountId,
         customerId,
-        customerEmail,
-        customerName: customerName || undefined,
+        customerEmail: userInfo.email,
+        customerName: userInfo.nombre || undefined,
         amount: booking.total_price,
         description: `Reserva: ${courtName}`,
         bookingId: booking.id,
-        empresaId: sede.empresa_id || '',
+        empresaId: sede.id || '',
         courtId: booking.court_id,
         branchId: branchId,
         paymentType: 'booking',
-        isPartialPayment: false
+        isPartialPayment: false,
+        totalAmount: booking.total_price,
+        country: country // Añadir el país para determinar la moneda
       });
 
       if (!invoiceResult.success) {

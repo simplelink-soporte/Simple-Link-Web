@@ -31,6 +31,7 @@ export interface PaymentDetails {
   isPaid: boolean
   manualPrice?: number
   courtPrice?: number
+  generateInvoice?: boolean
 }
 
 export interface RentalSelection {
@@ -103,6 +104,7 @@ export interface BookingCreationData {
   reservationType?: ReservationTypeEnum;
   classId?: string;
   classSessionPrice?: number;
+  generateInvoice?: boolean;
 }
 
 export interface BookingParticipant {

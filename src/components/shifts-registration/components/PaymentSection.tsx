@@ -11,6 +11,8 @@ import { StripeProvider } from "@/contexts/StripeContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { CardBrandIcon } from "../../classes-registration/components/CardBrandIcon"
 import { useStripe } from '@/contexts/StripeContext'
+import { Elements } from '@stripe/react-stripe-js'
+import { useStripePromise, getDefaultStripeOptions } from '@/hooks/useStripePromise'
 
 // Definimos la interfaz para un método de pago
 export interface PaymentMethod {
@@ -456,6 +458,11 @@ export function PaymentSection({
 
 // Componente wrapper que proporciona el StripeProvider
 export function PaymentSectionWithStripe(props: PaymentSectionProps) {
+  // Usar el hook centralizado para obtener la instancia de Stripe
+  const stripePromise = useStripePromise(props.stripeAccountId);
+  // Obtener las opciones estandarizadas para Elements
+  const stripeOptions = getDefaultStripeOptions();
+
   return (
     <StripeProvider 
       empresaId={props.stripeAccountId || null}
@@ -464,7 +471,9 @@ export function PaymentSectionWithStripe(props: PaymentSectionProps) {
       error={null}
       charges_enabled={true}
     >
-      <PaymentSection {...props} />
+      <Elements stripe={stripePromise} options={stripeOptions}>
+        <PaymentSection {...props} />
+      </Elements>
     </StripeProvider>
   );
 }
