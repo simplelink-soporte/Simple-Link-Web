@@ -116,6 +116,49 @@ class OnboardingCourtService {
       if (!branchId) {
         throw new Error('Se requiere el ID de la sede para crear las pistas por defecto')
       }
+
+      // Obtener información de la empresa para conocer el país
+      const { data: branchData, error: branchError } = await supabase
+        .from('sedes')
+        .select('empresa_id')
+        .eq('id', branchId)
+        .single()
+
+      if (branchError) {
+        console.warn('Error al obtener la información de la sede:', branchError)
+      }
+
+      // Valor por defecto para el precio de las pistas de raqueta
+      let racketPrice60min = 15
+      let racketPrice90min = 20
+      let racketPrice120min = 25
+      let racketPrice60minOutdoor = 15
+      let racketPrice90minOutdoor = 20
+      let racketPrice120minOutdoor = 25
+
+      // Si tenemos la ID de la empresa, verificamos si es de México
+      if (branchData?.empresa_id) {
+        const { data: companyData, error: companyError } = await supabase
+          .from('empresas')
+          .select('country')
+          .eq('id', branchData.empresa_id)
+          .single()
+
+        if (companyError) {
+          console.warn('Error al obtener la información de la empresa:', companyError)
+        }
+
+        // Si la empresa es de México, ajustamos los precios
+        if (companyData?.country === 'Mexico') {
+          console.log('🇲🇽 Empresa de México: Aplicando precios especiales para pistas de raqueta')
+          racketPrice60min = 200
+          racketPrice90min = 250
+          racketPrice120min = 300
+          racketPrice60minOutdoor = 200
+          racketPrice90minOutdoor = 250
+          racketPrice120minOutdoor = 300
+        }
+      }
       
       // Definir las 4 pistas por defecto (2 racket y 2 swimming)
       const defaultCourts = [
@@ -129,9 +172,9 @@ class OnboardingCourtService {
           is_active: true,
           available_durations: [60, 90, 120],
           duration_pricing: {
-            "60": 15,
-            "90": 20,
-            "120": 25
+            "60": racketPrice60min,
+            "90": racketPrice90min,
+            "120": racketPrice120min
           },
           custom_pricing: {}
         },
@@ -145,9 +188,9 @@ class OnboardingCourtService {
           is_active: true,
           available_durations: [60, 90, 120],
           duration_pricing: {
-            "60": 10,
-            "90": 15,
-            "120": 20
+            "60": racketPrice60minOutdoor,
+            "90": racketPrice90minOutdoor,
+            "120": racketPrice120minOutdoor
           },
           custom_pricing: {}
         },

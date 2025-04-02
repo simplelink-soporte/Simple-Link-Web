@@ -350,7 +350,7 @@ export class StripeInvoiceService {
             });
             console.log(`✅ [${requestId}] Factura marcada como pagada exitosamente mediante pay/paid_out_of_band`);
           } catch (payError) {
-            console.warn(`⚠️ [${requestId}] Error al marcar como pagada con método estándar:`, payError);
+            console.warn(`⚠️ [${requestId}] No se pudo actualizar el PaymentIntent con receipt_email:`, payError);
               
             // 6.5.2 Método alternativo: voidInvoice y luego crear una nueva con estado correcto
             console.log(`🔄 [${requestId}] Intentando método alternativo...`);
@@ -529,6 +529,9 @@ export class StripeInvoiceService {
       }
 
       // 4. Crear la factura para la reserva manual
+      const isDepositPayment = params.paymentType === 'deposit' || params.isPartialPayment;
+      const depositPercentage = '30'; // Porcentaje de seña por defecto
+      
       const invoiceParams: Stripe.InvoiceCreateParams = {
         customer: customerId,
         collection_method: 'charge_automatically',
@@ -544,39 +547,141 @@ export class StripeInvoiceService {
           is_partial_payment: String(params.isPartialPayment || false),
           total_amount: params.totalAmount?.toString() || '',
           country: country || ''
-        }
+        },
+        // Añadir un footer con información adicional si es un pago de seña
+        footer: isDepositPayment 
+          ? `Esta factura corresponde únicamente al pago de seña. El monto total de la reserva es de ${
+              params.totalAmount 
+                ? `${parseFloat(params.totalAmount.toString()).toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}`
+                : 'un valor mayor'
+            }. Quedan pendientes ${
+              params.totalAmount 
+                ? `${(parseFloat(params.totalAmount.toString()) - params.amount).toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}`
+                : 'pagos adicionales'
+            } por abonar.`
+          : undefined
       };
       
       const invoice = await stripe.invoices.create(invoiceParams);
 
-      // Añadir item a la factura
-      await stripe.invoiceItems.create({
-        customer: customerId,
-        invoice: invoice.id,
-        amount: Math.round(params.amount * 100),
-        currency: currencyCode,
-        description: params.description
-      });
+      // Añadir items a la factura con formato mejorado
+      if (isDepositPayment) {
+        // Si es una seña, incluir información más clara sobre el pago parcial
+        const totalAmount = params.totalAmount || params.amount;
+        const remainingAmount = Math.max(0, parseFloat(totalAmount.toString()) - params.amount);
+        
+        // Añadir el item principal (seña)
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: Math.round(params.amount * 100), // Convertir a centavos
+          currency: currencyCode,
+          description: `${params.description} - PAGO DE SEÑA`
+        });
+        
+        // Añadir línea informativa sobre el total y lo pendiente (con precio 0)
+        if (totalAmount > 0) {
+          await stripe.invoiceItems.create({
+            customer: customerId,
+            invoice: invoice.id,
+            amount: 0, // No se cobra
+            currency: currencyCode,
+            description: `Información: El monto total de la reserva es de ${parseFloat(totalAmount.toString()).toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}. Tras este pago de seña, quedarán pendientes ${remainingAmount.toFixed(2)}${currencyCode === 'eur' ? '€' : currencyCode === 'mxn' ? ' MXN' : ''}.`
+          });
+        }
+      } else {
+        // Si es pago completo, mantener el formato simple
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: Math.round(params.amount * 100),
+          currency: currencyCode,
+          description: params.description
+        });
+      }
 
       // Finalizar la factura
       const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
 
+      // Verificar si la factura está ya pagada o necesita marcarse como pagada
+      let invoiceToReturn = finalizedInvoice;
+      
+      if (finalizedInvoice.status !== 'paid') {
+        console.log(`🔄 [${requestId}] Factura manual no está pagada automáticamente, marcándola como pagada...`);
+        
+        try {
+          // Método estándar: marcar como pagada fuera del sistema (paid_out_of_band)
+          invoiceToReturn = await stripe.invoices.pay(finalizedInvoice.id, {
+            paid_out_of_band: true // Indica que ya fue pagada fuera del flujo regular de facturación
+          });
+          console.log(`✅ [${requestId}] Factura manual marcada como pagada exitosamente`);
+        } catch (payError) {
+          console.warn(`⚠️ [${requestId}] Error al marcar factura manual como pagada:`, payError);
+          
+          // Método alternativo si el anterior falla
+          console.log(`🔄 [${requestId}] Intentando método alternativo para marcar como pagada...`);
+          
+          // 1. Anular la factura actual que está en estado incorrecto
+          await stripe.invoices.voidInvoice(finalizedInvoice.id);
+          
+          // 2. Crear una nueva factura con los mismos datos
+          const newInvoice = await stripe.invoices.create({
+            customer: customerId,
+            collection_method: 'charge_automatically',
+            description: `${params.description} [Registro de pago]`,
+            currency: currencyCode,
+            metadata: {
+              booking_id: params.bookingId,
+              empresa_id: params.empresaId,
+              court_id: params.courtId || '',
+              branch_id: params.branchId || '',
+              payment_type: params.paymentType || 'booking',
+              is_partial_payment: String(params.isPartialPayment || false),
+              total_amount: params.totalAmount?.toString() || '',
+              country: country || '',
+              original_invoice_id: finalizedInvoice.id
+            }
+          });
+          
+          // 3. Añadir item a la nueva factura
+          await stripe.invoiceItems.create({
+            customer: customerId,
+            invoice: newInvoice.id,
+            amount: Math.round(params.amount * 100),
+            currency: currencyCode,
+            description: `${params.description} [Pago ya realizado]`
+          });
+          
+          // 4. Finalizar la nueva factura
+          const finalNewInvoice = await stripe.invoices.finalizeInvoice(newInvoice.id);
+          
+          // 5. Marcar como pagada usando el método más simple
+          invoiceToReturn = await stripe.invoices.pay(finalNewInvoice.id, {
+            paid_out_of_band: true
+          });
+          
+          console.log(`✅ [${requestId}] Método alternativo exitoso: Nueva factura creada y marcada como pagada`);
+        }
+      } else {
+        console.log(`✅ [${requestId}] Factura manual ya estaba marcada como pagada automáticamente`);
+      }
+
       // 5. Obtener la URL de la factura y del PDF
-      const invoiceUrl = finalizedInvoice.hosted_invoice_url;
-      const pdfUrl = finalizedInvoice.invoice_pdf;
+      const invoiceUrl = invoiceToReturn.hosted_invoice_url;
+      const pdfUrl = invoiceToReturn.invoice_pdf;
 
       console.log(`✅ [${requestId}] Factura manual creada exitosamente:`, {
-        invoiceId: finalizedInvoice.id,
-        invoiceNumber: finalizedInvoice.number,
-        status: finalizedInvoice.status,
-        amount: finalizedInvoice.amount_paid / 100,
+        invoiceId: invoiceToReturn.id,
+        invoiceNumber: invoiceToReturn.number,
+        status: invoiceToReturn.status,
+        amount: invoiceToReturn.amount_paid / 100,
         invoiceUrl: invoiceUrl || 'No disponible',
         pdfUrl: pdfUrl || 'No disponible'
       });
 
       return {
         success: true,
-        invoiceId: finalizedInvoice.id,
+        invoiceId: invoiceToReturn.id,
         invoiceUrl: invoiceUrl || undefined,
         pdfUrl: pdfUrl || undefined
       };

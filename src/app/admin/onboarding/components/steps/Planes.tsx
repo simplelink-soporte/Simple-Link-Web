@@ -28,6 +28,7 @@ import { onboardingCompanyService } from "@/services/onboardingCompanyService"
 import { ChevronRight } from "lucide-react"
 import { onboardingCourtService } from "@/services/onboardingCourtService"
 import { onboardingBranchService } from "@/services/onboardingBranchService"
+import { onboardingItemsService } from "@/services/onboardingItemsService"
 
 interface PlanFeature {
   name: string
@@ -226,6 +227,9 @@ export function Planes() {
     try {
       setIsCreatingCourts(true);
       
+      // Obtener empresaId del contexto de onboarding
+      const empresaId = formData.empresaId;
+      
       // Obtener el ID de la sede desde onboardingBranchService
       const branchesResponse = await onboardingBranchService.getBranchesByUserId();
       
@@ -246,15 +250,15 @@ export function Planes() {
       const branchId = branchesResponse.data[0].id;
       
       // Crear las pistas por defecto (2 racket y 2 swimming)
-      const result = await onboardingCourtService.createDefaultCourts(branchId);
+      const courtResult = await onboardingCourtService.createDefaultCourts(branchId);
       
-      if (result.success) {
+      if (courtResult.success) {
         toast({
           title: "Pistas creadas",
           description: "Se han creado 4 pistas por defecto para tu sede"
         });
       } else {
-        console.error('Error al crear pistas:', result.error);
+        console.error('Error al crear pistas:', courtResult.error);
         toast({
           title: "Error",
           description: "No se pudieron crear las pistas por defecto",
@@ -262,13 +266,56 @@ export function Planes() {
         });
       }
       
+      // Crear los items predeterminados (raqueta, pelota y paleta)
+      if (empresaId) {
+        const itemsResult = await onboardingItemsService.createDefaultItems(empresaId, branchId);
+        
+        if (itemsResult.success) {
+          toast({
+            title: "Items creados",
+            description: "Se han creado 3 items predeterminados para tu sede"
+          });
+        } else {
+          console.error('Error al crear items:', itemsResult.error);
+          toast({
+            title: "Error",
+            description: "No se pudieron crear los items predeterminados",
+            variant: "destructive"
+          });
+        }
+      } else {
+        console.error('No se pudo obtener el ID de la empresa para crear items');
+        
+        // Intentar obtener el empresaId del usuario autenticado
+        if (user) {
+          const { data } = await onboardingCompanyService.getOrCreateCompany(user.id);
+          if (data?.id) {
+            const itemsResult = await onboardingItemsService.createDefaultItems(data.id, branchId);
+            
+            if (itemsResult.success) {
+              toast({
+                title: "Items creados",
+                description: "Se han creado 3 items predeterminados para tu sede"
+              });
+            } else {
+              console.error('Error al crear items (segundo intento):', itemsResult.error);
+              toast({
+                title: "Error",
+                description: "No se pudieron crear los items predeterminados",
+                variant: "destructive"
+              });
+            }
+          }
+        }
+      }
+      
       // Continuar con el proceso de onboarding
       await completeAndAdvance(3);
     } catch (error) {
-      console.error('Error al crear pistas por defecto:', error);
+      console.error('Error al crear recursos por defecto:', error);
       toast({
         title: "Error",
-        description: "Ocurrió un error al crear las pistas",
+        description: "Ocurrió un error al crear los recursos predeterminados",
         variant: "destructive"
       });
       

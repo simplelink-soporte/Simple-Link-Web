@@ -1151,41 +1151,66 @@ export const bookingService = {
           if (typeof window !== 'undefined') {
             // Estamos en el navegador, usar API
             console.log('🌐 Llamando a API para generar factura desde el cliente...');
-            const invoiceApiResponse = await fetch('/api/stripe/invoices/manual-booking', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                stripeAccountId: stripeConnection.stripe_account_id,
-                customerId: clientInfo.stripeCustomerId,
-                customerEmail: clientInfo.email,
-                customerName: clientInfo.name,
-                amount: amount,
-                description: description,
-                bookingId: bookingId,
-                empresaId: data.empresaId,
-                courtId: data.courtId,
-                branchId: courtDetails.branch_id,
-                paymentType: paymentType,
-                isPartialPayment: isPartialPayment,
-                totalAmount: data.courtPrice + (data.rentalItemsPrice || 0)
-              }),
-            });
-            
-            if (!invoiceApiResponse.ok) {
-              throw new Error(`Error en API: ${invoiceApiResponse.status} ${await invoiceApiResponse.text()}`);
-            }
-            
-            const invoiceResult = await invoiceApiResponse.json();
-            console.log('✅ Resultado de generación de factura vía API:', invoiceResult);
-            
-            // No actualizamos la reserva con datos de factura ya que las columnas no existen
-            if (invoiceResult.success && invoiceResult.invoiceId) {
-              console.log('✅ Factura generada correctamente a través de API:', {
-                invoiceId: invoiceResult.invoiceId,
-                invoiceUrl: invoiceResult.invoiceUrl || null
+            try {
+              const invoiceApiResponse = await fetch('/api/stripe/invoices', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  endpoint: 'manual-booking', // Identificador para el backend
+                  stripeAccountId: stripeConnection.stripe_account_id,
+                  customerId: clientInfo.stripeCustomerId,
+                  customerEmail: clientInfo.email,
+                  customerName: clientInfo.name,
+                  amount: amount,
+                  description: description,
+                  bookingId: bookingId,
+                  empresaId: data.empresaId,
+                  courtId: data.courtId,
+                  branchId: courtDetails.branch_id,
+                  paymentType: paymentType,
+                  isPartialPayment: isPartialPayment,
+                  totalAmount: data.courtPrice + (data.rentalItemsPrice || 0)
+                }),
               });
+              
+              // Verificamos primero si la respuesta tiene un formato válido
+              let responseText;
+              try {
+                responseText = await invoiceApiResponse.text();
+              } catch (textError) {
+                console.error('❌ Error al leer la respuesta como texto:', textError);
+                throw new Error('Error al leer la respuesta de la API');
+              }
+              
+              // Si la respuesta no es OK, mostrar los detalles del error
+              if (!invoiceApiResponse.ok) {
+                console.error(`❌ Error en API de facturación: ${invoiceApiResponse.status} - ${responseText}`);
+                throw new Error(`Error en API de facturación: ${invoiceApiResponse.status} - ${responseText.substring(0, 200)}`);
+              }
+              
+              // Intentar parsear la respuesta como JSON
+              let invoiceResult;
+              try {
+                invoiceResult = JSON.parse(responseText);
+              } catch (jsonError) {
+                console.error('❌ Error al parsear la respuesta como JSON:', jsonError, 'Texto:', responseText.substring(0, 200));
+                throw new Error('Respuesta de API no es un JSON válido');
+              }
+              
+              console.log('✅ Resultado de generación de factura vía API:', invoiceResult);
+              
+              // No actualizamos la reserva con datos de factura ya que las columnas no existen
+              if (invoiceResult.success && invoiceResult.invoiceId) {
+                console.log('✅ Factura generada correctamente a través de API:', {
+                  invoiceId: invoiceResult.invoiceId,
+                  invoiceUrl: invoiceResult.invoiceUrl || null
+                });
+              }
+            } catch (apiError) {
+              console.error('❌ Error al comunicarse con API de facturas:', apiError);
+              // No re-lanzamos el error para que no interrumpa el flujo de creación de reserva
             }
           } else {
             // Estamos en el servidor, podemos usar el servicio directamente
@@ -1219,6 +1244,31 @@ export const bookingService = {
             error: invoiceError,
             bookingId: bookingId
           });
+          
+          // Intentar obtener más información sobre el error para diagnóstico
+          let errorDetails = 'Error desconocido';
+          if (invoiceError instanceof Error) {
+            errorDetails = invoiceError.message;
+            
+            // Log detallado del error para diagnóstico
+            console.error('❌ Detalles del error de facturación:', {
+              message: invoiceError.message,
+              stack: invoiceError.stack,
+              name: invoiceError.name
+            });
+          } else if (typeof invoiceError === 'object') {
+            try {
+              errorDetails = JSON.stringify(invoiceError);
+            } catch (e) {
+              errorDetails = 'Error no serializable: ' + Object.prototype.toString.call(invoiceError);
+            }
+          } else if (invoiceError !== undefined && invoiceError !== null) {
+            errorDetails = String(invoiceError);
+          }
+          
+          // Registrar el error más específicamente para análisis posterior
+          console.error(`❌ Error al generar factura para reserva ${bookingId}: ${errorDetails}`);
+          
           // No fallamos la creación de la reserva si hay error en la factura
         }
       } else {
