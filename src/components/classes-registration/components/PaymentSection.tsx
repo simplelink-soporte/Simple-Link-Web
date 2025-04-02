@@ -37,6 +37,7 @@ export interface PaymentSectionProps {
   expandCardList?: boolean
   className?: string
   empresaId?: string
+  amount?: number  // Añadir soporte para el monto a mostrar
 }
 
 export function PaymentSection({
@@ -49,7 +50,8 @@ export function PaymentSection({
   expandCardList = false,
   className = "",
   theme = 'light',
-  empresaId
+  empresaId,
+  amount
 }: PaymentSectionProps) {
   const { user } = useAuth()
   const [isListExpanded, setIsListExpanded] = useState(expandCardList)
@@ -438,6 +440,7 @@ export function PaymentSection({
         onCardSetupBack={handleCardSetupBack}
         theme={theme}
         stripeAccountId={stripeAccountId}
+        amount={amount}
       />
 
       {hasError && (
@@ -469,6 +472,7 @@ export function PaymentSection({
           onCardSetupBack={handleCardSetupBack}
           theme={theme}
           stripeAccountId={stripeAccountId}
+          amount={amount}
         />
       )}
     </motion.div>

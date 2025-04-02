@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { useRentalContext } from '@/contexts/RentalContext'
 import { PaymentMethodEnum, PaymentStatusEnum, PaymentTypeEnum } from '@/types/bookings'
 import type { RentalSelection } from '@/types/items'
+import { getCurrencySymbol } from '@/lib/currency-utils'
 
 interface PaymentStepProps {
   selectedCourts: string[]
@@ -23,6 +24,7 @@ interface PaymentStepProps {
   onNext: () => void
   onBack: () => void
   isVisible?: boolean
+  country?: string | null
 }
 
 export function PaymentStep({ 
@@ -32,7 +34,8 @@ export function PaymentStep({
   onPaymentChange,
   onNext,
   onBack,
-  isVisible = true
+  isVisible = true,
+  country
 }: PaymentStepProps) {
   const { currentBranch } = useBranchContext()
   const { rentals, totalPrice: rentalsPriceTotal } = useRentalContext()
@@ -621,18 +624,18 @@ export function PaymentStep({
           <div className="space-y-2.5">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Cancha</span>
-              <span className="text-sm text-gray-900">{courtsPriceTotal}€</span>
+              <span className="text-sm text-gray-900">{courtsPriceTotal}{getCurrencySymbol(country)}</span>
             </div>
             {rentals.length > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Equipamiento</span>
-                <span className="text-sm text-gray-900">{rentalsPriceTotal}€</span>
+                <span className="text-sm text-gray-900">{rentalsPriceTotal}{getCurrencySymbol(country)}</span>
               </div>
             )}
             <div className="pt-2.5 border-t border-gray-100">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-900">Total</span>
-                <span className="text-sm font-medium text-gray-900">{calculateTotalAmount()}€</span>
+                <span className="text-sm font-medium text-gray-900">{calculateTotalAmount()}{getCurrencySymbol(country)}</span>
               </div>
             </div>
           </div>

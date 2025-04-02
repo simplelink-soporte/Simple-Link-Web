@@ -668,13 +668,31 @@ export class ManualClassBookingService {
             }
           }
 
+          // Obtener el país de la empresa para establecer la moneda correcta
+          let country = null;
+          try {
+            const { data: empresaData } = await this.supabase
+              .from('empresas')
+              .select('country')
+              .eq('id', options.empresaId)
+              .single();
+            
+            if (empresaData?.country) {
+              country = empresaData.country;
+              console.log('🌎 País de la empresa detectado:', country);
+            }
+          } catch (countryError) {
+            console.error('⚠️ Error al obtener el país de la empresa:', countryError);
+            // Continuar sin país, se usará EUR por defecto
+          }
+          
           // Verificar que tengamos una cuenta Stripe antes de intentar crear la factura
           if (!stripeAccountId) {
             console.error('❌ No se puede generar factura: falta la cuenta de Stripe');
             // Continuar sin generar factura
             return { id: bookingId };
           }
-          
+
           // Crear la factura
           console.log('📋 Generando factura para la reserva de clase:', {
             bookingId,
@@ -682,7 +700,8 @@ export class ManualClassBookingService {
             paymentMethod: options.paymentMethod,
             paymentStatus: options.paymentStatus,
             isDeposit,
-            stripeAccountId // Log de la cuenta Stripe que se usará
+            stripeAccountId, // Log de la cuenta Stripe que se usará
+            country // Log del país detectado
           });
           
           const invoiceData = {
@@ -697,6 +716,7 @@ export class ManualClassBookingService {
             customerName: participant.fullName,
             // Pasar parámetro de tipo de pago explícitamente
             paymentType: isDeposit ? 'deposit' as const : 'full' as const,
+            empresaId: options.empresaId, // Asegurar que se pasa el empresaId
             metadata: {
               resource_type: 'class',
               is_class_booking: 'true',
@@ -709,7 +729,10 @@ export class ManualClassBookingService {
               payment_type: isDeposit ? 'deposit' : 'full',
               booking_id: bookingId,
               class_id: options.classId,
-              session_id: options.sessionId
+              session_id: options.sessionId,
+              // Añadir país explícitamente en los metadatos para determinar la moneda
+              country: country || '',
+              empresa_id: options.empresaId
             },
             stripeAccountId // Añadir cuenta Stripe del club
           };

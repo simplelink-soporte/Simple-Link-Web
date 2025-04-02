@@ -11,7 +11,7 @@ import { StripeInvoiceService } from './stripe-invoice.service'
 import { Stripe } from 'stripe'
 
 // Instanciar el servicio de facturas
-const stripeInvoiceService = new StripeInvoiceService();
+const stripeInvoiceService = StripeInvoiceService.getInstance();
 
 // Crear una instancia de Supabase memoizada
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null;
@@ -1148,32 +1148,71 @@ export const bookingService = {
           }
           
           // Ahora crear la factura directamente
-          const invoiceService = new StripeInvoiceService();
-          const invoiceResult = await invoiceService.createManualBookingInvoice({
-            stripeAccountId: stripeConnection.stripe_account_id,
-            customerId: clientInfo.stripeCustomerId,
-            customerEmail: clientInfo.email,
-            customerName: clientInfo.name,
-            amount: amount,
-            description: description,
-            bookingId: bookingId,
-            empresaId: data.empresaId,
-            courtId: data.courtId,
-            branchId: courtDetails.branch_id,
-            paymentType: paymentType,
-            isPartialPayment: isPartialPayment,
-            totalAmount: data.courtPrice + (data.rentalItemsPrice || 0) // Añadimos explícitamente el monto total de la reserva
-          });
-          
-          console.log('✅ Resultado de generación de factura directa:', invoiceResult);
-          
-          // No actualizamos la reserva con datos de factura ya que las columnas no existen
-          // El ID y URL de factura estarán disponibles en la respuesta pero no se guardan en BD
-          if (invoiceResult.success && invoiceResult.invoiceId) {
-            console.log('✅ Factura generada correctamente pero no almacenada en BD:', {
-              invoiceId: invoiceResult.invoiceId,
-              invoiceUrl: invoiceResult.invoiceUrl || null
+          if (typeof window !== 'undefined') {
+            // Estamos en el navegador, usar API
+            console.log('🌐 Llamando a API para generar factura desde el cliente...');
+            const invoiceApiResponse = await fetch('/api/stripe/invoices/manual-booking', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                stripeAccountId: stripeConnection.stripe_account_id,
+                customerId: clientInfo.stripeCustomerId,
+                customerEmail: clientInfo.email,
+                customerName: clientInfo.name,
+                amount: amount,
+                description: description,
+                bookingId: bookingId,
+                empresaId: data.empresaId,
+                courtId: data.courtId,
+                branchId: courtDetails.branch_id,
+                paymentType: paymentType,
+                isPartialPayment: isPartialPayment,
+                totalAmount: data.courtPrice + (data.rentalItemsPrice || 0)
+              }),
             });
+            
+            if (!invoiceApiResponse.ok) {
+              throw new Error(`Error en API: ${invoiceApiResponse.status} ${await invoiceApiResponse.text()}`);
+            }
+            
+            const invoiceResult = await invoiceApiResponse.json();
+            console.log('✅ Resultado de generación de factura vía API:', invoiceResult);
+            
+            // No actualizamos la reserva con datos de factura ya que las columnas no existen
+            if (invoiceResult.success && invoiceResult.invoiceId) {
+              console.log('✅ Factura generada correctamente a través de API:', {
+                invoiceId: invoiceResult.invoiceId,
+                invoiceUrl: invoiceResult.invoiceUrl || null
+              });
+            }
+          } else {
+            // Estamos en el servidor, podemos usar el servicio directamente
+            const invoiceResult = await stripeInvoiceService.createManualBookingInvoice({
+              stripeAccountId: stripeConnection.stripe_account_id,
+              customerId: clientInfo.stripeCustomerId,
+              customerEmail: clientInfo.email,
+              customerName: clientInfo.name,
+              amount: amount,
+              description: description,
+              bookingId: bookingId,
+              empresaId: data.empresaId,
+              courtId: data.courtId,
+              branchId: courtDetails.branch_id,
+              paymentType: paymentType,
+              isPartialPayment: isPartialPayment,
+              totalAmount: data.courtPrice + (data.rentalItemsPrice || 0)
+            });
+            
+            console.log('✅ Resultado de generación de factura directa:', invoiceResult);
+            
+            if (invoiceResult.success && invoiceResult.invoiceId) {
+              console.log('✅ Factura generada correctamente en el servidor:', {
+                invoiceId: invoiceResult.invoiceId,
+                invoiceUrl: invoiceResult.invoiceUrl || null
+              });
+            }
           }
         } catch (invoiceError) {
           console.error('❌ Error al generar factura para reserva:', {

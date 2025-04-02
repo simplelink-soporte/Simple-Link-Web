@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/use-toast'
 import { useOrganization } from '@/contexts/OrganizationContext'
 import { supabase } from '@/lib/supabase'
 import { paymentService } from '@/services/paymentService'
+import { formatCurrencyByCountry } from '@/lib/currency-utils'
 
 interface CancelBookingModalProps {
   isOpen: boolean
@@ -226,6 +227,9 @@ export function CancelBookingModal({
   // Calcular el monto del cargo (usando el porcentaje de garantía o 40% por defecto)
   const chargeAmount = totalAmount * (effectiveGuaranteePercentage / 100);
   
+  // Obtener el país de la organización para determinar la moneda
+  const organizationCountry = organization?.country || null;
+  
   // Logs para depuración
   useEffect(() => {
     if (isOpen && hasGuarantee) {
@@ -233,10 +237,11 @@ export function CancelBookingModal({
         guaranteePercentage: effectiveGuaranteePercentage,
         totalAmount,
         chargeAmount,
+        country: organizationCountry,
         canApplyCharge: hasGuarantee && stripeEnabled && chargeAmount > 0
       });
     }
-  }, [isOpen, hasGuarantee, effectiveGuaranteePercentage, totalAmount, chargeAmount, stripeEnabled]);
+  }, [isOpen, hasGuarantee, effectiveGuaranteePercentage, totalAmount, chargeAmount, stripeEnabled, organizationCountry]);
 
   // Validar si se puede aplicar cargo
   const canApplyCharge = hasGuarantee && stripeEnabled && chargeAmount > 0
@@ -262,6 +267,7 @@ export function CancelBookingModal({
         console.log('💳 Procesando cargo por no-show:', {
           bookingId: booking.id,
           amount: totalAmount * (effectiveGuaranteePercentage / 100),
+          country: organizationCountry,
           timestamp: new Date().toISOString()
         });
 
@@ -272,7 +278,8 @@ export function CancelBookingModal({
           reason,
           empresaId: organization?.id,
           customerEmail: customerDetails.email || booking.customer_email,
-          customerName: customerDetails.name || booking.customer_name
+          customerName: customerDetails.name || booking.customer_name,
+          country: organizationCountry // Añadir el país para determinar la moneda en el servidor
         };
 
         // Si tenemos los datos de Stripe, incluirlos directamente para evitar problemas en el servidor
@@ -440,10 +447,7 @@ export function CancelBookingModal({
                               Aplicar cargo por no presentarse
                             </label>
                             <p className="text-xs text-gray-500">
-                              Se cobrará el {effectiveGuaranteePercentage}% del total ({new Intl.NumberFormat('es-ES', {
-                                style: 'currency',
-                                currency: 'EUR'
-                              }).format(chargeAmount)})
+                              Se cobrará el {effectiveGuaranteePercentage}% del total ({formatCurrencyByCountry(chargeAmount, organizationCountry)})
                             </p>
                           </div>
                         </div>

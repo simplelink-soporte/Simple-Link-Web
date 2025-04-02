@@ -58,6 +58,7 @@ interface SimpleShiftBookingProps {
   endTime?: string
   selectedDate: Date
   isVisible: boolean
+  country: string
 }
 
 interface PaymentDetails {
@@ -127,7 +128,10 @@ export function SimpleShiftBookingModal({
   })
 
   const { organization } = useOrganization()
-
+  
+  // Obtener el país de la organización para determinar la moneda
+  const organizationCountry = organization?.country || null
+  
   const { canMakeBooking, isLoading: isLoadingBookingCount } = useBookingCount({ 
     empresaId: organization?.id || '', 
     date: selectedDate.toISOString().split('T')[0],
@@ -437,6 +441,7 @@ export function SimpleShiftBookingModal({
                 manualPrice: paymentDetails.manualPrice
               }}
               items={items}
+              country={organization?.country}
             />
           ) : (
             <SimpleShiftBooking
@@ -449,8 +454,9 @@ export function SimpleShiftBookingModal({
               onPaymentChange={setPaymentDetails}
               onParticipantChange={setParticipants}
               participants={participants}
-              selectedDate={selectedDate}
+              selectedDate={selectedDate || new Date()}
               isVisible={isOpen}
+              country={organizationCountry}
             />
           )}
         </div>

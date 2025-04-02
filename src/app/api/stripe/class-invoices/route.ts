@@ -107,8 +107,8 @@ interface ClassInvoiceRequestBody {
  * Maneja la lógica del servidor para la creación de facturas seguras
  */
 export async function POST(request: Request) {
-  // Generar un ID único para esta solicitud (para logging)
-  const requestId = crypto.randomUUID();
+  // Generar un ID de solicitud único para seguimiento en logs
+  const requestId = `${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
   
   console.log(`🟢 [${requestId}] Nueva solicitud de factura de clase recibida`);
 
@@ -147,7 +147,9 @@ export async function POST(request: Request) {
       paymentIntentId: body.paymentIntentId,
       classId: body.classId,
       paymentType: body.paymentType,
-      isManualBooking: body.metadata?.is_manual_booking === 'true'
+      isManualBooking: body.metadata?.is_manual_booking === 'true',
+      empresaId: body.empresaId, // Log del empresaId para depuración
+      requestId // Incluir el ID de solicitud para seguimiento
     });
     
     // Función para determinar la moneda basada en el país
@@ -209,7 +211,13 @@ export async function POST(request: Request) {
           ...body.metadata,
           total_amount: calculatedTotal.toFixed(2)
         };
-        console.log(`📊 [API] Calculado monto total: ${calculatedTotal.toFixed(2)}€ basado en seña de ${body.amount}€ (${depositPercentage}%)`);
+        
+        // Usar el símbolo de moneda correcto basado en el código de moneda detectado
+        const currencySymbol = currencyCode === 'eur' ? '€' : 
+                              currencyCode === 'mxn' ? ' MXN' : 
+                              currencyCode === 'ars' ? ' ARS' : '€';
+                              
+        console.log(`📊 [${requestId}] Calculado monto total: ${calculatedTotal.toFixed(2)}${currencySymbol} basado en seña de ${body.amount}${currencySymbol} (${depositPercentage}%)`);
       }
     }
     

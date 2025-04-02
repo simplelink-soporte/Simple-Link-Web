@@ -22,6 +22,40 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       });
     }
     
+    // Obtener el país de la organización si no está disponible
+    if (payload.empresaId && !payload.country) {
+      try {
+        console.log(`🔍 [${requestId}] Intentando obtener país de la organización:`, payload.empresaId);
+        const { data: org } = await supabaseAdmin
+          .from('organizations')
+          .select('country, name')
+          .eq('id', payload.empresaId)
+          .single();
+          
+        if (org?.country) {
+          payload.country = org.country;
+          console.log(`🌎 [${requestId}] País obtenido de la base de datos:`, payload.country);
+        } else if (org?.name) {
+          // Intentar inferir el país por el nombre
+          const name = org.name.toLowerCase();
+          if (name.includes('mexico') || name.includes('méxico')) {
+            payload.country = 'MX';
+            console.log(`🌎 [${requestId}] País inferido del nombre:`, payload.country);
+          } else if (name.includes('argentina')) {
+            payload.country = 'AR';
+            console.log(`🌎 [${requestId}] País inferido del nombre:`, payload.country);
+          } else if (name.includes('españa') || name.includes('espana')) {
+            payload.country = 'ES';
+            console.log(`🌎 [${requestId}] País inferido del nombre:`, payload.country);
+          }
+        }
+      } catch (error) {
+        console.warn(`⚠️ [${requestId}] Error al obtener país de la organización:`, error);
+      }
+    } else if (payload.country) {
+      console.log(`🌎 [${requestId}] País recibido directamente del cliente:`, payload.country);
+    }
+    
     // Si no se proporcionaron datos del cliente, intentar obtenerlos de la reserva
     if (!payload.customerEmail || !payload.customerName) {
       console.log(`🔍 [${requestId}] Buscando datos del cliente en la reserva:`, payload.bookingId);
@@ -62,6 +96,7 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       amount: payload.amount,
       reason: payload.reason,
       empresaId: payload.empresaId,
+      country: payload.country, // Pasar el país de forma explícita
       stripeData: payload.stripeData, // Pasar los datos de Stripe si están disponibles
       customerEmail: payload.customerEmail,
       customerName: payload.customerName

@@ -25,6 +25,7 @@ import { useOrganization } from '@/contexts/OrganizationContext'
 import { supabase } from "@/lib/supabase"
 import { DateTime } from "luxon"
 import { PAYMENT_TYPE_MAPPINGS } from '@/types/bookings'
+import { getCurrencySymbol } from "@/lib/currency-utils"
 
 interface ViewBookingModalProps {
   isOpen: boolean
@@ -122,9 +123,26 @@ function CollapsibleSection({ icon, title, count, children }: CollapsibleSection
 }
 
 // 1. Modificar la función helper para formatear precios
-const formatPrice = (amount: number | undefined | null) => {
-  if (amount === undefined || amount === null) return '€0.00'
-  return `€${amount.toFixed(2)}`
+const formatPrice = (amount: number | undefined | null, country?: string | null) => {
+  // Verificar explícitamente si amount es undefined o null para evitar cálculos incorrectos
+  if (amount === undefined || amount === null) {
+    console.log('⚠️ formatPrice: Monto no definido, devolviendo 0.00');
+    return `${getCurrencySymbol(country)}0.00`;
+  }
+  
+  // Agregar logging detallado para debugging
+  console.log(`💰 formatPrice: Monto=${amount}, País="${country || 'No especificado'}"`);
+  
+  // Obtener el símbolo de moneda basado en el país
+  const symbol = getCurrencySymbol(country);
+  console.log(`💰 formatPrice: Símbolo obtenido=${symbol}`);
+  
+  // Formatear el número a 2 decimales
+  const formattedNumber = amount.toFixed(2);
+  console.log(`💰 formatPrice: Número formateado=${formattedNumber}`);
+  
+  // Devolver el precio formateado con el símbolo correcto
+  return `${symbol}${formattedNumber}`;
 }
 
 // Función para formatear el método de pago (movida fuera del componente PaymentDetails)
@@ -155,7 +173,8 @@ function PaymentDetails({
   paymentMethod, 
   status,
   paymentType,
-  onNewPayment
+  onNewPayment,
+  country
 }: { 
   total: number
   deposit: number
@@ -163,9 +182,10 @@ function PaymentDetails({
   status: string
   paymentType: PaymentTypeEnum
   onNewPayment: (amount: number, method: string) => void
+  country?: string | null
 }) {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
-
+  
   // Simplificamos esta parte para evitar errores
   const isValidPaymentType = (type: string): type is PaymentTypeEnum => {
     return ['booking', 'deposit', 'remaining', 'guarantee', 'no_show_charge'].includes(type)
@@ -198,7 +218,8 @@ function PaymentDetails({
         deposit,
         paymentMethod,
         status,
-        paymentType
+        paymentType,
+        country
       },
       validation: {
         isGuarantee: paymentType === 'guarantee',
@@ -209,7 +230,7 @@ function PaymentDetails({
         isValidType: ['booking', 'deposit', 'remaining', 'guarantee', 'no_show_charge'].includes(paymentType)
       }
     })
-  }, [total, deposit, paymentMethod, status, paymentType])
+  }, [total, deposit, paymentMethod, status, paymentType, country])
 
   // Log para depuración de botones de pago
   useEffect(() => {
@@ -240,14 +261,14 @@ function PaymentDetails({
       <div className="pt-2 border-t flex justify-between text-sm">
         <span className="font-medium text-gray-900">Total</span>
         <span className="font-medium text-gray-900">
-          {formatPrice(total)}
+          {formatPrice(total, country)}
         </span>
       </div>
 
       {/* Monto Depositado */}
       <div className="flex justify-between text-sm">
         <span className="text-gray-500">Monto depositado</span>
-        <span className="text-gray-900">{formatPrice(deposit)}</span>
+        <span className="text-gray-900">{formatPrice(deposit, country)}</span>
       </div>
 
       {/* Método de Pago */}
@@ -373,6 +394,13 @@ export function ViewBookingModal({
   const [isProcessingCancel, setIsProcessingCancel] = useState(false)
   const { toast } = useToast()
 
+  // Obtener el país de la organización para determinar la moneda
+  const organizationCountry = organization?.country || null;
+
+  // Timezone de la organización o por defecto 'UTC'
+  // Nota: Si el tipo Organization no tiene timezone, usar fallback seguro
+  const organizationTimezone = (organization as any)?.timezone || 'UTC';
+
   const { registerPayment, cancelBooking } = useBookings({
     branchId: currentBranch?.id
   })
@@ -390,20 +418,20 @@ export function ViewBookingModal({
       // Si no, obtenemos los datos y los transformamos
       const result = await bookingQueryService.getBookingById(booking.id)
       
-      if (!businessHours?.timezone) return result;
+      if (!organizationTimezone) return result;
 
       // Transformar los horarios si no vienen transformados
       const startDateTime = DateTime.fromFormat(
         result.startTime,
         'HH:mm:ss',
         { zone: 'UTC' }
-      ).setZone(businessHours.timezone);
+      ).setZone(organizationTimezone);
 
       const endDateTime = DateTime.fromFormat(
         result.endTime,
         'HH:mm:ss',
         { zone: 'UTC' }
-      ).setZone(businessHours.timezone);
+      ).setZone(organizationTimezone);
 
       return {
         ...result,
@@ -533,6 +561,17 @@ export function ViewBookingModal({
     }
   }, [showCancelModal, currentBooking, canChargeNoShow, stripeConnection, processedData]);
 
+  useEffect(() => {
+    if (organization) {
+      console.log('🌍 Información de organización:', {
+        orgName: organization.name,
+        orgId: organization.id,
+        country: organization.country,
+        countryVariable: organizationCountry
+      });
+    }
+  }, [organization, organizationCountry]);
+
   const handlePayment = async (amount: number, method: PaymentMethodEnum) => {
     if (!currentBooking) return
 
@@ -561,7 +600,11 @@ export function ViewBookingModal({
       onClose() // Cerrar el modal principal
     } catch (error) {
       console.error('Error al procesar el pago:', error)
-      toast.error('Error al procesar el pago')
+      toast({
+        title: "Error",
+        description: "Error al procesar el pago",
+        variant: "destructive"
+      })
     }
   }
 
@@ -576,13 +619,18 @@ export function ViewBookingModal({
 
     setIsProcessingCancel(true);
     try {
+      // Obtener los datos de pago necesarios, si existen en las propiedades
+      // Nota: Usamos acceso seguro con as any para evitar errores de tipo
+      const paymentMethodId = (currentBooking as any).stripe_payment_method_id || '';
+      const accountId = (organization as any)?.stripe_account_id || '';
+
       const { data, error } = await supabase.rpc('cancel_booking_v1', {
         p_booking_id: currentBooking.id,
         p_reason: reason,
         p_should_charge: shouldCharge,
         p_charge_amount: shouldCharge ? (currentBooking.totalAmount * 0.3) : null,
-        p_stripe_payment_method_id: currentBooking.stripePaymentMethodId,
-        p_stripe_account_id: organization?.stripeAccountId
+        p_stripe_payment_method_id: paymentMethodId,
+        p_stripe_account_id: accountId
       });
 
       if (error) throw error;
@@ -718,8 +766,11 @@ export function ViewBookingModal({
                               </div>
                               <div>
                                 <p className="text-sm text-gray-600">{processedData.formatParticipantName(participant)}</p>
-                                {participant.email && (
-                                  <p className="text-xs text-gray-400">{participant.email}</p>
+                                {/* Acceder a email de forma segura para evitar errores de tipo */}
+                                {(participant as any)?.email && (
+                                  <p className="text-xs text-gray-400">
+                                    {(participant as any).email}
+                                  </p>
                                 )}
                               </div>
                             </motion.div>
@@ -738,7 +789,7 @@ export function ViewBookingModal({
                             {processedData.courtName && (
                               <div className="flex items-center justify-between py-1.5">
                                 <span className="text-sm text-gray-600">{processedData.courtName}</span>
-                                <span className="text-sm text-gray-900 font-mono">€{processedData.courtPrice}</span>
+                                <span className="text-sm text-gray-900 font-mono">{formatPrice(processedData.courtPrice, organizationCountry)}</span>
                               </div>
                             )}
                           </div>
@@ -761,9 +812,7 @@ export function ViewBookingModal({
                                       {item.name} ({item.quantity}x)
                                     </span>
                                   </div>
-                                  <span className="text-sm text-gray-900 font-mono">
-                                    €{(item.pricePerUnit * item.quantity).toFixed(2)}
-                                  </span>
+                                  <span className="text-sm text-gray-900 font-mono">{formatPrice(item.pricePerUnit * item.quantity, organizationCountry)}</span>
                                 </div>
                               ))}
                             </div>
@@ -794,23 +843,17 @@ export function ViewBookingModal({
                             {/* Mostrar el monto depositado siempre, sin importar si es 0 */}
                             <div className="flex items-center justify-between py-1.5">
                               <span className="text-sm text-gray-600">Monto depositado</span>
-                              <span className="text-sm text-gray-900 font-mono">
-                                €{processedData.depositAmount.toFixed(2)}
-                              </span>
+                              <span className="text-sm text-gray-900 font-mono">{formatPrice(processedData.depositAmount, organizationCountry)}</span>
                             </div>
                             {processedData.paymentStatus === 'partial' && (
                               <div className="flex items-center justify-between py-1.5">
                                 <span className="text-sm text-gray-600">Restante</span>
-                                <span className="text-sm text-gray-900 font-mono">
-                                  €{(processedData.totalAmount - processedData.depositAmount).toFixed(2)}
-                                </span>
+                                <span className="text-sm text-gray-900 font-mono">{formatPrice(processedData.totalAmount - processedData.depositAmount, organizationCountry)}</span>
                               </div>
                             )}
                             <div className="flex items-center justify-between py-1.5 border-t border-gray-100">
                               <span className="text-sm font-medium text-gray-900">Total</span>
-                              <span className="text-sm font-medium text-gray-900 font-mono">
-                                €{processedData.totalAmount}
-                              </span>
+                              <span className="text-sm font-medium text-gray-900 font-mono">{formatPrice(processedData.totalAmount, organizationCountry)}</span>
                             </div>
                             
                             {/* Botón de pago para reservas señadas o pendientes */}
@@ -870,8 +913,8 @@ export function ViewBookingModal({
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
           onConfirm={handlePayment}
-          remainingAmount={processedData.totalAmount - processedData.depositAmount}
-          booking={currentBooking}
+          remainingAmount={processedData?.totalAmount - processedData?.depositAmount || 0}
+          country={organizationCountry}
         />
 
         {/* Modal de Confirmación de Cancelación */}

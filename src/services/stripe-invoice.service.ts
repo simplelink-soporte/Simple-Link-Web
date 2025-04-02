@@ -3,29 +3,51 @@ import { Stripe } from 'stripe';
 import { createSupabaseClient } from '@/lib/supabase';
 
 /**
- * Obtiene el código de moneda según el país
- * @param country El país, si está disponible
- * @returns El código de moneda ISO 4217 (MXN para México, EUR para Europa, etc.)
+ * Obtiene el código de moneda según el país proporcionado
+ * @param country Código ISO o nombre del país
+ * @returns Código de moneda (mxn, ars, eur)
  */
 const getCurrencyCodeByCountry = (country?: string | null): string => {
-  if (!country) return 'eur'; // Por defecto
+  if (!country) {
+    console.log('⚠️ No se proporcionó país, usando EUR por defecto');
+    return 'eur';
+  }
   
   const countryLower = country.toLowerCase();
-  switch (countryLower) {
-    case 'mexico':
-    case 'méxico':
-      return 'mxn'; // Peso mexicano
-    case 'argentina':
-      return 'ars'; // Peso argentino
-    case 'españa':
-    case 'espana':
-    case 'spain':
-    case 'europe':
-    case 'europa':
-      return 'eur'; // Euro
-    default:
-      return 'eur'; // Por defecto para otros países
+  
+  // Casos para México
+  if (countryLower === 'mx' || 
+      countryLower === 'mexico' || 
+      countryLower === 'méxico' || 
+      countryLower.includes('mex')) {
+    console.log(`🌎 País detectado como México, usando moneda: mxn`);
+    return 'mxn';
   }
+  
+  // Casos para Argentina
+  if (countryLower === 'ar' || 
+      countryLower === 'argentina' || 
+      countryLower.includes('arg')) {
+    console.log(`🌎 País detectado como Argentina, usando moneda: ars`);
+    return 'ars';
+  }
+  
+  // Casos para España/Europa
+  if (countryLower === 'es' || 
+      countryLower === 'spain' || 
+      countryLower === 'españa' || 
+      countryLower === 'espana' || 
+      countryLower === 'europa' || 
+      countryLower === 'europe' || 
+      countryLower.includes('esp') ||
+      countryLower.includes('eur')) {
+    console.log(`🌎 País detectado como España/Europa, usando moneda: eur`);
+    return 'eur';
+  }
+  
+  // Si llegamos aquí, es un país desconocido o no especificado
+  console.log(`⚠️ País no reconocido (${country}), usando EUR por defecto`);
+  return 'eur';
 };
 
 interface CreateInvoiceParams {
@@ -59,6 +81,105 @@ interface CreateManualBookingInvoiceParams {
  * Implementa un enfoque que genera PDFs descargables y facturas formales
  */
 export class StripeInvoiceService {
+  private supabase = createSupabaseClient();
+  private countryCache: Record<string, string> = {};
+  private defaultCountry = process.env.DEFAULT_COUNTRY || 'MX';
+  
+  // Instancia única (patrón singleton)
+  private static instance: StripeInvoiceService;
+  
+  // Método para obtener la instancia única
+  public static getInstance(): StripeInvoiceService {
+    if (!StripeInvoiceService.instance) {
+      StripeInvoiceService.instance = new StripeInvoiceService();
+    }
+    return StripeInvoiceService.instance;
+  }
+
+  /**
+   * Obtiene el país de una organización por su ID
+   * @param empresaId ID de la organización
+   * @returns Código ISO o nombre del país, o null si no se encuentra
+   */
+  private async getCountryByOrganizationId(empresaId?: string): Promise<string | null> {
+    if (!empresaId) return null;
+    
+    // Crear una clave única para este empresaId
+    const cacheKey = `country_${empresaId}`;
+    
+    // Verificar si ya tenemos este país en caché (dentro de la misma sesión)
+    if (this.countryCache && this.countryCache[cacheKey]) {
+      console.log(`🌎 [Cache] Usando país en caché para organización ${empresaId}:`, this.countryCache[cacheKey]);
+      return this.countryCache[cacheKey];
+    }
+    
+    try {
+      console.log(`🔎 Consultando país para organización ${empresaId} - intentando obtener org_details...`);
+      
+      // Primero intentar obtener de la tabla organizations_details que puede tener más datos
+      const { data: orgDetails } = await this.supabase
+        .from('organizations_details')
+        .select('country')
+        .eq('organization_id', empresaId)
+        .single();
+      
+      if (orgDetails?.country) {
+        // Guardar en caché
+        this.countryCache[cacheKey] = orgDetails.country;
+        
+        console.log(`🌎 País encontrado en organizations_details:`, orgDetails.country);
+        return orgDetails.country;
+      }
+      
+      // Si no se encuentra en organizations_details, intentar en la tabla principal
+      console.log(`🔎 Consultando país en tabla organizations para ${empresaId}...`);
+      const { data: org } = await this.supabase
+        .from('organizations')
+        .select('country, name')
+        .eq('id', empresaId)
+        .single();
+      
+      // Si tenemos el país, guardarlo en caché y devolverlo
+      if (org?.country) {
+        this.countryCache[cacheKey] = org.country;
+        
+        console.log(`🌎 País encontrado en organizations:`, org.country);
+        return org.country;
+      }
+      
+      // Si no tenemos país pero tenemos el nombre, intentar inferirlo
+      if (org?.name) {
+        console.log(`🔍 Intentando inferir país por nombre:`, org.name);
+        // Inferir país a partir del nombre (si contiene México, Argentina, España)
+        if (org.name.toLowerCase().includes('méxico') || org.name.toLowerCase().includes('mexico')) {
+          this.countryCache[cacheKey] = 'MX';
+          console.log(`🌎 País inferido por nombre de organización:`, 'MX');
+          return 'MX';
+        }
+        if (org.name.toLowerCase().includes('argentina')) {
+          this.countryCache[cacheKey] = 'AR';
+          console.log(`🌎 País inferido por nombre de organización:`, 'AR');
+          return 'AR';
+        }
+        if (org.name.toLowerCase().includes('españa') || org.name.toLowerCase().includes('espana')) {
+          this.countryCache[cacheKey] = 'ES';
+          console.log(`🌎 País inferido por nombre de organización:`, 'ES');
+          return 'ES';
+        }
+      }
+      
+      // Si no se pudo determinar por ningún método, usar el país por defecto configurado
+      console.log(`⚠️ No se encontró país para organización ${empresaId}. Usando país por defecto:`, this.defaultCountry);
+      this.countryCache[cacheKey] = this.defaultCountry;
+      return this.defaultCountry;
+    } catch (error) {
+      console.error('❌ Error al obtener el país de la organización:', error);
+      // En caso de error, usar el país por defecto configurado
+      console.log('⚠️ Usando país por defecto debido a error:', this.defaultCountry);
+      return this.defaultCountry;
+    }
+  }
+
   /**
    * Crea y envía una factura profesional después de un pago exitoso
    * @param params Parámetros necesarios para crear la factura
@@ -103,8 +224,21 @@ export class StripeInvoiceService {
         ...paymentMetadata // Priorizar los metadatos del PaymentIntent
       };
       
-      // Obtener el país desde los metadatos actualizados y determinar la moneda
-      const country = updatedMetadata?.country;
+      // Obtener el país desde los metadatos o desde la organización
+      let country = updatedMetadata?.country || '';
+      const empresaId = updatedMetadata?.empresaId || '';
+      
+      // Si no tenemos país pero tenemos empresaId, obtener el país desde la BD
+      if (!country && empresaId) {
+        console.log(`🔍 [${requestId}] Obteniendo país de la organización:`, empresaId);
+        const dbCountry = await this.getCountryByOrganizationId(empresaId);
+        if (dbCountry) {
+          country = dbCountry;
+        }
+        console.log(`🌎 [${requestId}] País obtenido de la base de datos:`, country || 'No encontrado');
+      }
+      
+      // Determinar la moneda según el país
       const currencyCode = getCurrencyCodeByCountry(country);
       
       console.log(`🌎 [${requestId}] País detectado: ${country || 'No especificado'}, usando moneda: ${currencyCode}`);
@@ -344,84 +478,116 @@ export class StripeInvoiceService {
     success: boolean;
     invoiceId?: string;
     invoiceUrl?: string;
-    error?: { message: string; code: string };
+    pdfUrl?: string;
+    error?: any
   }> {
-    const requestId = `mbi_${Date.now().toString(36)}`;
-    console.log(`🔄 [${requestId}] Iniciando creación de factura para reserva manual:`, params);
-    
-    // Verificar explícitamente la presencia de bookingId
-    if (!params.bookingId) {
-      console.warn(`⚠️ [${requestId}] ADVERTENCIA: No se proporcionó bookingId en los parámetros!`);
-    }
+    const requestId = createId();
+    console.log(`🔄 [${requestId}] Iniciando creación de factura manual para reserva:`, params.bookingId);
 
     try {
-      // Convertir los parámetros a un formato adecuado para la API, asegurando que todos los
-      // campos requeridos estén presentes y sean del tipo correcto
-      const apiParams = {
-        stripeAccountId: params.stripeAccountId,
-        customerId: params.customerId || undefined,
-        customerEmail: params.customerEmail,
-        customerName: params.customerName || undefined,
-        amount: params.amount,
+      // 1. Configurar Stripe con la cuenta correcta
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+        stripeAccount: params.stripeAccountId
+      });
+
+      // 2. Si no hay parámetro de país explícito, intentar obtenerlo de la base de datos
+      let country = params.country || '';
+      if (!country && params.empresaId) {
+        console.log(`🔍 [${requestId}] Obteniendo país de la organización para factura manual:`, params.empresaId);
+        const dbCountry = await this.getCountryByOrganizationId(params.empresaId);
+        if (dbCountry) {
+          country = dbCountry;
+        }
+        console.log(`🌎 [${requestId}] País obtenido de la base de datos para factura manual:`, country || 'No encontrado');
+      }
+
+      // 3. Determinar la moneda según el país
+      const currencyCode = getCurrencyCodeByCountry(country);
+      console.log(`🌎 [${requestId}] Usando moneda para factura manual: ${currencyCode} (país: ${country || 'No especificado'})`);
+
+      // 3. Buscar o crear el cliente si es necesario
+      let customerId = params.customerId;
+
+      if (!customerId) {
+        console.log(`🔍 [${requestId}] Sin customerID proporcionado, buscando cliente por email:`, params.customerEmail);
+        // Buscar cliente por email
+        const customers = await stripe.customers.list({
+          email: params.customerEmail
+        });
+        if (customers.data.length > 0) {
+          customerId = customers.data[0].id;
+          console.log(`✅ [${requestId}] Cliente encontrado por email: ${customerId}`);
+        } else {
+          // Crear cliente si no existe
+          const customer = await stripe.customers.create({
+            email: params.customerEmail,
+            name: params.customerName || 'Cliente'
+          });
+          customerId = customer.id;
+          console.log(`✅ [${requestId}] Cliente creado: ${customerId}`);
+        }
+      }
+
+      // 4. Crear la factura para la reserva manual
+      const invoiceParams: Stripe.InvoiceCreateParams = {
+        customer: customerId,
+        collection_method: 'charge_automatically',
+        auto_advance: true,
         description: params.description,
-        bookingId: params.bookingId,
-        empresaId: params.empresaId,
-        courtId: params.courtId || undefined,
-        branchId: params.branchId || undefined,
-        paymentType: params.paymentType || undefined,
-        isPartialPayment: params.isPartialPayment || undefined,
-        totalAmount: params.totalAmount || undefined,
-        country: params.country || undefined // Añadir país para determinar la moneda
+        currency: currencyCode,
+        metadata: {
+          booking_id: params.bookingId,
+          empresa_id: params.empresaId,
+          court_id: params.courtId || '',
+          branch_id: params.branchId || '',
+          payment_type: params.paymentType || 'booking',
+          is_partial_payment: String(params.isPartialPayment || false),
+          total_amount: params.totalAmount?.toString() || '',
+          country: country || ''
+        }
       };
       
-      console.log(`📦 [${requestId}] Parámetros procesados para enviar a la API:`, apiParams);
-      
-      // Utilizar el endpoint de API para crear la factura en el servidor
-      const response = await fetch('/api/stripe/invoices', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiParams)
+      const invoice = await stripe.invoices.create(invoiceParams);
+
+      // Añadir item a la factura
+      await stripe.invoiceItems.create({
+        customer: customerId,
+        invoice: invoice.id,
+        amount: Math.round(params.amount * 100),
+        currency: currencyCode,
+        description: params.description
       });
-      
-      // Log detallado de la respuesta
-      console.log(`🔍 [${requestId}] Respuesta del servidor:`, {
-        status: response.status,
-        statusText: response.statusText
+
+      // Finalizar la factura
+      const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+
+      // 5. Obtener la URL de la factura y del PDF
+      const invoiceUrl = finalizedInvoice.hosted_invoice_url;
+      const pdfUrl = finalizedInvoice.invoice_pdf;
+
+      console.log(`✅ [${requestId}] Factura manual creada exitosamente:`, {
+        invoiceId: finalizedInvoice.id,
+        invoiceNumber: finalizedInvoice.number,
+        status: finalizedInvoice.status,
+        amount: finalizedInvoice.amount_paid / 100,
+        invoiceUrl: invoiceUrl || 'No disponible',
+        pdfUrl: pdfUrl || 'No disponible'
       });
-      
-      const result = await response.json();
-      console.log(`📄 [${requestId}] Cuerpo de la respuesta:`, result);
-      
-      if (!response.ok) {
-        console.error(`❌ [${requestId}] Error al crear factura en el servidor:`, result.error);
-        return {
-          success: false,
-          error: {
-            message: result.error?.message || 'Error al crear factura',
-            code: result.error?.code || 'INVOICE_ERROR'
-          }
-        };
-      }
-      
-      console.log(`✅ [${requestId}] Factura creada exitosamente en el servidor:`, {
-        invoiceId: result.invoiceId,
-        invoiceUrl: result.invoiceUrl
-      });
-      
+
       return {
         success: true,
-        invoiceId: result.invoiceId,
-        invoiceUrl: result.invoiceUrl
+        invoiceId: finalizedInvoice.id,
+        invoiceUrl: invoiceUrl || undefined,
+        pdfUrl: pdfUrl || undefined
       };
     } catch (error: any) {
-      console.error(`❌ [${requestId}] Error al crear factura para reserva manual:`, error);
+      console.error(`❌ [${requestId}] Error al crear factura manual para reserva:`, error);
       return {
         success: false,
         error: {
-          message: error.message || 'Error al crear factura',
-          code: error.code || 'INVOICE_ERROR'
+          message: error.message,
+          code: error.code,
+          type: error.type
         }
       };
     }
@@ -668,4 +834,4 @@ export class StripeInvoiceService {
 }
 
 // Exportar una instancia única del servicio
-export const createInvoiceService = new StripeInvoiceService();
+export const createInvoiceService = StripeInvoiceService.getInstance();

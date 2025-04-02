@@ -284,6 +284,13 @@ export async function POST(request: Request) {
     // 2. Obtener el cuerpo de la solicitud
     const requestBody = await request.json();
     
+    // Verificar si es una solicitud para crear factura de reserva manual
+    const isManualBookingInvoice = requestBody.endpoint === 'manual-booking';
+    
+    if (isManualBookingInvoice) {
+      return await handleManualBookingInvoice(requestBody);
+    }
+    
     // Log detallado del cuerpo completo de la solicitud
     console.log('📦 CUERPO COMPLETO DE LA SOLICITUD:', JSON.stringify(requestBody, null, 2));
     
@@ -580,3 +587,71 @@ export async function POST(request: Request) {
     }, { status: error.status || 500 });
   }
 }
+
+/**
+ * Manejador para crear facturas para reservas manuales
+ * Utiliza la clave secreta del servidor para interactuar con Stripe
+ */
+async function handleManualBookingInvoice(requestBody: any) {
+  try {
+    const {
+      stripeAccountId,
+      customerId,
+      customerEmail,
+      customerName,
+      amount,
+      description,
+      bookingId,
+      empresaId,
+      courtId,
+      branchId,
+      paymentType = 'booking',
+      isPartialPayment = false,
+      totalAmount = amount,
+      country
+    } = requestBody;
+    
+    // Crear ID único para el seguimiento de esta solicitud
+    const requestId = `mb_${Date.now().toString(36)}`;
+    console.log(`🔄 [${requestId}] Iniciando creación de factura manual para reserva: ${bookingId}`);
+    
+    // Importar el servicio de facturas de Stripe
+    const { createInvoiceService } = await import('@/services/stripe-invoice.service');
+    
+    // Llamar al servicio para crear la factura
+    const invoiceResult = await createInvoiceService.createManualBookingInvoice({
+      stripeAccountId,
+      customerId,
+      customerEmail,
+      customerName,
+      amount,
+      description,
+      bookingId,
+      empresaId,
+      courtId,
+      branchId,
+      paymentType,
+      isPartialPayment,
+      totalAmount,
+      country
+    });
+    
+    console.log(`✅ [${requestId}] Resultado de generación de factura manual:`, invoiceResult);
+    
+    return NextResponse.json(invoiceResult);
+  } catch (error: any) {
+    console.error('❌ Error al crear factura manual:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: {
+        message: error.message || 'Error al crear factura',
+        code: error.code || 'manual_invoice_error'
+      }
+    }, { status: 500 });
+  }
+}
+
+export default {
+  GET,
+  POST
+};

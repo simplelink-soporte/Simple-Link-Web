@@ -18,6 +18,7 @@ interface NoShowChargeParams {
   amount: number;
   reason?: string;
   empresaId: string;
+  country?: string; // País de la organización para determinar la moneda
   stripeData?: {
     paymentMethodId: string;
     accountId: string;
@@ -61,7 +62,8 @@ export class NoShowService {
     console.log(`🔄 [${requestId}] Iniciando proceso de no-show:`, {
       bookingId: params.bookingId,
       amount: params.amount,
-      hasCustomerEmail: Boolean(params.customerEmail)
+      hasCustomerEmail: Boolean(params.customerEmail),
+      country: params.country || 'No especificado'
     });
 
     try {
@@ -113,7 +115,8 @@ export class NoShowService {
         bookingId: params.bookingId,
         paymentIntentId: chargeResult.paymentIntentId,
         amount: params.amount,
-        hasCustomerEmail: Boolean(params.customerEmail)
+        hasCustomerEmail: Boolean(params.customerEmail),
+        country: params.country || 'No especificado'
       });
 
       try {
@@ -140,6 +143,41 @@ export class NoShowService {
             }
           }
           
+          // Usar país proporcionado o intentar obtenerlo de la base de datos
+          let country = params.country;
+          if (!country && params.empresaId) {
+            try {
+              // Si no tenemos país pero tenemos id de empresa, intentar obtenerlo
+              console.log(`🔍 [${requestId}] Obteniendo país de la organización para factura no-show:`, params.empresaId);
+              const { data: org } = await this.config.supabase
+                .from('organizations')
+                .select('country, name')
+                .eq('id', params.empresaId)
+                .single();
+              
+              if (org && org.country) {
+                country = org.country;
+                console.log(`🌎 [${requestId}] País de la organización para no-show:`, country);
+              } else if (org && org.name) {
+                // Inferir país a partir del nombre de la organización
+                const name = org.name.toLowerCase();
+                if (name.includes('mexico') || name.includes('méxico')) {
+                  country = 'MX';
+                  console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                } else if (name.includes('argentina')) {
+                  country = 'AR';
+                  console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                } else if (name.includes('españa') || name.includes('espana')) {
+                  country = 'ES';
+                  console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                }
+              }
+            } catch (countryError) {
+              console.warn(`⚠️ [${requestId}] Error al obtener país de la organización:`, countryError);
+              // Continuamos sin el país, el servicio de facturación usará el valor por defecto
+            }
+          }
+          
           // Crear la factura usando el servicio de facturación - siguiendo el patrón de process-full-payment
           const invoiceResult = await createInvoiceService.createAndSendInvoice({
             paymentIntentId: chargeResult.paymentIntentId,
@@ -152,7 +190,8 @@ export class NoShowService {
               customer_email: params.customerEmail,
               customer_name: params.customerName || '',
               booking_id: params.bookingId,
-              empresaId: params.empresaId
+              empresaId: params.empresaId,
+              country: country || '' // Añadir país de la organización para la factura
             }
           });
 
@@ -310,6 +349,41 @@ export class NoShowService {
               }
             }
             
+            // Usar país proporcionado o intentar obtenerlo de la base de datos
+            let country = params.country;
+            if (!country && params.empresaId) {
+              try {
+                // Si no tenemos país pero tenemos id de empresa, intentar obtenerlo
+                console.log(`🔍 [${requestId}] Obteniendo país de la organización para factura no-show:`, params.empresaId);
+                const { data: org } = await this.config.supabase
+                  .from('organizations')
+                  .select('country, name')
+                  .eq('id', params.empresaId)
+                  .single();
+                
+                if (org && org.country) {
+                  country = org.country;
+                  console.log(`🌎 [${requestId}] País de la organización para no-show:`, country);
+                } else if (org && org.name) {
+                  // Inferir país a partir del nombre de la organización
+                  const name = org.name.toLowerCase();
+                  if (name.includes('mexico') || name.includes('méxico')) {
+                    country = 'MX';
+                    console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                  } else if (name.includes('argentina')) {
+                    country = 'AR';
+                    console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                  } else if (name.includes('españa') || name.includes('espana')) {
+                    country = 'ES';
+                    console.log(`🌎 [${requestId}] País inferido por nombre de organización:`, country);
+                  }
+                }
+              } catch (countryError) {
+                console.warn(`⚠️ [${requestId}] Error al obtener país de la organización:`, countryError);
+                // Continuamos sin el país, el servicio de facturación usará el valor por defecto
+              }
+            }
+            
             // Crear la factura usando el servicio de facturación
             const invoiceResult = await createInvoiceService.createAndSendInvoice({
               paymentIntentId: chargeResult.paymentIntentId,
@@ -325,6 +399,7 @@ export class NoShowService {
                 payment_description: 'Cargo por garantía',
                 charge_type: 'no_show',
                 empresaId: params.empresaId,
+                country: country || '' // Añadir país de la organización para la factura
               }
             });
 

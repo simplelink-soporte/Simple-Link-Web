@@ -30,6 +30,7 @@ import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 import { requiresCardPayment } from '../components/PaymentTypeSection'
 import { classInvoiceService } from '@/services/class-invoice.service'
+import { formatCurrencyByCountry, getCurrencySymbol, getCurrencyByCountry } from '@/lib/currency-utils'
 
 // Definición de los métodos de pago disponibles
 const PAYMENT_METHODS: Record<PaymentMethodEnum, {
@@ -58,26 +59,6 @@ const PAYMENT_METHODS: Record<PaymentMethodEnum, {
     description: 'Pago seguro con tarjeta online'
   }
 }
-
-// Función para determinar el símbolo de moneda según el país
-const getCurrencySymbol = (country: string | null): string => {
-  if (!country) return '€'; // Valor por defecto
-  
-  const countryLower = country.toLowerCase();
-  switch (countryLower) {
-    case 'mexico':
-    case 'méxico':
-      return '$'; // Peso mexicano
-    case 'argentina':
-      return '$'; // Peso argentino
-    case 'españa':
-    case 'espana':
-    case 'spain':
-      return '€'; // Euro
-    default:
-      return '€'; // Valor por defecto para otros países
-  }
-};
 
 export function SummaryStep() {
   const { state, updateState, goToStep } = useClassRegistration()
@@ -361,6 +342,7 @@ export function SummaryStep() {
       // Verificar si es pago completo o pago de seña
       const isFullPayment = selectedPaymentType === 'full';
       const isDepositPayment = selectedPaymentType === 'deposit';
+      const isGuaranteePayment = selectedPaymentType === 'guarantee';
       
       if (isCardPayment) {
         // Obtener el customer ID de Stripe
@@ -371,118 +353,136 @@ export function SummaryStep() {
           throw new Error('No se encontró la información necesaria del cliente para procesar el pago');
         }
         
-        // Mostrar mensaje al usuario
-        toast({
-          title: 'Procesando pago',
-          description: isDepositPayment 
-            ? 'Estamos procesando el pago de tu seña...' 
-            : 'Estamos procesando tu pago con tarjeta...',
-          variant: 'default'
-        });
-        
-        try {
-          let paymentResult;
+        // Si es una reserva con garantía, no procesamos pago ni factura
+        if (isGuaranteePayment) {
+          console.log('🔄 [SummaryStep] Reserva con GARANTÍA - No se realiza pago ni factura');
+          toast({
+            title: 'Procesando reserva',
+            description: 'Estamos registrando tu reserva con garantía...',
+            variant: 'default'
+          });
           
-          if (isDepositPayment) {
-            // Procesar pago de seña
-            console.log('🔄 [SummaryStep] Procesando PAGO CON SEÑA con depositPaymentService...');
-            // Obtener el país de la cuenta conectada o usar México como valor predeterminado
-            const country = organization?.country || 'Mexico';
-            console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
+          // No procesamos ningún pago, solo registramos la reserva
+          // Usamos directamente el hook useClassBooking para crear la reserva
+          const paymentType = 'guarantee';
+          
+          console.log('📋 [SummaryStep] Creando reserva tipo garantía sin procesar pagos');
+          
+          // Pasar al siguiente bloque de código para crear la reserva
+        } else {
+          // Mostrar mensaje al usuario para pagos normales (no garantía)
+          toast({
+            title: 'Procesando pago',
+            description: isDepositPayment 
+              ? 'Estamos procesando el pago de tu seña...' 
+              : 'Estamos procesando tu pago con tarjeta...',
+            variant: 'default'
+          });
+          
+          try {
+            let paymentResult;
             
-            paymentResult = await depositPaymentService.processPayment({
-              paymentMethodId: selectedCardMethod.id,
-              amount: 0, // Usaremos el cálculo en base al porcentaje
-              totalAmount: selectedSession.price,
-              depositPercentage: 30,
-              empresaId: empresaId || '',
-              description: `Seña - Clase: ${state.selectedClass?.title}`,
-              stripeCustomerId: stripeCustomerId,
-              stripeAccountId: stripeAccountId,
-              customerEmail: user?.email, // Incluir el email para facturación
-              metadata: {
-                country: country // Pasar el país para determinar la moneda
-              }
-            });
-          } else {
-            // Procesar pago completo (como estaba antes)
-            console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService...');
-            // Obtener el país de la cuenta conectada o usar México como valor predeterminado
-            const country = organization?.country || 'Mexico';
-            console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
+            if (isDepositPayment) {
+              // Procesar pago de seña
+              console.log('🔄 [SummaryStep] Procesando PAGO CON SEÑA con depositPaymentService...');
+              // Obtener el país de la cuenta conectada o usar México como valor predeterminado
+              const country = organization?.country || 'Mexico';
+              console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
+              
+              paymentResult = await depositPaymentService.processPayment({
+                paymentMethodId: selectedCardMethod.id,
+                amount: 0, // Usaremos el cálculo en base al porcentaje
+                totalAmount: selectedSession.price,
+                depositPercentage: 30,
+                empresaId: empresaId || '',
+                description: `Seña - Clase: ${state.selectedClass?.title}`,
+                stripeCustomerId: stripeCustomerId,
+                stripeAccountId: stripeAccountId,
+                customerEmail: user?.email, // Incluir el email para facturación
+                metadata: {
+                  country: country // Pasar el país para determinar la moneda
+                }
+              });
+            } else {
+              // Procesar pago completo
+              console.log('🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService...');
+              // Obtener el país de la cuenta conectada o usar México como valor predeterminado
+              const country = organization?.country || 'Mexico';
+              console.log(`🌎 [SummaryStep] Procesando pago para país: ${country}`);
+              
+              paymentResult = await fullPaymentService.processPayment({
+                paymentMethodId: selectedCardMethod.id,
+                amount: selectedSession.price,
+                empresaId: empresaId || '',
+                description: `Pago completo - Clase: ${state.selectedClass?.title}`,
+                stripeCustomerId: stripeCustomerId,
+                stripeAccountId: stripeAccountId,
+                customerEmail: user?.email, // Incluir el email para facturación
+                metadata: {
+                  country: country // Pasar el país para determinar la moneda
+                }
+              });
+            }
             
-            paymentResult = await fullPaymentService.processPayment({
-              paymentMethodId: selectedCardMethod.id,
-              amount: selectedSession.price,
-              empresaId: empresaId || '',
-              description: `Pago completo - Clase: ${state.selectedClass?.title}`,
-              stripeCustomerId: stripeCustomerId,
-              stripeAccountId: stripeAccountId,
-              customerEmail: user?.email, // Incluir el email para facturación
-              metadata: {
-                country: country // Pasar el país para determinar la moneda
-              }
+            console.log('✅ [SummaryStep] Resultado del procesamiento de pago:', paymentResult);
+            
+            // Verificar el resultado del pago
+            if (!paymentResult.success) {
+              console.error('❌ [SummaryStep] Error al procesar el pago:', paymentResult.error);
+              toast({
+                title: 'Error de pago',
+                description: paymentResult.message || 'No se pudo procesar el pago con tarjeta',
+                variant: 'destructive'
+              });
+              setIsProcessing(false);
+              return;
+            }
+            
+            console.log('✅ [SummaryStep] Pago procesado correctamente:', {
+              paymentIntentId: paymentResult.paymentIntentId,
+              status: paymentResult.chargeStatus,
+              isDepositPayment: isDepositPayment,
+              depositAmount: isDepositPayment ? (paymentResult as any).depositAmount : null,
+              totalAmount: isDepositPayment ? (paymentResult as any).totalAmount : selectedSession.price
             });
-          }
-          
-          console.log('✅ [SummaryStep] Resultado del procesamiento de pago:', paymentResult);
-          
-          // Verificar el resultado del pago
-          if (!paymentResult.success) {
-            console.error('❌ [SummaryStep] Error al procesar el pago:', paymentResult.error);
+            
+            toast({
+              title: 'Pago exitoso',
+              description: isDepositPayment
+                ? 'El pago de la seña se ha procesado correctamente'
+                : 'El pago se ha procesado correctamente',
+              variant: 'default'
+            });
+            
+            // Crear factura para pagos (completos o seña)
+            createInvoiceAfterPayment(paymentResult, isDepositPayment);
+            
+            // Guardar el ID del payment intent como respaldo
+            try {
+              localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
+              localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
+              if (isDepositPayment) {
+                // Usamos type assertion para acceder a propiedades específicas de DepositPaymentResult
+                const depositResult = paymentResult as any;
+                localStorage.setItem('lastDepositAmount', JSON.stringify({
+                  depositAmount: depositResult.depositAmount || 0,
+                  totalAmount: depositResult.totalAmount || 0,
+                  depositPercentage: depositResult.depositPercentage || 30
+                }));
+              }
+            } catch (storageError) {
+              console.warn('⚠️ [SummaryStep] No se pudo guardar en localStorage:', storageError);
+            }
+          } catch (paymentError: any) {
+            console.error('❌ [SummaryStep] Error al llamar al servicio de pago:', paymentError);
             toast({
               title: 'Error de pago',
-              description: paymentResult.message || 'No se pudo procesar el pago con tarjeta',
+              description: paymentError?.message || 'Error inesperado al procesar el pago',
               variant: 'destructive'
             });
             setIsProcessing(false);
             return;
           }
-          
-          console.log('✅ [SummaryStep] Pago procesado correctamente:', {
-            paymentIntentId: paymentResult.paymentIntentId,
-            status: paymentResult.chargeStatus,
-            isDepositPayment: isDepositPayment,
-            depositAmount: isDepositPayment ? (paymentResult as any).depositAmount : null,
-            totalAmount: isDepositPayment ? (paymentResult as any).totalAmount : selectedSession.price
-          });
-          
-          toast({
-            title: 'Pago exitoso',
-            description: isDepositPayment 
-              ? 'Tu seña ha sido procesada correctamente' 
-              : 'Tu pago ha sido procesado correctamente',
-            variant: 'default'
-          });
-          
-          // Crear y enviar factura después del pago exitoso
-          await createInvoiceAfterPayment(paymentResult, isDepositPayment);
-          
-          // Guardar el ID del payment intent como respaldo
-          try {
-            localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
-            localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
-            if (isDepositPayment) {
-              // Usamos type assertion para acceder a propiedades específicas de DepositPaymentResult
-              const depositResult = paymentResult as any;
-              localStorage.setItem('lastDepositAmount', JSON.stringify({
-                depositAmount: depositResult.depositAmount || 0,
-                totalAmount: depositResult.totalAmount || 0,
-                depositPercentage: depositResult.depositPercentage || 30
-              }));
-            }
-          } catch (storageError) {
-            console.warn('⚠️ [SummaryStep] No se pudo guardar en localStorage:', storageError);
-          }
-        } catch (paymentError: any) {
-          console.error('❌ [SummaryStep] Error al llamar al servicio de pago:', paymentError);
-          toast({
-            title: 'Error de pago',
-            description: paymentError?.message || 'Error inesperado al procesar el pago',
-            variant: 'destructive'
-          });
-          setIsProcessing(false);
-          return;
         }
       } else {
         console.log('⚠️ [SummaryStep] No se requiere procesamiento de pago con Stripe, continuando con la creación de reserva');
@@ -743,7 +743,7 @@ export function SummaryStep() {
     }
     
     // Formatear el precio
-    const formatted = price.toFixed(2);
+    const formatted = formatCurrencyByCountry(price, country);
     const [integerPart, decimalPart] = formatted.split('.');
     
     return (
@@ -755,7 +755,7 @@ export function SummaryStep() {
 
         {/* Precio con decimales estilizados */}
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
-          {currencySymbol}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
+          {getCurrencySymbol(country)}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
         </p>
 
         {/* Indicador de Pago Seguro */}
@@ -767,7 +767,7 @@ export function SummaryStep() {
         </div>
       </div>
     );
-  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, currencySymbol]);
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, country]);
 
   // Determinar si el tipo de pago seleccionado requiere tarjeta
   const showCardPaymentSection = useMemo(() => {
@@ -1063,7 +1063,11 @@ export function SummaryStep() {
           
           // Otros datos útiles
           branch_name: selectedClass?.branchName || 'Sucursal principal',  
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          
+          // Información del país para determinar correctamente la moneda
+          country: country || '',
+          empresa_id: empresaId || ''
         }
       });
 

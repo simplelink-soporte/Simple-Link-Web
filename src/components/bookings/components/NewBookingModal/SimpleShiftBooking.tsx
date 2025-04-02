@@ -31,6 +31,7 @@ interface SimpleShiftBookingProps {
   participants: Participant[]
   selectedDate: Date
   isVisible?: boolean
+  country?: string | null
 }
 
 export function SimpleShiftBooking({ 
@@ -44,7 +45,8 @@ export function SimpleShiftBooking({
   participants,
   onParticipantChange,
   selectedDate,
-  isVisible = true
+  isVisible = true,
+  country
 }: SimpleShiftBookingProps) {
   const { selectedDate: contextDate } = useDateContext()
   const { currentBranch } = useBranchContext()
@@ -269,6 +271,7 @@ export function SimpleShiftBooking({
             endTime={timeSelection?.endTime || '00:00'}
             durationInMinutes={timeSelection ? timeToMinutes(timeSelection.endTime) - timeToMinutes(timeSelection.startTime) : 0}
             selectedDate={selectedDate}
+            country={country}
           />
         )
       case 'payment':
@@ -282,6 +285,7 @@ export function SimpleShiftBooking({
             onPaymentChange={handlePaymentChange}
             onNext={() => onValidationChange(true)}
             onBack={() => onValidationChange(true)}
+            country={country}
           />
         )
       case 'confirmation':
@@ -293,6 +297,7 @@ export function SimpleShiftBooking({
             totalAmount={total}
             rentals={rentals}
             sampleRentalItems={[]}
+            country={country}
           />
         )
       case 'congrats':
@@ -322,6 +327,7 @@ export function SimpleShiftBooking({
           onPaymentChange={handlePaymentChange}
           onNext={() => onValidationChange(true)}
           onBack={() => onValidationChange(true)}
+          country={country}
         />
       ) : (
         renderStep()

@@ -108,7 +108,9 @@ export class ClassInvoiceService {
       customerEmail: params.customerEmail,
       branchId: params.branchId,
       classId: params.classId,
-      paymentType: params.paymentType || 'full'
+      paymentType: params.paymentType || 'full',
+      empresaId: params.empresaId, 
+      country: params.metadata?.country 
     });
 
     try {
@@ -138,8 +140,15 @@ export class ClassInvoiceService {
         empresa_id: params.empresaId || '',
         customer_email: params.customerEmail || '',
         customer_name: params.customerName || '',
-        payment_date: new Date().toISOString()
+        payment_date: new Date().toISOString(),
+        
+        // Asegurarse de que país está siempre en los metadatos si fue proporcionado
+        country: params.metadata?.country || ''
       };
+
+      // Asignar un ID de solicitud único para seguimiento
+      const requestId = `${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+      console.log(`🟢 [${requestId}] Nueva solicitud de factura de clase recibida`);
 
       // Llamar al endpoint de API con parámetros simplificados
       const response = await fetch('/api/stripe/class-invoices', {

@@ -1,19 +1,22 @@
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import type { Court } from '@/types/court'
-import type { PaymentDetails, BookingParticipant, TimeSelection } from '../../types'
-import type { RentalSelection, Item } from '@/types/items'
+import type { PaymentDetails, TimeSelection } from '@/types/bookings'
+import type { Item, RentalSelection } from '@/types/items'
+import type { Participant } from '@/types/participant'
+import { getCurrencySymbol } from '@/lib/currency-utils'
 import { cn } from '@/lib/utils'
 
 interface ConfirmationStepProps {
   selectedDate: Date
   selectedCourts: string[]
   courts: Court[]
-  timeSelection: TimeSelection
-  participants: BookingParticipant[]
+  timeSelection?: TimeSelection
+  participants?: Participant[]
   rentals: RentalSelection[]
-  paymentDetails: PaymentDetails
   items: Item[]
+  paymentDetails?: PaymentDetails
+  country?: string | null
 }
 
 export function ConfirmationStep({
@@ -24,7 +27,8 @@ export function ConfirmationStep({
   participants,
   rentals,
   paymentDetails,
-  items
+  items,
+  country
 }: ConfirmationStepProps) {
   const selectedCourtsInfo = courts.filter(court => selectedCourts.includes(court.id))
 
@@ -109,7 +113,7 @@ export function ConfirmationStep({
             <div key={court.id} className="flex justify-between items-center">
               <span className="text-xs text-gray-600">{court.name}</span>
               <span className="text-xs font-medium text-gray-900">
-                {getCourtPrice(court.id)}€
+                {getCourtPrice(court.id)}{getCurrencySymbol(country)}
               </span>
             </div>
           ))}
@@ -122,7 +126,7 @@ export function ConfirmationStep({
       </div>
 
       {/* Participantes */}
-      {participants.length > 0 && (
+      {participants && participants.length > 0 && (
         <div>
           <div className="space-y-1">
             <h3 className="text-sm font-medium text-gray-900">
@@ -170,7 +174,7 @@ export function ConfirmationStep({
                   {getItemName(rental.itemId)} x{rental.quantity}
                 </span>
                 <span className="text-xs font-medium text-gray-900">
-                  {(rental.pricePerUnit * rental.quantity).toFixed(2)}€
+                  {(rental.pricePerUnit * rental.quantity).toFixed(2)}{getCurrencySymbol(country)}
                 </span>
               </div>
             ))}
@@ -198,13 +202,13 @@ export function ConfirmationStep({
             <span className="text-xs text-gray-600">Estado</span>
             <div className="text-right">
               <p className="text-xs font-medium text-gray-900">
-                {paymentDetails.paymentStatus === 'completed' ? 'Pago Completo' :
-                 paymentDetails.paymentStatus === 'partial' ? 'Seña / Anticipo' :
+                {paymentDetails?.paymentStatus === 'completed' ? 'Pago Completo' :
+                 paymentDetails?.paymentStatus === 'partial' ? 'Seña / Anticipo' :
                  'Reserva Simple'}
               </p>
-              {paymentDetails.paymentStatus !== 'pending' && (
+              {paymentDetails?.paymentStatus !== 'pending' && (
                 <p className="text-xs text-gray-500 capitalize">
-                  {paymentDetails.paymentMethod}
+                  {paymentDetails?.paymentMethod}
                 </p>
               )}
             </div>
@@ -213,29 +217,29 @@ export function ConfirmationStep({
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-600">Cancha</span>
-              <span className="text-xs font-medium">{getCourtPrice(selectedCourts[0])}€</span>
+              <span className="text-xs font-medium">{paymentDetails?.courtPrice}{getCurrencySymbol(country)}</span>
             </div>
             {rentals.length > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-xs text-gray-600">Equipamiento</span>
-                <span className="text-xs font-medium">{paymentDetails.rentalItemsPrice}€</span>
+                <span className="text-xs font-medium">{paymentDetails?.rentalItemsPrice}{getCurrencySymbol(country)}</span>
               </div>
             )}
             <div className="pt-2 border-t border-gray-100">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-medium text-gray-900">Total</span>
-                <span className="text-xs font-medium text-gray-900">{calculateTotal()}€</span>
+                <span className="text-xs font-medium text-gray-900">{calculateTotal()}{getCurrencySymbol(country)}</span>
               </div>
-              {paymentDetails.paymentStatus === 'partial' && (
+              {paymentDetails?.paymentStatus === 'partial' && (
                 <>
                   <div className="flex justify-between items-center mt-1">
                     <span className="text-xs text-gray-600">Seña</span>
-                    <span className="text-xs font-medium">{paymentDetails.deposit}€</span>
+                    <span className="text-xs font-medium">{paymentDetails?.deposit}{getCurrencySymbol(country)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-500">Pendiente</span>
-                    <span className="text-xs text-gray-500">
-                      {calculateTotal() - paymentDetails.deposit}€
+                    <span className="text-xs font-medium text-amber-600">
+                      {calculateTotal() - (paymentDetails?.deposit || 0)}{getCurrencySymbol(country)}
                     </span>
                   </div>
                 </>

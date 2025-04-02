@@ -12,6 +12,8 @@ export interface NoShowChargeRequest {
   amount: number;
   reason?: string;
   empresaId: string;
+  // País de la organización para determinar la moneda
+  country?: string;
   // Campos opcionales para especificar información de Stripe directamente
   stripeData?: StripeData;
   // Campos deprecados (mantener por compatibilidad hacia atrás)

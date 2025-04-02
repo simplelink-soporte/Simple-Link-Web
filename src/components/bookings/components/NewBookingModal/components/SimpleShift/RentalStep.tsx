@@ -19,6 +19,7 @@ import { checkFutureAvailability } from '@/services/bookingService'
 import { bookingService } from '@/services/bookingService'
 import { useDateContext } from "@/contexts/DateContext"
 import { DateTime } from 'luxon'
+import { getCurrencySymbol } from '@/lib/currency-utils'
 
 interface RentalStepProps {
   startTime: string
@@ -26,6 +27,7 @@ interface RentalStepProps {
   durationInMinutes: number
   selectedDate: Date
   isVisible?: boolean
+  country?: string | null
 }
 
 // Definir la interfaz para el item con stock
@@ -50,7 +52,8 @@ export function RentalStep({
   endTime,
   durationInMinutes: propDurationInMinutes,
   selectedDate,
-  isVisible = true
+  isVisible = true,
+  country
 }: RentalStepProps) {
   const { currentBranch } = useBranchContext()
   const { rentals, updateRentals } = useRentalContext()
@@ -198,6 +201,7 @@ export function RentalStep({
         items: [...acc.items, {
           ...rental,
           pricePerUnit: priceInfo.basePrice,
+          price: priceInfo.basePrice * rental.quantity,
           totalPrice: priceInfo.basePrice * rental.quantity
         }]
       };
@@ -327,10 +331,10 @@ export function RentalStep({
 
     return (
       <span className="text-sm font-medium text-gray-900">
-        {price.toFixed(2)}€
+        {price.toFixed(2)}{getCurrencySymbol(country)}
       </span>
     );
-  }, [durationInMinutes, customPrices]);
+  }, [durationInMinutes, customPrices, country]);
 
   // Efecto para inicializar itemsWithStock cuando items cambia
   useEffect(() => {
@@ -656,7 +660,7 @@ export function RentalStep({
                     <span className="text-xs text-gray-400">x{rental.quantity}</span>
                   </div>
                   <span className="text-sm font-medium text-gray-900">
-                    {(basePrice * rental.quantity).toFixed(2)}€
+                    {(basePrice * rental.quantity).toFixed(2)}{getCurrencySymbol(country)}
                   </span>
                 </motion.div>
               )
@@ -664,7 +668,7 @@ export function RentalStep({
             <div className="pt-2 border-t border-gray-100 flex justify-between">
               <span className="text-sm font-medium text-gray-900">Total</span>
               <span className="text-sm font-medium text-gray-900">
-                {calculateTotal().toFixed(2)}€
+                {calculateTotal().toFixed(2)}{getCurrencySymbol(country)}
               </span>
             </div>
           </div>

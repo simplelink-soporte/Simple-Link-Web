@@ -4,21 +4,23 @@ import { Button } from "@/components/ui/button"
 import { IconCash, IconCreditCard, IconBuildingBank } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import type { PaymentMethodEnum } from "@/types/bookings"
+import { formatCurrencyByCountry } from "@/lib/currency-utils"
 
 interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: (amount: number, method: PaymentMethodEnum) => void
   remainingAmount: number
+  country?: string | null
 }
 
-export function PaymentModal({ isOpen, onClose, onConfirm, remainingAmount }: PaymentModalProps) {
+export function PaymentModal({ isOpen, onClose, onConfirm, remainingAmount, country = null }: PaymentModalProps) {
   const [amount, setAmount] = useState<number>(remainingAmount)
   const [method, setMethod] = useState<PaymentMethodEnum>('cash')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('PaymentModal - Enviando datos:', { amount, method })
+    console.log('PaymentModal - Enviando datos:', { amount, method, country })
     onConfirm(amount, method)
     onClose()
   }
@@ -83,7 +85,7 @@ export function PaymentModal({ isOpen, onClose, onConfirm, remainingAmount }: Pa
                   )}
                 />
                 <p className="text-sm text-gray-500">
-                  Monto pendiente: {remainingAmount.toFixed(2)} €
+                  Monto pendiente: {formatCurrencyByCountry(remainingAmount, country)}
                 </p>
               </div>
               
