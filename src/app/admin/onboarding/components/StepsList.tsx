@@ -9,7 +9,15 @@ export function StepsList() {
   const { currentStep, steps, setCurrentStep, completedSteps, canAccessStep } = useOnboarding()
 
   return (
-    <div className="relative">
+    <motion.div 
+      className="relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ 
+        duration: 0.5, 
+        delay: 0.9 
+      }}
+    >
       {/* Lista de pasos */}
       <div className="space-y-3 md:space-y-6 relative">
         {steps.map((step, index) => {
@@ -77,6 +85,6 @@ export function StepsList() {
           )
         })}
       </div>
-    </div>
+    </motion.div>
   )
 }

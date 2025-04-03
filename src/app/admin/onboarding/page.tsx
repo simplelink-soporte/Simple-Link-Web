@@ -54,12 +54,19 @@ export default function OnboardingPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Barra lateral - Solo visible en desktop */}
-      <aside className="hidden md:block w-[35%] max-w-[600px] min-w-[400px] bg-black flex-shrink-0 relative">
-        {/* Elemento diagonal decorativo */}
-        <div className="absolute top-0 right-0 h-full w-full overflow-hidden">
-          <div className="absolute top-0 right-0 h-full bg-white transform skew-x-6 origin-top-left" style={{
-            width: '145px'
-          }}></div>
+      <aside className="hidden md:block w-[35%] max-w-[600px] min-w-[400px] flex-shrink-0 relative bg-white">
+        {/* Contenedor para la animación */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-black transform -skew-x-3 origin-top-right"
+            initial={{ width: "1%" }}
+            animate={{ width: "90%" }}
+            transition={{ 
+              duration: 0.7, 
+              ease: "easeOut",
+              delay: 0.2
+            }}
+          />
         </div>
         
         <div className="relative h-full flex flex-col p-10 z-10">
