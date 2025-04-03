@@ -77,14 +77,14 @@ export function OnboardingSteps() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto md:pl-8">
+    <div className="w-full max-w-4xl">
       <AnimatePresence mode="wait">
         <motion.div
           key={isOnboardingComplete ? 'final' : currentStep}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="bg-white rounded-xl md:p-6"
+          className="bg-white rounded-xl md:p-8"
         >
           {renderStep()}
         </motion.div>

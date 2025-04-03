@@ -52,43 +52,50 @@ export default function OnboardingPage() {
   const [showFAQ, setShowFAQ] = useState(false)
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex h-screen overflow-hidden">
       {/* Barra lateral - Solo visible en desktop */}
-      <div className="fixed top-0 bottom-0 w-96 bg-gray-50 p-8 border-r border-gray-200 hidden md:flex md:flex-col">
-        <div className="mb-12">
-          <h2 className="text-gray-900 text-xl font-semibold mb-2">Configuración Inicial</h2>
-          <p className="text-gray-500 text-sm">Complete los siguientes pasos para configurar su cuenta.</p>
+      <aside className="hidden md:block w-[35%] max-w-[600px] min-w-[400px] bg-black flex-shrink-0 relative">
+        {/* Elemento diagonal decorativo */}
+        <div className="absolute top-0 right-0 h-full w-full overflow-hidden">
+          <div className="absolute top-0 right-0 h-full bg-white transform skew-x-6 origin-top-left" style={{
+            width: '145px'
+          }}></div>
         </div>
         
-        <nav className="flex-1">
-          <StepsList />
-        </nav>
+        <div className="relative h-full flex flex-col p-10 z-10">
+          <div className="mb-12">
+            <h2 className="text-white text-xl font-semibold mb-2">Configuración Inicial</h2>
+            <p className="text-gray-300 text-sm">Complete los siguientes pasos para configurar su cuenta.</p>
+          </div>
+          
+          <nav className="flex-1">
+            <StepsList />
+          </nav>
 
-        <div className="mt-auto pt-6">
-          <Button 
-            variant="ghost" 
-            className={cn(
-              "text-sm text-gray-500",
-              "hover:text-gray-900 hover:bg-gray-100",
-              "transition-colors"
-            )}
-            onClick={() => setShowFAQ(true)}
-          >
-            <HelpCircle className="w-4 h-4 mr-2" />
-            Ayuda
-          </Button>
+          <div className="mt-auto pt-6">
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "text-sm text-gray-300",
+                "hover:text-white hover:bg-gray-800",
+                "transition-colors"
+              )}
+              onClick={() => setShowFAQ(true)}
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Ayuda
+            </Button>
+          </div>
         </div>
-      </div>
+      </aside>
 
       {/* Contenido principal */}
-      <div className="flex flex-col min-h-screen md:pl-96">
+      <main className="flex-1 h-full overflow-y-auto bg-white">
         <MobileHeader />
-        <main className="flex-1 flex bg-white items-center justify-center">
-          <div className="w-full px-2 md:px-0">
-            <OnboardingSteps />
-          </div>
-        </main>
-      </div>
+        <div className="flex items-center justify-start h-full p-4 pl-12">
+          <OnboardingSteps />
+        </div>
+      </main>
 
       <FAQDialog 
         open={showFAQ} 

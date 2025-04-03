@@ -520,7 +520,7 @@ export function SucursalSelection({ onNext, onConfigureBranch }: SucursalSelecti
       <div className="pt-4">
         <div className="flex flex-col items-end gap-2">
           {!hasConfiguredBranch && (
-            <p className="text-sm text-amber-600 italic flex items-center">
+            <p className="text-sm text-gray-600 italic flex items-center">
               <Info className="h-4 w-4 mr-1" />
               Configura al menos una sede para continuar
             </p>

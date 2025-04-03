@@ -50,7 +50,7 @@ export function StepsList() {
                 ) : (
                   <span className={cn(
                     "text-xs font-medium",
-                    isCurrent ? "text-primary" : "text-gray-500"
+                    isCurrent ? "text-white" : "text-gray-300"
                   )}>
                     {index + 1}
                   </span>
@@ -67,8 +67,8 @@ export function StepsList() {
               >
                 <p className={cn(
                   "text-sm font-medium transition-colors",
-                  isCurrent ? "text-primary" : "text-gray-500",
-                  isCompleted && "text-gray-900"
+                  isCurrent ? "text-white" : "text-gray-300",
+                  isCompleted && "text-white"
                 )}>
                   {step}
                 </p>
