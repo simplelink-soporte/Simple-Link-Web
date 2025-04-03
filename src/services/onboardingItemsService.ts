@@ -48,14 +48,38 @@ class OnboardingItemsService {
       }
 
       // Valor por defecto para el precio de los items
-      let raquetaPrice = 10
-      let pelotasPrice = 5
+      let raquetaPrices = {
+        "60": 10,
+        "90": 15,
+        "120": 20,
+        "150": 25,
+        "180": 30
+      }
+      let pelotasPrices = {
+        "60": 5,
+        "90": 7.5,
+        "120": 10,
+        "150": 12.5,
+        "180": 15
+      }
 
       // Si la empresa es de México, ajustamos los precios
       if (companyData?.country === 'Mexico') {
         console.log('🇲🇽 Empresa de México: Aplicando precios especiales para items')
-        raquetaPrice = 150
-        pelotasPrice = 75
+        raquetaPrices = {
+          "60": 150,
+          "90": 225,
+          "120": 300,
+          "150": 375,
+          "180": 450
+        }
+        pelotasPrices = {
+          "60": 75,
+          "90": 112.5,
+          "120": 150,
+          "150": 187.5,
+          "180": 225
+        }
       }
       
       // Definir los items predeterminados (una raqueta y pelotas de padel)
@@ -63,9 +87,7 @@ class OnboardingItemsService {
         {
           name: "Raqueta de Padel",
           type: "equipment",
-          duration_pricing: {
-            "60": raquetaPrice
-          },
+          duration_pricing: raquetaPrices,
           default_duration: 60,
           stock: 50,
           requires_deposit: false,
@@ -76,9 +98,7 @@ class OnboardingItemsService {
         {
           name: "Set de Pelotas de Padel",
           type: "equipment",
-          duration_pricing: {
-            "60": pelotasPrice
-          },
+          duration_pricing: pelotasPrices,
           default_duration: 60,
           stock: 100,
           requires_deposit: false,
