@@ -60,6 +60,7 @@ interface ShiftFormState {
   bookingStatus: 'idle' | 'submitting' | 'success' | 'error';
   authChecked: boolean; // Nueva bandera para verificar si la autenticación ya fue comprobada
   hasNoCredits: boolean; // Indica si la empresa no tiene créditos disponibles
+  country: string | null; // Nuevo campo para almacenar el país del formulario
 }
 
 // Acciones que pueden ser despachadas al reducer
@@ -89,6 +90,7 @@ type ShiftFormAction =
   | { type: 'SET_AUTH_ERROR'; payload: Error | null }
   | { type: 'SET_AUTH_CHECKED'; payload: boolean }
   | { type: 'SET_HAS_NO_CREDITS'; payload: boolean }
+  | { type: 'SET_COUNTRY'; payload: string | null }
   | { type: 'RESET_FORM' };
 
 // Estado inicial para el contexto
@@ -115,6 +117,7 @@ const initialState: ShiftFormState = {
   bookingStatus: 'idle',
   authChecked: false,
   hasNoCredits: false, // Por defecto, asumimos que la empresa tiene créditos
+  country: null, // Inicializar el campo country como null
 };
 
 // Reducer para gestionar el estado del formulario
@@ -189,6 +192,8 @@ const shiftFormReducer = (state: ShiftFormState, action: ShiftFormAction): Shift
       }
       // Si se establece a false, mantenemos el paso actual
       return { ...state, hasNoCredits: action.payload };
+    case 'SET_COUNTRY':
+      return { ...state, country: action.payload };
     case 'RESET_FORM':
       return { ...initialState };
     default:
@@ -233,6 +238,7 @@ interface ShiftFormContextProps {
   }) => Promise<void>;
   logout: () => Promise<void>;
   continueAsGuest: () => void;
+  checkAuthAndRedirect: () => void;
 }
 
 // Crear el contexto
@@ -325,6 +331,37 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
     }
   }, [organization, isLoadingAuth, state.step, state.isAuthenticated, hasInitialized]);
 
+  // Inicializar datos del formulario cuando estén disponibles
+  useEffect(() => {
+    if (formData && !hasInitialized) {
+      console.log('📝 [ShiftFormContext] Inicializando datos del formulario:', formData.id);
+      
+      // Inicializar métodos de pago disponibles
+      if (formData.settings?.paymentMethods?.available?.length) {
+        dispatch({ type: 'SET_AVAILABLE_PAYMENT_METHODS', payload: formData.settings.paymentMethods.available });
+        console.log('💰 [ShiftFormContext] Métodos de pago establecidos:', formData.settings.paymentMethods.available);
+      } else if (availablePaymentMethods?.length) {
+        dispatch({ type: 'SET_AVAILABLE_PAYMENT_METHODS', payload: availablePaymentMethods });
+        console.log('💰 [ShiftFormContext] Métodos de pago predeterminados establecidos:', availablePaymentMethods);
+      }
+      
+      // Inicializar porcentajes de pagos
+      if (formData.settings?.paymentMethods?.percentages) {
+        dispatch({ type: 'SET_PAYMENT_PERCENTAGES', payload: formData.settings.paymentMethods.percentages });
+        console.log('💰 [ShiftFormContext] Porcentajes de pago establecidos:', formData.settings.paymentMethods.percentages);
+      }
+
+      // Extraer y almacenar el país desde los metadatos del formulario
+      const countryFromMetadata = formData.metadata?.country || null;
+      if (countryFromMetadata) {
+        console.log('🌍 [ShiftFormContext] País obtenido desde los metadatos del formulario:', countryFromMetadata);
+        dispatch({ type: 'SET_COUNTRY', payload: countryFromMetadata });
+      }
+      
+      setHasInitialized(true);
+    }
+  }, [formData, hasInitialized, availablePaymentMethods]);
+
   // Acciones de navegación
   const nextStep = useCallback(() => {
     dispatch({ type: 'NEXT_STEP' });
@@ -390,6 +427,10 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
 
   const setHasNoCredits = useCallback((hasNoCredits: boolean) => {
     dispatch({ type: 'SET_HAS_NO_CREDITS', payload: hasNoCredits });
+  }, [dispatch]);
+
+  const setCountry = useCallback((country: string | null) => {
+    dispatch({ type: 'SET_COUNTRY', payload: country });
   }, [dispatch]);
 
   // Funciones para la autenticación
@@ -471,6 +512,7 @@ function ClientSideShiftProvider({ children, formData, empresaId, availablePayme
     setAuthError: (error: Error | null) => dispatch({ type: 'SET_AUTH_ERROR', payload: error }),
     setAuthChecked: (checked: boolean) => dispatch({ type: 'SET_AUTH_CHECKED', payload: checked }),
     setHasNoCredits,
+    setCountry,
     resetForm,
     login: async (email: string, password: string) => {
       // Implementar la lógica de inicio de sesión aquí

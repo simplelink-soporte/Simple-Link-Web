@@ -28,6 +28,7 @@ interface PaymentGatewayContextType {
   config: PaymentGatewayConfig;
   empresaId: string | null;
   setEmpresaId: (id: string | null) => void;
+  setCountry: (country: string | null) => void;
   refreshGateway: () => void;
 }
 
@@ -49,6 +50,7 @@ const PaymentGatewayContext = createContext<PaymentGatewayContextType>({
   config: defaultConfig,
   empresaId: null,
   setEmpresaId: () => {},
+  setCountry: () => {},
   refreshGateway: () => {}
 });
 
@@ -278,6 +280,7 @@ export function PaymentGatewayProvider({
     config,
     empresaId,
     setEmpresaId,
+    setCountry: (country: string | null) => setConfig(prev => ({ ...prev, country })),
     refreshGateway
   };
 

@@ -1,0 +1,1041 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Ejecutando navegación al siguiente paso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📌 Emitiendo evento para crear reserva desde StepNavigation"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📣 Evento de creación de reserva recibido"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📣 [SummaryStep] Condiciones cumplidas, llamando a handleCreateReservation()"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 [SummaryStep] Iniciando handleCreateReservation..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 [SummaryStep] Estado actual:",
+      {
+        "isProcessing": false,
+        "selectedPayment": "card",
+        "selectedPaymentType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Iniciando creación de reserva:"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Método de pago:",
+      "card"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Tipo de pago seleccionado:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de clase seleccionada:",
+      {
+        "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b",
+        "title": "vvvv",
+        "description": "",
+        "is_active": true,
+        "created_at": "2025-04-04T00:16:40.9662+00:00",
+        "updated_at": "2025-04-04T00:16:40.9662+00:00",
+        "sport": "racket",
+        "schedule": {
+          "days": [
+            4,
+            5,
+            6,
+            3,
+            2,
+            1,
+            0
+          ],
+          "timeSlots": [
+            {
+              "startTime": "18:00",
+              "endTime": "19:00",
+              "capacity": 50,
+              "spotsLeft": 50,
+              "instructors": [
+                "pepe"
+              ],
+              "courtIds": [
+                "9c8f7d57-dff8-42a9-aef8-90f43e82574f"
+              ],
+              "price": 247
+            }
+          ],
+          "daysOfWeek": [
+            "jueves",
+            "viernes",
+            "sábado",
+            "miércoles",
+            "martes",
+            "lunes",
+            "domingo"
+          ],
+          "startDate": "2025-04-04",
+          "endDate": null,
+          "specificSessions": [],
+          "suspendedSessions": []
+        },
+        "availablePaymentMethods": [
+          "cash",
+          "partial_payment",
+          "full_payment",
+          "guarantee"
+        ],
+        "payment_config": {
+          "status": "pending",
+          "currency": "EUR",
+          "guaranteePercentage": 30,
+          "partialPaymentPercentage": 20
+        },
+        "visibility": "public",
+        "is_recurring": true,
+        "instructor": "pepe",
+        "sessions": [
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-04",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 49,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-05-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-05",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-06-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-06",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-07-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-07",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-08-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-08",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-09-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-09",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-10-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-10",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-11-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-11",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-12-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-12",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          },
+          {
+            "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-13-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "date": "2025-04-13",
+            "startTime": "18:00",
+            "endTime": "19:00",
+            "spotsLeft": 50,
+            "totalSpots": 50,
+            "courts": [
+              {
+                "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+                "name": "Pista Raqueta 1",
+                "description": "synthetic - indoor"
+              }
+            ],
+            "instructor": "pepe",
+            "price": 247
+          }
+        ],
+        "branchInfo": {
+          "id": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+          "name": "Sede de Matador 12",
+          "address": "sdfsdfd 122",
+          "phone": "45242452"
+        },
+        "courts": [
+          {
+            "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "name": "Pista Raqueta 1",
+            "description": "synthetic - indoor"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] ID de sesión seleccionada:",
+      "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Datos de sesión completa:",
+      {
+        "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+        "date": "2025-04-04",
+        "startTime": "18:00",
+        "endTime": "19:00",
+        "spotsLeft": 49,
+        "totalSpots": 50,
+        "courts": [
+          {
+            "id": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+            "name": "Pista Raqueta 1",
+            "description": "synthetic - indoor"
+          }
+        ],
+        "instructor": "pepe",
+        "price": 247
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] Verificando condiciones para procesar pago con Stripe:"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Método seleccionado es card:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Existe método de tarjeta:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Tipo de pago seleccionado:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Session existe:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - stripeAccountId existe:",
+      true
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [SummaryStep] - Datos de tarjeta:",
+      "{\"id\":\"pm_1R9OnPRYLT0A6sSKFS4vW867\",\"brand\":\"visa\",\"last4\":\"4242\",\"customerId\":\"cus_S3VePTZT5VFhbS\"}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [SummaryStep] Procesando PAGO COMPLETO con fullPaymentService..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🌎 [SummaryStep] Procesando pago para país: Mexico"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [gohcj5jew5wc3ulfg6cpxdjm] Iniciando procesamiento de pago completo:",
+      {
+        "amount": 247,
+        "paymentMethodId": "pm_1R9OnPR...",
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "hasCustomerId": true,
+        "hasAccountId": true,
+        "timestamp": "2025-04-04T00:18:56.442Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [gohcj5jew5wc3ulfg6cpxdjm] Datos para procesamiento directo:",
+      {
+        "customerId": "cus_S3VePT...",
+        "accountId": "acct_1R9AnERYLT0A6sSK"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [gohcj5jew5wc3ulfg6cpxdjm] Enviando solicitud para procesamiento de pago on-session"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [gohcj5jew5wc3ulfg6cpxdjm] Respuesta HTTP recibida: 200 OK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [gohcj5jew5wc3ulfg6cpxdjm] Pago procesado exitosamente:",
+      {
+        "paymentIntentId": "pi_3R9xyHRYLT0A6sSK1KP8f2Iv",
+        "status": "succeeded",
+        "timestamp": "2025-04-04T00:19:02.353Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Resultado del procesamiento de pago:",
+      {
+        "success": true,
+        "paymentIntentId": "pi_3R9xyHRYLT0A6sSK1KP8f2Iv",
+        "chargeStatus": "succeeded",
+        "message": "Pago procesado exitosamente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Pago procesado correctamente:",
+      {
+        "paymentIntentId": "pi_3R9xyHRYLT0A6sSK1KP8f2Iv",
+        "status": "succeeded",
+        "isDepositPayment": false,
+        "depositAmount": null,
+        "totalAmount": 247
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] No se detectó factura previa, creando factura..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧾 [SummaryStep] Intentando crear factura para el pago:",
+      {
+        "paymentIntentId": "pi_3R9xyHRYLT0A6sSK1KP8f2Iv",
+        "classId": "1e865db2-bde7-40ab-ae12-5939d89e4a3b",
+        "sessionId": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+        "isDepositPayment": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [ClassInvoiceService:Client] Iniciando creación de factura para registro de clase:",
+      {
+        "paymentIntentId": "pi_3R9xyHRYLT0A6sSK1KP8f2Iv",
+        "classId": "1e865db2-bde7-40ab-ae12-5939d89e4a3b",
+        "paymentType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:",
+      {
+        "paymentMethod": "card",
+        "paymentType": "full",
+        "hasCardMethod": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [SummaryStep] Llamando a submitClassBooking con los siguientes parámetros...",
+      {
+        "paymentMethod": "card",
+        "paymentType": "full"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [useClassBooking] Opciones recibidas para la reserva:",
+      {
+        "paymentMethod": "card",
+        "paymentType": "full",
+        "paymentMethodDetails": {
+          "id": "pm_1R9OnPRYLT0A6sSKFS4vW867",
+          "brand": "visa",
+          "last4": "4242",
+          "expMonth": 4,
+          "expYear": 2029,
+          "type": "card",
+          "name": "visa terminada en 4242",
+          "description": "Expira: 04/2029",
+          "customerId": "cus_S3VePTZT5VFhbS"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [useClassBooking] Pago completo detectado, configurando importe:",
+      247
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📌 [useClassBooking] Iniciando creación de reserva con sessionIds:",
+      [
+        "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f"
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📌 [useClassBooking] Detalles de la sesión seleccionada:",
+      {
+        "id": "1e865db2-bde7-40ab-ae12-5939d89e4a3b-2025-04-04-18:00-9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+        "date": "2025-04-04",
+        "horario": "18:00 - 19:00",
+        "pistas": [
+          "9c8f7d57-dff8-42a9-aef8-90f43e82574f"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [ClassBookingService] Creando reserva de clase con ID:",
+      "1e865db2-bde7-40ab-ae12-5939d89e4a3b"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [ClassBookingService] Usando sesión específica:",
+      "2025-04-04",
+      "18:00",
+      "-",
+      "19:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Creando reserva para la clase:",
+      "vvvv",
+      "sesión:",
+      "2025-04-04"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Opciones recibidas:",
+      "{\n  \"userId\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n  \"empresaId\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"completed\",\n  \"depositAmount\": 247,\n  \"paymentType\": \"full\",\n  \"stripePaymentMethodId\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      " [ClassBookingTransformService] Normalizando tipo de pago:",
+      "full"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      " [ClassBookingTransformService] Tipo de pago 'full' normalizado a 'booking'"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Datos de reserva transformados:",
+      "{\n  \"reservationType\": \"class\",\n  \"classId\": \"1e865db2-bde7-40ab-ae12-5939d89e4a3b\",\n  \"courtId\": \"9c8f7d57-dff8-42a9-aef8-90f43e82574f\",\n  \"date\": \"2025-04-04\",\n  \"startTime\": \"18:00\",\n  \"endTime\": \"19:00\",\n  \"title\": \"Clase: vvvv\",\n  \"description\": \"\",\n  \"participants\": [\n    {\n      \"id\": \"33d30c6d-4d1a-40c7-a3dd-5988d63215ee\",\n      \"user_id\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n      \"role\": \"player\"\n    }\n  ],\n  \"courtPrice\": 0,\n  \"classSessionPrice\": 247,\n  \"rentalItemsPrice\": 0,\n  \"rentalItems\": [],\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"completed\",\n  \"paymentType\": \"booking\",\n  \"depositAmount\": 247,\n  \"stripe_payment_method_id\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\",\n  \"empresaId\": \"2c4c929f-c308-42c9-8306-5857e07d9634\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      " [ClassBookingTransformService] Normalizando tipo de pago:",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      " [ClassBookingTransformService] Tipo de pago 'booking' validado correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Normalización del tipo de pago:",
+      {
+        "original": "full",
+        "transformado": "booking",
+        "normalizado": "booking",
+        "método": "card"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Tipo de pago final utilizado:",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-04",
+          "start": "18:00",
+          "end": "19:00",
+          "timezone": "America/New_York",
+          "localStart": "2025-04-04T18:00:00.000-04:00",
+          "localEnd": "2025-04-04T19:00:00.000-04:00"
+        },
+        "utc": {
+          "date": "2025-04-04",
+          "start": "2025-04-04 22:00:00.000",
+          "end": "2025-04-04 23:00:00.000",
+          "fullStartUTC": "2025-04-04T22:00:00.000Z",
+          "fullEndUTC": "2025-04-04T23:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Conversión de horarios completada:",
+      "{\n  \"bookingDateUTC\": \"2025-04-04\",\n  \"startTimeUTC\": \"2025-04-04 22:00:00.000\",\n  \"endTimeUTC\": \"2025-04-04 23:00:00.000\",\n  \"timezone\": \"America/New_York\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ClassBookingService] Parámetros enviados a RPC create_booking_v2:",
+      "{\n  \"p_court_id\": \"9c8f7d57-dff8-42a9-aef8-90f43e82574f\",\n  \"p_date\": \"2025-04-04\",\n  \"p_start_time\": \"2025-04-04 22:00:00.000\",\n  \"p_end_time\": \"2025-04-04 23:00:00.000\",\n  \"p_court_price\": 0,\n  \"p_deposit_amount\": 247,\n  \"p_payment_method\": \"card\",\n  \"p_payment_status\": \"completed\",\n  \"p_payment_type\": \"booking\",\n  \"p_rental_items\": [],\n  \"p_rental_items_price\": 0,\n  \"p_title\": \"Clase: vvvv\",\n  \"p_description\": \"\",\n  \"p_participants\": [\n    {\n      \"id\": \"33d30c6d-4d1a-40c7-a3dd-5988d63215ee\",\n      \"user_id\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n      \"role\": \"player\"\n    }\n  ],\n  \"p_empresa_id\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"p_reservation_type\": \"class\",\n  \"p_class_id\": \"1e865db2-bde7-40ab-ae12-5939d89e4a3b\",\n  \"p_class_session_price\": 247,\n  \"p_stripe_payment_method_id\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Resultado de submitClassBooking:",
+      {
+        "data": {
+          "bookingIds": [
+            "e12f5ff7-a4bd-4bea-ae85-df9901433ea1"
+          ],
+          "totalSessions": 1
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Reserva creada exitosamente, avanzando a confirmación"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México, usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 247, País: \"Mexico\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 247.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Reservas confirmadas:",
+      [
+        "e12f5ff7-a4bd-4bea-ae85-df9901433ea1"
+      ]
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Reservas confirmadas:",
+      [
+        "e12f5ff7-a4bd-4bea-ae85-df9901433ea1"
+      ]
+    ]
+  }
+]

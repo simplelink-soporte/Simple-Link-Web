@@ -22,6 +22,12 @@ export interface CompanyLinkSettings {
     advance_days?: number | null;
   };
   fields?: FormStepField[];
+  metadata?: {
+    country?: string | null;
+    createdBy?: string;
+    updatedBy?: string;
+    [key: string]: any;
+  };
 }
 
 export interface CreateCompanyLinkParams {
@@ -296,11 +302,39 @@ export class CompanyLinksService {
         );
       }
 
-      // 1. Generar slug único primero
+      // 1. Obtener el país de la empresa
+      const { data: empresaData, error: empresaError } = await this.supabase
+        .from('empresas')
+        .select('country')
+        .eq('id', empresaId)
+        .single();
+
+      if (empresaError) {
+        this.logError('Error al obtener país de la empresa:', empresaError);
+        throw new CompanyLinkError(
+          'Error al obtener datos de la empresa',
+          'EMPRESA_DATA_ERROR',
+          empresaError
+        );
+      }
+
+      const countryFromEmpresa = empresaData?.country || null;
+      this.log('País de la empresa obtenido:', countryFromEmpresa);
+
+      // 2. Generar slug único primero
       const slug = await this.generateUniqueSlug(name);
 
-      // 2. Verificar si ya existe un link activo
+      // 3. Verificar si ya existe un link activo
       const existingLink = await this.getCompanyLink(empresaId, type);
+
+      // 4. Preparar los settings con el país incluido en metadata
+      const settingsWithCountry = {
+        ...settings,
+        metadata: {
+          ...(settings?.metadata || {}),
+          country: countryFromEmpresa
+        }
+      };
 
       if (existingLink) {
         this.log('Actualizando link existente');
@@ -311,7 +345,7 @@ export class CompanyLinksService {
           settings: {
             ...defaultSettings,
             ...existingLink.settings,
-            ...settings
+            ...settingsWithCountry
           }
         };
 
@@ -333,7 +367,7 @@ export class CompanyLinksService {
           );
         }
 
-        this.log('Link actualizado:', data);
+        this.log('Link actualizado con país:', data);
         return data;
       } else {
         this.log('Creando nuevo link');
@@ -346,14 +380,14 @@ export class CompanyLinksService {
           is_active: true,
           settings: {
             ...defaultSettings,
-            ...settings
+            ...settingsWithCountry
           }
         };
 
         // Validar antes de insertar
         this.validateLinkData(newLinkData);
 
-        this.log('Datos a insertar:', newLinkData);
+        this.log('Datos a insertar con país:', newLinkData);
 
         const { data, error } = await this.supabase
           .from('company_links')
@@ -370,7 +404,7 @@ export class CompanyLinksService {
           );
         }
 
-        this.log('Link creado:', data);
+        this.log('Link creado con país:', data);
         return data;
       }
     } catch (error) {

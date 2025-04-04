@@ -16,6 +16,10 @@ interface FullPaymentResponse {
   paymentIntentId?: string;
   chargeStatus?: string;
   message?: string;
+  // Añadir propiedades de factura
+  invoiceId?: string;
+  invoiceUrl?: string;
+  pdfUrl?: string;
   error?: {
     code: string;
     message: string;
@@ -143,6 +147,7 @@ export class FullPaymentClientService {
       console.log(`✅ [${requestId}] Pago procesado exitosamente:`, {
         paymentIntentId: result.paymentIntentId,
         status: result.chargeStatus,
+        invoiceId: result.invoiceId || 'N/A',
         timestamp: new Date().toISOString()
       });
       
@@ -150,6 +155,10 @@ export class FullPaymentClientService {
         success: true,
         paymentIntentId: result.paymentIntentId,
         chargeStatus: result.chargeStatus,
+        // Incluir información de factura si está disponible
+        invoiceId: result.invoiceId,
+        invoiceUrl: result.invoiceUrl,
+        pdfUrl: result.pdfUrl,
         message: 'Pago procesado exitosamente'
       };
     } catch (error: any) {

@@ -29,7 +29,6 @@ import type { UserPackageFromDB, ClassSession } from '../types/models'
 import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 import { requiresCardPayment } from '../components/PaymentTypeSection'
-import { classInvoiceService } from '@/services/class-invoice.service'
 import { formatCurrencyByCountry, getCurrencySymbol, getCurrencyByCountry } from '@/lib/currency-utils'
 
 // Definición de los métodos de pago disponibles
@@ -301,8 +300,7 @@ export function SummaryStep() {
     if (state.selectedPayment === 'cash' && !selectedPaymentType) {
       console.log('📋 [SummaryStep] Pago en el club detectado sin tipo específico, estableciendo tipo como "booking"');
       setSelectedPaymentType('booking');
-      // Esperamos brevemente para que se actualice el estado
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Como setSelectedPaymentType es asíncrono, usamos directamente 'booking' en la creación de la reserva
     }
     
     setIsProcessing(true);
@@ -454,24 +452,33 @@ export function SummaryStep() {
               variant: 'default'
             });
             
-            // Crear factura para pagos (completos o seña)
-            createInvoiceAfterPayment(paymentResult, isDepositPayment);
+            const paymentResultAny = paymentResult as any;
             
-            // Guardar el ID del payment intent como respaldo
-            try {
-              localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
-              localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
-              if (isDepositPayment) {
-                // Usamos type assertion para acceder a propiedades específicas de DepositPaymentResult
-                const depositResult = paymentResult as any;
-                localStorage.setItem('lastDepositAmount', JSON.stringify({
-                  depositAmount: depositResult.depositAmount || 0,
-                  totalAmount: depositResult.totalAmount || 0,
-                  depositPercentage: depositResult.depositPercentage || 30
-                }));
+            // FLUJO UNIFICADO DE FACTURAS:
+            // Tanto para pagos completos como para pagos de seña,
+            // la factura ya es generada automáticamente en el backend
+            if (paymentResultAny.invoiceId) {
+              console.log(`✅ [SummaryStep] Factura de pago ${isDepositPayment ? 'SEÑA' : 'COMPLETO'} ya generada en backend:`, {
+                invoiceId: paymentResultAny.invoiceId,
+                invoiceUrl: paymentResultAny.invoiceUrl
+              });
+              
+              // Guardar referencia a la factura en localStorage
+              try {
+                localStorage.setItem('lastClassInvoiceId', paymentResultAny.invoiceId || '');
+                localStorage.setItem('lastClassInvoiceUrl', paymentResultAny.invoiceUrl || '');
+              } catch (storageError) {
+                console.warn('⚠️ [SummaryStep] No se pudo guardar datos de factura en localStorage:', storageError);
               }
-            } catch (storageError) {
-              console.warn('⚠️ [SummaryStep] No se pudo guardar en localStorage:', storageError);
+              
+              // Notificar al usuario sobre la factura generada
+              toast({
+                title: 'Factura generada',
+                description: 'Se ha generado una factura para tu pago. Puedes consultarla en tu correo electrónico.',
+                variant: 'default'
+              });
+            } else {
+              console.log(`⚠️ [SummaryStep] No se recibió información de factura del backend para pago ${isDepositPayment ? 'SEÑA' : 'COMPLETO'}`);
             }
           } catch (paymentError: any) {
             console.error('❌ [SummaryStep] Error al llamar al servicio de pago:', paymentError);
@@ -963,137 +970,9 @@ export function SummaryStep() {
     </motion.div>
   ), []);
 
-  // Función para crear y enviar factura después de un pago exitoso
-  const createInvoiceAfterPayment = useCallback(async (paymentResult: any, isDepositPayment: boolean) => {
-    if (!paymentResult?.paymentIntentId || !selectedSession || !empresaId || !stripeAccountId || !user?.email) {
-      console.warn('❌ [SummaryStep] No se puede crear factura: faltan datos necesarios');
-      return;
-    }
-
-    try {
-      console.log('🧾 [SummaryStep] Intentando crear factura para el pago:', {
-        paymentIntentId: paymentResult.paymentIntentId,
-        classId: state.selectedClass?.id,
-        sessionId: selectedSession.id,
-        isDepositPayment
-      });
-
-      const amount = isDepositPayment 
-        ? (paymentResult as any).depositAmount 
-        : selectedSession.price;
-
-      // Obtener nombres de manera segura con valores por defecto - usando any para evitar errores de tipado
-      const selectedClass = state.selectedClass as any;
-      // Usar title en lugar de name, ya que en PublicClass el campo se llama title
-      const className = selectedClass?.title || 'Clase';
-      
-      // Crear una descripción legible y amigable, ideal para mostrar en PDF
-      // Formato: "Clase [nombre de la clase] - [fecha]"
-      let sessionTitle = 'Sesión ' + selectedSession.id;
-      
-      // Añadir información de fecha formateada si está disponible
-      if (selectedSession.date) {
-        try {
-          // Crear fecha a partir de string YYYY-MM-DD
-          const [year, month, day] = selectedSession.date.split('-').map(Number);
-          const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-          
-          // Formatear la fecha para ser amigable
-          const formattedDate = format(date, 'd MMMM yyyy', { locale: es });
-          sessionTitle = formattedDate;
-        } catch (error) {
-          console.warn('⚠️ Error al formatear la fecha de sesión:', error);
-        }
-      }
-      
-      // Obtener hora de sesión de manera segura
-      const sessionTime = (selectedSession as any).time || 'Horario no especificado';
-      
-      // La descripción visible en la factura PDF - Usar información más amigable y consistente con el formato manual
-      const description = isDepositPayment
-        ? `Seña (${(paymentResult as any).depositPercentage}%): ${className} - ${sessionTitle}`
-        : `Pago de clase "${className}" - ${sessionTitle}`;
-
-      // Obtener CustomerId del método de pago seleccionado
-      const customerId = selectedCardMethod?.customerId;
-      
-      if (!customerId) {
-        console.warn('❌ [SummaryStep] No se puede crear factura: falta customerId');
-        return;
-      }
-
-      // Obtener branchId de manera segura usando type assertion
-      const branchId = (selectedClass?.branch_id as string) || undefined;
-
-      // Obtener nombre del cliente de manera segura
-      const customerName = user.email?.split('@')[0] || 'Cliente';
-      
-      // Calcular el porcentaje de depósito para incluirlo en los metadatos
-      const depositPercentage = isDepositPayment 
-        ? String((paymentResult as any).depositPercentage || 30) 
-        : '100';
-
-      const invoiceResult = await classInvoiceService.createAndSendInvoice({
-        paymentIntentId: paymentResult.paymentIntentId,
-        stripeAccountId,
-        customerId,
-        amount,
-        description,
-        customerEmail: user.email,
-        empresaId,
-        classId: state.selectedClass?.id,
-        branchId,
-        paymentType: isDepositPayment ? 'deposit' : 'full',
-        metadata: {
-          // Identificadores técnicos (para filtrado y procesamiento)
-          class_id: state.selectedClass?.id || '',
-          session_id: selectedSession.id,
-          
-          // Información legible (para mostrar al usuario)
-          class_name: className,
-          class_title: selectedClass?.title || 'Clase',  
-          session_title: sessionTitle,
-          session_date: selectedSession.date,
-          session_time: sessionTime,
-          customer_name: customerName,
-          
-          // Información sobre el pago
-          deposit_percentage: depositPercentage,
-          booking_type: 'class',
-          
-          // Otros datos útiles
-          branch_name: selectedClass?.branchName || 'Sucursal principal',  
-          created_at: new Date().toISOString(),
-          
-          // Información del país para determinar correctamente la moneda
-          country: country || '',
-          empresa_id: empresaId || ''
-        }
-      });
-
-      if (invoiceResult.success) {
-        console.log('✅ [SummaryStep] Factura creada exitosamente:', {
-          invoiceId: invoiceResult.invoiceId,
-          invoiceUrl: invoiceResult.invoiceUrl
-        });
-
-        // Guardar referencia a la factura en localStorage para futuras consultas
-        localStorage.setItem('lastClassInvoiceId', invoiceResult.invoiceId || '');
-        localStorage.setItem('lastClassInvoiceUrl', invoiceResult.invoiceUrl || '');
-        
-        // Notificar al usuario sobre la factura generada
-        toast({
-          title: 'Factura generada',
-          description: 'Se ha generado una factura para tu pago. Puedes consultarla en tu correo electrónico.',
-          variant: 'default'
-        });
-      } else {
-        console.error('❌ [SummaryStep] Error al crear factura:', invoiceResult.error);
-      }
-    } catch (error) {
-      console.error('❌ [SummaryStep] Error inesperado al crear factura:', error);
-    }
-  }, [empresaId, selectedCardMethod, selectedSession, state.selectedClass, stripeAccountId, toast, user?.email]);
+  useEffect(() => {
+    // ...
+  }, []);
 
   return (
     <StepContainer stepId="summary" centered={false}>

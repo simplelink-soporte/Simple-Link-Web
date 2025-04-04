@@ -72,6 +72,7 @@ interface FormData {
   businessName?: string
   primaryColor?: string
   publicFormUrl?: string
+  country?: string | null
   [key: string]: any // Para permitir propiedades adicionales
 }
 
@@ -179,7 +180,7 @@ function OnboardingProviderContent({
           try {
             const { data } = await supabase
               .from('empresas')
-              .select('id, onboarding, business_name, name')
+              .select('id, onboarding, business_name, name, country')
               .eq('id', formData.empresaId)
               .maybeSingle()
             
@@ -203,7 +204,7 @@ function OnboardingProviderContent({
           try {
             const { data } = await supabase
               .from('empresas')
-              .select('id, onboarding, business_name, name')
+              .select('id, onboarding, business_name, name, country')
               .eq('auth_user_id', user.id)
               .maybeSingle()
             
@@ -227,15 +228,17 @@ function OnboardingProviderContent({
             ...prev,
             empresaId: empresaData.id,
             nombre: formData.nombre || empresaData.name,
-            businessName: empresaData.business_name || empresaData.name
+            businessName: empresaData.business_name || empresaData.name,
+            country: empresaData.country || null // Guardar el país en el contexto
           }))
         } else if (empresaData.id) {
-          // Si ya tenemos el ID pero no el business_name, actualizarlo
-          if (!formData.businessName && (empresaData.business_name || empresaData.name)) {
+          // Si ya tenemos el ID pero no el business_name o el country, actualizarlos
+          if (!formData.businessName || !formData.country) {
             setFormData(prev => ({
               ...prev,
-              businessName: empresaData.business_name || empresaData.name,
-              nombre: prev.nombre || empresaData.name
+              businessName: prev.businessName || empresaData.business_name || empresaData.name,
+              nombre: prev.nombre || empresaData.name,
+              country: prev.country || empresaData.country || null
             }))
           }
         }
@@ -412,6 +415,8 @@ function OnboardingProviderContent({
             title: `Reservas ${formData.nombre || 'Sin nombre'}`,
             description: `Realiza tu reserva en ${formData.nombre || 'nuestra instalación'}`,
             business_name: formData.businessName || formData.nombre || 'Sin nombre',
+            // Pasar el país desde el contexto
+            country: formData.country,
             // Usar una plantilla básica o tomar campos desde los datos guardados
             fields: [], // Esto se llenará con campos por defecto en el servicio
             theme: {
@@ -433,6 +438,8 @@ function OnboardingProviderContent({
               }
             }
           };
+          
+          console.log(`🌍 País de la empresa en onboarding: ${formData.country || 'No disponible'}`);
           
           // Llamar al servicio para publicar el formulario
           const url = await formPublishService.publish(publishData);

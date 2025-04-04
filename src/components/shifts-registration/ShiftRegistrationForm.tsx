@@ -60,40 +60,42 @@ export const ShiftRegistrationForm: React.FC<{ form: PublishedForm }> = ({ form 
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Verificar créditos disponibles - misma implementación exacta que en ClassRegistrationContext
+  // Verificar créditos disponibles - usando el ID de la empresa del formulario, no del usuario autenticado
   const { canMakeBooking, remainingBookings, isPro, isLoading: isLoadingBookingCount } = useBookingCount({ 
-    empresaId: organization?.id || '', 
+    empresaId: form.empresa_id || organization?.id || '', 
     date: new Date().toISOString().split('T')[0],
-    enabled: !!organization?.id
+    enabled: !!form.empresa_id || !!organization?.id
   });
 
-  // Efecto para verificar si hay créditos disponibles, igual que en ClassRegistrationContext
+  // Efecto para verificar si hay créditos disponibles, usando ID de empresa del formulario
   useEffect(() => {
-    if (!isLoadingBookingCount && organization?.id) {
+    if (!isLoadingBookingCount && (form.empresa_id || organization?.id)) {
+      const empresaId = form.empresa_id || organization?.id;
       const noCreditsAvailable = !isPro && remainingBookings <= 0;
       
       // Almacenar el estado en localStorage para persistencia entre recargas
-      if (noCreditsAvailable) {
-        localStorage.setItem(`shift_no_credits_${organization.id}`, 'true');
+      if (noCreditsAvailable && empresaId) {
+        localStorage.setItem(`shift_no_credits_${empresaId}`, 'true');
         setHasNoCredits(true);
         dispatch({ type: 'SET_STEP', payload: 'noCredits' });
-      } else {
-        localStorage.removeItem(`shift_no_credits_${organization.id}`);
+      } else if (empresaId) {
+        localStorage.removeItem(`shift_no_credits_${empresaId}`);
         setHasNoCredits(false);
       }
     }
-  }, [canMakeBooking, remainingBookings, isPro, organization?.id, isLoadingBookingCount, dispatch, setHasNoCredits]);
+  }, [canMakeBooking, remainingBookings, isPro, form.empresa_id, organization?.id, isLoadingBookingCount, dispatch, setHasNoCredits]);
 
   // Verificar estado guardado al cargar el componente
   useEffect(() => {
-    if (organization?.id) {
-      const savedNoCredits = localStorage.getItem(`shift_no_credits_${organization.id}`);
+    const empresaId = form.empresa_id || organization?.id;
+    if (empresaId) {
+      const savedNoCredits = localStorage.getItem(`shift_no_credits_${empresaId}`);
       if (savedNoCredits === 'true') {
         setHasNoCredits(true);
         dispatch({ type: 'SET_STEP', payload: 'noCredits' });
       }
     }
-  }, [organization?.id, setHasNoCredits, dispatch]);
+  }, [form.empresa_id, organization?.id, setHasNoCredits, dispatch]);
 
   // Verificar autenticación cuando se carga el componente
   useEffect(() => {

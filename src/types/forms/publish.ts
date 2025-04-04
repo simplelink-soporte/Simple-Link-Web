@@ -60,6 +60,7 @@ export interface PublishedForm {
   metadata?: {
     createdBy?: string;
     updatedBy?: string;
+    country?: string | null;
   };
   createdAt?: Date;
   updatedAt?: Date;

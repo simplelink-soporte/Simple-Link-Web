@@ -189,6 +189,7 @@ export async function POST(request: Request) {
         success: true,
         paymentIntentId: paymentIntent.id,
         chargeStatus: paymentIntent.status,
+        invoiceId: invoiceResult?.invoiceId,
         invoiceUrl: invoiceResult?.invoiceUrl,
         pdfUrl: invoiceResult?.pdfUrl
       });

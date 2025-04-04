@@ -312,64 +312,70 @@ export async function POST(request: Request) {
     // Crear ID único para el seguimiento de esta solicitud
     const requestId = `mbi_${Date.now().toString(36)}`;
 
+    // Verificar que tengamos un ID de empresa válido
+    const effectiveEmpresaId = empresaId || session.user.app_metadata?.empresa_id;
+    
+    if (!effectiveEmpresaId) {
+      console.error(`❌ [${requestId}] No se proporcionó empresaId en la solicitud ni en los metadatos de usuario`);
+      return NextResponse.json({ 
+        success: false, 
+        error: { 
+          message: 'Se requiere ID de empresa para crear facturas',
+          code: 'missing_empresa_id'
+        } 
+      }, { status: 400 });
+    }
+    
+    console.log(`✅ [${requestId}] Usando empresa_id: ${effectiveEmpresaId}`);
+
     // Obtener el país de la empresa si no se proporcionó
     let countryToUse = country;
     
-    if (!countryToUse && empresaId) {
+    if (!countryToUse) {
       try {
-        console.log(`🔍 [${requestId}] Buscando país de la empresa: ${empresaId}`);
+        console.log(`🔍 [${requestId}] Buscando país de la empresa: ${effectiveEmpresaId}`);
         const { data: empresaData } = await supabaseServerClient
           .from('empresas')
           .select('country')
-          .eq('id', empresaId)
+          .eq('id', effectiveEmpresaId)
           .single();
 
         if (empresaData?.country) {
           countryToUse = empresaData.country;
           console.log(`✅ [${requestId}] País de la empresa encontrado: ${countryToUse}`);
+        } else {
+          throw new Error(`No se encontró país para la empresa: ${effectiveEmpresaId}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ [${requestId}] Error al buscar país de la empresa:`, error);
-        // Continuar con el valor por defecto si hay error
+        return NextResponse.json({ 
+          success: false, 
+          error: { 
+            message: `Error al determinar el país: ${error.message || 'No se encontró el país'}`,
+            code: 'country_detection_error'
+          } 
+        }, { status: 400 });
       }
     }
     
-    // Función para determinar la moneda basada en el país
-    const getCurrencyCodeByCountry = (country?: string | null): string => {
-      if (!country) return 'eur'; // Por defecto
-      
-      const countryLower = country.toLowerCase();
-      switch (countryLower) {
-        case 'mexico':
-        case 'méxico':
-          return 'mxn'; // Peso mexicano
-        case 'argentina':
-          return 'ars'; // Peso argentino
-        case 'españa':
-        case 'espana':
-        case 'spain':
-        case 'europe':
-        case 'europa':
-          return 'eur'; // Euro
-        default:
-          return 'eur'; // Por defecto para otros países
-      }
-    };
+    // Importar el servicio para la detección de país
+    const { countryDetectionService } = await import('@/services/country-detection.service');
     
-    // Determinar la moneda basada en el país
-    const currencyCode = getCurrencyCodeByCountry(countryToUse);
-    console.log(`🌎 [${requestId}] País detectado: ${countryToUse || 'No especificado'}, usando moneda: ${currencyCode}`);
-    
-    console.log('📦 Parámetros recibidos para crear factura:', {
-      stripeAccountId,
-      customerEmail,
-      amount,
-      description,
-      bookingId,
-      empresaId,
-      country: countryToUse,
-      currencyCode
-    });
+    // Determinar la moneda basada en el país usando el servicio especializado
+    let currencyCode;
+    try {
+      currencyCode = countryDetectionService.getCurrencyCodeByCountry(countryToUse);
+      console.log(`🌎 [${requestId}] País detectado: ${countryToUse}, usando moneda: ${currencyCode}`);
+    } catch (error: any) {
+      console.error(`❌ [${requestId}] Error al determinar moneda para el país ${countryToUse}:`, error);
+      return NextResponse.json({ 
+        success: false, 
+        error: { 
+          message: `Error al determinar la moneda: ${error.message}`,
+          code: 'currency_detection_error'
+        } 
+      }, { status: 400 });
+    }
     
     // 3. Validar parámetros obligatorios
     if (!stripeAccountId) {
@@ -386,10 +392,6 @@ export async function POST(request: Request) {
     
     if (!bookingId) {
       return NextResponse.json({ error: 'Se requiere bookingId' }, { status: 400 });
-    }
-    
-    if (!empresaId) {
-      return NextResponse.json({ error: 'Se requiere empresaId' }, { status: 400 });
     }
     
     // 4. Inicializar Stripe con la clave secreta del servidor
@@ -410,7 +412,7 @@ export async function POST(request: Request) {
       apiVersion: '2025-02-24.acacia',
       stripeAccount: stripeAccountId
     });
-    
+
     // 5. Preparar metadatos para la factura
     const isPartialPayment = requestBody.isPartialPayment === true;
     const paymentType = requestBody.paymentType || 'booking';
@@ -420,7 +422,7 @@ export async function POST(request: Request) {
       customer_email: customerEmail,
       customer_name: customerName || '',
       booking_id: bookingId,
-      empresaId: empresaId,
+      empresaId: effectiveEmpresaId,
       court_id: courtId || '',
       branch_id: branchId || '',
       payment_date: new Date().toISOString(),
@@ -453,7 +455,7 @@ export async function POST(request: Request) {
           email: customerEmail,
           name: customerName || customerEmail,
           metadata: {
-            empresaId: empresaId
+            empresaId: effectiveEmpresaId
           }
         });
         
@@ -615,30 +617,53 @@ async function handleManualBookingInvoice(requestBody: any) {
     const requestId = `mb_${Date.now().toString(36)}`;
     console.log(`🔄 [${requestId}] Iniciando creación de factura manual para reserva: ${bookingId}`);
     
+    // Verificar que tengamos un ID de empresa válido
+    if (!empresaId) {
+      console.error(`❌ [${requestId}] No se proporcionó empresaId en la solicitud de factura manual`);
+      return NextResponse.json({ 
+        success: false, 
+        error: { 
+          message: 'Se requiere ID de empresa para crear facturas manuales',
+          code: 'missing_empresa_id'
+        } 
+      }, { status: 400 });
+    }
+    
     // Importar el servicio de facturas de Stripe
     const { createInvoiceService } = await import('@/services/stripe-invoice.service');
     
     // Llamar al servicio para crear la factura
-    const invoiceResult = await createInvoiceService.createManualBookingInvoice({
-      stripeAccountId,
-      customerId,
-      customerEmail,
-      customerName,
-      amount,
-      description,
-      bookingId,
-      empresaId,
-      courtId,
-      branchId,
-      paymentType,
-      isPartialPayment,
-      totalAmount,
-      country
-    });
-    
-    console.log(`✅ [${requestId}] Resultado de generación de factura manual:`, invoiceResult);
-    
-    return NextResponse.json(invoiceResult);
+    try {
+      const invoiceResult = await createInvoiceService.createManualBookingInvoice({
+        stripeAccountId,
+        customerId,
+        customerEmail,
+        customerName,
+        amount,
+        description,
+        bookingId,
+        empresaId,
+        courtId,
+        branchId,
+        paymentType,
+        isPartialPayment,
+        totalAmount,
+        country
+      });
+      
+      console.log(`✅ [${requestId}] Resultado de generación de factura manual:`, invoiceResult);
+      
+      return NextResponse.json(invoiceResult);
+    } catch (error: any) {
+      console.error(`❌ [${requestId}] Error al crear factura manual:`, error);
+      return NextResponse.json({ 
+        success: false, 
+        error: {
+          message: error.message || 'Error al crear factura',
+          code: error.code || 'manual_invoice_error'
+        }
+      }, { status: 500 });
+    }
   } catch (error: any) {
     console.error('❌ Error al crear factura manual:', error);
     return NextResponse.json({ 
