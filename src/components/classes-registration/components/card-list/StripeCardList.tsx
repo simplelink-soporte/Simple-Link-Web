@@ -41,10 +41,12 @@ export function StripeCardList({
 
   // Efecto para controlar la altura del contenedor para la animación
   useEffect(() => {
-    if (contentRef.current && isExpanded) {
-      setHeight(contentRef.current.scrollHeight);
-    } else {
-      setHeight(0);
+    if (contentRef.current) {
+      if (isExpanded || showCardForm) {
+        setHeight(contentRef.current.scrollHeight);
+      } else {
+        setHeight(0);
+      }
     }
   }, [isExpanded, cards.length, showCardForm]);
 
@@ -117,7 +119,7 @@ export function StripeCardList({
       {/* Lista de tarjetas */}
       <motion.div
         className="overflow-hidden"
-        style={{ height: isExpanded ? 'auto' : '0px' }}
+        style={{ height: isExpanded || showCardForm ? 'auto' : '0px' }}
       >
         <AnimatePresence>
           <motion.div

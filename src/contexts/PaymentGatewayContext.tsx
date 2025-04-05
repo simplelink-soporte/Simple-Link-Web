@@ -103,6 +103,102 @@ export function PaymentGatewayProvider({
         return;
       }
 
+      // Función para verificar la configuración de MercadoPago
+      async function checkMercadoPago(empresaId: string, country: string | null, mounted: boolean): Promise<boolean> {
+        console.log('[PaymentGatewayContext] Consultando MercadoPago para empresa de Argentina:', { empresaId });
+        
+        const { data: mpData, error: mpError } = await supabase
+          .from('mercadopago_connections')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .single();
+
+        if (mpError && mpError.code !== 'PGRST116') { // Ignoramos el error "no se encontró registro único"
+          throw mpError;
+        }
+
+        if (!mpData) {
+          console.warn('[PaymentGatewayContext] No se encontró configuración de MercadoPago:', { empresaId });
+          
+          if (mounted) {
+            setConfig({
+              activeGateway: 'none',
+              isLoading: false,
+              error: new Error('No se encontró configuración de MercadoPago'),
+              country,
+              isArgentina: true,
+              stripeAccountId: null,
+              stripeConnected: false,
+              mercadoPagoUserId: null,
+              mercadoPagoConnected: false
+            });
+          }
+          return false;
+        }
+
+        console.log('[PaymentGatewayContext] Configuración de MercadoPago encontrada:', {
+          empresaId,
+          mercadoPagoUserId: mpData.mercadopago_user_id,
+          status: mpData.account_status
+        });
+
+        if (mounted) {
+          setConfig({
+            activeGateway: 'mercadopago',
+            isLoading: false,
+            error: null,
+            country,
+            isArgentina: true,
+            stripeAccountId: null,
+            stripeConnected: false,
+            mercadoPagoUserId: mpData.mercadopago_user_id,
+            mercadoPagoConnected: !!mpData.mercadopago_user_id && mpData.account_status === 'active'
+          });
+        }
+        return true;
+      }
+
+      // Función para verificar la configuración de Stripe
+      async function checkStripe(empresaId: string, country: string | null, mounted: boolean): Promise<boolean> {
+        console.log('[PaymentGatewayContext] Consultando Stripe para empresa:', { empresaId });
+        
+        const { data: stripeData, error: stripeError } = await supabase
+          .rpc('get_public_stripe_connection', {
+            p_empresa_id: empresaId
+          });
+
+        if (stripeError) throw stripeError;
+
+        if (!stripeData || stripeData.error) {
+          console.warn('[PaymentGatewayContext] No se encontró configuración de Stripe:', { 
+            empresaId,
+            error: stripeData?.error || 'Desconocido' 
+          });
+          return false;
+        }
+
+        console.log('[PaymentGatewayContext] Configuración de Stripe encontrada:', {
+          empresaId,
+          stripeAccountId: stripeData.stripe_account_id,
+          status: stripeData.account_status
+        });
+
+        if (mounted) {
+          setConfig({
+            activeGateway: 'stripe',
+            isLoading: false,
+            error: null,
+            country,
+            isArgentina: false,
+            stripeAccountId: stripeData.stripe_account_id,
+            stripeConnected: !!stripeData.stripe_account_id && stripeData.charges_enabled,
+            mercadoPagoUserId: null,
+            mercadoPagoConnected: false
+          });
+        }
+        return true;
+      }
+
       try {
         console.log('[PaymentGatewayContext] Verificando país y pasarela para empresa:', { empresaId });
 
@@ -137,81 +233,25 @@ export function PaymentGatewayProvider({
           }));
         }
 
-        // Paso 2: Verificar la pasarela apropiada según el país
+        // MODIFICACIÓN: Verificar primero Stripe para todos los países excepto Argentina
+        // Para Argentina, verificar solo MercadoPago
         if (isArgentina) {
-          // Para Argentina, verificar MercadoPago
-          console.log('[PaymentGatewayContext] Consultando MercadoPago para empresa de Argentina:', { empresaId });
-          
-          const { data: mpData, error: mpError } = await supabase
-            .from('mercadopago_connections')
-            .select('*')
-            .eq('empresa_id', empresaId)
-            .single();
-
-          if (mpError && mpError.code !== 'PGRST116') { // Ignoramos el error "no se encontró registro único"
-            throw mpError;
-          }
-
-          if (!mpData) {
-            console.warn('[PaymentGatewayContext] No se encontró configuración de MercadoPago:', { empresaId });
-            
-            if (mounted) {
-              setConfig({
-                activeGateway: 'none',
-                isLoading: false,
-                error: new Error('No se encontró configuración de MercadoPago'),
-                country,
-                isArgentina: true,
-                stripeAccountId: null,
-                stripeConnected: false,
-                mercadoPagoUserId: null,
-                mercadoPagoConnected: false
-              });
-            }
-            return;
-          }
-
-          console.log('[PaymentGatewayContext] Configuración de MercadoPago encontrada:', {
-            empresaId,
-            mercadoPagoUserId: mpData.mercadopago_user_id,
-            status: mpData.account_status
-          });
-
-          if (mounted) {
-            setConfig({
-              activeGateway: 'mercadopago',
-              isLoading: false,
-              error: null,
-              country,
-              isArgentina: true,
-              stripeAccountId: null,
-              stripeConnected: false,
-              mercadoPagoUserId: mpData.mercadopago_user_id,
-              mercadoPagoConnected: !!mpData.mercadopago_user_id && mpData.account_status === 'active'
-            });
-          }
+          // Lógica exclusiva para Argentina: verificar MercadoPago
+          await checkMercadoPago(empresaId, country, mounted);
         } else {
-          // Para otros países, verificar Stripe
-          console.log('[PaymentGatewayContext] Consultando Stripe para empresa no-Argentina:', { empresaId });
+          // Para todos los demás países (incluyendo México), intentar primero con Stripe
+          // Si Stripe falla o no está configurado, no caemos back a MercadoPago
+          const stripeResult = await checkStripe(empresaId, country, mounted);
           
-          const { data: stripeData, error: stripeError } = await supabase
-            .rpc('get_public_stripe_connection', {
-              p_empresa_id: empresaId
-            });
-
-          if (stripeError) throw stripeError;
-
-          if (!stripeData || stripeData.error) {
-            console.warn('[PaymentGatewayContext] No se encontró configuración de Stripe:', { 
-              empresaId,
-              error: stripeData?.error || 'Desconocido' 
-            });
+          // Si no se encontró configuración de Stripe, mostrar error específico
+          if (!stripeResult) {
+            console.warn('[PaymentGatewayContext] No se encontró configuración de Stripe:', { empresaId });
             
             if (mounted) {
               setConfig({
                 activeGateway: 'none',
                 isLoading: false,
-                error: new Error(stripeData?.error || 'No se encontró configuración de Stripe'),
+                error: new Error('No se encontró configuración de Stripe para este país'),
                 country,
                 isArgentina: false,
                 stripeAccountId: null,
@@ -220,27 +260,6 @@ export function PaymentGatewayProvider({
                 mercadoPagoConnected: false
               });
             }
-            return;
-          }
-
-          console.log('[PaymentGatewayContext] Configuración de Stripe encontrada:', {
-            empresaId,
-            stripeAccountId: stripeData.stripe_account_id,
-            status: stripeData.account_status
-          });
-
-          if (mounted) {
-            setConfig({
-              activeGateway: 'stripe',
-              isLoading: false,
-              error: null,
-              country,
-              isArgentina: false,
-              stripeAccountId: stripeData.stripe_account_id,
-              stripeConnected: !!stripeData.stripe_account_id && stripeData.charges_enabled,
-              mercadoPagoUserId: null,
-              mercadoPagoConnected: false
-            });
           }
         }
       } catch (error) {

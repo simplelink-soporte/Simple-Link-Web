@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { usePaymentGatewayByCountry } from '@/hooks/usePaymentGatewayByCountry';
+import { useOrganization } from '@/contexts/OrganizationContext';
 import { StripeCardList } from './StripeCardList';
 import { MercadoPagoCardList } from './MercadoPagoCardList';
 import { CardListProps, StoredCard } from './shared/types';
@@ -12,6 +13,9 @@ import { Loader2 } from 'lucide-react';
  * según la pasarela de pago activa (Stripe o MercadoPago)
  */
 export function CardList(props: CardListProps) {
+  const { organization } = useOrganization();
+  const empresaId = props.empresaId || (organization ? organization.id : null);
+
   const { 
     activeGateway, 
     isLoading: isLoadingGateway,
@@ -19,7 +23,7 @@ export function CardList(props: CardListProps) {
     mercadoPagoUserId,
     stripeConnected,
     mercadoPagoConnected
-  } = usePaymentGatewayByCountry(props.empresaId || null);
+  } = usePaymentGatewayByCountry(empresaId);
 
   // Estado local para verificar conectividad de pasarela
   const [hasPendingCheck, setHasPendingCheck] = useState(true);
@@ -35,7 +39,7 @@ export function CardList(props: CardListProps) {
         activeGateway,
         stripeAccountId,
         mercadoPagoUserId,
-        empresaId: props.empresaId,
+        empresaId,
         stripeConnected,
         mercadoPagoConnected
       });
@@ -46,7 +50,7 @@ export function CardList(props: CardListProps) {
       // Marcar que ya no hay verificaciones pendientes
       setHasPendingCheck(false);
     }
-  }, [isLoadingGateway, hasPendingCheck]); // Reducimos las dependencias al mínimo necesario
+  }, [isLoadingGateway, hasPendingCheck, activeGateway, stripeAccountId, mercadoPagoUserId, empresaId, stripeConnected, mercadoPagoConnected]);
 
   // Si está cargando la información de la pasarela, mostrar un loading
   if (isLoadingGateway || hasPendingCheck) {
@@ -73,7 +77,7 @@ export function CardList(props: CardListProps) {
       break;
     case 'mercadopago':
       // Validamos que tengamos empresaId antes de renderizar el componente
-      if (!props.empresaId) {
+      if (!empresaId) {
         console.error('Error: Se requiere empresaId para usar MercadoPago');
         return (
           <div className="p-4 rounded-lg border border-red-200 bg-red-50 text-red-800">
@@ -96,7 +100,7 @@ export function CardList(props: CardListProps) {
           <MercadoPagoCardList
             {...props}
             mercadoPagoUserId={mercadoPagoUserId || props.mercadoPagoUserId}
-            empresaId={props.empresaId}
+            empresaId={empresaId}
             amount={props.amount || 1}
           />
         );
