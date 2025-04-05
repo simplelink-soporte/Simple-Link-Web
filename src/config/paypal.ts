@@ -42,15 +42,15 @@ export const PAYPAL_CONFIG: PayPalConfig = {
   SUBSCRIPTION_PLANS: {
     PRO_MONTHLY: {
       plan_id: PLAN_IDS[isProduction ? 'production' : 'development'].PRO_MONTHLY,
-      price: 32
+      price: 64
     },
     PRO_QUARTERLY: {
       plan_id: PLAN_IDS[isProduction ? 'production' : 'development'].PRO_QUARTERLY,
-      price: 86.40
+      price: 172
     },
     PRO_ANNUALLY: {
       plan_id: PLAN_IDS[isProduction ? 'production' : 'development'].PRO_ANNUALLY,
-      price: 249
+      price: 499
     }
   },
   CLIENT_ID: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
