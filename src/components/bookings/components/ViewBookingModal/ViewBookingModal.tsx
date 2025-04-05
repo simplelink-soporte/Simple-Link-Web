@@ -925,7 +925,14 @@ export function ViewBookingModal({
           hasGuarantee={currentBooking?.paymentType === 'guarantee'}
           totalAmount={processedData?.totalAmount}
           guaranteePercentage={currentBooking?.guarantee_percentage}
-          booking={currentBooking}
+          booking={{
+            id: currentBooking?.id || '',
+            stripe_payment_method_id: currentBooking?.stripe_payment_method_id,
+            customer_name: currentBooking?.customer_name,
+            customer_email: currentBooking?.customer_email,
+            customer_id: currentBooking?.customer_id,
+            payment_type: currentBooking?.paymentType // Pasar el tipo de pago para determinar si mostrar opciones de reembolso
+          }}
         />
       </>,
       document.body

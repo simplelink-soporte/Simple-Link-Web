@@ -1,0 +1,421 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=45, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=45.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=20, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=20.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=24, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=24.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=0, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=0.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=89, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=89.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=45, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=45.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=20, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=20.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=24, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=24.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=0, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=0.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=89, País=\"España\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"España\" (normalizado: \"ESPAÑA\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado España/Europa, usando €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=€"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=89.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "b02e6fff-e60c-43b4-8f97-06fef244a784",
+        "hasGuarantee": false,
+        "totalAmount": 89,
+        "timestamp": "2025-04-05T05:02:26.516Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando facturas para la reserva:",
+      "b02e6fff-e60c-43b4-8f97-06fef244a784"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [BookingInvoiceService] Buscando facturas para la reserva: b02e6fff-e60c-43b4-8f97-06fef244a784"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al obtener facturas de Stripe:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando datos del cliente para reserva:",
+      "b02e6fff-e60c-43b4-8f97-06fef244a784"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 DIAGNÓSTICO DE MODAL DE CANCELACIÓN:",
+      {
+        "hasGuarantee": false,
+        "stripeAccountIdPresente": true,
+        "stripeEnabled": false,
+        "isLoadingStripe": false,
+        "datosFactura": {
+          "hasInvoice": false,
+          "invoicesCount": 0
+        },
+        "condicionMostrarOpciones": false,
+        "timestamp": "2025-04-05T05:02:26.521Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "booking",
+        "canChargeNoShow": false,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 89
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ [BookingInvoiceService] Error al buscar facturas:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ No se encontraron facturas para esta reserva"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 DIAGNÓSTICO DE MODAL DE CANCELACIÓN:",
+      {
+        "hasGuarantee": false,
+        "stripeAccountIdPresente": true,
+        "stripeEnabled": false,
+        "isLoadingStripe": false,
+        "datosFactura": {
+          "hasInvoice": false,
+          "invoicesCount": 0
+        },
+        "condicionMostrarOpciones": false,
+        "timestamp": "2025-04-05T05:02:26.575Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos del cliente encontrados en BD:",
+      {
+        "hasCustomerEmail": false,
+        "hasCustomerName": false
+      }
+    ]
+  }
+]

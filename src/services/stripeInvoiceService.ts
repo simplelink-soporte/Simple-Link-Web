@@ -20,16 +20,30 @@ class StripeInvoiceService {
   private stripe: Stripe | null = null;
 
   /**
-   * Inicializa la instancia de Stripe
+   * Determina si estamos en el cliente (browser) o en el servidor
+   * @returns true si estamos en el cliente
+   */
+  private isClient(): boolean {
+    return typeof window !== 'undefined';
+  }
+
+  /**
+   * Inicializa la instancia de Stripe - solo debe usarse en el servidor
    * @param stripeAccountId ID de la cuenta de Stripe del club (Connect)
    * @returns Una instancia configurada de Stripe
    */
   private getStripeInstance(stripeAccountId?: string): Stripe {
+    // Si estamos en el cliente, no deberíamos llamar a este método
+    if (this.isClient()) {
+      console.warn('⚠️ Intento de inicializar Stripe directamente en el cliente. Las operaciones de Stripe deben realizarse a través de endpoints API.');
+      throw new Error('Las operaciones de Stripe no deben iniciarse directamente en el cliente. Usa los endpoints API.');
+    }
+    
     if (!this.stripe) {
-      const stripeSecretKey = process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
+      const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
       
       if (!stripeSecretKey) {
-        throw new Error('No se ha configurado la clave secreta de Stripe');
+        throw new Error('No se ha configurado la clave secreta de Stripe en el servidor');
       }
       
       const config: Stripe.StripeConfig = {
