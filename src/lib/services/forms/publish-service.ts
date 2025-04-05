@@ -62,6 +62,10 @@ export class FormPublishService {
         created_at: link.created_at
       });
 
+      // Extraer el país de los metadatos del link si existe
+      const countryFromSettings = link.settings?.metadata?.country || null;
+      FormPublishService.debug.log('🌍 País del formulario:', countryFromSettings);
+
       // Usar plantilla por defecto si no hay campos definidos
       const fields = link.settings?.fields || BOOKING_FORM_TEMPLATE;
       FormPublishService.debug.log('📋 Campos del formulario:', { count: fields.length });
@@ -100,7 +104,8 @@ export class FormPublishService {
         status: 'published',
         metadata: {
           createdBy: link.settings?.created_by,
-          updatedBy: link.settings?.updated_by
+          updatedBy: link.settings?.updated_by,
+          country: countryFromSettings // Incluir el país en los metadatos
         },
         createdAt: link.created_at ? new Date(link.created_at) : undefined,
         updatedAt: link.updated_at ? new Date(link.updated_at) : undefined
@@ -233,6 +238,30 @@ export class FormPublishService {
 
       this.validateFields(form.fields);
 
+      // Variable para almacenar el país
+      let countryFromEmpresa = form.country || null;
+      
+      // Si no se proporciona el país en el formulario, obtenerlo de la base de datos
+      if (countryFromEmpresa === null) {
+        FormPublishService.debug.log('🌍 Obteniendo país de la base de datos...');
+        
+        // Obtener el país de la empresa
+        const { data: empresaData, error: empresaError } = await this.supabase
+          .from('empresas')
+          .select('country, business_name, name')
+          .eq('id', form.empresa_id)
+          .single();
+
+        if (empresaError) {
+          FormPublishService.debug.error('Error al obtener país de la empresa:', empresaError);
+          throw new Error(`Error al obtener datos de la empresa: ${empresaError.message}`);
+        }
+
+        countryFromEmpresa = empresaData?.country || null;
+      }
+      
+      FormPublishService.debug.log('🌍 País de la empresa:', countryFromEmpresa);
+
       // Priorizar el nombre comercial de la empresa si está disponible
       const empresaNombre = form.business_name
         ? form.business_name
@@ -270,6 +299,7 @@ export class FormPublishService {
         }
       }
 
+      // Incluir el país en los metadatos
       const linkData = {
         empresa_id: form.empresa_id,
         type: 'bookings',
@@ -279,12 +309,19 @@ export class FormPublishService {
           description: form.description || '',
           fields: form.fields,
           theme: form.theme || 'light',
-          customization: form.customization || {}
+          customization: form.customization || {},
+          // Preservar configuraciones si existen
+          ...(form.settings || {}),
+          // Incluir metadatos con el país
+          metadata: {
+            ...(form.settings?.metadata || {}),
+            country: countryFromEmpresa
+          }
         },
         is_active: true
       };
 
-      FormPublishService.debug.log('📝 Datos a insertar:', linkData);
+      FormPublishService.debug.log('📝 Datos a insertar (con país):', linkData);
 
       const { data: link, error: linkError } = await this.supabase
         .from('company_links')
@@ -303,7 +340,7 @@ export class FormPublishService {
 
       // Usar ruta absoluta para el formulario público
       const url = `/reservas/${link.slug}`;
-      FormPublishService.debug.log('✅ Formulario publicado:', { url, linkData });
+      FormPublishService.debug.log('✅ Formulario publicado con país:', { url, country: countryFromEmpresa });
 
       return url;
     } catch (error) {

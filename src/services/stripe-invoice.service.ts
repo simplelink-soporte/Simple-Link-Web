@@ -1,53 +1,17 @@
 import { createId } from '@paralleldrive/cuid2';
 import { Stripe } from 'stripe';
 import { createSupabaseClient } from '@/lib/supabase';
+import { countryDetectionService } from './country-detection.service';
 
 /**
  * Obtiene el código de moneda según el país proporcionado
  * @param country Código ISO o nombre del país
  * @returns Código de moneda (mxn, ars, eur)
+ * @deprecated Use countryDetectionService.getCurrencyCodeByCountry en su lugar
  */
 const getCurrencyCodeByCountry = (country?: string | null): string => {
-  if (!country) {
-    console.log('⚠️ No se proporcionó país, usando EUR por defecto');
-    return 'eur';
-  }
-  
-  const countryLower = country.toLowerCase();
-  
-  // Casos para México
-  if (countryLower === 'mx' || 
-      countryLower === 'mexico' || 
-      countryLower === 'méxico' || 
-      countryLower.includes('mex')) {
-    console.log(`🌎 País detectado como México, usando moneda: mxn`);
-    return 'mxn';
-  }
-  
-  // Casos para Argentina
-  if (countryLower === 'ar' || 
-      countryLower === 'argentina' || 
-      countryLower.includes('arg')) {
-    console.log(`🌎 País detectado como Argentina, usando moneda: ars`);
-    return 'ars';
-  }
-  
-  // Casos para España/Europa
-  if (countryLower === 'es' || 
-      countryLower === 'spain' || 
-      countryLower === 'españa' || 
-      countryLower === 'espana' || 
-      countryLower === 'europa' || 
-      countryLower === 'europe' || 
-      countryLower.includes('esp') ||
-      countryLower.includes('eur')) {
-    console.log(`🌎 País detectado como España/Europa, usando moneda: eur`);
-    return 'eur';
-  }
-  
-  // Si llegamos aquí, es un país desconocido o no especificado
-  console.log(`⚠️ País no reconocido (${country}), usando EUR por defecto`);
-  return 'eur';
+  // Usar el servicio centralizado de detección de países
+  return countryDetectionService.getCurrencyCodeByCountry(country || '');
 };
 
 interface CreateInvoiceParams {
@@ -57,6 +21,7 @@ interface CreateInvoiceParams {
   amount: number;
   description: string;
   metadata?: Record<string, string>;
+  contextCountry?: string | null; // Nuevo parámetro opcional para el país desde el contexto
 }
 
 interface CreateManualBookingInvoiceParams {
@@ -73,7 +38,7 @@ interface CreateManualBookingInvoiceParams {
   paymentType?: 'booking' | 'deposit'; // Tipo de pago: completo o seña
   isPartialPayment?: boolean; // Indica si es un pago parcial
   totalAmount?: number; // Monto total de la reserva, importante para cálculos de seña
-  country?: string; // Añadir país para determinar la moneda
+  country?: string; // Mantener este campo para reservas manuales
 }
 
 /**
@@ -82,8 +47,6 @@ interface CreateManualBookingInvoiceParams {
  */
 export class StripeInvoiceService {
   private supabase = createSupabaseClient();
-  private countryCache: Record<string, string> = {};
-  private defaultCountry = process.env.DEFAULT_COUNTRY || 'MX';
   
   // Instancia única (patrón singleton)
   private static instance: StripeInvoiceService;
@@ -102,81 +65,17 @@ export class StripeInvoiceService {
    * @returns Código ISO o nombre del país, o null si no se encuentra
    */
   private async getCountryByOrganizationId(empresaId?: string): Promise<string | null> {
-    if (!empresaId) return null;
-    
-    // Crear una clave única para este empresaId
-    const cacheKey = `country_${empresaId}`;
-    
-    // Verificar si ya tenemos este país en caché (dentro de la misma sesión)
-    if (this.countryCache && this.countryCache[cacheKey]) {
-      console.log(`🌎 [Cache] Usando país en caché para organización ${empresaId}:`, this.countryCache[cacheKey]);
-      return this.countryCache[cacheKey];
+    if (!empresaId) {
+      console.error('❌ No se proporcionó ID de organización para obtener el país');
+      return null;
     }
     
     try {
-      console.log(`🔎 Consultando país para organización ${empresaId} - intentando obtener org_details...`);
-      
-      // Primero intentar obtener de la tabla organizations_details que puede tener más datos
-      const { data: orgDetails } = await this.supabase
-        .from('organizations_details')
-        .select('country')
-        .eq('organization_id', empresaId)
-        .single();
-      
-      if (orgDetails?.country) {
-        // Guardar en caché
-        this.countryCache[cacheKey] = orgDetails.country;
-        
-        console.log(`🌎 País encontrado en organizations_details:`, orgDetails.country);
-        return orgDetails.country;
-      }
-      
-      // Si no se encuentra en organizations_details, intentar en la tabla principal
-      console.log(`🔎 Consultando país en tabla organizations para ${empresaId}...`);
-      const { data: org } = await this.supabase
-        .from('organizations')
-        .select('country, name')
-        .eq('id', empresaId)
-        .single();
-      
-      // Si tenemos el país, guardarlo en caché y devolverlo
-      if (org?.country) {
-        this.countryCache[cacheKey] = org.country;
-        
-        console.log(`🌎 País encontrado en organizations:`, org.country);
-        return org.country;
-      }
-      
-      // Si no tenemos país pero tenemos el nombre, intentar inferirlo
-      if (org?.name) {
-        console.log(`🔍 Intentando inferir país por nombre:`, org.name);
-        // Inferir país a partir del nombre (si contiene México, Argentina, España)
-        if (org.name.toLowerCase().includes('méxico') || org.name.toLowerCase().includes('mexico')) {
-          this.countryCache[cacheKey] = 'MX';
-          console.log(`🌎 País inferido por nombre de organización:`, 'MX');
-          return 'MX';
-        }
-        if (org.name.toLowerCase().includes('argentina')) {
-          this.countryCache[cacheKey] = 'AR';
-          console.log(`🌎 País inferido por nombre de organización:`, 'AR');
-          return 'AR';
-        }
-        if (org.name.toLowerCase().includes('españa') || org.name.toLowerCase().includes('espana')) {
-          this.countryCache[cacheKey] = 'ES';
-          console.log(`🌎 País inferido por nombre de organización:`, 'ES');
-          return 'ES';
-        }
-      }
-      
-      // Si no se pudo determinar por ningún método, usar el país por defecto configurado
-      console.log(`⚠️ No se encontró país para organización ${empresaId}. Usando país por defecto:`, this.defaultCountry);
-      this.countryCache[cacheKey] = this.defaultCountry;
-      return this.defaultCountry;
-    } catch (error) {
-      console.error('❌ Error al obtener el país de la organización:', error);
-      // En caso de error, usar el país por defecto configurado
-      console.log('⚠️ Usando país por defecto debido a error:', this.defaultCountry);
-      return this.defaultCountry;
+      // Utilizar el servicio especializado para la detección de países
+      return await countryDetectionService.getCountryByOrganizationId(empresaId);
+    } catch (error: any) {
+      console.error(`❌ Error al obtener país para organización ${empresaId}:`, error.message);
+      throw error; // Propagar el error para que el llamador pueda manejarlo
     }
   }
 
@@ -224,22 +123,25 @@ export class StripeInvoiceService {
         ...paymentMetadata // Priorizar los metadatos del PaymentIntent
       };
       
-      // Obtener el país desde los metadatos o desde la organización
-      let country = updatedMetadata?.country || '';
+      // Obtener el país, priorizando el país del contexto (si existe)
+      let country = params.contextCountry || updatedMetadata?.country || '';
       const empresaId = updatedMetadata?.empresaId || '';
       
       // Si no tenemos país pero tenemos empresaId, obtener el país desde la BD
+      // Solo hacemos la consulta si NO tenemos el país desde el contexto
       if (!country && empresaId) {
-        console.log(`🔍 [${requestId}] Obteniendo país de la organización:`, empresaId);
+        console.log(`🔍 [${requestId}] No se proporcionó país desde contexto, obteniendo país de la organización:`, empresaId);
         const dbCountry = await this.getCountryByOrganizationId(empresaId);
         if (dbCountry) {
           country = dbCountry;
         }
         console.log(`🌎 [${requestId}] País obtenido de la base de datos:`, country || 'No encontrado');
+      } else if (params.contextCountry) {
+        console.log(`🌎 [${requestId}] Usando país desde contexto:`, params.contextCountry);
       }
       
-      // Determinar la moneda según el país
-      const currencyCode = getCurrencyCodeByCountry(country);
+      // Determinar la moneda según el país usando el servicio centralizado
+      const currencyCode = countryDetectionService.getCurrencyCodeByCountry(country || '');
       
       console.log(`🌎 [${requestId}] País detectado: ${country || 'No especificado'}, usando moneda: ${currencyCode}`);
       
@@ -490,20 +392,39 @@ export class StripeInvoiceService {
         stripeAccount: params.stripeAccountId
       });
 
-      // 2. Si no hay parámetro de país explícito, intentar obtenerlo de la base de datos
-      let country = params.country || '';
-      if (!country && params.empresaId) {
-        console.log(`🔍 [${requestId}] Obteniendo país de la organización para factura manual:`, params.empresaId);
-        const dbCountry = await this.getCountryByOrganizationId(params.empresaId);
-        if (dbCountry) {
-          country = dbCountry;
+      // 2. Obtener el país de la organización
+      let country = '';
+      try {
+        if (params.country) {
+          // Si se proporciona un país explícito, usarlo
+          country = params.country;
+          console.log(`🌎 [${requestId}] Usando país proporcionado explícitamente:`, country);
+        } else if (params.empresaId) {
+          console.log(`🔍 [${requestId}] Obteniendo país de la organización para factura manual:`, params.empresaId);
+          const dbCountry = await this.getCountryByOrganizationId(params.empresaId);
+          if (dbCountry) {
+            country = dbCountry;
+            console.log(`🌎 [${requestId}] País obtenido de la base de datos:`, country);
+          }
         }
-        console.log(`🌎 [${requestId}] País obtenido de la base de datos para factura manual:`, country || 'No encontrado');
+        
+        if (!country) {
+          throw new Error(`No se pudo determinar el país para la factura de la reserva ${params.bookingId}`);
+        }
+      } catch (countryError: any) {
+        console.error(`❌ [${requestId}] Error al obtener país para factura:`, countryError.message);
+        throw new Error(`Error al determinar el país: ${countryError.message}`);
       }
 
       // 3. Determinar la moneda según el país
-      const currencyCode = getCurrencyCodeByCountry(country);
-      console.log(`🌎 [${requestId}] Usando moneda para factura manual: ${currencyCode} (país: ${country || 'No especificado'})`);
+      let currencyCode;
+      try {
+        currencyCode = countryDetectionService.getCurrencyCodeByCountry(country);
+        console.log(`🌎 [${requestId}] Usando moneda para factura manual: ${currencyCode} (país: ${country})`);
+      } catch (currencyError: any) {
+        console.error(`❌ [${requestId}] Error al determinar moneda para el país ${country}:`, currencyError.message);
+        throw new Error(`Error al determinar la moneda: ${currencyError.message}`);
+      }
 
       // 3. Buscar o crear el cliente si es necesario
       let customerId = params.customerId;

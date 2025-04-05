@@ -1,0 +1,1129 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando duración para timeSelection:",
+      {
+        "startTime": "14:00",
+        "endTime": "15:00",
+        "slots": 4,
+        "durationInMinutes": 60,
+        "calculatedFromSlots": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Creando reserva manual con datos:",
+      {
+        "courtId": "888df223-0384-42e5-8b29-4e8991750018",
+        "date": "2025-04-03",
+        "startTime": "14:00",
+        "endTime": "15:00",
+        "courtPrice": 450,
+        "rentalItemsPrice": 240,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "1577a8cf-6234-42d2-850d-d173f014b86d",
+            "quantity": 2,
+            "duration": 60,
+            "pricePerUnit": 120,
+            "price": 240,
+            "totalPrice": 240
+          }
+        ],
+        "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📝 Creando reserva con datos:",
+      {
+        "courtId": "888df223-0384-42e5-8b29-4e8991750018",
+        "date": "2025-04-03",
+        "startTime": "14:00",
+        "endTime": "15:00",
+        "courtPrice": 450,
+        "rentalItemsPrice": 240,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "1577a8cf-6234-42d2-850d-d173f014b86d",
+            "quantity": 2,
+            "duration": 60,
+            "pricePerUnit": 120,
+            "price": 240,
+            "totalPrice": 240
+          }
+        ],
+        "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "generateInvoice": true,
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "14:00",
+          "end": "15:00",
+          "timezone": "America/New_York",
+          "localStart": "2025-04-03T14:00:00.000-04:00",
+          "localEnd": "2025-04-03T15:00:00.000-04:00"
+        },
+        "utc": {
+          "startDateTimeUTC": "2025-04-03 18:00:00",
+          "endDateTimeUTC": "2025-04-03 19:00:00",
+          "isOvernightUTC": false
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Participantes transformados:",
+      {
+        "original": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "transformed": [
+          {
+            "user_id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Parámetros de la reserva:",
+      {
+        "p_court_id": "888df223-0384-42e5-8b29-4e8991750018",
+        "p_date": "2025-04-03",
+        "p_start_time": "2025-04-03 18:00:00",
+        "p_end_time": "2025-04-03 19:00:00",
+        "p_court_price": 450,
+        "p_rental_items_price": 240,
+        "p_payment_method": "cash",
+        "p_payment_status": "completed",
+        "p_payment_type": "booking",
+        "p_deposit_amount": 0,
+        "p_title": null,
+        "p_description": null,
+        "p_participants": [
+          {
+            "user_id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "p_rental_items": [
+          {
+            "item_id": "1577a8cf-6234-42d2-850d-d173f014b86d",
+            "quantity": 2,
+            "price_per_unit": 120,
+            "total_price": 240
+          }
+        ],
+        "p_reservation_type": "booking",
+        "p_class_id": null,
+        "p_class_session_price": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Llamando al procedimiento create_booking_v2 con los parámetros mostrados"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Respuesta completa del procedimiento create_booking_v2:",
+      {
+        "success": true,
+        "statusCode": 200,
+        "resultType": "string",
+        "resultValue": "b3f69da3-a8bb-4692-92af-b762857c9e4c"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ UUID de reserva obtenido directamente:",
+      "b3f69da3-a8bb-4692-92af-b762857c9e4c"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧾 Intentando generar factura para reserva:",
+      {
+        "bookingId": "b3f69da3-a8bb-4692-92af-b762857c9e4c",
+        "paymentType": "booking",
+        "paymentStatus": "completed",
+        "isDepositPayment": false,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "⚠️ No se proporcionó empresaId en los datos de la reserva, obteniendo de la cancha"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ID de empresa obtenido desde la cancha:",
+      {
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "courtId": "888df223-0384-42e5-8b29-4e8991750018",
+        "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando información de cliente para factura:",
+      {
+        "bookingData": {
+          "courtId": "888df223-0384-42e5-8b29-4e8991750018",
+          "date": "2025-04-03",
+          "startTime": "14:00",
+          "endTime": "15:00",
+          "courtPrice": 450,
+          "rentalItemsPrice": 240,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "paymentType": "booking",
+          "depositAmount": 0,
+          "participants": [
+            {
+              "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+              "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+              "role": "player"
+            }
+          ],
+          "rentalItems": [
+            {
+              "itemId": "1577a8cf-6234-42d2-850d-d173f014b86d",
+              "quantity": 2,
+              "duration": 60,
+              "pricePerUnit": 120,
+              "price": 240,
+              "totalPrice": 240
+            }
+          ],
+          "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+          "generateInvoice": true,
+          "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634"
+        },
+        "bookingId": "b3f69da3-a8bb-4692-92af-b762857c9e4c"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Cliente encontrado en datos del participante (usuario):",
+      {
+        "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+        "email": "georgeclooney11@simple.com",
+        "nombre": "George Clooney"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Buscando/creando cliente en Stripe mediante API:",
+      {
+        "email": "georgeclooney11@simple.com",
+        "name": "George Clooney",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 2796ms"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Error al buscar/crear cliente en Stripe:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💵 Generando factura por pago COMPLETO:",
+      {
+        "amount": 690,
+        "isPartialPayment": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🌐 Llamando a API para generar factura desde el cliente..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Actualizando participantes automáticamente..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Actualizando participantes para clases:",
+      {
+        "totalClases": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Analizando ID completo:",
+      "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962-9c8f7d57-dff8-42a9-aef8-90f43e82574f-15:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para clase:",
+      {
+        "idCompleto": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962-9c8f7d57-dff8-42a9-aef8-90f43e82574f-15:00",
+        "classId": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962",
+        "date": "2025-04-03",
+        "startTime": "15:00",
+        "endTime": "18:00",
+        "isSuspended": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Zona horaria de la sede:",
+      "America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 ClassQueryService - Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "15:00",
+          "end": "18:00",
+          "timezone": "America/New_York",
+          "localStart": "2025-04-03T15:00:00.000-04:00",
+          "localEnd": "2025-04-03T18:00:00.000-04:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "2025-04-03 19:00:00.000",
+          "end": "2025-04-03 22:00:00.000",
+          "fullStartUTC": "2025-04-03T19:00:00.000Z",
+          "fullEndUTC": "2025-04-03T22:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de clase:",
+      {
+        "classId": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962",
+        "title": "Clase 4",
+        "bookedSpots": 2,
+        "availableSpots": 78,
+        "totalCapacity": 80,
+        "isAvailable": true,
+        "isSuspended": false,
+        "horarios": {
+          "local": {
+            "date": "2025-04-03",
+            "startTime": "15:00",
+            "endTime": "18:00"
+          },
+          "utc": {
+            "date": "2025-04-03",
+            "startTime": "2025-04-03 19:00:00.000",
+            "endTime": "2025-04-03 22:00:00.000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Actualización de participantes completada."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ No hay cambios en la disponibilidad"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Resultado de generación de factura vía API:",
+      {
+        "success": true,
+        "invoiceId": "in_1R9vhPRYLT0A6sSKHYpVXsPj",
+        "invoiceUrl": "https://invoice.stripe.com/i/acct_1R9AnERYLT0A6sSK/test_YWNjdF8xUjlBbkVSWUxUMEE2c1NLLF9TNDNwMkhiUGN2eHo1ZEFoZmhnazUxaUszUDhaRXg1LDEzNDI1ODAwNQ0200SpvTX3y6?s=ap",
+        "pdfUrl": "https://pay.stripe.com/invoice/acct_1R9AnERYLT0A6sSK/test_YWNjdF8xUjlBbkVSWUxUMEE2c1NLLF9TNDNwMkhiUGN2eHo1ZEFoZmhnazUxaUszUDhaRXg1LDEzNDI1ODAwNQ0200SpvTX3y6/pdf?s=ap"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Factura generada correctamente a través de API:",
+      {
+        "invoiceId": "in_1R9vhPRYLT0A6sSKHYpVXsPj",
+        "invoiceUrl": "https://invoice.stripe.com/i/acct_1R9AnERYLT0A6sSK/test_YWNjdF8xUjlBbkVSWUxUMEE2c1NLLF9TNDNwMkhiUGN2eHo1ZEFoZmhnazUxaUszUDhaRXg1LDEzNDI1ODAwNQ0200SpvTX3y6?s=ap"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 BookingQueryService - Consultando reservas para fecha:",
+      {
+        "date": "2025-04-03",
+        "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+        "timestamp": "2025-04-03T21:53:25.881Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando rentals:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Nuevo precio total:",
+      0
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando duración para timeSelection:",
+      {
+        "startTime": "14:00",
+        "endTime": "15:00",
+        "slots": 4,
+        "durationInMinutes": 60,
+        "calculatedFromSlots": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📍 Zona horaria de la sede: America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 useClasses - Consultando clases:",
+      {
+        "date": "2025-04-03",
+        "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "includeCompleted": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Iniciando consulta:",
+      {
+        "date": "2025-04-03",
+        "options": {
+          "date": "2025-04-03",
+          "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+          "includeCompleted": true,
+          "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634"
+        },
+        "timestamp": "2025-04-03T21:53:26.388Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Incluyendo clases completadas"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔧 ClassQueryService - Construyendo query:",
+      {
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "status": [
+          "active",
+          "completed"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🏢 ClassQueryService - Aplicando filtro de sede:",
+      "04c4b1ad-ae26-4956-82b6-03a43a5f59f6"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📅 ClassQueryService - Aplicando filtro de fechas:",
+      {
+        "filter": "and(is_recurring.eq.true,start_date.lte.2025-04-03,or(end_date.is.null,end_date.gte.2025-04-03)),and(is_recurring.eq.false,start_date.eq.2025-04-03)",
+        "date": "2025-04-03"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 ClassQueryService - Resultados obtenidos:",
+      {
+        "total": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Proceso completado:",
+      {
+        "totalClases": 1,
+        "clasesValidas": 1,
+        "timestamp": "2025-04-03T21:53:26.719Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 ClassQueryService - Iniciando transformación:",
+      {
+        "totalClases": 1,
+        "date": "2025-04-03"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 ClassQueryService - Procesando clase: 7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962, Estado: active"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Sesiones específicas para esta fecha:",
+      {
+        "classId": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962",
+        "date": "2025-04-03",
+        "totalSpecificSessions": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Transformación completada:",
+      {
+        "clasesTransformadas": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ useClasses - Clases obtenidas:",
+      {
+        "total": 1,
+        "date": "2025-04-03",
+        "includeCompleted": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Actualizando participantes para clases:",
+      {
+        "totalClases": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Analizando ID completo:",
+      "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962-9c8f7d57-dff8-42a9-aef8-90f43e82574f-15:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para clase:",
+      {
+        "idCompleto": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962-9c8f7d57-dff8-42a9-aef8-90f43e82574f-15:00",
+        "classId": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962",
+        "date": "2025-04-03",
+        "startTime": "15:00",
+        "endTime": "18:00",
+        "isSuspended": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Zona horaria de la sede:",
+      "America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 ClassQueryService - Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "15:00",
+          "end": "18:00",
+          "timezone": "America/New_York",
+          "localStart": "2025-04-03T15:00:00.000-04:00",
+          "localEnd": "2025-04-03T18:00:00.000-04:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "2025-04-03 19:00:00.000",
+          "end": "2025-04-03 22:00:00.000",
+          "fullStartUTC": "2025-04-03T19:00:00.000Z",
+          "fullEndUTC": "2025-04-03T22:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de clase:",
+      {
+        "classId": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962",
+        "title": "Clase 4",
+        "bookedSpots": 2,
+        "availableSpots": 78,
+        "totalCapacity": 80,
+        "isAvailable": true,
+        "isSuspended": false,
+        "horarios": {
+          "local": {
+            "date": "2025-04-03",
+            "startTime": "15:00",
+            "endTime": "18:00"
+          },
+          "utc": {
+            "date": "2025-04-03",
+            "startTime": "2025-04-03 19:00:00.000",
+            "endTime": "2025-04-03 22:00:00.000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Actualización de participantes completada."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 Limpiando intervalo de actualización automática"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🏛️ Renderizando ClassBlock:",
+      {
+        "id": "7e75bbab-6fe6-4cf7-ae72-c9dff1dd8962-9c8f7d57-dff8-42a9-aef8-90f43e82574f-15:00",
+        "title": "Clase 4",
+        "currentParticipants": 2,
+        "capacity": 80,
+        "isFull": false,
+        "isSuspended": false,
+        "courtId": "9c8f7d57-dff8-42a9-aef8-90f43e82574f",
+        "startTime": "15:00",
+        "endTime": "18:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Usando participantes en caché para:",
+      "2025-04-03",
+      {
+        "totalClases": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏱️ Configurando actualización automática de participantes cada 2 minutos"
+    ]
+  }
+]

@@ -15,8 +15,6 @@ import { useClassBooking } from '@/hooks/useClassBooking'
 import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PaymentTypeSection } from '../components/PaymentTypeSection'
-import { PaymentMethodEnum } from '@/types/bookings';
-import { PaymentMethod as BookingPaymentMethod } from '../types/models'
 import { PaymentTypeEnum, PAYMENT_TYPES, PaymentType } from '../components/payment-types'
 import { PaymentMethod as CardPaymentMethod } from '../components/PaymentSection'
 import { PaymentSectionWithStripe } from '../components/PaymentSection'
@@ -29,11 +27,10 @@ import type { UserPackageFromDB, ClassSession } from '../types/models'
 import { fullPaymentService } from '@/services/full-payment-client.service'
 import { depositPaymentService } from '@/services/deposit-payment-client.service'
 import { requiresCardPayment } from '../components/PaymentTypeSection'
-import { classInvoiceService } from '@/services/class-invoice.service'
 import { formatCurrencyByCountry, getCurrencySymbol, getCurrencyByCountry } from '@/lib/currency-utils'
 
 // Definición de los métodos de pago disponibles
-const PAYMENT_METHODS: Record<PaymentMethodEnum, {
+const PAYMENT_METHODS: Record<PaymentTypeEnum, {
   icon: typeof IconCash
   label: string
   description: string
@@ -59,6 +56,11 @@ const PAYMENT_METHODS: Record<PaymentMethodEnum, {
     description: 'Pago seguro con tarjeta online'
   }
 }
+
+// Filtrar tipos de pago específicos si es necesario
+const FILTERED_PAYMENT_TYPES = PAYMENT_TYPES.filter((type: PaymentType) => 
+  !['card', 'cash'].includes(type.id)
+)
 
 export function SummaryStep() {
   const { state, updateState, goToStep } = useClassRegistration()
@@ -113,8 +115,48 @@ export function SummaryStep() {
     country
   } = usePaymentGatewayByCountry(empresaId || null);
 
-  // Obtener el símbolo de moneda según el país
-  const currencySymbol = useMemo(() => getCurrencySymbol(country), [country]);
+  // Obtener la moneda y símbolo directamente desde payment_config, con fallback a country
+  const { currencySymbol, currency } = useMemo(() => {
+    // Si existe payment_config y tiene un currency, lo usamos directamente
+    if (state.selectedClass?.payment_config?.currency) {
+      const configCurrency = state.selectedClass.payment_config.currency;
+      console.log(`💰 [SummaryStep] Usando moneda desde payment_config: ${configCurrency}`);
+      
+      // Ahora payment_config.currency contiene tanto el código como el símbolo (ej: "EUR €" o "MXN $")
+      // Extraer el código de moneda y el símbolo
+      let code = configCurrency;
+      let symbol = '€'; // Valor por defecto
+      
+      // Si el formato es "CÓDIGO SÍMBOLO" (con espacio)
+      if (configCurrency.includes(' ')) {
+        const parts = configCurrency.split(' ');
+        code = parts[0]; // El código está antes del espacio
+        symbol = parts[1]; // El símbolo está después del espacio
+      } 
+      // Si el valor tiene el símbolo al final sin espacio (para compatibilidad)
+      else if (configCurrency.endsWith('€')) {
+        code = configCurrency.substring(0, configCurrency.length - 1);
+        symbol = '€';
+      } else if (configCurrency.endsWith('$')) {
+        code = configCurrency.substring(0, configCurrency.length - 1);
+        symbol = '$';
+      }
+      
+      console.log(`💰 [SummaryStep] Moneda extraída: Código=${code}, Símbolo=${symbol}`);
+      
+      return { 
+        currency: code,
+        currencySymbol: symbol
+      };
+    }
+    
+    // Fallback: usar el country como antes
+    console.log(`⚠️ [SummaryStep] payment_config.currency no disponible, usando country (${country})`);
+    return { 
+      currency: getCurrencyByCountry(country),
+      currencySymbol: getCurrencySymbol(country)
+    };
+  }, [state.selectedClass?.payment_config?.currency, country]);
 
   // Log mejorado para depuración con más información
   useEffect(() => {
@@ -204,6 +246,36 @@ export function SummaryStep() {
     )
   }, [state.selectedClass?.sessions, state.selectedSessions[0]])
 
+  // Calcular precios finales basados en el tipo de pago seleccionado
+  const finalPrice = useMemo(() => {
+    if (!selectedSession) return 0;
+    
+    // Extraer el precio base de la sesión
+    const basePrice = selectedSession.price;
+    
+    // Para pagos de tipo seña, calcular el porcentaje correspondiente
+    if (selectedPaymentType === 'deposit' && state.selectedClass?.payment_config?.partialPaymentPercentage) {
+      const percentage = state.selectedClass.payment_config.partialPaymentPercentage;
+      return (basePrice * percentage) / 100;
+    }
+    
+    // Para garantías, usar el porcentaje de garantía configurado
+    if (selectedPaymentType === 'guarantee') {
+      // Obtener porcentaje de garantía del payment_config o usar el valor por defecto
+      const percentage = state.selectedClass?.payment_config?.guaranteePercentage || guaranteePercentage;
+      return (basePrice * percentage) / 100;
+    }
+    
+    // Para pagos completos o cualquier otro caso, retornar el precio total
+    return basePrice;
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, guaranteePercentage]);
+
+  // Formatear precio como string con la moneda
+  const formattedPrice = useMemo(() => {
+    // Formatear directamente el precio sin llamar a funciones externas
+    return finalPrice.toFixed(2);
+  }, [finalPrice]);
+
   // Manejar la selección del tipo de pago (pago total, seña, etc.)
   const handlePaymentTypeSelection = useCallback((type: PaymentTypeEnum | null, percentage?: number) => {
     console.log('📢 Tipo de pago seleccionado:', type, percentage ? `con porcentaje: ${percentage}%` : '');
@@ -278,9 +350,20 @@ export function SummaryStep() {
       return;
     }
     
+    // Validar que si el tipo de pago requiere tarjeta, se haya seleccionado una tarjeta
+    if (requiresCardPayment(selectedPaymentType) && (!selectedCardMethod || state.selectedPayment !== 'card')) {
+      console.log('⚠️ [SummaryStep] El tipo de pago requiere tarjeta pero no se ha seleccionado ninguna');
+      toast({
+        title: 'Tarjeta requerida',
+        description: 'Este tipo de pago requiere que agregues una tarjeta antes de confirmar la reserva',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     // Corrección para el pago en el club: si el tipo es 'booking' pero no hay método, establecer a 'cash'
     if (selectedPaymentType === 'booking' && !state.selectedPayment) {
-      console.log('⚠️ [SummaryStep] Tipo de pago "booking" detectado sin método de pago, forzando método a "cash"');
+      console.log('📢 [SummaryStep] Tipo de pago "booking" seleccionado, forzando método de pago a "cash"');
       updateState({ type: 'SELECT_PAYMENT', payload: 'cash' });
       // Esperamos brevemente para que se actualice el estado
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -297,12 +380,9 @@ export function SummaryStep() {
       return;
     }
     
-    // Establecer tipo de pago predeterminado para pagos en el club
-    if (state.selectedPayment === 'cash' && !selectedPaymentType) {
-      console.log('📋 [SummaryStep] Pago en el club detectado sin tipo específico, estableciendo tipo como "booking"');
-      setSelectedPaymentType('booking');
-      // Esperamos brevemente para que se actualice el estado
-      await new Promise(resolve => setTimeout(resolve, 100));
+    // Si se proporciona un porcentaje y el tipo es garantía, actualizarlo
+    if (selectedPaymentType === 'guarantee') {
+      console.log('📢 Porcentaje de garantía actualizado:', guaranteePercentage);
     }
     
     setIsProcessing(true);
@@ -454,24 +534,33 @@ export function SummaryStep() {
               variant: 'default'
             });
             
-            // Crear factura para pagos (completos o seña)
-            createInvoiceAfterPayment(paymentResult, isDepositPayment);
+            const paymentResultAny = paymentResult as any;
             
-            // Guardar el ID del payment intent como respaldo
-            try {
-              localStorage.setItem('lastPaymentIntentId', paymentResult.paymentIntentId || '');
-              localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
-              if (isDepositPayment) {
-                // Usamos type assertion para acceder a propiedades específicas de DepositPaymentResult
-                const depositResult = paymentResult as any;
-                localStorage.setItem('lastDepositAmount', JSON.stringify({
-                  depositAmount: depositResult.depositAmount || 0,
-                  totalAmount: depositResult.totalAmount || 0,
-                  depositPercentage: depositResult.depositPercentage || 30
-                }));
+            // FLUJO UNIFICADO DE FACTURAS:
+            // Tanto para pagos completos como para pagos de seña,
+            // la factura ya es generada automáticamente en el backend
+            if (paymentResultAny.invoiceId) {
+              console.log(`✅ [SummaryStep] Factura de pago ${isDepositPayment ? 'SEÑA' : 'COMPLETO'} ya generada en backend:`, {
+                invoiceId: paymentResultAny.invoiceId,
+                invoiceUrl: paymentResultAny.invoiceUrl
+              });
+              
+              // Guardar referencia a la factura en localStorage
+              try {
+                localStorage.setItem('lastClassInvoiceId', paymentResultAny.invoiceId || '');
+                localStorage.setItem('lastClassInvoiceUrl', paymentResultAny.invoiceUrl || '');
+              } catch (storageError) {
+                console.warn('⚠️ [SummaryStep] No se pudo guardar datos de factura en localStorage:', storageError);
               }
-            } catch (storageError) {
-              console.warn('⚠️ [SummaryStep] No se pudo guardar en localStorage:', storageError);
+              
+              // Notificar al usuario sobre la factura generada
+              toast({
+                title: 'Factura generada',
+                description: 'Se ha generado una factura para tu pago. Puedes consultarla en tu correo electrónico.',
+                variant: 'default'
+              });
+            } else {
+              console.log(`⚠️ [SummaryStep] No se recibió información de factura del backend para pago ${isDepositPayment ? 'SEÑA' : 'COMPLETO'}`);
             }
           } catch (paymentError: any) {
             console.error('❌ [SummaryStep] Error al llamar al servicio de pago:', paymentError);
@@ -515,7 +604,7 @@ export function SummaryStep() {
       });
       
       const result = await submitClassBooking({
-        paymentMethod: state.selectedPayment as PaymentMethodEnum,
+        paymentMethod: state.selectedPayment as PaymentTypeEnum,
         paymentType: paymentTypeToUse || 'booking', // Nunca enviar undefined para paymentType
         paymentMethodDetails: state.selectedPayment === 'card' && selectedCardMethod 
           ? selectedCardMethod as { id: string; [key: string]: any }
@@ -742,8 +831,8 @@ export function SummaryStep() {
       priceLabel = `Seña (${percentage}%)`;
     }
     
-    // Formatear el precio
-    const formatted = formatCurrencyByCountry(price, country);
+    // Formatear el precio directamente sin usar formatCurrencyByCountry
+    const formatted = price.toFixed(2);
     const [integerPart, decimalPart] = formatted.split('.');
     
     return (
@@ -755,7 +844,7 @@ export function SummaryStep() {
 
         {/* Precio con decimales estilizados */}
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
-          {getCurrencySymbol(country)}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
+          {currencySymbol}{integerPart}<span className="opacity-40 text-gray-600">.{decimalPart}</span>
         </p>
 
         {/* Indicador de Pago Seguro */}
@@ -767,12 +856,22 @@ export function SummaryStep() {
         </div>
       </div>
     );
-  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, country]);
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, currencySymbol]);
 
   // Determinar si el tipo de pago seleccionado requiere tarjeta
   const showCardPaymentSection = useMemo(() => {
     return requiresCardPayment(selectedPaymentType);
   }, [selectedPaymentType]);
+
+  // Determinar si el pago actual requiere tarjeta
+  const currentPaymentRequiresCard = useMemo(() => {
+    return requiresCardPayment(selectedPaymentType);
+  }, [selectedPaymentType]);
+
+  // Verificar si hay un problema de validación con la tarjeta requerida
+  const hasCardValidationIssue = useMemo(() => {
+    return currentPaymentRequiresCard && (!selectedCardMethod || state.selectedPayment !== 'card');
+  }, [currentPaymentRequiresCard, selectedCardMethod, state.selectedPayment]);
 
   if (!selectedSession || !state.selectedClass) {
     return (
@@ -896,7 +995,7 @@ export function SummaryStep() {
     // Filtrar los tipos de pago basados en los métodos disponibles de la clase
     const availablePaymentTypes = PAYMENT_TYPES.filter(type => {
       // Mapeo entre PaymentTypeEnum y los valores de la tabla classes
-      const paymentTypeToMethodMap: Record<string, BookingPaymentMethod> = {
+      const paymentTypeToMethodMap: Record<string, string> = {
         'booking': 'pay_at_club',
         'full': 'full_payment',
         'deposit': 'partial_payment',
@@ -910,19 +1009,26 @@ export function SummaryStep() {
 
     return (
       <div className="space-y-4">
-        <div className="mb-2">
-          <h3 className="text-sm font-medium text-gray-700">
-            Elige cómo deseas realizar el pago
-          </h3>
+        <div className={`space-y-0.5`}>
+          <label className="text-[13px] font-medium text-gray-700">
+            Tipo de pago
+          </label>
+          <PaymentTypeSection
+            selectedType={selectedPaymentType}
+            onSelect={handlePaymentTypeSelection}
+            viewType={isMobile ? 'mobile' : 'desktop'}
+            paymentTypes={
+              // Si la configuración de pagos de la clase no permite pagos parciales, 
+              // filtramos esta opción
+              state.selectedClass?.payment_config?.partialPaymentPercentage === undefined 
+                ? FILTERED_PAYMENT_TYPES.filter((type: PaymentType) => type.id !== 'deposit') 
+                : FILTERED_PAYMENT_TYPES
+            }
+            paymentConfig={state.selectedClass?.payment_config}
+          />
         </div>
 
-        <PaymentTypeSection
-          selectedType={selectedPaymentType}
-          onSelect={handlePaymentTypeSelection}
-          viewType={isMobile ? 'mobile' : 'desktop'}
-          paymentTypes={availablePaymentTypes}
-          paymentConfig={state.selectedClass?.payment_config}
-        />
+        {/* Sección de Método de Pago (adaptable según el tipo seleccionado) */}
       </div>
     );
   }, [selectedPaymentType, handlePaymentTypeSelection, isMobile, state.selectedClass?.availablePaymentMethods, state.selectedClass?.payment_config]);
@@ -963,137 +1069,9 @@ export function SummaryStep() {
     </motion.div>
   ), []);
 
-  // Función para crear y enviar factura después de un pago exitoso
-  const createInvoiceAfterPayment = useCallback(async (paymentResult: any, isDepositPayment: boolean) => {
-    if (!paymentResult?.paymentIntentId || !selectedSession || !empresaId || !stripeAccountId || !user?.email) {
-      console.warn('❌ [SummaryStep] No se puede crear factura: faltan datos necesarios');
-      return;
-    }
-
-    try {
-      console.log('🧾 [SummaryStep] Intentando crear factura para el pago:', {
-        paymentIntentId: paymentResult.paymentIntentId,
-        classId: state.selectedClass?.id,
-        sessionId: selectedSession.id,
-        isDepositPayment
-      });
-
-      const amount = isDepositPayment 
-        ? (paymentResult as any).depositAmount 
-        : selectedSession.price;
-
-      // Obtener nombres de manera segura con valores por defecto - usando any para evitar errores de tipado
-      const selectedClass = state.selectedClass as any;
-      // Usar title en lugar de name, ya que en PublicClass el campo se llama title
-      const className = selectedClass?.title || 'Clase';
-      
-      // Crear una descripción legible y amigable, ideal para mostrar en PDF
-      // Formato: "Clase [nombre de la clase] - [fecha]"
-      let sessionTitle = 'Sesión ' + selectedSession.id;
-      
-      // Añadir información de fecha formateada si está disponible
-      if (selectedSession.date) {
-        try {
-          // Crear fecha a partir de string YYYY-MM-DD
-          const [year, month, day] = selectedSession.date.split('-').map(Number);
-          const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-          
-          // Formatear la fecha para ser amigable
-          const formattedDate = format(date, 'd MMMM yyyy', { locale: es });
-          sessionTitle = formattedDate;
-        } catch (error) {
-          console.warn('⚠️ Error al formatear la fecha de sesión:', error);
-        }
-      }
-      
-      // Obtener hora de sesión de manera segura
-      const sessionTime = (selectedSession as any).time || 'Horario no especificado';
-      
-      // La descripción visible en la factura PDF - Usar información más amigable y consistente con el formato manual
-      const description = isDepositPayment
-        ? `Seña (${(paymentResult as any).depositPercentage}%): ${className} - ${sessionTitle}`
-        : `Pago de clase "${className}" - ${sessionTitle}`;
-
-      // Obtener CustomerId del método de pago seleccionado
-      const customerId = selectedCardMethod?.customerId;
-      
-      if (!customerId) {
-        console.warn('❌ [SummaryStep] No se puede crear factura: falta customerId');
-        return;
-      }
-
-      // Obtener branchId de manera segura usando type assertion
-      const branchId = (selectedClass?.branch_id as string) || undefined;
-
-      // Obtener nombre del cliente de manera segura
-      const customerName = user.email?.split('@')[0] || 'Cliente';
-      
-      // Calcular el porcentaje de depósito para incluirlo en los metadatos
-      const depositPercentage = isDepositPayment 
-        ? String((paymentResult as any).depositPercentage || 30) 
-        : '100';
-
-      const invoiceResult = await classInvoiceService.createAndSendInvoice({
-        paymentIntentId: paymentResult.paymentIntentId,
-        stripeAccountId,
-        customerId,
-        amount,
-        description,
-        customerEmail: user.email,
-        empresaId,
-        classId: state.selectedClass?.id,
-        branchId,
-        paymentType: isDepositPayment ? 'deposit' : 'full',
-        metadata: {
-          // Identificadores técnicos (para filtrado y procesamiento)
-          class_id: state.selectedClass?.id || '',
-          session_id: selectedSession.id,
-          
-          // Información legible (para mostrar al usuario)
-          class_name: className,
-          class_title: selectedClass?.title || 'Clase',  
-          session_title: sessionTitle,
-          session_date: selectedSession.date,
-          session_time: sessionTime,
-          customer_name: customerName,
-          
-          // Información sobre el pago
-          deposit_percentage: depositPercentage,
-          booking_type: 'class',
-          
-          // Otros datos útiles
-          branch_name: selectedClass?.branchName || 'Sucursal principal',  
-          created_at: new Date().toISOString(),
-          
-          // Información del país para determinar correctamente la moneda
-          country: country || '',
-          empresa_id: empresaId || ''
-        }
-      });
-
-      if (invoiceResult.success) {
-        console.log('✅ [SummaryStep] Factura creada exitosamente:', {
-          invoiceId: invoiceResult.invoiceId,
-          invoiceUrl: invoiceResult.invoiceUrl
-        });
-
-        // Guardar referencia a la factura en localStorage para futuras consultas
-        localStorage.setItem('lastClassInvoiceId', invoiceResult.invoiceId || '');
-        localStorage.setItem('lastClassInvoiceUrl', invoiceResult.invoiceUrl || '');
-        
-        // Notificar al usuario sobre la factura generada
-        toast({
-          title: 'Factura generada',
-          description: 'Se ha generado una factura para tu pago. Puedes consultarla en tu correo electrónico.',
-          variant: 'default'
-        });
-      } else {
-        console.error('❌ [SummaryStep] Error al crear factura:', invoiceResult.error);
-      }
-    } catch (error) {
-      console.error('❌ [SummaryStep] Error inesperado al crear factura:', error);
-    }
-  }, [empresaId, selectedCardMethod, selectedSession, state.selectedClass, stripeAccountId, toast, user?.email]);
+  useEffect(() => {
+    // ...
+  }, []);
 
   return (
     <StepContainer stepId="summary" centered={false}>

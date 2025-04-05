@@ -1,0 +1,231 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Usando datos de disponibilidad en caché para:",
+      "12c7030c-25b3-4967-acd0-707256792e0f:2025-04-16:09:00:10:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔒 Registrando sesión 12c7030c-25b3-4967-acd0-707256792e0f-2025-04-16-09:00-888df223-0384-42e5-8b29-4e8991750018 con stock validado: 18"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Optimización aplicada: La disponibilidad se verificará individualmente al seleccionar cada sesión"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [SummaryStep] Usando moneda desde payment_config: MXN $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [SummaryStep] Moneda extraída: Código=MXN, Símbolo=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [SummaryStep] Usando moneda desde payment_config: MXN $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [SummaryStep] Moneda extraída: Código=MXN, Símbolo=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MXN\" (después de trim: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencyByCountry: País no reconocido: \"MXN\", usando EUR por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MXN\" (normalizado: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: País no reconocido: \"MXN\", usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 177, País: \"MXN\", Moneda: EUR, Símbolo: €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato EUR/Otro: 177.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MXN\" (después de trim: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencyByCountry: País no reconocido: \"MXN\", usando EUR por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MXN\" (normalizado: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: País no reconocido: \"MXN\", usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 177, País: \"MXN\", Moneda: EUR, Símbolo: €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato EUR/Otro: 177.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Estado de pasarela de pago:",
+      {
+        "clientOrgId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "adminOrgId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "userMetadataEmpresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "selectedEmpresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "activeGateway": "stripe",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "isConnected": true,
+        "mercadoPagoUserId": null,
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "isLoadingGateway": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[SummaryStep] Estado de pasarela de pago:",
+      {
+        "clientOrgId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "adminOrgId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "userMetadataEmpresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "selectedEmpresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "activeGateway": "stripe",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "isConnected": true,
+        "mercadoPagoUserId": null,
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "isLoadingGateway": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MXN\" (después de trim: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencyByCountry: País no reconocido: \"MXN\", usando EUR por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MXN\" (normalizado: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: País no reconocido: \"MXN\", usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 177, País: \"MXN\", Moneda: EUR, Símbolo: €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato EUR/Otro: 177.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MXN\" (después de trim: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencyByCountry: País no reconocido: \"MXN\", usando EUR por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MXN\" (normalizado: \"MXN\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: País no reconocido: \"MXN\", usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 177, País: \"MXN\", Moneda: EUR, Símbolo: €"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato EUR/Otro: 177.00"
+    ]
+  }
+]

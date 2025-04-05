@@ -17,6 +17,7 @@ import { useBranchContext } from '@/contexts/BranchContext'
 import { useCurrentEmpresa } from '@/hooks/useCurrentEmpresa'
 import { useClasses } from '../../hooks/useClasses'
 import { checkClassAvailability, checkRecurringClassAvailability } from '@/services/classAvailabilityService'
+import { getCurrencyByCountry, getCurrencyWithSymbol } from '@/lib/currency-utils'
 
 interface NewBookingModalProps {
   isOpen: boolean
@@ -205,6 +206,64 @@ export function NewBookingModal({
         }))
       }
 
+      // Determinar la moneda basada en el país de la empresa
+      let currencyFromCountry = 'EUR'; // Valor por defecto
+      let currencyWithSymbol = 'EUR €'; // Valor por defecto con símbolo
+      
+      if (empresa && empresa.country) {
+        // Si tenemos el país de la empresa en el contexto, usarlo directamente
+        currencyFromCountry = getCurrencyByCountry(empresa.country);
+        currencyWithSymbol = getCurrencyWithSymbol(empresa.country);
+        console.log(`💱 País detectado desde contexto: "${empresa.country}" => Moneda: ${currencyFromCountry} (${currencyWithSymbol})`);
+      } else {
+        // Si por alguna razón no tenemos el país en el contexto, intentar obtenerlo directamente
+        try {
+          const { data: empresaData } = await supabase
+            .from('empresas')
+            .select('country')
+            .eq('id', empresa.id)
+            .single();
+            
+          if (empresaData && empresaData.country) {
+            currencyFromCountry = getCurrencyByCountry(empresaData.country);
+            currencyWithSymbol = getCurrencyWithSymbol(empresaData.country);
+            console.log(`💱 País obtenido de consulta directa: "${empresaData.country}" => Moneda: ${currencyFromCountry} (${currencyWithSymbol})`);
+          } else {
+            console.log(`⚠️ No se pudo obtener el país de la empresa (ID: ${empresa.id}), usando EUR por defecto`);
+          }
+        } catch (error) {
+          console.error('Error al obtener país de empresa:', error);
+          // Si hay error, mantener EUR como valor por defecto
+        }
+      }
+      
+      // Si aún tenemos EUR como valor por defecto, usar el del formulario si está definido
+      if (currencyFromCountry === 'EUR' && classPaymentConfig.currency) {
+        currencyFromCountry = classPaymentConfig.currency;
+        // Intentar derivar el símbolo desde el código de moneda del formulario
+        if (currencyFromCountry === 'MXN') {
+          currencyWithSymbol = 'MXN $';
+        } else if (currencyFromCountry === 'ARS') {
+          currencyWithSymbol = 'ARS $';
+        } else {
+          currencyWithSymbol = 'EUR €';
+        }
+        console.log(`💱 Usando moneda del formulario: ${currencyFromCountry} (${currencyWithSymbol})`);
+      }
+        
+      console.log('💱 Currency determination:', {
+        empresaId: empresa.id,
+        empresaCountry: empresa.country,
+        defaultCurrency: classPaymentConfig.currency,
+        determinedCurrency: currencyFromCountry,
+        currencyWithSymbol: currencyWithSymbol
+      });
+      
+      // Validar y asignar deporte por defecto si no está definido
+      if (!classDetails.sport) {
+        console.log('⚠️ No se ha definido un deporte para la clase, asignando "racket" por defecto');
+      }
+      
       const classData: Database['public']['Tables']['classes']['Insert'] = {
         name: classDetails.name,
         description: classDetails.description || null,
@@ -217,7 +276,7 @@ export function NewBookingModal({
         schedule_config: scheduleConfig,
         available_payment_methods: classPaymentConfig.paymentMethods,
         payment_config: {
-          currency: classPaymentConfig.currency,
+          currency: currencyWithSymbol, // Usar la moneda con símbolo
           status: classPaymentConfig.paymentStatus,
           guaranteePercentage: classPaymentConfig.guaranteePercentage || 30,
           partialPaymentPercentage: classPaymentConfig.partialPaymentPercentage || 20
@@ -225,7 +284,7 @@ export function NewBookingModal({
         created_by: empresa.auth_user_id,
         min_students: 1,
         status: 'active',
-        sport: classDetails.sport
+        sport: classDetails.sport || 'racket' // Asignar "racket" como valor por defecto si no está definido
       }
 
       const { data, error } = await supabase

@@ -27,6 +27,9 @@ interface DepositPaymentResult {
   depositAmount?: number;     // Monto de la seña cobrada
   totalAmount?: number;       // Monto total de la reserva
   depositPercentage?: number; // Porcentaje cobrado como seña
+  invoiceId?: string;         // ID de la factura generada automáticamente
+  invoiceUrl?: string;        // URL para ver la factura
+  pdfUrl?: string;            // URL para descargar el PDF de la factura
   message?: string;
   error?: any;
 }
@@ -133,6 +136,9 @@ class DepositPaymentService {
         depositAmount: data.depositAmount,
         totalAmount: data.totalAmount,
         depositPercentage: data.depositPercentage,
+        invoiceId: data.invoiceId,
+        invoiceUrl: data.invoiceUrl,
+        pdfUrl: data.pdfUrl,
         message: data.success 
           ? 'Pago de seña procesado correctamente' 
           : (data.error?.message || 'Error al procesar el pago con seña'),

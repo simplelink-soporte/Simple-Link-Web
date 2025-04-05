@@ -48,7 +48,7 @@ export default function useOrganization() {
         }
         
         if (!empresaData) {
-          console.warn('No se encontró la empresa para el usuario:', user.id)
+          console.debug('No se encontró la empresa para el usuario:', user.id)
           return null
         }
 

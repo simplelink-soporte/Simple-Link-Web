@@ -10,6 +10,7 @@ interface EmpresaData {
   is_active: boolean
   plan_type: string
   auth_user_id: string
+  country?: string
 }
 
 export function useCurrentEmpresa() {
@@ -21,41 +22,44 @@ export function useCurrentEmpresa() {
   useEffect(() => {
     const loadEmpresa = async () => {
       try {
-        // Intentar obtener datos del localStorage
-        const storedEmpresaId = localStorage.getItem('empresaId')
-        const storedEmpresaData = localStorage.getItem('empresaData')
-
-        if (storedEmpresaId && storedEmpresaData) {
-          setEmpresa(JSON.parse(storedEmpresaData))
-          setIsLoading(false)
-          return
-        }
-
-        // Si no hay datos en localStorage, verificar la sesión
+        // Si no hay datos en localStorage o queremos asegurar datos actualizados, verificar la sesión
         const { data: { session } } = await supabase.auth.getSession()
         
         if (!session) {
+          // Si no hay sesión activa, limpiar localStorage y redirigir a login
+          localStorage.removeItem('empresaId')
+          localStorage.removeItem('empresaData')
           router.push('/admin/login')
           return
         }
 
-        // Buscar la empresa del usuario
+        // Siempre buscar la empresa del usuario para tener datos actualizados
         const { data: empresaData, error } = await supabase
           .from('empresas')
-          .select('id, name, is_active, plan_type, auth_user_id')
+          .select('id, name, is_active, plan_type, auth_user_id, country')
           .eq('auth_user_id', session.user.id)
           .single()
 
         if (error || !empresaData) {
           console.error('Error al cargar empresa:', error)
+          localStorage.removeItem('empresaId')
+          localStorage.removeItem('empresaData')
           router.push('/admin/login')
           return
         }
 
-        // Guardar en localStorage y estado
+        // Guardar los datos actualizados en localStorage y estado
         localStorage.setItem('empresaId', empresaData.id)
         localStorage.setItem('empresaData', JSON.stringify(empresaData))
         setEmpresa(empresaData)
+        setIsLoading(false)
+        
+        // Verificar explícitamente si tenemos el campo country
+        if (empresaData.country) {
+          console.log(`✅ useCurrentEmpresa: País de la empresa detectado: "${empresaData.country}"`);
+        } else {
+          console.log(`⚠️ useCurrentEmpresa: No se detectó país para la empresa`);
+        }
       } catch (error) {
         console.error('Error al cargar datos de empresa:', error)
         router.push('/admin/login')
@@ -65,11 +69,7 @@ export function useCurrentEmpresa() {
     }
 
     loadEmpresa()
-  }, [router])
+  }, [router, supabase])
 
-  return {
-    empresa,
-    isLoading,
-    empresaId: empresa?.id
-  }
-} 
+  return { empresa, isLoading }
+}

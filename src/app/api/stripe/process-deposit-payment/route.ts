@@ -209,6 +209,7 @@ export async function POST(request: Request) {
         depositAmount: paymentIntent.amount / 100,
         totalAmount: data.totalAmount,
         depositPercentage: data.depositPercentage,
+        invoiceId: invoiceResult?.invoiceId,
         invoiceUrl: invoiceResult?.invoiceUrl,
         pdfUrl: invoiceResult?.pdfUrl
       });

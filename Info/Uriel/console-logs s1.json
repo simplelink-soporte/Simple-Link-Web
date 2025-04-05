@@ -1,0 +1,1371 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando nuevo total en PaymentStep:",
+      {
+        "effectiveCourtPrice": 45,
+        "rentalsPriceTotal": 24,
+        "newTotal": 69,
+        "manualPrice": null,
+        "currentTotal": 0,
+        "currentDeposit": 0,
+        "currentStatus": "completed",
+        "rentals": [
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 69,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": false,
+        "generateInvoice": true,
+        "courtPrice": 45,
+        "rentalItemsPrice": 24
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sincronizando estado con nuevo total:",
+      {
+        "total": 69,
+        "oldState": {
+          "totalAmount": 0,
+          "deposit": 0,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "isPaid": false,
+          "generateInvoice": true
+        },
+        "newState": {
+          "totalAmount": 69,
+          "deposit": 69,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "isPaid": false,
+          "generateInvoice": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 69,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": false,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 0,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": true,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando duración para timeSelection:",
+      {
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "slots": 4,
+        "durationInMinutes": 60,
+        "calculatedFromSlots": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando nuevo total en PaymentStep:",
+      {
+        "effectiveCourtPrice": 45,
+        "rentalsPriceTotal": 24,
+        "newTotal": 69,
+        "manualPrice": null,
+        "currentTotal": 0,
+        "currentDeposit": 0,
+        "currentStatus": "completed",
+        "rentals": [
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 69,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": false,
+        "generateInvoice": true,
+        "courtPrice": 45,
+        "rentalItemsPrice": 24
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Sincronizando estado con nuevo total:",
+      {
+        "total": 69,
+        "oldState": {
+          "totalAmount": 0,
+          "deposit": 0,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "isPaid": false,
+          "generateInvoice": true
+        },
+        "newState": {
+          "totalAmount": 69,
+          "deposit": 69,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "isPaid": false,
+          "generateInvoice": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 69,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": false,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Payment details updated:",
+      {
+        "totalAmount": 69,
+        "deposit": 0,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "isPaid": true,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Total amount calculation:",
+      {
+        "courtPrice": 45,
+        "rentalPrice": 0,
+        "totalAmount": 45,
+        "manualCourtPrice": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Total amount calculation:",
+      {
+        "courtPrice": 45,
+        "rentalPrice": 0,
+        "totalAmount": 45,
+        "manualCourtPrice": null
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando duración para timeSelection:",
+      {
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "slots": 4,
+        "durationInMinutes": 60,
+        "calculatedFromSlots": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Creando reserva manual con datos:",
+      {
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "date": "2025-04-03",
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "courtPrice": 45,
+        "rentalItemsPrice": 24,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          }
+        ],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📝 Creando reserva con datos:",
+      {
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "date": "2025-04-03",
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "courtPrice": 45,
+        "rentalItemsPrice": 24,
+        "paymentStatus": "completed",
+        "paymentMethod": "cash",
+        "paymentType": "booking",
+        "depositAmount": 0,
+        "participants": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "rentalItems": [
+          {
+            "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          },
+          {
+            "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "duration": 60,
+            "pricePerUnit": 12,
+            "price": 12,
+            "totalPrice": 12
+          }
+        ],
+        "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+        "generateInvoice": true,
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ getCurrencySymbol: No se proporcionó país, usando € por defecto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "10:00",
+          "end": "11:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-03T10:00:00.000+02:00",
+          "localEnd": "2025-04-03T11:00:00.000+02:00"
+        },
+        "utc": {
+          "startDateTimeUTC": "2025-04-03 08:00:00",
+          "endDateTimeUTC": "2025-04-03 09:00:00",
+          "isOvernightUTC": false
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Participantes transformados:",
+      {
+        "original": [
+          {
+            "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "transformed": [
+          {
+            "user_id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Parámetros de la reserva:",
+      {
+        "p_court_id": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "p_date": "2025-04-03",
+        "p_start_time": "2025-04-03 08:00:00",
+        "p_end_time": "2025-04-03 09:00:00",
+        "p_court_price": 45,
+        "p_rental_items_price": 24,
+        "p_payment_method": "cash",
+        "p_payment_status": "completed",
+        "p_payment_type": "booking",
+        "p_deposit_amount": 0,
+        "p_title": null,
+        "p_description": null,
+        "p_participants": [
+          {
+            "user_id": "8b896425-e5e1-428b-a837-aa35935baf55",
+            "role": "player"
+          }
+        ],
+        "p_rental_items": [
+          {
+            "item_id": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+            "quantity": 1,
+            "price_per_unit": 12,
+            "total_price": 12
+          },
+          {
+            "item_id": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+            "quantity": 1,
+            "price_per_unit": 12,
+            "total_price": 12
+          }
+        ],
+        "p_reservation_type": "booking",
+        "p_class_id": null,
+        "p_class_session_price": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Llamando al procedimiento create_booking_v2 con los parámetros mostrados"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 Respuesta completa del procedimiento create_booking_v2:",
+      {
+        "success": true,
+        "statusCode": 200,
+        "resultType": "string",
+        "resultValue": "5dcef51b-c8be-4ad1-8d2c-c2a0fa10d8b1"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ UUID de reserva obtenido directamente:",
+      "5dcef51b-c8be-4ad1-8d2c-c2a0fa10d8b1"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧾 Intentando generar factura para reserva:",
+      {
+        "bookingId": "5dcef51b-c8be-4ad1-8d2c-c2a0fa10d8b1",
+        "paymentType": "booking",
+        "paymentStatus": "completed",
+        "isDepositPayment": false,
+        "generateInvoice": true
+      }
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "⚠️ No se proporcionó empresaId en los datos de la reserva, obteniendo de la cancha"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ID de empresa obtenido desde la cancha:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Buscando información de cliente para factura:",
+      {
+        "bookingData": {
+          "courtId": "1ff82367-757c-4812-96b7-daee3238d6cd",
+          "date": "2025-04-03",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "courtPrice": 45,
+          "rentalItemsPrice": 24,
+          "paymentStatus": "completed",
+          "paymentMethod": "cash",
+          "paymentType": "booking",
+          "depositAmount": 0,
+          "participants": [
+            {
+              "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+              "userId": "8b896425-e5e1-428b-a837-aa35935baf55",
+              "role": "player"
+            }
+          ],
+          "rentalItems": [
+            {
+              "itemId": "8e76de4a-d5d0-4083-afee-581ecf0c9dc9",
+              "quantity": 1,
+              "duration": 60,
+              "pricePerUnit": 12,
+              "price": 12,
+              "totalPrice": 12
+            },
+            {
+              "itemId": "61c7b47d-a093-4a9b-bacc-6f04b104d3ca",
+              "quantity": 1,
+              "duration": 60,
+              "pricePerUnit": 12,
+              "price": 12,
+              "totalPrice": 12
+            }
+          ],
+          "empresa_id": "99f78081-24fa-4892-aae2-823816e7d132",
+          "generateInvoice": true,
+          "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+        },
+        "bookingId": "5dcef51b-c8be-4ad1-8d2c-c2a0fa10d8b1"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Cliente encontrado en datos del participante (usuario):",
+      {
+        "id": "8b896425-e5e1-428b-a837-aa35935baf55",
+        "email": "georgeclooney11@simple.com",
+        "nombre": "George Clooney"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Buscando/creando cliente en Stripe mediante API:",
+      {
+        "email": "georgeclooney11@simple.com",
+        "name": "George Clooney",
+        "stripeAccountId": "acct_1QdNzWKvLJLkhMls"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 2612ms"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Error al buscar/crear cliente en Stripe:",
+      {}
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💵 Generando factura por pago COMPLETO:",
+      {
+        "amount": 69,
+        "isPartialPayment": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🌐 Llamando a API para generar factura desde el cliente..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Resultado de generación de factura vía API:",
+      {
+        "success": true,
+        "invoiceId": "in_1R9vUvKvLJLkhMlskgtQZw6u",
+        "invoiceUrl": "https://invoice.stripe.com/i/acct_1QdNzWKvLJLkhMls/test_YWNjdF8xUWROeldLdkxKTGtoTWxzLF9TNDNjbXR5dEQwUTJzVFBlMEF0RXFKRVh6ZzBnd1JWLDEzNDI1NzIzMg0200U74uwkam?s=ap",
+        "pdfUrl": "https://pay.stripe.com/invoice/acct_1QdNzWKvLJLkhMls/test_YWNjdF8xUWROeldLdkxKTGtoTWxzLF9TNDNjbXR5dEQwUTJzVFBlMEF0RXFKRVh6ZzBnd1JWLDEzNDI1NzIzMg0200U74uwkam/pdf?s=ap"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Factura generada correctamente a través de API:",
+      {
+        "invoiceId": "in_1R9vUvKvLJLkhMlskgtQZw6u",
+        "invoiceUrl": "https://invoice.stripe.com/i/acct_1QdNzWKvLJLkhMls/test_YWNjdF8xUWROeldLdkxKTGtoTWxzLF9TNDNjbXR5dEQwUTJzVFBlMEF0RXFKRVh6ZzBnd1JWLDEzNDI1NzIzMg0200U74uwkam?s=ap"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 BookingQueryService - Consultando reservas para fecha:",
+      {
+        "date": "2025-04-03",
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "timestamp": "2025-04-03T21:40:32.266Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Actualizando rentals:",
+      []
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Nuevo precio total:",
+      0
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "Calculando duración para timeSelection:",
+      {
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "slots": 4,
+        "durationInMinutes": 60,
+        "calculatedFromSlots": 60
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📍 Zona horaria de la sede: Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 useClasses - Consultando clases:",
+      {
+        "date": "2025-04-03",
+        "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "includeCompleted": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Iniciando consulta:",
+      {
+        "date": "2025-04-03",
+        "options": {
+          "date": "2025-04-03",
+          "branchId": "eb8139e9-261f-4912-bc32-9aa1d455ab15",
+          "includeCompleted": true,
+          "empresaId": "99f78081-24fa-4892-aae2-823816e7d132"
+        },
+        "timestamp": "2025-04-03T21:40:32.626Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Incluyendo clases completadas"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔧 ClassQueryService - Construyendo query:",
+      {
+        "empresaId": "99f78081-24fa-4892-aae2-823816e7d132",
+        "status": [
+          "active",
+          "completed"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🏢 ClassQueryService - Aplicando filtro de sede:",
+      "eb8139e9-261f-4912-bc32-9aa1d455ab15"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📅 ClassQueryService - Aplicando filtro de fechas:",
+      {
+        "filter": "and(is_recurring.eq.true,start_date.lte.2025-04-03,or(end_date.is.null,end_date.gte.2025-04-03)),and(is_recurring.eq.false,start_date.eq.2025-04-03)",
+        "date": "2025-04-03"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 ClassQueryService - Resultados obtenidos:",
+      {
+        "total": 3
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Proceso completado:",
+      {
+        "totalClases": 3,
+        "clasesValidas": 2,
+        "timestamp": "2025-04-03T21:40:32.969Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 ClassQueryService - Iniciando transformación:",
+      {
+        "totalClases": 2,
+        "date": "2025-04-03"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 ClassQueryService - Procesando clase: 8a8cd4d8-e426-4086-b0b8-410a355be4b7, Estado: active"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Sesiones específicas para esta fecha:",
+      {
+        "classId": "8a8cd4d8-e426-4086-b0b8-410a355be4b7",
+        "date": "2025-04-03",
+        "totalSpecificSessions": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📊 ClassQueryService - Procesando clase: 19ce6f10-2cbb-45c3-9526-b4a71433413e, Estado: active"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Sesiones específicas para esta fecha:",
+      {
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "date": "2025-04-03",
+        "totalSpecificSessions": 0
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Transformación completada:",
+      {
+        "clasesTransformadas": 2
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ useClasses - Clases obtenidas:",
+      {
+        "total": 2,
+        "date": "2025-04-03",
+        "includeCompleted": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 ClassQueryService - Actualizando participantes para clases:",
+      {
+        "totalClases": 2
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Analizando ID completo:",
+      "8a8cd4d8-e426-4086-b0b8-410a355be4b7-562b18bd-612d-4c20-b9ad-c31a1aea44a2-09:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para clase:",
+      {
+        "idCompleto": "8a8cd4d8-e426-4086-b0b8-410a355be4b7-562b18bd-612d-4c20-b9ad-c31a1aea44a2-09:00",
+        "classId": "8a8cd4d8-e426-4086-b0b8-410a355be4b7",
+        "date": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "isSuspended": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 ClassQueryService - Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-03T09:00:00.000+02:00",
+          "localEnd": "2025-04-03T10:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "2025-04-03 07:00:00.000",
+          "end": "2025-04-03 08:00:00.000",
+          "fullStartUTC": "2025-04-03T07:00:00.000Z",
+          "fullEndUTC": "2025-04-03T08:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de clase:",
+      {
+        "classId": "8a8cd4d8-e426-4086-b0b8-410a355be4b7",
+        "title": "Clase para Principantes",
+        "bookedSpots": 1,
+        "availableSpots": 3,
+        "totalCapacity": 4,
+        "isAvailable": true,
+        "isSuspended": false,
+        "horarios": {
+          "local": {
+            "date": "2025-04-03",
+            "startTime": "09:00",
+            "endTime": "10:00"
+          },
+          "utc": {
+            "date": "2025-04-03",
+            "startTime": "2025-04-03 07:00:00.000",
+            "endTime": "2025-04-03 08:00:00.000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Analizando ID completo:",
+      "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Verificando disponibilidad para clase:",
+      {
+        "idCompleto": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "date": "2025-04-03",
+        "startTime": "09:00",
+        "endTime": "11:00",
+        "isSuspended": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Zona horaria de la sede:",
+      "Europe/Madrid"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 ClassQueryService - Conversión de horarios:",
+      {
+        "local": {
+          "date": "2025-04-03",
+          "start": "09:00",
+          "end": "11:00",
+          "timezone": "Europe/Madrid",
+          "localStart": "2025-04-03T09:00:00.000+02:00",
+          "localEnd": "2025-04-03T11:00:00.000+02:00"
+        },
+        "utc": {
+          "date": "2025-04-03",
+          "start": "2025-04-03 07:00:00.000",
+          "end": "2025-04-03 09:00:00.000",
+          "fullStartUTC": "2025-04-03T07:00:00.000Z",
+          "fullEndUTC": "2025-04-03T09:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Disponibilidad de clase:",
+      {
+        "classId": "19ce6f10-2cbb-45c3-9526-b4a71433413e",
+        "title": "Clase | Tecnica | Entrenamiento",
+        "bookedSpots": 9,
+        "availableSpots": 0,
+        "totalCapacity": 8,
+        "isAvailable": false,
+        "isSuspended": false,
+        "horarios": {
+          "local": {
+            "date": "2025-04-03",
+            "startTime": "09:00",
+            "endTime": "11:00"
+          },
+          "utc": {
+            "date": "2025-04-03",
+            "startTime": "2025-04-03 07:00:00.000",
+            "endTime": "2025-04-03 09:00:00.000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ ClassQueryService - Actualización de participantes completada."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 Limpiando intervalo de actualización automática"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🏛️ Renderizando ClassBlock:",
+      {
+        "id": "19ce6f10-2cbb-45c3-9526-b4a71433413e-8f69eb96-fde1-4085-8577-61da097e4f99-09:00",
+        "title": "Clase | Tecnica | Entrenamiento",
+        "currentParticipants": 9,
+        "capacity": 8,
+        "isFull": true,
+        "isSuspended": false,
+        "courtId": "8f69eb96-fde1-4085-8577-61da097e4f99",
+        "startTime": "09:00",
+        "endTime": "11:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🏛️ Renderizando ClassBlock:",
+      {
+        "id": "8a8cd4d8-e426-4086-b0b8-410a355be4b7-562b18bd-612d-4c20-b9ad-c31a1aea44a2-09:00",
+        "title": "Clase para Principantes",
+        "currentParticipants": 1,
+        "capacity": 4,
+        "isFull": false,
+        "isSuspended": false,
+        "courtId": "562b18bd-612d-4c20-b9ad-c31a1aea44a2",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Usando participantes en caché para:",
+      "2025-04-03",
+      {
+        "totalClases": 2
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⏱️ Configurando actualización automática de participantes cada 2 minutos"
+    ]
+  }
+]

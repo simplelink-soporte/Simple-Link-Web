@@ -68,6 +68,10 @@ export default function ShiftFormPageNew() {
         
         // Actualizar el contexto de la organización
         if (formData.empresa_id) {
+          // Obtener el país desde los metadatos del formulario
+          const countryFromMetadata = formData.metadata?.country || null;
+          console.log('🌍 País obtenido desde los metadatos del formulario:', countryFromMetadata);
+
           // El tipo Organization es exactamente igual a la tabla empresas en supabase
           setOrganization({
             id: formData.empresa_id,
@@ -85,7 +89,7 @@ export default function ShiftFormPageNew() {
             auth_user_id: null,
             plan_type: 'FREE',
             onboarding: null,
-            country: null,
+            country: countryFromMetadata, // Usar el país desde los metadatos
             zip_code: null,
             plan_id: null,
             plan_updated_at: null,

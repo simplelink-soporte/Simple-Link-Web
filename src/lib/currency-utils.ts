@@ -13,36 +13,43 @@ export const getCurrencyByCountry = (country?: string | null): string => {
     return 'EUR'; // Default a EUR si no hay país
   }
 
-  // Normalizar el código de país a mayúsculas y quitar espacios
-  const normalizedCountry = country.trim().toUpperCase();
+  // Normalizar el código de país quitando espacios en blanco
+  const trimmedCountry = country.trim();
   
-  console.log(`🔍 getCurrencyByCountry: Analizando país "${country}" (normalizado: "${normalizedCountry}")`);
+  // Para pruebas, guardamos tanto el valor original como el normalizado
+  console.log(`🔍 getCurrencyByCountry: Analizando país "${country}" (después de trim: "${trimmedCountry}")`);
 
-  // Mapeo extensivo para reconocer diferentes variantes
-  if (normalizedCountry === 'MX' || 
-      normalizedCountry === 'MEXICO' || 
-      normalizedCountry === 'MÉXICO' ||
-      normalizedCountry.includes('MEX')) {
-    console.log(`✅ getCurrencyByCountry: Detectado México, usando MXN`);
+  // Convertimos a minúsculas para comparaciones no sensibles a mayúsculas/minúsculas
+  const lowerCountry = trimmedCountry.toLowerCase();
+  
+  // Método más robusto usando comparaciones case-insensitive
+  // México / Mexico
+  if (lowerCountry === 'mx' || 
+      lowerCountry === 'Mexico' || 
+      lowerCountry === 'México' ||
+      lowerCountry.includes('mex')) {
+    console.log(`✅ getCurrencyByCountry: Detectado México (${country}), usando MXN`);
     return 'MXN';
   }
   
-  if (normalizedCountry === 'AR' || 
-      normalizedCountry === 'ARGENTINA' ||
-      normalizedCountry.includes('ARG')) {
-    console.log(`✅ getCurrencyByCountry: Detectado Argentina, usando ARS`);
+  // Argentina
+  if (lowerCountry === 'ar' || 
+      lowerCountry === 'argentina' ||
+      lowerCountry.includes('arg')) {
+    console.log(`✅ getCurrencyByCountry: Detectado Argentina (${country}), usando ARS`);
     return 'ARS';
   }
   
-  if (normalizedCountry === 'ES' || 
-      normalizedCountry === 'SPAIN' || 
-      normalizedCountry === 'ESPAÑA' ||
-      normalizedCountry === 'ESPANA' ||
-      normalizedCountry.includes('ESP') ||
-      normalizedCountry === 'EUROPE' ||
-      normalizedCountry === 'EUROPA' ||
-      normalizedCountry.includes('EUR')) {
-    console.log(`✅ getCurrencyByCountry: Detectado España/Europa, usando EUR`);
+  // España / Spain / Europa
+  if (lowerCountry === 'es' || 
+      lowerCountry === 'spain' || 
+      lowerCountry === 'Epaña' ||
+      lowerCountry === 'Espana' ||
+      lowerCountry.includes('esp') ||
+      lowerCountry === 'europe' ||
+      lowerCountry === 'europa' ||
+      lowerCountry.includes('eur')) {
+    console.log(`✅ getCurrencyByCountry: Detectado España/Europa (${country}), usando EUR`);
     return 'EUR';
   }
   
@@ -96,6 +103,28 @@ export const getCurrencySymbol = (country?: string | null): string => {
   
   console.log(`⚠️ getCurrencySymbol: País no reconocido: "${country}", usando € por defecto`);
   return '€'; // Por defecto para otros países
+};
+
+/**
+ * Combina el código de moneda con su símbolo correspondiente
+ * @param country Código de país (ES, MX, AR)
+ * @returns Moneda con símbolo (EUR €, MXN $, ARS $)
+ */
+export const getCurrencyWithSymbol = (country?: string | null): string => {
+  const currencyCode = getCurrencyByCountry(country);
+  const currencySymbol = getCurrencySymbol(country);
+  
+  // Formar el string combinado según el formato requerido
+  if (currencyCode === 'MXN') {
+    return `MXN $`;
+  } else if (currencyCode === 'EUR') {
+    return `EUR €`;
+  } else if (currencyCode === 'ARS') {
+    return `ARS $`;
+  }
+  
+  // Para cualquier otra moneda, usar el formato genérico: CÓDIGO SÍMBOLO
+  return `${currencyCode} ${currencySymbol}`;
 };
 
 /**

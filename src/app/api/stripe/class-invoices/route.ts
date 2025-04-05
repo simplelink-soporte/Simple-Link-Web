@@ -152,6 +152,87 @@ export async function POST(request: Request) {
       requestId // Incluir el ID de solicitud para seguimiento
     });
     
+    // 2.1 Verificar si ya existe una factura para este PaymentIntent
+    // Solo si tenemos un paymentIntentId y no es una reserva manual
+    if (body.paymentIntentId && !body.metadata?.is_manual_booking) {
+      try {
+        console.log(`🔍 [${requestId}] ⚠️ VERIFICACIÓN CRÍTICA: Buscando facturas existentes para PaymentIntent: ${body.paymentIntentId}`);
+        
+        // Inicializar Stripe con la cuenta conectada
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+          stripeAccount: body.stripeAccountId || undefined 
+        });
+        
+        // Buscar facturas usando el paymentIntentId como clave de búsqueda
+        const invoices = await stripe.invoices.list({
+          limit: 5, // Aumentar el límite para una búsqueda más exhaustiva
+          // @ts-ignore - TypeScript no reconoce que Stripe en realidad soporta este filtro
+          payment_intent: body.paymentIntentId
+        });
+        
+        // Log más detallado para depuración
+        if (invoices.data.length > 0) {
+          console.log(`⚠️ [${requestId}] ¡ALERTA DE DUPLICACIÓN EVITADA! Se encontraron ${invoices.data.length} facturas existentes:`);
+          invoices.data.forEach((inv, index) => {
+            console.log(`  [${index + 1}] ID: ${inv.id}, Número: ${inv.number}, Estado: ${inv.status}, Creada: ${new Date(inv.created * 1000).toISOString()}`);
+          });
+          
+          // Obtener la factura más reciente (la primera en la lista)
+          const existingInvoice = invoices.data[0];
+          
+          // Obtener URL de la factura
+          const invoiceHostedUrl = existingInvoice.hosted_invoice_url;
+          
+          return NextResponse.json({
+            success: true,
+            invoiceId: existingInvoice.id,
+            invoiceNumber: existingInvoice.number,
+            status: existingInvoice.status,
+            amount: existingInvoice.amount_paid / 100, // Convertir de centavos
+            invoiceUrl: invoiceHostedUrl,
+            pdfUrl: existingInvoice.invoice_pdf,
+            message: '✅ Se encontró una factura existente para este pago. Se evitó la duplicación.'
+          });
+        }
+        
+        console.log(`✅ [${requestId}] Verificación completa: No se encontraron facturas previas. Procediendo a crear una nueva.`);
+      } catch (error) {
+        console.error(`⚠️ [${requestId}] Error al verificar facturas existentes:`, error);
+        // Añadir verificación adicional antes de continuar
+        console.log(`⚠️ [${requestId}] Por precaución, se realizará una segunda verificación de facturas...`);
+        
+        try {
+          // Una segunda verificación con un enfoque diferente
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+            stripeAccount: body.stripeAccountId || undefined 
+          });
+          
+          // Obtener el PaymentIntent para verificar si ya tiene una factura asociada
+          const paymentIntent = await stripe.paymentIntents.retrieve(body.paymentIntentId);
+          
+          if (paymentIntent.invoice) {
+            console.log(`⚠️ [${requestId}] ¡SEGUNDA VERIFICACIÓN EXITOSA! Se encontró factura en PaymentIntent:`, paymentIntent.invoice);
+            
+            // Obtener detalles de la factura
+            const invoice = await stripe.invoices.retrieve(paymentIntent.invoice as string);
+            
+            return NextResponse.json({
+              success: true,
+              invoiceId: invoice.id,
+              invoiceNumber: invoice.number,
+              status: invoice.status,
+              amount: invoice.amount_paid / 100,
+              invoiceUrl: invoice.hosted_invoice_url,
+              pdfUrl: invoice.invoice_pdf,
+              message: '✅ Se encontró una factura existente (segunda verificación). Se evitó la duplicación.'
+            });
+          }
+        } catch (secondError) {
+          console.error(`⚠️ [${requestId}] Error en segunda verificación:`, secondError);
+        }
+      }
+    }
+    
     // Función para determinar la moneda basada en el país
     const getCurrencyCodeByCountry = (country?: string | null): string => {
       if (!country) return 'eur'; // Por defecto
@@ -513,7 +594,7 @@ export async function POST(request: Request) {
             success: true,
             invoiceId: paidInvoice.id,
             invoiceUrl: paidInvoice.hosted_invoice_url || undefined,
-            pdfUrl: paidInvoice.invoice_pdf || undefined,
+            pdfUrl: paidInvoice.invoice_pdf,
             emailSent
           };
         } catch (invoiceError: any) {
@@ -531,7 +612,10 @@ export async function POST(request: Request) {
         console.error('❌ Error inesperado al procesar factura manual:', err);
         return NextResponse.json({ 
           success: false, 
-          error: { message: 'Error inesperado al procesar la factura manual' } 
+          error: {
+            message: err instanceof Error ? err.message : 'Error inesperado al procesar la factura manual',
+            code: 'unexpected_error'
+          } 
         }, { status: 500 });
       }
     } else {

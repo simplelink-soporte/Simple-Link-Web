@@ -24,6 +24,7 @@ import { shiftBookingService } from '@/services/shiftBookingService';
 import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/bookings';
 import { fullPaymentService } from '@/services/full-payment-client.service';
 import { depositPaymentService } from '@/services/deposit-payment-client.service';
+import { getCurrencySymbol } from '@/lib/currency-utils';
 
 const formatShiftDate = (dateString: string) => {
   try {
@@ -43,26 +44,6 @@ const formatShiftDate = (dateString: string) => {
       dayNumber: '-',
       month: 'Mes'
     };
-  }
-};
-
-// Función para determinar el símbolo de moneda según el país
-const getCurrencySymbol = (country: string | null): string => {
-  if (!country) return '€'; // Valor por defecto
-  
-  const countryLower = country.toLowerCase();
-  switch (countryLower) {
-    case 'mexico':
-    case 'méxico':
-      return '$'; // Peso mexicano
-    case 'argentina':
-      return '$'; // Peso argentino
-    case 'españa':
-    case 'espana':
-    case 'spain':
-      return '€'; // Euro
-    default:
-      return '€'; // Valor por defecto para otros países
   }
 };
 
@@ -90,28 +71,55 @@ export function SummaryStep({
   const { organization } = useClientOrganizationContext();
   const { organization: adminOrganization } = useOrganization();
 
-  const empresaId = useMemo(() => 
-    organization?.id || adminOrganization?.id || user?.metadata?.empresa_id
-  , [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id]);
+  // Acceso seguro a las propiedades del usuario
+  const userMetadata = user ? (user as any).metadata || {} : {};
 
+  const empresaId = useMemo(() => 
+    organization?.id || adminOrganization?.id || userMetadata.empresa_id
+  , [organization?.id, adminOrganization?.id, userMetadata.empresa_id]);
+  
+  // Usar el país desde el contexto de formulario
+  const countryFromContext = state.country;
+
+  // Siempre llamamos al hook, pero añadimos un parámetro para indicar si solo necesitamos el país
+  // Esto cumple con las reglas de hooks porque el hook siempre se llama en el mismo orden
   const { 
     activeGateway, 
     isLoading: isLoadingGateway,
     stripeAccountId, 
     stripeConnected,
     mercadoPagoUserId,
-    mercadoPagoConnected,
-    country
-  } = usePaymentGatewayByCountry(empresaId || null);
+    mercadoPagoConnected
+  } = usePaymentGatewayByCountry(
+    // Solo pasamos el ID de empresa si realmente necesitamos cargar datos de pago
+    summarySubStep === 'payment' ? empresaId || null : null, 
+    countryFromContext
+  );
+  
+  // Usar directamente el país del contexto
+  const country = countryFromContext;
 
-  // Obtener el símbolo de moneda según el país
+  // Obtener el símbolo de moneda según el país usando la utilidad centralizada
   const currencySymbol = useMemo(() => getCurrencySymbol(country), [country]);
+
+  // Para el log, determinar si estamos usando datos reales o valores por defecto
+  const usingRealGatewayData = summarySubStep === 'payment' && !!empresaId;
+
+  useEffect(() => {
+    console.log('[SummaryStep-Shifts] País y moneda:', {
+      countryFromContext,
+      summarySubStep,
+      countryUsed: country,
+      currencySymbol,
+      usingRealGatewayData
+    });
+  }, [countryFromContext, summarySubStep, country, currencySymbol, usingRealGatewayData]);
 
   useEffect(() => {
     console.log('[SummaryStep-Shifts] Verificación de pasarelas de pago:', {
       clientOrgId: organization?.id,
       adminOrgId: adminOrganization?.id,
-      userMetadataEmpresaId: user?.metadata?.empresa_id,
+      userEmpresaId: userMetadata.empresa_id,
       selectedEmpresaId: empresaId,
       activeGateway,
       stripeAccountId,
@@ -120,7 +128,32 @@ export function SummaryStep({
       mercadoPagoConnected,
       userId: user?.id
     });
-  }, [organization?.id, adminOrganization?.id, user?.metadata?.empresa_id, empresaId, activeGateway, stripeAccountId, stripeConnected, mercadoPagoUserId, mercadoPagoConnected, user?.id]);
+  }, [organization?.id, adminOrganization?.id, userMetadata.empresa_id, empresaId, activeGateway, stripeAccountId, stripeConnected, mercadoPagoUserId, mercadoPagoConnected, user?.id]);
+
+  useEffect(() => {
+    // Comprobar el estado de la pasarela de pago y ajustar las opciones según corresponda
+    const gateway = activeGateway as string;
+    
+    if (gateway === 'none' || gateway === 'loading') {
+      setShowPaymentList(false);
+    } else if (gateway === 'stripe' && !stripeConnected) {
+      setShowPaymentList(false);
+      toast({
+        title: "Configuración incompleta",
+        description: "La conexión con Stripe no está configurada correctamente. Por favor, contacta al administrador.",
+        variant: "destructive"
+      });
+    } else if (gateway === 'mercadopago' && !mercadoPagoConnected) {
+      setShowPaymentList(false);
+      toast({
+        title: "Configuración incompleta",
+        description: "La conexión con MercadoPago no está configurada correctamente. Por favor, contacta al administrador.",
+        variant: "destructive"
+      });
+    } else {
+      setShowPaymentList(true);
+    }
+  }, [activeGateway, stripeConnected, mercadoPagoConnected, toast]);
 
   const summaryStepRef = useRef<any>({});
   
@@ -364,7 +397,7 @@ export function SummaryStep({
                 payment_type: 'guarantee',
                 guarantee_percentage: guaranteePercentage.toString(),
                 customer_email: user?.email || '',
-                customer_name: user?.user_metadata?.full_name || '',
+                customer_name: userMetadata.name || '',
                 country: country || '' // Incluir país para determinar la moneda
               }
             });
@@ -382,7 +415,7 @@ export function SummaryStep({
               metadata: {
                 payment_type: 'full',
                 customer_email: user?.email || '',
-                customer_name: user?.user_metadata?.full_name || '',
+                customer_name: userMetadata.name || '',
                 country: country || '' // Incluir país para determinar la moneda
               }
             });
@@ -467,7 +500,7 @@ export function SummaryStep({
         'transfer': 'transfer'
       };
 
-      const paymentMethod = paymentMethodMap[selectedPaymentMethod] || 'cash';
+      const paymentMethod = paymentMethodMap[selectedPaymentMethod as string] || 'cash';
       const paymentStatus = 
         selectedPaymentMethod === 'full' || selectedPaymentMethod === 'card' 
           ? 'completed' as PaymentStatusEnum
