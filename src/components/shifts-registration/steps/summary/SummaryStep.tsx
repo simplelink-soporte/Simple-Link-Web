@@ -255,7 +255,7 @@ export function SummaryStep({
           console.error('❌ [SummaryStep] Error al procesar el pago: No hay una pasarela de pago configurada');
           toast({
             title: 'Error de configuración',
-            description: activeGateway === 'mercadopago' || activeGateway === 'loading' ? 
+            description: (activeGateway as any) === 'mercadopago' || (activeGateway as any) === 'loading' ? 
               'No se encontró configuración de MercadoPago para procesar el pago' : 
               'No se encontró configuración de Stripe para procesar el pago',
             variant: 'destructive'
@@ -381,7 +381,7 @@ export function SummaryStep({
                 }
               });
             }
-          } else if (selectedPaymentMethod === 'guarantee') {
+          } else if (selectedPaymentMethod === 'guarantee' as any) {
             console.log('🔄 [SummaryStep] Procesando cargo de GARANTÍA...');
             const totalAmount = shiftDetails.price + state.itemsTotalPrice;
             
@@ -553,6 +553,63 @@ export function SummaryStep({
       
       dispatch({ type: 'SET_BOOKING_ID', payload: bookingResult.id || '' });
       
+      // Actualizar los metadatos de la factura con el booking_id si se realizó un pago con tarjeta
+      // Verificar que tenemos un ID de reserva válido
+      if (!bookingResult.id || typeof bookingResult.id !== 'string') {
+        console.error('❌ [SummaryStep] No se recibió un ID válido de reserva:', bookingResult);
+        toast({
+          title: 'Advertencia',
+          description: 'La reserva se creó pero podría haber problemas para relacionarla con el pago.',
+          variant: 'destructive'
+        });
+      } else {
+        console.log('✅ [SummaryStep] ID de reserva válido obtenido:', bookingResult.id);
+      }
+      
+      // Actualizar metadatos de factura para todos los pagos con tarjeta
+      const isCardPaymentMethod = ['card', 'full', 'deposit', 'guarantee'].includes(selectedPaymentMethod as string);
+                                 
+      if (isCardPaymentMethod && (activeGateway === 'stripe') && bookingResult.id) {
+        // Recuperar el último ID de PaymentIntent desde localStorage
+        const lastPaymentIntentId = localStorage.getItem('lastPaymentIntentId');
+        
+        if (lastPaymentIntentId) {
+          try {
+            console.log('🔄 [SummaryStep] Actualizando metadatos de factura con booking_id:', bookingResult.id);
+            
+            // Llamar al API para actualizar los metadatos de la factura
+            const updateInvoiceResponse = await fetch('/api/stripe/invoices/update-metadata', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                paymentIntentId: lastPaymentIntentId,
+                stripeAccountId: stripeAccountId,
+                metadata: {
+                  booking_id: bookingResult.id,
+                  updated_from: 'shift_registration_form'
+                }
+              })
+            });
+            
+            const updateResult = await updateInvoiceResponse.json();
+            
+            if (updateInvoiceResponse.ok && updateResult.success) {
+              console.log('✅ [SummaryStep] Metadatos de factura actualizados con éxito');
+              if (updateResult.updatedInvoices) {
+                console.log('✅ [SummaryStep] Se actualizaron', updateResult.updatedInvoices, 'facturas');
+              }
+            } else {
+              console.error('❌ [SummaryStep] Error al actualizar metadatos de factura:', updateResult.error);
+            }
+          } catch (updateError) {
+            console.error('❌ [SummaryStep] Error al actualizar metadatos de factura:', updateError);
+            // No interrumpimos el flujo principal por este error
+          }
+        } else {
+          console.warn('⚠️ [SummaryStep] No se encontró ID de PaymentIntent para actualizar la factura');
+        }
+      }
+      
       toast({
         title: 'Reserva creada',
         description: 'Tu reserva ha sido procesada correctamente',
@@ -659,13 +716,20 @@ export function SummaryStep({
     const shiftPrice = state.shiftDetails?.price || 0;
     const itemsPrice = state.itemsTotalPrice || 0;
     const totalPrice = shiftPrice + itemsPrice;
-    const formatted = totalPrice.toFixed(2);
+    
+    // Determinar si es una seña y calcular el porcentaje
+    const isDeposit = selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'deposit';
+    // El porcentaje de seña estándar es 30%
+    const depositPercentage = 30;
+    // Calcular el precio a pagar (total o seña)
+    const priceToShow = isDeposit ? (totalPrice * depositPercentage / 100) : totalPrice;
+    const formatted = priceToShow.toFixed(2);
     const [integerPart, decimalPart] = formatted?.split('.');
     
     return (
       <div className="flex flex-col items-center justify-center py-5 my-4">
         <p className="text-sm font-semibold mb-2 text-gray-500">
-          Precio Total
+          {isDeposit ? `Seña (${depositPercentage}%)` : 'Precio Total'}
         </p>
 
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
@@ -680,7 +744,7 @@ export function SummaryStep({
         </div>
       </div>
     );
-  }, [state.shiftDetails, state.itemsTotalPrice, currencySymbol]);
+  }, [state.shiftDetails, state.itemsTotalPrice, currencySymbol, selectedPaymentMethod]);
 
   const ReservationDetails = useCallback(() => {
     if (!state.shiftDetails) return null;

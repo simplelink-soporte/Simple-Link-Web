@@ -1,0 +1,319 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=480, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=480.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=930, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=930.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=930, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=930.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=480, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=480.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=930, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=930.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=930, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=930.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "de0ad629-9dd7-4fb5-9e2c-022ce1bf547e",
+        "hasGuarantee": false,
+        "totalAmount": 930,
+        "payment_type": "booking",
+        "timestamp": "2025-04-05T22:19:55.172Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "booking",
+        "canChargeNoShow": false,
+        "stripeConnection": {},
+        "totalAmount": 930
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "hasBookingIdInMetadata": false,
+        "timestamp": "2025-04-05T22:19:55.183Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ No se puede reembolsar: no hay factura asociada"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "hasBookingIdInMetadata": false,
+        "timestamp": "2025-04-05T22:19:55.183Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ No se puede reembolsar: no hay factura asociada"
+    ]
+  }
+]

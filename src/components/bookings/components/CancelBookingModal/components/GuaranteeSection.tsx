@@ -6,28 +6,31 @@ import { formatCurrencyByCountry } from '@/lib/currency-utils';
 import { IconLoader } from '@tabler/icons-react';
 
 interface GuaranteeSectionProps {
-  isEnabled: boolean;
-  isLoading: boolean;
   totalAmount: number;
-  effectiveGuaranteePercentage: number;
+  guaranteePercentage: number;
   country?: string;
   shouldCharge: boolean;
   setShouldCharge: (value: boolean) => void;
   isProcessing: boolean;
+  isLoading?: boolean;
+  stripeEnabled?: boolean;
 }
 
 export function GuaranteeSection({
-  isEnabled,
-  isLoading,
   totalAmount,
-  effectiveGuaranteePercentage,
+  guaranteePercentage,
   country,
   shouldCharge,
   setShouldCharge,
-  isProcessing
+  isProcessing,
+  isLoading = false,
+  stripeEnabled = false
 }: GuaranteeSectionProps) {
   // Calcular el cargo por cancelación
-  const cancellationFee = (totalAmount * effectiveGuaranteePercentage) / 100;
+  const cancellationFee = (totalAmount * guaranteePercentage) / 100;
+  
+  // Log de prop stripeEnabled
+  console.log('🟢 GuaranteeSection - stripeEnabled:', stripeEnabled);
 
   if (isLoading) {
     return (
@@ -41,9 +44,9 @@ export function GuaranteeSection({
   }
 
   return (
-    <div className="space-y-4 mb-4">
+    <div className="space-y-4">
       <div className="border rounded-lg p-4 bg-white">
-        {isEnabled ? (
+        {stripeEnabled === true ? (
           <div>
             <div className="flex items-start mb-3">
               <Checkbox
@@ -64,7 +67,7 @@ export function GuaranteeSection({
                   Aplicar cargo de cancelación
                 </label>
                 <p className="text-sm text-gray-500">
-                  {formatCurrencyByCountry(cancellationFee, country || 'MX')} ({effectiveGuaranteePercentage}% del total)
+                  {formatCurrencyByCountry(cancellationFee, country || 'MX')} ({guaranteePercentage}% del total)
                 </p>
               </div>
             </div>
@@ -78,9 +81,14 @@ export function GuaranteeSection({
             )}
           </div>
         ) : (
-          <p className="text-sm text-red-600">
-            No se puede aplicar el cargo porque la conexión con Stripe no está activa.
-          </p>
+          <div>
+            <p className="text-sm text-red-600 mb-2">
+              No se puede aplicar el cargo porque la conexión con Stripe no está activa.
+            </p>
+            <p className="text-xs text-gray-500">
+              Verifique que la cuenta de Stripe esté correctamente configurada y que haya un método de pago válido asignado a esta reserva.
+            </p>
+          </div>
         )}
       </div>
     </div>

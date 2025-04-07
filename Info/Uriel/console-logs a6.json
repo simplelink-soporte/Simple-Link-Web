@@ -1,0 +1,273 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [SummaryStep] Procesando PAGO COMPLETO con tarjeta..."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [suush43prr3e8diau6tmnquq] Iniciando procesamiento de pago completo:",
+      {
+        "amount": 450,
+        "paymentMethodId": "pm_1R9OnPR...",
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "hasCustomerId": true,
+        "hasAccountId": true,
+        "timestamp": "2025-04-07T16:06:41.764Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [suush43prr3e8diau6tmnquq] Datos para procesamiento directo:",
+      {
+        "customerId": "cus_S3VePT...",
+        "accountId": "acct_1R9AnERYLT0A6sSK"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [suush43prr3e8diau6tmnquq] Enviando solicitud para procesamiento de pago on-session"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [suush43prr3e8diau6tmnquq] Respuesta HTTP recibida: 200 OK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [suush43prr3e8diau6tmnquq] Pago procesado exitosamente:",
+      {
+        "paymentIntentId": "pi_3RBIC7RYLT0A6sSK14NbLjwY",
+        "status": "succeeded",
+        "invoiceId": "in_1RBIC9RYLT0A6sSKJ6HiGGeI",
+        "timestamp": "2025-04-07T16:06:48.776Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Resultado del procesamiento de pago:",
+      {
+        "success": true,
+        "paymentIntentId": "pi_3RBIC7RYLT0A6sSK14NbLjwY",
+        "chargeStatus": "succeeded",
+        "invoiceId": "in_1RBIC9RYLT0A6sSKJ6HiGGeI",
+        "invoiceUrl": "https://invoice.stripe.com/i/acct_1R9AnERYLT0A6sSK/test_YWNjdF8xUjlBbkVSWUxUMEE2c1NLLF9TNVQ4d1RQRE1uZmJtRks0R3M2OFVRU1RoVDVzTUE5LDEzNDU4MjgwOA0200rFo15DvR?s=ap",
+        "pdfUrl": "https://pay.stripe.com/invoice/acct_1R9AnERYLT0A6sSK/test_YWNjdF8xUjlBbkVSWUxUMEE2c1NLLF9TNVQ4d1RQRE1uZmJtRks0R3M2OFVRU1RoVDVzTUE5LDEzNDU4MjgwOA0200rFo15DvR/pdf?s=ap",
+        "message": "Pago procesado exitosamente"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 [SummaryStep] Monto de depósito a registrar:",
+      450
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Pago procesado correctamente:",
+      {
+        "paymentIntentId": "pi_3RBIC7RYLT0A6sSK14NbLjwY",
+        "status": "succeeded",
+        "isDepositPayment": false,
+        "depositAmount": null,
+        "totalAmount": 450
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [SummaryStep] Procediendo a crear la reserva con los siguientes parámetros:",
+      {
+        "paymentMethod": "card",
+        "paymentType": "full",
+        "paymentStatus": "completed",
+        "hasCardMethod": true,
+        "depositAmount": 450,
+        "selectedItems": {},
+        "itemsTotalPrice": 0,
+        "itemsCompleteData": [
+          {
+            "id": "1577a8cf-6234-42d2-850d-d173f014b86d",
+            "name": "Raqueta",
+            "type": "equipment",
+            "duration_pricing": {
+              "60": 120
+            },
+            "default_duration": 60,
+            "stock": 50,
+            "requires_deposit": false,
+            "deposit_amount": null,
+            "is_active": true,
+            "created_at": "2025-04-02T14:56:17.884+00:00",
+            "updated_at": "2025-04-02T14:56:17.884+00:00",
+            "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+            "sede_id": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+            "availableStock": 50,
+            "baseStock": 50,
+            "reservedUnits": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Creando reserva para el turno:",
+      "Pista Raqueta 2",
+      "fecha:",
+      "2025-04-07"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Opciones recibidas:",
+      "{\n  \"userId\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n  \"empresaId\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"completed\",\n  \"paymentType\": \"full\",\n  \"stripePaymentMethodId\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\",\n  \"depositAmount\": 450,\n  \"rentalItems\": {},\n  \"rentalItemsPrice\": 0,\n  \"itemsData\": [\n    {\n      \"id\": \"1577a8cf-6234-42d2-850d-d173f014b86d\",\n      \"name\": \"Raqueta\",\n      \"type\": \"equipment\",\n      \"duration_pricing\": {\n        \"60\": 120\n      },\n      \"default_duration\": 60,\n      \"stock\": 50,\n      \"requires_deposit\": false,\n      \"deposit_amount\": null,\n      \"is_active\": true,\n      \"created_at\": \"2025-04-02T14:56:17.884+00:00\",\n      \"updated_at\": \"2025-04-02T14:56:17.884+00:00\",\n      \"empresa_id\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n      \"sede_id\": \"04c4b1ad-ae26-4956-82b6-03a43a5f59f6\",\n      \"availableStock\": 50,\n      \"baseStock\": 50,\n      \"reservedUnits\": 0\n    }\n  ]\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Items recibidos:",
+      "{\n  \"items\": {},\n  \"totalPrice\": 0,\n  \"itemsDataLength\": 1\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos de reserva transformados:",
+      "{\n  \"reservationType\": \"booking\",\n  \"courtId\": \"888df223-0384-42e5-8b29-4e8991750018\",\n  \"date\": \"2025-04-07\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"10:00\",\n  \"title\": \"Turno: Pista Raqueta 2\",\n  \"description\": \"Reserva de cancha Pista Raqueta 2\",\n  \"participants\": [\n    {\n      \"id\": \"2db1c5b9-0c06-449f-a565-b01f1513f3ac\",\n      \"user_id\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n      \"role\": \"player\"\n    }\n  ],\n  \"courtPrice\": 450,\n  \"classSessionPrice\": 0,\n  \"rentalItemsPrice\": 0,\n  \"rentalItems\": [],\n  \"paymentMethod\": \"card\",\n  \"paymentStatus\": \"completed\",\n  \"paymentType\": \"booking\",\n  \"depositAmount\": 450,\n  \"empresaId\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"stripe_payment_method_id\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Tipo de pago normalizado:",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Estado de pago normalizado:",
+      "completed"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Tipo de reserva normalizado:",
+      "booking"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Zona horaria de la sede:",
+      "America/New_York"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🕒 Conversión de horarios:",
+      {
+        "local": {
+          "start": "09:00",
+          "end": "10:00",
+          "timezone": "America/New_York",
+          "localStart": "2025-04-07T09:00:00.000-04:00",
+          "localEnd": "2025-04-07T10:00:00.000-04:00"
+        },
+        "utc": {
+          "date": "2025-04-07",
+          "start": "2025-04-07 13:00:00",
+          "end": "2025-04-07 14:00:00",
+          "isOvernightUTC": false,
+          "fullStartUTC": "2025-04-07T13:00:00.000Z",
+          "fullEndUTC": "2025-04-07T14:00:00.000Z"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Datos finales para RPC:",
+      "{\n  \"p_court_id\": \"888df223-0384-42e5-8b29-4e8991750018\",\n  \"p_date\": \"2025-04-07\",\n  \"p_start_time\": \"2025-04-07 13:00:00\",\n  \"p_end_time\": \"2025-04-07 14:00:00\",\n  \"p_court_price\": 450,\n  \"p_deposit_amount\": 450,\n  \"p_payment_method\": \"card\",\n  \"p_payment_status\": \"completed\",\n  \"p_payment_type\": \"booking\",\n  \"p_rental_items\": [],\n  \"p_rental_items_price\": 0,\n  \"p_title\": \"Turno: Pista Raqueta 2\",\n  \"p_description\": \"Reserva de cancha Pista Raqueta 2\",\n  \"p_participants\": [\n    {\n      \"id\": \"2db1c5b9-0c06-449f-a565-b01f1513f3ac\",\n      \"user_id\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n      \"role\": \"player\"\n    }\n  ],\n  \"p_empresa_id\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"p_reservation_type\": \"booking\",\n  \"p_class_id\": null,\n  \"p_class_session_price\": 0,\n  \"p_stripe_payment_method_id\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\"\n}"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📋 [ShiftBookingService] Parámetros enviados a RPC create_booking_v2:",
+      "{\n  \"p_court_id\": \"888df223-0384-42e5-8b29-4e8991750018\",\n  \"p_date\": \"2025-04-07\",\n  \"p_start_time\": \"2025-04-07 13:00:00\",\n  \"p_end_time\": \"2025-04-07 14:00:00\",\n  \"p_court_price\": 450,\n  \"p_deposit_amount\": 450,\n  \"p_payment_method\": \"card\",\n  \"p_payment_status\": \"completed\",\n  \"p_payment_type\": \"booking\",\n  \"p_rental_items\": [],\n  \"p_rental_items_price\": 0,\n  \"p_title\": \"Turno: Pista Raqueta 2\",\n  \"p_description\": \"Reserva de cancha Pista Raqueta 2\",\n  \"p_participants\": [\n    {\n      \"id\": \"2db1c5b9-0c06-449f-a565-b01f1513f3ac\",\n      \"user_id\": \"8e51d239-9a17-42cc-ac9d-4d99dd7a98fc\",\n      \"role\": \"player\"\n    }\n  ],\n  \"p_empresa_id\": \"2c4c929f-c308-42c9-8306-5857e07d9634\",\n  \"p_reservation_type\": \"booking\",\n  \"p_class_id\": null,\n  \"p_class_session_price\": 0,\n  \"p_stripe_payment_method_id\": \"pm_1R9OnPRYLT0A6sSKFS4vW867\"\n}"
+    ]
+  },
+  {
+    "type": "warn",
+    "message": [
+      "⚠️ [ShiftBookingService] No se recibió un ID para la reserva creada, pero la operación fue exitosa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "ℹ️ [ShiftBookingService] Omitiendo generación de factura para pago con tarjeta/seña, ya que se generó durante el procesamiento del pago"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Reserva de turno creada con éxito. ID:",
+      "unknown"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [SummaryStep] Actualizando metadatos de factura con booking_id:",
+      "unknown"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] rebuilding"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "[Fast Refresh] done in 2316ms"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [SummaryStep] Metadatos de factura actualizados con éxito"
+    ]
+  }
+]

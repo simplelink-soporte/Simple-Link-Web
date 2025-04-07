@@ -1,0 +1,124 @@
+
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Iniciando carga de datos para reembolso:",
+      {
+        "booking_id": "de0ad629-9dd7-4fb5-9e2c-022ce1bf547e",
+        "payment_type": "booking",
+        "hasStripeConnection": false,
+        "timestamp": "2025-04-05T23:08:51.955Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ [useStripeRefund] No se encontró conexión Stripe en contexto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "de0ad629-9dd7-4fb5-9e2c-022ce1bf547e",
+        "hasGuarantee": false,
+        "totalAmount": 930,
+        "payment_type": "booking",
+        "timestamp": "2025-04-05T23:08:51.957Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación (reembolso):",
+      {
+        "paymentType": "booking",
+        "refundReady": false,
+        "hasValidInvoice": false,
+        "isLoading": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "booking",
+        "canChargeNoShow": false,
+        "stripeConnection": {},
+        "totalAmount": 930
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasValidInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "stripeAccountId": "N/A",
+        "isReady": false,
+        "timestamp": "2025-04-05T23:08:51.976Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasValidInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "stripeAccountId": "N/A",
+        "isReady": false,
+        "timestamp": "2025-04-05T23:08:51.977Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": false,
+        "hasStripeAccountId": false,
+        "hasCustomerId": false,
+        "hasValidInvoice": false,
+        "invoiceCount": 0,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "booking_id": "de0ad629-9dd7-4fb5-9e2c-022ce1bf547e",
+        "timestamp": "2025-04-05T23:08:51.982Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación (reembolso):",
+      {
+        "paymentType": "booking",
+        "refundReady": false,
+        "hasValidInvoice": false,
+        "isLoading": false
+      }
+    ]
+  }
+]

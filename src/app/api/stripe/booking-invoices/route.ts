@@ -39,34 +39,108 @@ async function findInvoicesForBooking(
       console.log(`🛡️ [API] No se pudo obtener datos de la reserva: ${(fetchError as Error).message}`);
     }
     
-    // Si tenemos un customer_id, hacemos una búsqueda más acotada
+    // Estrategia 1: Búsqueda directa por metadatos (más eficiente)
+    console.log(`💡 [API] Usando búsqueda directa por metadatos booking_id=${bookingId}`);
+    const metadataSearchResult = await stripe.invoices.search({
+      query: `metadata['booking_id']:'${bookingId}'`,
+      limit: 5,
+      expand: ['data.customer', 'data.charge', 'data.payment_intent', 'data.lines']
+    });
+    
+    // Si encontramos facturas por metadatos, usamos esos resultados directamente
+    if (metadataSearchResult.data.length > 0) {
+      console.log(`✅ [API] Encontradas ${metadataSearchResult.data.length} facturas directamente por metadatos`);
+      return {
+        matchingInvoices: metadataSearchResult.data,
+        searchTime: Date.now() - startTime
+      };
+    }
+    
+    // Estrategia 2: Si no encontramos por metadatos, intentamos búsqueda por cliente si disponible
     let invoices;
     if (customerId) {
-      console.log(`🏦 [API] Buscando facturas para customer_id=${customerId} (más eficiente)`);
+      console.log(`🏦 [API] Buscando facturas para customer_id=${customerId} (búsqueda secundaria)`);
       invoices = await stripe.invoices.list({
         limit: 5, // Pocas facturas por cliente normalmente
         customer: customerId,
-        expand: ['data.customer', 'data.charge']
+        expand: ['data.customer', 'data.charge', 'data.payment_intent', 'data.lines']
       });
     } else {
-      // Si no tenemos customer_id, usamos una búsqueda limitada
-      console.log(`🔎 [API] Sin customer_id disponible, usando búsqueda limitada`);
+      // Estrategia 3: Último recurso - búsqueda limitada
+      console.log(`🔎 [API] Sin coincidencias por metadatos ni customer_id, usando búsqueda limitada`);
       invoices = await stripe.invoices.list({
-        limit: 20, // Reducimos el límite para mejorar rendimiento
-        expand: ['data.customer', 'data.charge']
+        limit: 10, // Reducimos aún más el límite para mejor rendimiento
+        expand: ['data.customer', 'data.charge', 'data.payment_intent', 'data.lines']
       });
     }
     
-    // Filtrado del lado del servidor
-    const filteredInvoices = invoices.data.filter(invoice => 
-      invoice.metadata && invoice.metadata.booking_id === bookingId
-    );
+    // Métodos adicionales para encontrar facturas relacionadas con la reserva
+    const filteredInvoices = invoices.data.filter(invoice => {
+      // 1. Método estándar: booking_id en metadata
+      const hasBookingIdInMetadata = invoice.metadata && invoice.metadata.booking_id === bookingId;
+      
+      // 2. Método alternativo: booking_id en la descripción de la factura o de sus líneas
+      const hasBookingIdInDescription = 
+        invoice.description?.includes(bookingId) || 
+        invoice.lines?.data?.some(line => line.description?.includes(bookingId));
+      
+      // 3. Método alternativo: booking_id en los metadatos de cualquier ítem de factura
+      const hasBookingIdInLineItemMetadata = invoice.lines?.data?.some(
+        line => line.metadata && line.metadata.booking_id === bookingId
+      );
+      
+      // 4. Método alternativo: booking_id en la referencia externa
+      const hasBookingIdInExternalReference = 
+        invoice.footer?.includes(bookingId) || 
+        invoice.custom_fields?.some(field => field.value?.includes(bookingId));
+      
+      // Registramos detalles para depuración
+      if (hasBookingIdInMetadata || hasBookingIdInDescription || 
+          hasBookingIdInLineItemMetadata || hasBookingIdInExternalReference) {
+        console.log(`🔍 [API] Factura ${invoice.id} relacionada con booking ${bookingId}:`, {
+          por_metadata: hasBookingIdInMetadata,
+          por_descripcion: hasBookingIdInDescription,
+          por_linea_item: hasBookingIdInLineItemMetadata,
+          por_referencia: hasBookingIdInExternalReference
+        });
+      }
+      
+      // Una factura coincide si cumple CUALQUIERA de los criterios
+      return hasBookingIdInMetadata || 
+             hasBookingIdInDescription || 
+             hasBookingIdInLineItemMetadata || 
+             hasBookingIdInExternalReference;
+    });
     
     const elapsed = Date.now() - startTime;
     console.log(`📊 [API] Búsqueda optimizada completada en ${elapsed}ms - ` + 
       `Modo: ${foundByBookingData ? 'Por customer_id' : 'General'}, ` +
       `Facturas analizadas: ${invoices.data.length}, ` +
       `Coincidencias: ${filteredInvoices.length}`);
+      
+    // Información detallada sobre cada factura encontrada  
+    if (filteredInvoices.length > 0) {
+      filteredInvoices.forEach((invoice, index) => {
+        console.log(`💳 [API] Detalle Factura #${index+1} para booking ${bookingId}:`, {
+          invoice_id: invoice.id,
+          customer: typeof invoice.customer === 'string' ? invoice.customer : 'objeto-customer',
+          amount_due: invoice.amount_due,
+          total: invoice.total,
+          status: invoice.status,
+          has_payment_intent: Boolean(invoice.payment_intent),
+          payment_intent_prefix: invoice.payment_intent ? 
+            (typeof invoice.payment_intent === 'string' ? 
+              invoice.payment_intent.substring(0, 10) + '...' : 'objeto-paymentIntent') : 'N/A',
+          has_charge: Boolean(invoice.charge),
+          charge_prefix: invoice.charge ? 
+            (typeof invoice.charge === 'string' ? 
+              invoice.charge.substring(0, 10) + '...' : 'objeto-charge') : 'N/A',
+          metadata: invoice.metadata || {}
+        });
+      });
+    } else {
+      console.log(`⚠️ [API] No se encontraron facturas para booking ${bookingId} después de búsqueda exhaustiva`);
+    }
     
     return { matchingInvoices: filteredInvoices, searchTime: elapsed };
   } catch (error) {
@@ -74,12 +148,35 @@ async function findInvoicesForBooking(
     // Si falla la estrategia optimizada, volvemos al método estándar
     const invoices = await stripe.invoices.list({
       limit: 20,
-      expand: ['data.customer', 'data.charge']
+      expand: ['data.customer', 'data.charge', 'data.lines']
     });
     
-    const filteredInvoices = invoices.data.filter(invoice => 
-      invoice.metadata && invoice.metadata.booking_id === bookingId
-    );
+    // Usamos los mismos métodos mejorados de búsqueda
+    const filteredInvoices = invoices.data.filter(invoice => {
+      // 1. Método estándar: booking_id en metadata
+      const hasBookingIdInMetadata = invoice.metadata && invoice.metadata.booking_id === bookingId;
+      
+      // 2. Método alternativo: booking_id en la descripción
+      const hasBookingIdInDescription = 
+        invoice.description?.includes(bookingId) || 
+        invoice.lines?.data?.some(line => line.description?.includes(bookingId));
+      
+      // 3. Método alternativo: booking_id en metadatos de línea
+      const hasBookingIdInLineItemMetadata = invoice.lines?.data?.some(
+        line => line.metadata && line.metadata.booking_id === bookingId
+      );
+      
+      // 4. Método alternativo: booking_id en referencia 
+      const hasBookingIdInExternalReference = 
+        invoice.footer?.includes(bookingId) || 
+        invoice.custom_fields?.some(field => field.value?.includes(bookingId));
+      
+      // Una factura coincide si cumple CUALQUIERA de los criterios
+      return hasBookingIdInMetadata || 
+             hasBookingIdInDescription || 
+             hasBookingIdInLineItemMetadata || 
+             hasBookingIdInExternalReference;
+    });
     
     const elapsed = Date.now() - startTime;
     console.log(`📊 [API] Búsqueda estándar completada en ${elapsed}ms - Total facturas: ${invoices.data.length}`);
@@ -167,6 +264,15 @@ export async function GET(req: NextRequest) {
         customer: typeof matchingInvoices[0].customer === 'string' ? matchingInvoices[0].customer : 'objeto-customer',
         amount: matchingInvoices[0].amount_due,
         created: new Date(matchingInvoices[0].created * 1000).toISOString(),
+        status: matchingInvoices[0].status,
+        has_payment_intent: Boolean(matchingInvoices[0].payment_intent),
+        payment_intent_prefix: matchingInvoices[0].payment_intent ? 
+          (typeof matchingInvoices[0].payment_intent === 'string' ? 
+            matchingInvoices[0].payment_intent.substring(0, 10) + '...' : 'objeto-paymentIntent') : 'N/A',
+        has_charge: Boolean(matchingInvoices[0].charge),
+        charge_prefix: matchingInvoices[0].charge ? 
+          (typeof matchingInvoices[0].charge === 'string' ? 
+            matchingInvoices[0].charge.substring(0, 10) + '...' : 'objeto-charge') : 'N/A',
         metadata: matchingInvoices[0].metadata || {}
       });
     }

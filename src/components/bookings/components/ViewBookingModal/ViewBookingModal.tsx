@@ -622,15 +622,22 @@ export function ViewBookingModal({
       // Obtener los datos de pago necesarios, si existen en las propiedades
       // Nota: Usamos acceso seguro con as any para evitar errores de tipo
       const paymentMethodId = (currentBooking as any).stripe_payment_method_id || '';
-      const accountId = (organization as any)?.stripe_account_id || '';
 
+      console.log('🔐 Ejecutando RPC cancel_booking_v1 con parámetros correctos:', {
+        booking_id: currentBooking.id,
+        reason,
+        should_charge: shouldCharge,
+        timestamp: new Date().toISOString()
+      });
+
+      // Llamar a la función RPC con los parámetros en el orden correcto
       const { data, error } = await supabase.rpc('cancel_booking_v1', {
         p_booking_id: currentBooking.id,
+        p_charge_amount: shouldCharge ? (currentBooking.totalAmount * 0.3) : 0, // Póngalo como 0 si no se va a cobrar, no null
         p_reason: reason,
         p_should_charge: shouldCharge,
-        p_charge_amount: shouldCharge ? (currentBooking.totalAmount * 0.3) : null,
-        p_stripe_payment_method_id: paymentMethodId,
-        p_stripe_account_id: accountId
+        p_stripe_payment_intent_id: null, // Este campo es requerido por la función RPC
+        p_stripe_payment_method_id: paymentMethodId
       });
 
       if (error) throw error;

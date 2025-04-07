@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { supabase } from '@/lib/supabase';
+import { paymentService } from '@/services/paymentService';
+
+// Tipos para mejorar la tipificación
+interface OrganizationWithStripe {
+  id: string;
+  name: string;
+  stripe_account_id?: string;
+  // otros campos...
+  [key: string]: any;
+}
 
 interface UseStripeConnectionProps {
   isOpen: boolean;
@@ -47,12 +57,16 @@ export function useStripeConnection({
 
   const loadOrganizationData = async () => {
     try {
-      if (!organization?.stripe_account_id) return;
+      const org = organization as OrganizationWithStripe;
+      if (!org?.stripe_account_id) {
+        console.log('⚠️ La organización no tiene stripe_account_id configurado');
+        return;
+      }
       
-      setStripeAccountId(organization.stripe_account_id);
+      setStripeAccountId(org.stripe_account_id);
       console.log('📊 Datos de organización cargados:', { 
-        organization_id: organization.id,
-        stripe_account_id: organization.stripe_account_id
+        organization_id: org.id,
+        stripe_account_id: org.stripe_account_id
       });
     } catch (error) {
       console.error('Error al cargar datos de la organización:', error);
@@ -60,31 +74,97 @@ export function useStripeConnection({
   };
 
   const loadStripeData = async () => {
+    console.log('🔄 Iniciando carga de datos Stripe:', {
+      booking_id: booking?.id,
+      timestamp: new Date().toISOString()
+    });
+    
     setIsLoadingStripe(true);
     setLoadAttempted(true);
+    setStripeEnabled(false); // Reset inicial
     
     try {
-      // Asegurarnos que tengamos una conexión con Stripe
-      if (!stripeConnection?.enabled) {
-        await loadStripeConnection();
-      }
+      // 1. Cargar conexión Stripe
+      const connection = await loadStripeConnection();
+      console.log('✅ Conexión Stripe cargada:', connection);
 
-      const { enabled, account_id } = stripeConnection || {};
-      setStripeEnabled(enabled || false);
+      // IMPORTANTE: Si la conexión existe, verificamos que tenga las propiedades necesarias
+      if (!connection) {
+        console.log('⚠️ Conexión Stripe no encontrada');
+        setStripeEnabled(false);
+        return;
+      }
       
-      if (!enabled) {
-        console.log('⚠️ Conexión con Stripe no está habilitada');
+      console.log('💳 Estado de conexión Stripe:', {
+        charges_enabled: connection.charges_enabled,
+        account_status: connection.account_status
+      });
+      
+      // Si no tiene charges_enabled o no está activa, no continuamos
+      if (!connection.charges_enabled || connection.account_status !== 'active') {
+        console.log('⚠️ Conexión Stripe no activa o sin capacidad de cargos');
+        setStripeEnabled(false);
         return;
       }
 
-      // Verificar que tenemos los datos necesarios
-      if (!booking?.stripe_payment_method_id) {
-        console.log('⚠️ No hay método de pago registrado para esta reserva');
+      // 2. Si Stripe está habilitado, obtener datos de pago
+      if (booking?.id) {
+        // Uso directo de datos existentes para garantía
+        const org = organization as OrganizationWithStripe;
+        if (booking.stripe_payment_method_id && org?.stripe_account_id && booking.customer_id) {
+          console.log('💡 Usando datos existentes de la reserva:', {
+            hasPaymentMethodId: Boolean(booking.stripe_payment_method_id),
+            hasStripeAccountId: Boolean(org?.stripe_account_id),
+            hasCustomerId: Boolean(booking.customer_id)
+          });
+          
+          setStripePaymentMethodId(booking.stripe_payment_method_id);
+          setStripeAccountId(org.stripe_account_id);
+          setStripeCustomerId(booking.customer_id);
+          setStripeEnabled(true);
+          return;
+        }
+        
+        console.log('🛠️ Intentando obtener datos desde paymentService...');
+        const stripeData = await paymentService.getStripePaymentData(booking.id);
+        console.log('💳 Datos de pago obtenidos:', {
+          hasPaymentMethod: Boolean(stripeData?.paymentMethodId),
+          hasAccountId: Boolean(stripeData?.accountId),
+          hasCustomerId: Boolean(stripeData?.customerId),
+          timestamp: new Date().toISOString()
+        });
+
+        if (stripeData?.paymentMethodId && stripeData?.accountId && stripeData?.customerId) {
+          setStripePaymentMethodId(stripeData.paymentMethodId);
+          setStripeAccountId(stripeData.accountId);
+          setStripeCustomerId(stripeData.customerId);
+          setStripeEnabled(true);
+          console.log('✅ Stripe habilitado correctamente con datos de paymentService');
+        } else {
+          console.log('⚠️ Datos de Stripe incompletos:', {
+            hasPaymentMethod: Boolean(stripeData?.paymentMethodId),
+            hasAccountId: Boolean(stripeData?.accountId),
+            hasCustomerId: Boolean(stripeData?.customerId)
+          });
+          
+          // FALLBACK: Si tenemos al menos el ID del método de pago y el accountId
+          const org = organization as OrganizationWithStripe;
+          if (booking.stripe_payment_method_id && org?.stripe_account_id) {
+            console.log('💡 FALLBACK: Usando datos parciales disponibles');
+            setStripePaymentMethodId(booking.stripe_payment_method_id);
+            setStripeAccountId(org.stripe_account_id);
+            if (booking.customer_id) setStripeCustomerId(booking.customer_id);
+            setStripeEnabled(true);
+            return;
+          }
+          
+          setStripeEnabled(false);
+          return;
+        }
+      } else {
+        console.log('⚠️ No hay ID de reserva disponible');
         return;
       }
-
-      // Guardar los datos de Stripe
-      setStripePaymentMethodId(booking.stripe_payment_method_id);
       
       // Verificar customer_id y buscar detalles adicionales si es necesario
       if (booking.customer_id) {
@@ -127,6 +207,21 @@ export function useStripeConnection({
     }
   };
 
+  // Depuración del estado final
+  useEffect(() => {
+    if (isOpen && hasGuarantee && !isLoadingStripe && loadAttempted) {
+      console.log('💯 Estado final de useStripeConnection:', {
+        stripeEnabled,
+        hasPaymentMethodId: Boolean(stripePaymentMethodId),
+        hasAccountId: Boolean(stripeAccountId),
+        hasCustomerId: Boolean(stripeCustomerId),
+        booking_id: booking?.id,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [isOpen, hasGuarantee, isLoadingStripe, loadAttempted, stripeEnabled, 
+      stripePaymentMethodId, stripeAccountId, stripeCustomerId, booking?.id]);
+      
   return {
     stripeEnabled,
     isLoadingStripe,

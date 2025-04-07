@@ -113,16 +113,37 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (orgData) {
+      // Establecer la organización en el estado
+      const typedOrgData = orgData as Organization;
       setOrganization(prevOrg => {
-        if (JSON.stringify(prevOrg) !== JSON.stringify(orgData)) {
-          return orgData as Organization
+        if (JSON.stringify(prevOrg) !== JSON.stringify(typedOrgData)) {
+          return typedOrgData;
         }
-        return prevOrg
-      })
+        return prevOrg;
+      });
+      
+      // Cargar automáticamente la conexión Stripe cuando cambia la organización
+      if (typedOrgData.id) {
+        console.log('🔍 Iniciando carga automática de conexión Stripe para empresa:', typedOrgData.id);
+        loadStripeConnection()
+          .then(connection => {
+            if (connection) {
+              console.log('✅ Conexión Stripe cargada automáticamente:', {
+                id: typedOrgData.id,
+                stripe_account_id: connection.stripe_account_id
+              });
+            } else {
+              console.log('⚠️ No se encontró conexión Stripe para la organización');
+            }
+          })
+          .catch(err => {
+            console.error('❌ Error al cargar conexión Stripe automáticamente:', err);
+          });
+      }
     }
     
-    setIsLoading(orgLoading)
-    setError(orgError as Error | null)
+    setIsLoading(orgLoading);
+    setError(orgError as Error | null);
   }, [orgData, orgLoading, orgError])
 
   // Función para cargar conexión Stripe bajo demanda

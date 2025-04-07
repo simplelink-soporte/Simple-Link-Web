@@ -28,6 +28,7 @@ import { StripeInvoiceService } from './stripe-invoice.service'; // Importamos e
 // Interfaces para el servicio
 interface BookingResult {
   id?: string;
+  success?: boolean;
   error?: {
     message: string;
     details?: string;
@@ -349,12 +350,51 @@ export class ShiftBookingService {
         };
       }
       
-      // Extraer el ID de la reserva creada (si está disponible)
-      const bookingId = data && data.length > 0 ? data[0].id : null;
+      // Log completo de la respuesta para depuración
+      console.log('📋 [ShiftBookingService] Respuesta completa del RPC:', JSON.stringify(data, null, 2));
       
-      // Registramos si se recibió un ID o no, pero no consideramos un error si no hay ID
+      // Extraer el ID de la reserva creada (analizando diferentes formatos posibles de respuesta)
+      let bookingId = null;
+      
+      if (data) {
+        // Caso 1: Si la respuesta es un array con objetos que contienen un campo 'id'
+        if (Array.isArray(data) && data.length > 0 && data[0].id) {
+          bookingId = data[0].id;
+          console.log('✅ [ShiftBookingService] ID de reserva extraído de array[0].id:', bookingId);
+        }
+        // Caso 2: Si la respuesta es un objeto con campo 'id' directamente
+        else if (typeof data === 'object' && data !== null && 'id' in data) {
+          bookingId = data.id;
+          console.log('✅ [ShiftBookingService] ID de reserva extraído de object.id:', bookingId);
+        }
+        // Caso 3: Si la respuesta es un array de valores (primer elemento es el ID)
+        else if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
+          bookingId = data[0];
+          console.log('✅ [ShiftBookingService] ID de reserva extraído de array[0] como string:', bookingId);
+        }
+        // Caso 4: Si la respuesta es directamente el ID como string
+        else if (typeof data === 'string') {
+          bookingId = data;
+          console.log('✅ [ShiftBookingService] ID de reserva extraído directamente como string:', bookingId);
+        }
+        // Caso 5: Si la respuesta usa una clave diferente como 'booking_id'
+        else if (typeof data === 'object' && data !== null) {
+          const possibleKeys = ['booking_id', 'bookingId', 'reservation_id', 'id'];
+          for (const key of possibleKeys) {
+            if (key in data) {
+              bookingId = data[key];
+              console.log(`✅ [ShiftBookingService] ID de reserva extraído de object.${key}:`, bookingId);
+              break;
+            }
+          }
+        }
+      }
+      
+      // Registramos si se recibió un ID o no
       if (!bookingId) {
-        console.warn('⚠️ [ShiftBookingService] No se recibió un ID para la reserva creada, pero la operación fue exitosa');
+        console.warn('⚠️ [ShiftBookingService] No se pudo extraer el ID de la reserva a pesar de que la operación fue exitosa.', 
+          'Tipo de respuesta:', typeof data, 
+          'Contenido:', data);
       } else {
         console.log('✅ [ShiftBookingService] Reserva creada exitosamente con ID:', bookingId);
       }
@@ -377,8 +417,11 @@ export class ShiftBookingService {
         }
       }
       
-      // Devolvemos un resultado exitoso incluso si hay error en factura
-      return { id: bookingId || 'unknown' };
+      // Devolvemos un resultado exitoso con el ID
+      return { 
+        id: bookingId,
+        success: true
+      };
     } catch (error: any) {
       console.error('❌ [ShiftBookingService] Error inesperado al crear la reserva:', error);
       return {

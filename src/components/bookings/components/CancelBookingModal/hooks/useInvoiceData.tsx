@@ -11,6 +11,9 @@ interface UseInvoiceDataProps {
 interface InvoiceData {
   hasInvoice: boolean;
   invoices: Array<any>;
+  paymentIntent?: string;
+  chargeId?: string;
+  metadata?: Record<string, any>;
 }
 
 export function useInvoiceData({ 
@@ -33,7 +36,13 @@ export function useInvoiceData({
     
     // Solo buscamos facturas si es pago completo o booking
     if (isOpen && bookingId && stripeAccountId && (paymentType === 'full' || paymentType === 'booking')) {
-      console.log('🔍 Verificando si se deben buscar facturas:', { paymentType });
+      console.log('🔍 Verificando si se deben buscar facturas:', { 
+        paymentType,
+        bookingId,
+        stripeAccountId,
+        isBookingType: paymentType === 'booking',
+        timestamp: new Date().toISOString()
+      });
       
       const checkForInvoices = async () => {
         setIsLoadingInvoice(true);
@@ -42,10 +51,31 @@ export function useInvoiceData({
           const result = await bookingInvoiceService.findInvoicesByBookingId(stripeAccountId, bookingId);
           
           if (result.success && result.count > 0) {
-            console.log('✅ Facturas encontradas:', result.invoices);
+            // Extraer datos importantes de la primera factura (son cronológicas)
+            const latestInvoice = result.invoices[0];
+            const chargeId = latestInvoice.charge || latestInvoice.latest_charge;
+            const paymentIntent = latestInvoice.payment_intent;
+            const metadata = latestInvoice.metadata || {};
+            
+            // Verificar si la factura tiene el booking_id en metadata
+            const hasBookingIdInMetadata = metadata?.booking_id === bookingId;
+            
+            console.log('✅ Facturas encontradas:', {
+              count: result.count,
+              hasLatestInvoice: Boolean(latestInvoice),
+              hasPaymentIntent: Boolean(paymentIntent),
+              hasChargeId: Boolean(chargeId),
+              hasBookingIdInMetadata,
+              bookingIdInMetadata: metadata?.booking_id,
+              timestamp: new Date().toISOString()
+            });
+            
             setInvoiceData({
               hasInvoice: true,
-              invoices: result.invoices || []
+              invoices: result.invoices || [],
+              paymentIntent,
+              chargeId,
+              metadata
             });
           } else {
             console.log('ℹ️ No se encontraron facturas para esta reserva');

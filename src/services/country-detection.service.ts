@@ -25,6 +25,31 @@ export class CountryDetectionService {
   }
   
   /**
+   * Deduce el país a partir de una moneda
+   * @param currencyCode Código de moneda (mxn, ars, eur)
+   * @returns Código ISO del país (MX, AR, ES)
+   */
+  public getCountryByCurrency(currencyCode?: string | null): string | null {
+    if (!currencyCode) return null;
+    
+    const currencyLower = currencyCode.toLowerCase();
+    
+    switch (currencyLower) {
+      case 'mxn':
+        console.log(`🔄 Deduciendo país MX a partir de moneda ${currencyCode}`);
+        return 'MX';
+      case 'ars':
+        console.log(`🔄 Deduciendo país AR a partir de moneda ${currencyCode}`);
+        return 'AR';
+      case 'eur':
+        console.log(`🔄 Deduciendo país ES a partir de moneda ${currencyCode}`);
+        return 'ES';
+      default:
+        return null;
+    }
+  }
+  
+  /**
    * Convierte nombres de países a códigos ISO
    * @param countryName Nombre del país en texto
    * @returns Código ISO del país
@@ -58,11 +83,13 @@ export class CountryDetectionService {
    * Obtiene el código de moneda según el país proporcionado
    * @param country Código ISO o nombre del país
    * @returns Código de moneda (mxn, ars, eur)
-   * @throws Error si no se proporciona un país
    */
   public getCurrencyCodeByCountry(country?: string | null): string {
+    // Si no se proporciona país, asumimos Europa (EUR) como valor predeterminado
+    // ya que es el caso más común para la aplicación
     if (!country) {
-      throw new Error('No se proporcionó país para determinar la moneda');
+      console.log(`🌎 País no proporcionado, asumiendo Europa, usando moneda: eur`);
+      return 'eur';
     }
     
     const countryLower = country.toLowerCase();
@@ -84,26 +111,30 @@ export class CountryDetectionService {
     
     // Casos para España/Europa
     if (countryLower === 'es' || 
-        countryLower === 'spain' || 
-        countryLower === 'españa' || 
-        countryLower === 'espana') {
+        countryLower === 'españa' ||
+        countryLower === 'espana' ||
+        countryLower === 'spain' ||
+        countryLower === 'europe' ||
+        countryLower === 'europa') {
       console.log(`🌎 País detectado como España/Europa, usando moneda: eur`);
       return 'eur';
     }
     
-    // Si llegamos aquí, es un país no soportado
-    throw new Error(`País no soportado: ${country}`);
+    // Para cualquier otro caso, usar EUR como valor predeterminado
+    console.log(`⚠️ País ${country} no reconocido específicamente, usando moneda por defecto: eur`);
+    return 'eur';
   }
   
   /**
    * Obtiene el símbolo de moneda según el país proporcionado
    * @param country Código ISO o nombre del país
    * @returns Símbolo de moneda ($, €, etc)
-   * @throws Error si no se proporciona un país
    */
   public getCurrencySymbolByCountry(country?: string | null): string {
+    // Si no se proporciona país, usar el símbolo de euro por defecto
     if (!country) {
-      throw new Error('No se proporcionó país para determinar el símbolo de moneda');
+      console.log(`🌎 País no proporcionado para símbolo, asumiendo Europa, usando símbolo: €`);
+      return '€';
     }
     
     const countryLower = country.toLowerCase();
@@ -121,16 +152,19 @@ export class CountryDetectionService {
       return '$';
     }
     
-    // Casos para España/Europa
+    // Casos para España/Europa - usar la misma lógica que getCurrencyCodeByCountry
     if (countryLower === 'es' || 
-        countryLower === 'spain' || 
-        countryLower === 'españa' || 
-        countryLower === 'espana') {
+        countryLower === 'españa' ||
+        countryLower === 'espana' ||
+        countryLower === 'spain' ||
+        countryLower === 'europe' ||
+        countryLower === 'europa') {
       return '€';
     }
     
-    // Si llegamos aquí, es un país no soportado
-    throw new Error(`País no soportado para símbolo de moneda: ${country}`);
+    // Para cualquier otro caso, devolver el símbolo del euro como predeterminado
+    console.log(`⚠️ País ${country} no reconocido para símbolo, usando símbolo por defecto: €`);
+    return '€';
   }
   
   /**
