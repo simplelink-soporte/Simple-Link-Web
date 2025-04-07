@@ -64,7 +64,8 @@ const plans: Plan[] = [
     description: "Lo que necesitas para escalar tu negocio",
     isPopular: true,
     features: [
-      { name: "Reservas ilimitadas", included: true },
+      { name: "Formulario de reservas de Pistas y Clases", included: true },
+      { name: "Sin límite de sedes", included: true },
       { name: "Sin límite de pistas", included: true },
       { name: "Nuevas actualizaciones como Torneo, Membresías, etc.", included: true },
       { name: "Soporte prioritario 24/7", included: true },

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { IconSwimming, IconBallTennis } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
 
 interface TutorialStep {
   title: string
@@ -21,12 +22,18 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const router = useRouter()
 
   // Tutorial steps data
   const tutorialSteps: TutorialStep[] = [
     {
       title: "Bienvenido al Panel de Administración",
       description: "Este panel te permite gestionar todos los aspectos de tu organización. Vamos a mostrarte cómo funciona.",
+      imageUrl: "/images/Miroodles - Sticker 3.png"
+    },
+    {
+      title: "Gestiona tus Pistas",
+      description: "Te hemos creado dos pistas de natación y dos de raquetas predeterminadas. Puedes editarlas, crear nuevas o eliminarlas en la sección Pistas.",
       imageUrl: "/images/Miroodles - Sticker 3.png"
     },
     {
@@ -88,10 +95,6 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
     }
-  }
-
-  const handleSkip = () => {
-    handleClose()
   }
 
   if (!shouldRender) return null
@@ -157,6 +160,22 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
                   
                   {currentStep === 1 && (
                     <div className="flex items-center gap-2 mt-3">
+                      <Button 
+                        variant="default"
+                        size="sm"
+                        onClick={() => {
+                          router.push('/admin/dashboard/pricing/courts')
+                          handleClose()
+                        }}
+                        className="text-xs"
+                      >
+                        Ir a Pistas
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {currentStep === 2 && (
+                    <div className="flex items-center gap-2 mt-3">
                       <div className="inline-flex items-center px-3 py-1.5 text-sm font-medium border border-orange-300 bg-orange-50 text-orange-700 rounded-md">
                         <IconBallTennis className="mr-1.5 h-4 w-4" stroke={1.5} />
                         <span>Raqueta</span>
@@ -191,14 +210,6 @@ export function DashboardTutorial({ show, onClose }: DashboardTutorialProps) {
                         Anterior
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleSkip}
-                      className="text-xs text-gray-600"
-                    >
-                      Omitir
-                    </Button>
                   </div>
                   <Button
                     variant="default"
