@@ -92,11 +92,35 @@ export async function POST(request: Request) {
         }, { status: 404 });
       }
       
+      // Verificar si el pago es de tipo "garantia" a través de los metadatos
+      const isGuaranteePay = 
+        paymentIntent.metadata?.payment_type === 'guarantee' ||
+        (typeof paymentIntent.description === 'string' && 
+         paymentIntent.description.toLowerCase().includes('garantía'));
+      
+      console.log(`🔍 [${requestId}] Verificando tipo de pago:`, {
+        paymentType: paymentIntent.metadata?.payment_type,
+        description: paymentIntent.description,
+        isGuaranteePay
+      });
+      
+      // Si es un pago de garantía, no actualizamos ninguna factura
+      if (isGuaranteePay) {
+        console.log(`ℹ️ [${requestId}] Pago de tipo GARANTÍA detectado. No se actualizarán facturas.`);
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Los pagos de tipo garantía no requieren actualización de facturas',
+          skipped: true,
+          paymentIntentId
+        });
+      }
+      
       console.log(`✅ [${requestId}] PaymentIntent encontrado:`, {
         id: paymentIntent.id,
         status: paymentIntent.status,
         amount: paymentIntent.amount,
-        customerId: paymentIntent.customer
+        customerId: paymentIntent.customer,
+        paymentType: paymentIntent.metadata?.payment_type || 'no especificado'
       });
     } catch (error: any) {
       console.error(`❌ [${requestId}] Error al obtener PaymentIntent:`, error);

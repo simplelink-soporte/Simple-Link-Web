@@ -114,6 +114,16 @@ export async function POST(request: Request) {
       
       // Configuración para pagos según documentación de Stripe
       // Usar off_session: false cuando el cliente esté presente (on-session)
+      // Verificar si el tipo de pago es garantía, en cuyo caso no se debe generar factura
+      const isGuaranteePay = (data.metadata?.payment_type === 'guarantee') || 
+                            (data.paymentType === 'guarantee');
+      
+      console.log(`🔍 [${requestId}] Verificando tipo de pago:`, {
+        paymentType: data.paymentType,
+        metadataPaymentType: data.metadata?.payment_type,
+        isGuaranteePay
+      });
+      
       const paymentIntentConfig: Stripe.PaymentIntentCreateParams = {
         amount: Math.round(data.amount * 100), // Centavos
         currency: currencyCode, // Usar el código de moneda según el país
@@ -129,7 +139,8 @@ export async function POST(request: Request) {
           empresa_id: data.empresaId || '',
           customer_email: data.customerEmail || '', // Agregar email del cliente a la metadata
           empresa_stripe_id: data.stripeAccountId, // ID de cuenta Stripe para el webhook
-          invoice_auto_generate: 'true', // Flag para generar factura automáticamente
+          // Solo incluir invoice_auto_generate: 'true' si NO es un pago de garantía
+          ...(isGuaranteePay ? {} : { invoice_auto_generate: 'true' }),
           country: country || '' // Pasar el país a los metadatos para la factura
         },
         description: data.description || 'Pago completo de reserva',
@@ -157,8 +168,8 @@ export async function POST(request: Request) {
         timestamp: new Date().toISOString()
       });
       
-      // Generar factura profesional si hay email y el pago fue exitoso
-      if (data.customerEmail && paymentIntent.status === 'succeeded') {
+      // Generar factura profesional si hay email, el pago fue exitoso y NO es un pago de garantía
+      if (data.customerEmail && paymentIntent.status === 'succeeded' && !isGuaranteePay) {
         try {
           console.log(`📄 [${requestId}] Generando factura profesional...`);
           invoiceResult = await createInvoiceService.createAndSendInvoice({
@@ -172,6 +183,7 @@ export async function POST(request: Request) {
               customer_email: data.customerEmail
             }
           });
+        
           
           console.log(`📄 [${requestId}] Factura generada:`, {
             success: invoiceResult.success,

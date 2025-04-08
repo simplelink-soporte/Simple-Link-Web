@@ -610,10 +610,18 @@ export function ViewBookingModal({
 
   const handleCancelBooking = async ({ 
     reason, 
-    shouldCharge 
+    shouldCharge,
+    refundAction
   }: { 
     reason?: string; 
-    shouldCharge?: boolean 
+    shouldCharge?: boolean;
+    refundAction?: {
+      type: 'full' | 'percentage';
+      percentage?: number;
+      processMethod: 'stripe' | 'external';
+      amount?: number;
+      refundId?: string;
+    };
   }) => {
     if (!currentBooking) return;
 
@@ -623,30 +631,64 @@ export function ViewBookingModal({
       // Nota: Usamos acceso seguro con as any para evitar errores de tipo
       const paymentMethodId = (currentBooking as any).stripe_payment_method_id || '';
 
-      console.log('🔐 Ejecutando RPC cancel_booking_v1 con parámetros correctos:', {
+      // Determinar si debemos procesar como reembolso
+      const hasRefund = Boolean(refundAction);
+      const refundAmount = refundAction?.amount || null;
+      const refundId = refundAction?.refundId || null;
+
+      // Calcular monto del cargo por cancelación si corresponde
+      const chargeAmount = shouldCharge ? (currentBooking.totalAmount * 0.3) : 0;
+
+      console.log('🔐 Ejecutando cancelación de reserva con parámetros:', {
         booking_id: currentBooking.id,
         reason,
         should_charge: shouldCharge,
+        has_refund: hasRefund,
+        refund_amount: refundAmount,
+        refund_id: refundId,
+        charge_amount: chargeAmount,
         timestamp: new Date().toISOString()
       });
 
-      // Llamar a la función RPC con los parámetros en el orden correcto
-      const { data, error } = await supabase.rpc('cancel_booking_v1', {
-        p_booking_id: currentBooking.id,
-        p_charge_amount: shouldCharge ? (currentBooking.totalAmount * 0.3) : 0, // Póngalo como 0 si no se va a cobrar, no null
-        p_reason: reason,
-        p_should_charge: shouldCharge,
-        p_stripe_payment_intent_id: null, // Este campo es requerido por la función RPC
-        p_stripe_payment_method_id: paymentMethodId
-      });
+      let data, error;
+
+      // Bifurcación del flujo según sea reembolso o cancelación simple
+      if (hasRefund) {
+        // Si hay reembolso, usamos la RPC original que ya ha sido adaptada para reembolsos
+        ({ data, error } = await supabase.rpc('cancel_booking_v1', {
+          p_booking_id: currentBooking.id,
+          p_charge_amount: chargeAmount,
+          p_reason: reason,
+          p_should_charge: shouldCharge,
+          p_stripe_payment_intent_id: null, // Este campo es requerido por la función RPC
+          p_stripe_payment_method_id: paymentMethodId,
+          p_has_refund: hasRefund,
+          p_refund_amount: refundAmount,
+          p_stripe_refund_id: refundId
+        }));
+      } else {
+        // Si NO hay reembolso, usamos la nueva RPC especializada para cancelaciones
+        console.log('🔄 Usando nueva RPC para cancelación sin reembolso');
+        ({ data, error } = await supabase.rpc('update_payment_status_cancelled', {
+          p_booking_id: currentBooking.id,
+          p_reason: reason || 'Cancelación de reserva',
+          p_charge_amount: chargeAmount,
+          p_stripe_payment_intent_id: null, // Lo actualizaremos si se procesa un cargo
+          p_stripe_payment_method_id: paymentMethodId
+        }));
+      }
 
       if (error) throw error;
 
+      console.log('✅ Cancelación procesada correctamente:', data);
+
       toast({
-        title: "Reserva cancelada",
-        description: shouldCharge 
-          ? "La reserva ha sido cancelada y se procesará el cargo"
-          : "La reserva ha sido cancelada exitosamente"
+        title: "Reserva " + (hasRefund ? "reembolsada" : "cancelada"),
+        description: hasRefund 
+          ? "La reserva ha sido cancelada y el reembolso ha sido procesado"
+          : shouldCharge 
+            ? "La reserva ha sido cancelada y se procesará el cargo"
+            : "La reserva ha sido cancelada exitosamente"
       });
 
       onCancelSuccess?.();

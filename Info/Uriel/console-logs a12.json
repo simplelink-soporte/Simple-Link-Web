@@ -1,0 +1,1020 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [BookingInvoiceService] Respuesta de API para booking_id=282c25e9-2053-4109-b5eb-46a2dc65d546:",
+      {
+        "success": true,
+        "facturas_encontradas": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Facturas encontradas:",
+      {
+        "count": 1,
+        "hasLatestInvoice": true,
+        "hasPaymentIntent": false,
+        "hasCharge": false,
+        "timestamp": "2025-04-08T04:27:30.072Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Estructura de factura encontrada:",
+      {
+        "invoice_properties": [
+          "id",
+          "object",
+          "account_country",
+          "account_name",
+          "account_tax_ids",
+          "amount_due",
+          "amount_overpaid",
+          "amount_paid",
+          "amount_remaining",
+          "amount_shipping",
+          "application",
+          "application_fee_amount",
+          "attempt_count",
+          "attempted",
+          "auto_advance",
+          "automatic_tax",
+          "automatically_finalizes_at",
+          "billing_reason",
+          "charge",
+          "collection_method",
+          "created",
+          "currency",
+          "custom_fields",
+          "customer",
+          "customer_address",
+          "customer_email",
+          "customer_name",
+          "customer_phone",
+          "customer_shipping",
+          "customer_tax_exempt",
+          "customer_tax_ids",
+          "default_payment_method",
+          "default_source",
+          "default_tax_rates",
+          "description",
+          "discount",
+          "discounts",
+          "due_date",
+          "effective_at",
+          "ending_balance",
+          "footer",
+          "from_invoice",
+          "hosted_invoice_url",
+          "invoice_pdf",
+          "issuer",
+          "last_finalization_error",
+          "latest_revision",
+          "lines",
+          "livemode",
+          "metadata",
+          "next_payment_attempt",
+          "number",
+          "on_behalf_of",
+          "paid",
+          "paid_out_of_band",
+          "parent",
+          "payment_intent",
+          "payment_settings",
+          "period_end",
+          "period_start",
+          "post_payment_credit_notes_amount",
+          "pre_payment_credit_notes_amount",
+          "quote",
+          "receipt_number",
+          "rendering",
+          "shipping_cost",
+          "shipping_details",
+          "starting_balance",
+          "statement_descriptor",
+          "status",
+          "status_transitions",
+          "subscription",
+          "subscription_details",
+          "subtotal",
+          "subtotal_excluding_tax",
+          "tax",
+          "test_clock",
+          "total",
+          "total_discount_amounts",
+          "total_excluding_tax",
+          "total_pretax_credit_amounts",
+          "total_tax_amounts",
+          "total_taxes",
+          "transfer_data",
+          "webhooks_delivered_at"
+        ],
+        "has_invoice_id": false,
+        "invoice_id_value": "N/A",
+        "metadata_properties": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Payment Intent encontrado:",
+      {
+        "source": "metadata.payment_intent_id",
+        "paymentIntentPrefix": "pi_3RBTkjR..."
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T04:27:30.073Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T04:27:30.075Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": true,
+        "hasStripeAccountId": true,
+        "hasCustomerId": false,
+        "hasValidInvoice": true,
+        "invoiceCount": 1,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "timestamp": "2025-04-08T04:27:30.090Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📑 [RefundContext] Datos de factura extraídos:",
+      {
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "metadata_keys": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:35.476Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:35.478Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MX\" (después de trim: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México (MX), usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MX\" (normalizado: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 690, País: \"MX\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MX\" (después de trim: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México (MX), usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MX\" (normalizado: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 690, País: \"MX\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:36.518Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:36.520Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💸 Iniciando reembolso por Stripe",
+      {
+        "bookingId": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "invoiceId": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "paymentIntentId": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "refundType": "full",
+        "refundPercentage": 100
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:37.669Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:37.671Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Reembolso procesado correctamente:",
+      {
+        "success": true,
+        "refund": {
+          "id": "re_3RBTkjRYLT0A6sSK1uI2tQio",
+          "object": "refund",
+          "amount": 69000,
+          "balance_transaction": "txn_3RBTkjRYLT0A6sSK1a9VsNtH",
+          "charge": "ch_3RBTkjRYLT0A6sSK1hkM32qR",
+          "created": 1744086458,
+          "currency": "mxn",
+          "destination_details": {
+            "card": {
+              "reference_status": "pending",
+              "reference_type": "acquirer_reference_number",
+              "type": "refund"
+            },
+            "type": "card"
+          },
+          "metadata": {
+            "bookingId": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+            "isFullRefund": "true",
+            "percentage": "100",
+            "reason": "Cancelación de reserva",
+            "refundType": "full"
+          },
+          "payment_intent": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+          "reason": "requested_by_customer",
+          "receipt_number": null,
+          "source_transfer_reversal": null,
+          "status": "succeeded",
+          "transfer_reversal": null
+        },
+        "warning": "El reembolso se procesó en Stripe pero hubo un error al registrarlo en la base de datos"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=240, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=240.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=240, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=240.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:39.574Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBTklRYLT0A6sSK8EaKLZWg",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBTkjRYLT0A6sSK1e4Vtdgp",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T04:27:39.576Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "hasGuarantee": false,
+        "totalAmount": 690,
+        "payment_type": "booking",
+        "timestamp": "2025-04-08T04:27:39.589Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Enviando parámetros de cancelación con reembolso:",
+      {
+        "reason": "",
+        "refundAction": {
+          "type": "full",
+          "processMethod": "stripe",
+          "amount": 690,
+          "refundId": ""
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔐 Ejecutando RPC cancel_booking_v1 con parámetros:",
+      {
+        "booking_id": "282c25e9-2053-4109-b5eb-46a2dc65d546",
+        "reason": "",
+        "has_refund": true,
+        "refund_amount": 690,
+        "refund_id": null,
+        "timestamp": "2025-04-08T04:27:39.882Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=240, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=240.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=240, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=240.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=690, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=690.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 BookingQueryService - Consultando reservas para fecha:",
+      {
+        "date": "2025-04-08",
+        "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+        "timestamp": "2025-04-08T04:27:40.008Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📍 Zona horaria de la sede: America/New_York"
+    ]
+  }
+]

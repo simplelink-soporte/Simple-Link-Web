@@ -37,25 +37,55 @@ export class StripePaymentService {
     console.log(`🔄 [${requestId}] Iniciando proceso de cargo por no-show:`, {
       bookingId: params.bookingId,
       amount: params.amount,
-      empresaId: params.empresaId
+      empresaId: params.empresaId,
+      hasStripeAccountId: Boolean(params.stripeAccountId),
+      hasStripePaymentMethodId: Boolean(params.stripePaymentMethodId)
     });
 
     try {
-      // 1. Obtener datos de Stripe usando el servicio del servidor
-      const stripeData = await stripeDataService.getStripePaymentData(params.bookingId);
-      
-      if (!stripeData) {
-        throw {
-          code: 'STRIPE_DATA_NOT_FOUND',
-          message: 'No se encontraron datos de Stripe para la reserva'
-        };
+      // Verificar que tenemos los datos necesarios de Stripe
+      if (!params.stripeAccountId || !params.stripePaymentMethodId) {
+        console.log(`🔍 [${requestId}] Datos de Stripe no proporcionados, buscando en el servidor...`);
+        // Solo buscar datos de Stripe si no fueron proporcionados
+        const stripeData = await stripeDataService.getStripePaymentData(params.bookingId);
+        
+        if (!stripeData) {
+          throw {
+            code: 'STRIPE_DATA_NOT_FOUND',
+            message: 'No se encontraron datos de Stripe para la reserva'
+          };
+        }
+        
+        // Utilizar los datos del servidor
+        params.stripeAccountId = stripeData.accountId;
+        params.stripePaymentMethodId = stripeData.paymentMethodId;
+        // Guardar el customerId para usarlo más adelante
+        var customerId = stripeData.customerId || '';
+      } else {
+        console.log(`✅ [${requestId}] Usando datos de Stripe proporcionados por parámetro`);
+        // Intentar obtener customerId si no fue proporcionado
+        var customerId = '';
+        try {
+          const { data } = await this.supabase
+            .from('stripe_payment_methods')
+            .select('stripe_customer_id')
+            .eq('payment_method_id', params.stripePaymentMethodId)
+            .single();
+          
+          if (data && data.stripe_customer_id) {
+            customerId = data.stripe_customer_id;
+            console.log(`✅ [${requestId}] Customer ID encontrado:`, customerId);
+          }
+        } catch (err) {
+          console.warn(`⚠️ [${requestId}] No se pudo obtener el customerId:`, err);
+        }
       }
 
       // 2. Procesar el cargo
       const paymentIntent = await this.processCharge({
         amount: params.amount,
         stripeAccountId: params.stripeAccountId,
-        customerId: stripeData.customerId || '',
+        customerId: customerId,
         paymentMethodId: params.stripePaymentMethodId,
         metadata: {
           booking_id: params.bookingId,

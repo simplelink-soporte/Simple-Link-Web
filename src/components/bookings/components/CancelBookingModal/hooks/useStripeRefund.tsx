@@ -55,10 +55,24 @@ export function useStripeRefund({ isOpen, booking }: UseStripeRefundProps) {
 
   // Cargar datos cuando se abre el modal
   useEffect(() => {
-    if (isOpen && booking?.id && !loadAttempted) {
+    // No cargar datos para reservas tipo 'guarantee', evitando consultas innecesarias a la API
+    if (isOpen && booking?.id && !loadAttempted && booking?.payment_type !== 'guarantee') {
+      console.log('🔄 [useStripeRefund] Iniciando carga de datos para reembolso (no es tipo guarantee):', {
+        booking_id: booking?.id,
+        payment_type: booking?.payment_type,
+        timestamp: new Date().toISOString()
+      });
       loadRefundData();
+    } else if (isOpen && booking?.payment_type === 'guarantee') {
+      console.log('🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:', {
+        booking_id: booking?.id,
+        payment_type: booking?.payment_type,
+        timestamp: new Date().toISOString()
+      });
+      setLoadAttempted(true); // Marcamos como intentado para evitar reintentosq
+      setIsLoading(false); // Aseguramos que no se muestre como cargando
     }
-  }, [isOpen, booking?.id, loadAttempted, stripeConnection]);
+  }, [isOpen, booking?.id, booking?.payment_type, loadAttempted, stripeConnection]);
   
   /**
    * Obtiene la conexión con Stripe directamente desde la API
@@ -185,9 +199,35 @@ export function useStripeRefund({ isOpen, booking }: UseStripeRefundProps) {
         
         // Extraer datos importantes para reembolso
         const latestInvoice = invoiceResult.invoices[0];
-        const paymentIntent = latestInvoice.payment_intent;
-        const chargeId = latestInvoice.charge || latestInvoice.latest_charge;
         const metadata = latestInvoice.metadata || {};
+        
+        // Añadir logs detallados para inspeccionar la estructura completa de la factura
+        console.log('🔍 [useStripeRefund] Estructura de factura encontrada:', {
+          invoice_properties: Object.keys(latestInvoice),
+          has_invoice_id: Boolean(latestInvoice.invoice_id),
+          invoice_id_value: latestInvoice.invoice_id || 'N/A',
+          metadata_properties: Object.keys(metadata) 
+        });
+        
+        // Buscar payment_intent_id y charge_id tanto directamente como en los metadatos
+        const paymentIntent = latestInvoice.payment_intent || metadata.payment_intent_id;
+        const chargeId = latestInvoice.charge || latestInvoice.latest_charge || metadata.charge_id;
+        
+        // Verificación de depuración para payment intent
+        if (paymentIntent) {
+          console.log('✅ [useStripeRefund] Payment Intent encontrado:', {
+            source: latestInvoice.payment_intent ? 'invoice.payment_intent' : 'metadata.payment_intent_id',
+            paymentIntentPrefix: paymentIntent.substring(0, 10) + '...'
+          });
+        }
+        
+        // Verificación de depuración para charge
+        if (chargeId) {
+          console.log('✅ [useStripeRefund] Charge ID encontrado:', {
+            source: (latestInvoice.charge || latestInvoice.latest_charge) ? 'invoice.charge/latest_charge' : 'metadata.charge_id',
+            chargeIdPrefix: chargeId.substring(0, 10) + '...'
+          });
+        }
         
         // Determinar si la factura tiene datos válidos para reembolso
         const hasValidInvoiceData = Boolean(paymentIntent || chargeId);

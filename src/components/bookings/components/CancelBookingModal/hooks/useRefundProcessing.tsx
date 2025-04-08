@@ -5,12 +5,16 @@ interface UseRefundProcessingProps {
   totalAmount: number;
   stripeAccountId: string | null;
   bookingId: string;
+  invoiceId?: string;
+  paymentIntentId?: string;
 }
 
 export function useRefundProcessing({
   totalAmount,
   stripeAccountId,
-  bookingId
+  bookingId,
+  invoiceId,
+  paymentIntentId
 }: UseRefundProcessingProps) {
   const [shouldProcessRefund, setShouldProcessRefund] = useState<boolean>(false);
   const [showRefundOptions, setShowRefundOptions] = useState<boolean>(false);
@@ -31,10 +35,22 @@ export function useRefundProcessing({
       return false;
     }
     
+    if (!invoiceId && !paymentIntentId) {
+      console.error('No se puede procesar el reembolso: falta el ID de factura o payment intent');
+      toast({
+        title: "Error",
+        description: "No se puede procesar el reembolso por falta de datos de facturación",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
     try {
       console.log('💸 Iniciando reembolso por Stripe', {
         bookingId,
         stripeAccountId,
+        invoiceId,
+        paymentIntentId,
         refundType,
         refundPercentage: refundType === 'percentage' ? refundPercentage : 100
       });
@@ -47,6 +63,8 @@ export function useRefundProcessing({
         body: JSON.stringify({
           bookingId,
           accountId: stripeAccountId,
+          invoiceId,
+          paymentIntentId,
           refundType,
           percentage: refundType === 'percentage' ? refundPercentage : 100,
         }),

@@ -1,0 +1,1936 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=600, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=600.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=600, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=600.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:24.276Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:24.277Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Iniciando carga de datos para reembolso:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "payment_type": "booking",
+        "hasStripeConnection": false,
+        "timestamp": "2025-04-08T00:46:24.283Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ [useStripeRefund] No se encontró conexión Stripe en contexto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando conexión Stripe directamente para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "❌ [RefundContext] No se encontraron datos de factura para reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Iniciando carga de datos para reembolso:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "payment_type": "booking",
+        "hasStripeConnection": false,
+        "timestamp": "2025-04-08T00:46:24.288Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ [useStripeRefund] No se encontró conexión Stripe en contexto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando conexión Stripe directamente para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "hasGuarantee": false,
+        "totalAmount": 1050,
+        "payment_type": "booking",
+        "timestamp": "2025-04-08T00:46:24.293Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación (reembolso):",
+      {
+        "paymentType": "booking",
+        "refundReady": false,
+        "hasValidInvoice": false,
+        "isLoading": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "booking",
+        "canChargeNoShow": false,
+        "stripeConnection": {},
+        "totalAmount": 1050
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Iniciando carga de datos para reembolso:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "payment_type": "booking",
+        "hasStripeConnection": false,
+        "timestamp": "2025-04-08T00:46:24.300Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ [useStripeRefund] No se encontró conexión Stripe en contexto"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando conexión Stripe directamente para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "❌ [RefundContext] No se encontraron datos de factura para reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasValidInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "stripeAccountId": "N/A",
+        "isReady": false,
+        "timestamp": "2025-04-08T00:46:24.313Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": false,
+        "hasValidInvoice": false,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "stripeAccountId": "N/A",
+        "isReady": false,
+        "timestamp": "2025-04-08T00:46:24.313Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:24.314Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:24.315Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación (reembolso):",
+      {
+        "paymentType": "booking",
+        "refundReady": false,
+        "hasValidInvoice": false,
+        "isLoading": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💾 [useStripeRefund] Datos recibidos de API:",
+      {
+        "id": "a8e6c9ef-ad27-48ed-9d99-ccc79a1daffa",
+        "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "stripe_account_email": "a1.handwrite306@passinbox.com",
+        "account_status": "active",
+        "created_at": "2025-04-03T21:19:21.417657+00:00",
+        "updated_at": "2025-04-03T21:19:21.417657+00:00",
+        "account_details": {
+          "charges_enabled": true,
+          "payouts_enabled": true,
+          "requirements": "{\"alternatives\":[],\"current_deadline\":null,\"currently_due\":[],\"disabled_reason\":null,\"errors\":[],\"eventually_due\":[],\"past_due\":[],\"pending_verification\":[]}"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión obtenida directamente:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión Stripe obtenida directamente:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Usando conexión Stripe ya cargada:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando facturas para booking_id:",
+      "2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [BookingInvoiceService] BÚSQUEDA DE FACTURAS - Parámetros:",
+      {
+        "metodo": "findInvoicesByBookingId",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "bookingId": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:24.706Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📡 [BookingInvoiceService] Consultando endpoint API para buscar facturas de reserva 2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💾 [useStripeRefund] Datos recibidos de API:",
+      {
+        "id": "a8e6c9ef-ad27-48ed-9d99-ccc79a1daffa",
+        "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "stripe_account_email": "a1.handwrite306@passinbox.com",
+        "account_status": "active",
+        "created_at": "2025-04-03T21:19:21.417657+00:00",
+        "updated_at": "2025-04-03T21:19:21.417657+00:00",
+        "account_details": {
+          "charges_enabled": true,
+          "payouts_enabled": true,
+          "requirements": "{\"alternatives\":[],\"current_deadline\":null,\"currently_due\":[],\"disabled_reason\":null,\"errors\":[],\"eventually_due\":[],\"past_due\":[],\"pending_verification\":[]}"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión obtenida directamente:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión Stripe obtenida directamente:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Usando conexión Stripe ya cargada:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando facturas para booking_id:",
+      "2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [BookingInvoiceService] BÚSQUEDA DE FACTURAS - Parámetros:",
+      {
+        "metodo": "findInvoicesByBookingId",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "bookingId": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:25.102Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📡 [BookingInvoiceService] Consultando endpoint API para buscar facturas de reserva 2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [BookingInvoiceService] Respuesta de API para booking_id=2ead804d-48b1-4dd9-b266-ca4c94f836aa:",
+      {
+        "success": true,
+        "facturas_encontradas": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Facturas encontradas:",
+      {
+        "count": 1,
+        "hasLatestInvoice": true,
+        "hasPaymentIntent": false,
+        "hasCharge": false,
+        "timestamp": "2025-04-08T00:46:25.228Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Estructura de factura encontrada:",
+      {
+        "invoice_properties": [
+          "id",
+          "object",
+          "account_country",
+          "account_name",
+          "account_tax_ids",
+          "amount_due",
+          "amount_overpaid",
+          "amount_paid",
+          "amount_remaining",
+          "amount_shipping",
+          "application",
+          "application_fee_amount",
+          "attempt_count",
+          "attempted",
+          "auto_advance",
+          "automatic_tax",
+          "automatically_finalizes_at",
+          "billing_reason",
+          "charge",
+          "collection_method",
+          "created",
+          "currency",
+          "custom_fields",
+          "customer",
+          "customer_address",
+          "customer_email",
+          "customer_name",
+          "customer_phone",
+          "customer_shipping",
+          "customer_tax_exempt",
+          "customer_tax_ids",
+          "default_payment_method",
+          "default_source",
+          "default_tax_rates",
+          "description",
+          "discount",
+          "discounts",
+          "due_date",
+          "effective_at",
+          "ending_balance",
+          "footer",
+          "from_invoice",
+          "hosted_invoice_url",
+          "invoice_pdf",
+          "issuer",
+          "last_finalization_error",
+          "latest_revision",
+          "lines",
+          "livemode",
+          "metadata",
+          "next_payment_attempt",
+          "number",
+          "on_behalf_of",
+          "paid",
+          "paid_out_of_band",
+          "parent",
+          "payment_intent",
+          "payment_settings",
+          "period_end",
+          "period_start",
+          "post_payment_credit_notes_amount",
+          "pre_payment_credit_notes_amount",
+          "quote",
+          "receipt_number",
+          "rendering",
+          "shipping_cost",
+          "shipping_details",
+          "starting_balance",
+          "statement_descriptor",
+          "status",
+          "status_transitions",
+          "subscription",
+          "subscription_details",
+          "subtotal",
+          "subtotal_excluding_tax",
+          "tax",
+          "test_clock",
+          "total",
+          "total_discount_amounts",
+          "total_excluding_tax",
+          "total_pretax_credit_amounts",
+          "total_tax_amounts",
+          "total_taxes",
+          "transfer_data",
+          "webhooks_delivered_at"
+        ],
+        "has_invoice_id": false,
+        "invoice_id_value": "N/A",
+        "metadata_properties": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Payment Intent encontrado:",
+      {
+        "source": "metadata.payment_intent_id",
+        "paymentIntentPrefix": "pi_3RBPzWR..."
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.229Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.230Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": true,
+        "hasStripeAccountId": true,
+        "hasCustomerId": false,
+        "hasValidInvoice": true,
+        "invoiceCount": 1,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:25.233Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📑 [RefundContext] Datos de factura extraídos:",
+      {
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "metadata_keys": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.236Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.238Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💾 [useStripeRefund] Datos recibidos de API:",
+      {
+        "id": "a8e6c9ef-ad27-48ed-9d99-ccc79a1daffa",
+        "empresa_id": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "stripe_account_email": "a1.handwrite306@passinbox.com",
+        "account_status": "active",
+        "created_at": "2025-04-03T21:19:21.417657+00:00",
+        "updated_at": "2025-04-03T21:19:21.417657+00:00",
+        "account_details": {
+          "charges_enabled": true,
+          "payouts_enabled": true,
+          "requirements": "{\"alternatives\":[],\"current_deadline\":null,\"currently_due\":[],\"disabled_reason\":null,\"errors\":[],\"eventually_due\":[],\"past_due\":[],\"pending_verification\":[]}"
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión obtenida directamente:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Conexión Stripe obtenida directamente:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Usando conexión Stripe ya cargada:",
+      "acct_1R9AnERYLT0A6sSK"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Buscando facturas para booking_id:",
+      "2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [BookingInvoiceService] BÚSQUEDA DE FACTURAS - Parámetros:",
+      {
+        "metodo": "findInvoicesByBookingId",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "bookingId": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:25.641Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📡 [BookingInvoiceService] Consultando endpoint API para buscar facturas de reserva 2ead804d-48b1-4dd9-b266-ca4c94f836aa"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [BookingInvoiceService] Respuesta de API para booking_id=2ead804d-48b1-4dd9-b266-ca4c94f836aa:",
+      {
+        "success": true,
+        "facturas_encontradas": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Facturas encontradas:",
+      {
+        "count": 1,
+        "hasLatestInvoice": true,
+        "hasPaymentIntent": false,
+        "hasCharge": false,
+        "timestamp": "2025-04-08T00:46:25.721Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Estructura de factura encontrada:",
+      {
+        "invoice_properties": [
+          "id",
+          "object",
+          "account_country",
+          "account_name",
+          "account_tax_ids",
+          "amount_due",
+          "amount_overpaid",
+          "amount_paid",
+          "amount_remaining",
+          "amount_shipping",
+          "application",
+          "application_fee_amount",
+          "attempt_count",
+          "attempted",
+          "auto_advance",
+          "automatic_tax",
+          "automatically_finalizes_at",
+          "billing_reason",
+          "charge",
+          "collection_method",
+          "created",
+          "currency",
+          "custom_fields",
+          "customer",
+          "customer_address",
+          "customer_email",
+          "customer_name",
+          "customer_phone",
+          "customer_shipping",
+          "customer_tax_exempt",
+          "customer_tax_ids",
+          "default_payment_method",
+          "default_source",
+          "default_tax_rates",
+          "description",
+          "discount",
+          "discounts",
+          "due_date",
+          "effective_at",
+          "ending_balance",
+          "footer",
+          "from_invoice",
+          "hosted_invoice_url",
+          "invoice_pdf",
+          "issuer",
+          "last_finalization_error",
+          "latest_revision",
+          "lines",
+          "livemode",
+          "metadata",
+          "next_payment_attempt",
+          "number",
+          "on_behalf_of",
+          "paid",
+          "paid_out_of_band",
+          "parent",
+          "payment_intent",
+          "payment_settings",
+          "period_end",
+          "period_start",
+          "post_payment_credit_notes_amount",
+          "pre_payment_credit_notes_amount",
+          "quote",
+          "receipt_number",
+          "rendering",
+          "shipping_cost",
+          "shipping_details",
+          "starting_balance",
+          "statement_descriptor",
+          "status",
+          "status_transitions",
+          "subscription",
+          "subscription_details",
+          "subtotal",
+          "subtotal_excluding_tax",
+          "tax",
+          "test_clock",
+          "total",
+          "total_discount_amounts",
+          "total_excluding_tax",
+          "total_pretax_credit_amounts",
+          "total_tax_amounts",
+          "total_taxes",
+          "transfer_data",
+          "webhooks_delivered_at"
+        ],
+        "has_invoice_id": false,
+        "invoice_id_value": "N/A",
+        "metadata_properties": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Payment Intent encontrado:",
+      {
+        "source": "metadata.payment_intent_id",
+        "paymentIntentPrefix": "pi_3RBPzWR..."
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📑 Datos de factura extraídos para reembolso:",
+      {
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "metadata_keys": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ],
+        "has_invoice_id": true,
+        "has_payment_intent": true,
+        "timestamp": "2025-04-08T00:46:25.722Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📑 Datos de factura extraídos para reembolso:",
+      {
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "metadata_keys": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ],
+        "has_invoice_id": true,
+        "has_payment_intent": true,
+        "timestamp": "2025-04-08T00:46:25.722Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": true,
+        "hasValidInvoice": true,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "stripeAccountId": "acct_...",
+        "isReady": true,
+        "timestamp": "2025-04-08T00:46:25.722Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Factura válida encontrada, habilitando opciones de reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 Verificando si se puede procesar reembolso:",
+      {
+        "paymentType": "booking",
+        "hasInvoice": true,
+        "hasValidInvoice": true,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "stripeAccountId": "acct_...",
+        "isReady": true,
+        "timestamp": "2025-04-08T00:46:25.723Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Factura válida encontrada, habilitando opciones de reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.723Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:25.725Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": true,
+        "hasStripeAccountId": true,
+        "hasCustomerId": false,
+        "hasValidInvoice": true,
+        "invoiceCount": 1,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:25.739Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación (reembolso):",
+      {
+        "paymentType": "booking",
+        "refundReady": true,
+        "hasValidInvoice": true,
+        "isLoading": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [BookingInvoiceService] Respuesta de API para booking_id=2ead804d-48b1-4dd9-b266-ca4c94f836aa:",
+      {
+        "success": true,
+        "facturas_encontradas": 1
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Facturas encontradas:",
+      {
+        "count": 1,
+        "hasLatestInvoice": true,
+        "hasPaymentIntent": false,
+        "hasCharge": false,
+        "timestamp": "2025-04-08T00:46:26.221Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [useStripeRefund] Estructura de factura encontrada:",
+      {
+        "invoice_properties": [
+          "id",
+          "object",
+          "account_country",
+          "account_name",
+          "account_tax_ids",
+          "amount_due",
+          "amount_overpaid",
+          "amount_paid",
+          "amount_remaining",
+          "amount_shipping",
+          "application",
+          "application_fee_amount",
+          "attempt_count",
+          "attempted",
+          "auto_advance",
+          "automatic_tax",
+          "automatically_finalizes_at",
+          "billing_reason",
+          "charge",
+          "collection_method",
+          "created",
+          "currency",
+          "custom_fields",
+          "customer",
+          "customer_address",
+          "customer_email",
+          "customer_name",
+          "customer_phone",
+          "customer_shipping",
+          "customer_tax_exempt",
+          "customer_tax_ids",
+          "default_payment_method",
+          "default_source",
+          "default_tax_rates",
+          "description",
+          "discount",
+          "discounts",
+          "due_date",
+          "effective_at",
+          "ending_balance",
+          "footer",
+          "from_invoice",
+          "hosted_invoice_url",
+          "invoice_pdf",
+          "issuer",
+          "last_finalization_error",
+          "latest_revision",
+          "lines",
+          "livemode",
+          "metadata",
+          "next_payment_attempt",
+          "number",
+          "on_behalf_of",
+          "paid",
+          "paid_out_of_band",
+          "parent",
+          "payment_intent",
+          "payment_settings",
+          "period_end",
+          "period_start",
+          "post_payment_credit_notes_amount",
+          "pre_payment_credit_notes_amount",
+          "quote",
+          "receipt_number",
+          "rendering",
+          "shipping_cost",
+          "shipping_details",
+          "starting_balance",
+          "statement_descriptor",
+          "status",
+          "status_transitions",
+          "subscription",
+          "subscription_details",
+          "subtotal",
+          "subtotal_excluding_tax",
+          "tax",
+          "test_clock",
+          "total",
+          "total_discount_amounts",
+          "total_excluding_tax",
+          "total_pretax_credit_amounts",
+          "total_tax_amounts",
+          "total_taxes",
+          "transfer_data",
+          "webhooks_delivered_at"
+        ],
+        "has_invoice_id": false,
+        "invoice_id_value": "N/A",
+        "metadata_properties": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [useStripeRefund] Payment Intent encontrado:",
+      {
+        "source": "metadata.payment_intent_id",
+        "paymentIntentPrefix": "pi_3RBPzWR..."
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:26.222Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T00:46:26.223Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": true,
+        "hasStripeAccountId": true,
+        "hasCustomerId": false,
+        "hasValidInvoice": true,
+        "invoiceCount": 1,
+        "hasPaymentIntent": true,
+        "hasChargeId": false,
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "timestamp": "2025-04-08T00:46:26.240Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📑 [RefundContext] Datos de factura extraídos:",
+      {
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "metadata_keys": [
+          "booking_id",
+          "country",
+          "customer_email",
+          "description",
+          "empresa_id",
+          "empresa_stripe_id",
+          "invoice_auto_generate",
+          "payment_description",
+          "payment_intent_id",
+          "payment_type",
+          "request_id",
+          "updated_at",
+          "updated_from"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:31.758Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:31.759Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MX\" (después de trim: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México (MX), usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MX\" (normalizado: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 1050, País: \"MX\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencyByCountry: Analizando país \"MX\" (después de trim: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencyByCountry: Detectado México (MX), usando MXN"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"MX\" (normalizado: \"MX\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 formatCurrencyByCountry - Monto: 1050, País: \"MX\", Moneda: MXN, Símbolo: $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Formato MXN: 1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:33.233Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:33.235Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💸 Iniciando reembolso por Stripe",
+      {
+        "bookingId": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "stripeAccountId": "acct_1R9AnERYLT0A6sSK",
+        "invoiceId": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "paymentIntentId": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "refundType": "full",
+        "refundPercentage": 100
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:34.424Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:34.426Z"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "Error al procesar reembolso:",
+      {
+        "message": "No se puede determinar el monto a reembolsar"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=600, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=600.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=600, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=600.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=1050, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=1050.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:35.063Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "has_invoice_id": true,
+        "invoice_id": "in_1RBPzXRYLT0A6sSKj7cjX7aZ",
+        "has_payment_intent_id": true,
+        "payment_intent_id": "pi_3RBPzWRYLT0A6sSK0uGdtL82",
+        "has_stripe_account": true,
+        "can_process_refund": true,
+        "timestamp": "2025-04-08T00:46:35.065Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props iniciales:",
+      {
+        "booking_id": "2ead804d-48b1-4dd9-b266-ca4c94f836aa",
+        "hasGuarantee": false,
+        "totalAmount": 1050,
+        "payment_type": "booking",
+        "timestamp": "2025-04-08T00:46:35.094Z"
+      }
+    ]
+  }
+]

@@ -566,8 +566,16 @@ export function SummaryStep({
         console.log('✅ [SummaryStep] ID de reserva válido obtenido:', bookingResult.id);
       }
       
-      // Actualizar metadatos de factura para todos los pagos con tarjeta
-      const isCardPaymentMethod = ['card', 'full', 'deposit', 'guarantee'].includes(selectedPaymentMethod as string);
+      // Actualizar metadatos de factura para pagos con tarjeta, excepto garantía
+      // Los pagos de tipo guarantee no deben generar ni actualizar facturas
+      const isCardPaymentMethod = ['card', 'full', 'deposit'].includes(selectedPaymentMethod as string);
+      
+      console.log('🔍 [SummaryStep] Verificando si se debe actualizar metadatos de factura:', {
+        paymentType: selectedPaymentMethod,
+        shouldUpdateInvoice: isCardPaymentMethod,
+        activeGateway,
+        hasBookingId: !!bookingResult.id
+      });
                                  
       if (isCardPaymentMethod && (activeGateway === 'stripe') && bookingResult.id) {
         // Recuperar el último ID de PaymentIntent desde localStorage
@@ -717,19 +725,37 @@ export function SummaryStep({
     const itemsPrice = state.itemsTotalPrice || 0;
     const totalPrice = shiftPrice + itemsPrice;
     
-    // Determinar si es una seña y calcular el porcentaje
-    const isDeposit = selectedPaymentMethod === 'guarantee' || selectedPaymentMethod === 'deposit';
-    // El porcentaje de seña estándar es 30%
-    const depositPercentage = 30;
-    // Calcular el precio a pagar (total o seña)
-    const priceToShow = isDeposit ? (totalPrice * depositPercentage / 100) : totalPrice;
+    // Determinar si es una seña/garantía y obtener el porcentaje adecuado
+    const isDeposit = selectedPaymentMethod === 'deposit';
+    const isGuarantee = selectedPaymentMethod === 'guarantee';
+    const needsPercentage = isDeposit || isGuarantee;
+    
+    // Obtener el porcentaje de garantía del contexto, con valor predeterminado si no está configurado
+    const guaranteePercentage = state.paymentPercentages?.garantia || 
+                             state.paymentPercentages?.guarantee || 
+                             40; // Porcentaje predeterminado actualizado a 40%
+
+    // Obtener el porcentaje de seña estándar
+    const depositPercentage = state.paymentPercentages?.sena ||
+                            state.paymentPercentages?.deposit ||
+                            30; // Porcentaje predeterminado para seña
+    
+    // Determinar qué porcentaje usar según el tipo de pago
+    const percentageToUse = isGuarantee ? guaranteePercentage : depositPercentage;
+    
+    // Calcular el precio a mostrar
+    const priceToShow = needsPercentage ? (totalPrice * percentageToUse / 100) : totalPrice;
     const formatted = priceToShow.toFixed(2);
     const [integerPart, decimalPart] = formatted?.split('.');
     
     return (
       <div className="flex flex-col items-center justify-center py-5 my-4">
         <p className="text-sm font-semibold mb-2 text-gray-500">
-          {isDeposit ? `Seña (${depositPercentage}%)` : 'Precio Total'}
+          {isGuarantee 
+            ? `Cobro en caso de no asistir (${guaranteePercentage}%)` 
+            : isDeposit 
+              ? `Seña (${depositPercentage}%)` 
+              : 'Precio Total'}
         </p>
 
         <p className="text-5xl font-semibold leading-none mb-4 text-gray-900">
