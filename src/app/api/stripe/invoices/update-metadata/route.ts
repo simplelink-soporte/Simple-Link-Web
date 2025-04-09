@@ -78,6 +78,61 @@ export async function POST(request: Request) {
       stripeAccount: stripeAccountId
     });
     
+    // Determinar si estamos tratando con un ID de PaymentIntent o un ID de factura
+    const isInvoiceId = paymentIntentId.startsWith('in_');
+    const isPaymentIntentId = paymentIntentId.startsWith('pi_');
+    
+    console.log(`🔍 [${requestId}] Tipo de ID detectado:`, {
+      isInvoiceId,
+      isPaymentIntentId,
+      id: paymentIntentId.substring(0, 10) + '...'
+    });
+    
+    // Manejar la actualización según el tipo de ID proporcionado
+    if (isInvoiceId) {
+      // Si es un ID de factura, actualizar directamente la factura
+      try {
+        console.log(`🔍 [${requestId}] Actualizando directamente la factura:`, paymentIntentId);
+        
+        // Obtener la factura actual para preservar metadatos existentes
+        const invoice = await stripe.invoices.retrieve(paymentIntentId);
+        
+        // Combinar metadatos existentes con los nuevos
+        const updatedMetadata = {
+          ...invoice.metadata,
+          ...metadata,
+          updated_at: new Date().toISOString()
+        };
+        
+        // Actualizar la factura
+        const updatedInvoice = await stripe.invoices.update(paymentIntentId, {
+          metadata: updatedMetadata
+        });
+        
+        console.log(`✅ [${requestId}] Factura actualizada exitosamente:`, {
+          invoiceId: updatedInvoice.id,
+          invoiceNumber: updatedInvoice.number
+        });
+        
+        return NextResponse.json({
+          success: true,
+          invoiceId: updatedInvoice.id,
+          invoiceNumber: updatedInvoice.number,
+          message: 'Metadatos de factura actualizados correctamente'
+        });
+      } catch (error: any) {
+        console.error(`❌ [${requestId}] Error al actualizar la factura:`, error);
+        return NextResponse.json({
+          success: false,
+          error: {
+            message: `Error al actualizar la factura: ${error.message}`,
+            code: error.code || 'invoice_update_error'
+          }
+        }, { status: 500 });
+      }
+    }
+    
+    // Si no es un ID de factura, continuar con el flujo normal para PaymentIntent
     // 5. Obtener el PaymentIntent para verificar y encontrar las facturas asociadas
     let paymentIntent;
     try {

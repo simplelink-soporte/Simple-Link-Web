@@ -94,12 +94,18 @@ export class NoShowService {
 
       // En este punto, stripeData está garantizado a tener un valor
       // 2. Procesar el cargo en Stripe
+      console.log(`🔍 [${requestId}] Pasando datos Stripe a chargeNoShow:`, {
+        hasCustomerId: Boolean(stripeData.customerId),
+        customerIdPrefix: stripeData.customerId ? stripeData.customerId.substring(0, 8) + '...' : 'N/A'
+      });
+
       const chargeResult = await this.stripePaymentService.chargeNoShow({
         bookingId: params.bookingId,
         amount: params.amount,
         reason: params.reason,
         stripeAccountId: stripeData.accountId,
         stripePaymentMethodId: stripeData.paymentMethodId,
+        stripeCustomerId: stripeData.customerId,
         empresaId: params.empresaId
       });
 

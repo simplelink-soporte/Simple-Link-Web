@@ -18,7 +18,9 @@ export async function POST(request: Request): Promise<NextResponse<NoShowChargeR
       console.log(`✅ [${requestId}] Usando datos Stripe proporcionados por el cliente:`, {
         bookingId: payload.bookingId,
         hasPaymentMethodId: Boolean(payload.stripeData.paymentMethodId),
-        hasAccountId: Boolean(payload.stripeData.accountId)
+        hasAccountId: Boolean(payload.stripeData.accountId),
+        hasCustomerId: Boolean(payload.stripeData.customerId),
+        customerIdPrefix: payload.stripeData.customerId ? payload.stripeData.customerId.substring(0, 8) + '...' : 'N/A'
       });
     }
     

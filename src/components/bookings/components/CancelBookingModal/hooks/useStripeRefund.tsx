@@ -55,21 +55,25 @@ export function useStripeRefund({ isOpen, booking }: UseStripeRefundProps) {
 
   // Cargar datos cuando se abre el modal
   useEffect(() => {
-    // No cargar datos para reservas tipo 'guarantee', evitando consultas innecesarias a la API
-    if (isOpen && booking?.id && !loadAttempted && booking?.payment_type !== 'guarantee') {
-      console.log('🔄 [useStripeRefund] Iniciando carga de datos para reembolso (no es tipo guarantee):', {
+    // No cargar datos para reservas tipo 'guarantee' o 'deposit', evitando consultas innecesarias a la API
+    const excludedPaymentTypes = ['guarantee', 'deposit'];
+    const isExcludedType = excludedPaymentTypes.includes(booking?.payment_type || '');
+    
+    if (isOpen && booking?.id && !loadAttempted && !isExcludedType) {
+      console.log('🔄 [useStripeRefund] Iniciando carga de datos para reembolso (tipo de pago elegible):', {
         booking_id: booking?.id,
         payment_type: booking?.payment_type,
         timestamp: new Date().toISOString()
       });
       loadRefundData();
-    } else if (isOpen && booking?.payment_type === 'guarantee') {
-      console.log('🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:', {
+    } else if (isOpen && isExcludedType) {
+      console.log('🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo excluido:', {
         booking_id: booking?.id,
         payment_type: booking?.payment_type,
+        excluded_types: excludedPaymentTypes.join(', '),
         timestamp: new Date().toISOString()
       });
-      setLoadAttempted(true); // Marcamos como intentado para evitar reintentosq
+      setLoadAttempted(true); // Marcamos como intentado para evitar reintentos
       setIsLoading(false); // Aseguramos que no se muestre como cargando
     }
   }, [isOpen, booking?.id, booking?.payment_type, loadAttempted, stripeConnection]);

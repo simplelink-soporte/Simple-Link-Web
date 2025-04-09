@@ -1,0 +1,314 @@
+[
+  {
+    "type": "log",
+    "message": [
+      "Log capturing started. Use save() in the console to download logs."
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📦 Enviando parámetros de cancelación con reembolso:",
+      {
+        "reason": ""
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔐 Ejecutando cancelación de reserva con parámetros:",
+      {
+        "booking_id": "ed1233e8-893f-4c1d-8025-01c16c63ab5d",
+        "reason": "",
+        "has_refund": false,
+        "refund_amount": null,
+        "refund_id": null,
+        "charge_amount": 0,
+        "timestamp": "2025-04-08T22:53:26.105Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Usando nueva RPC para cancelación sin reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=120, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=120.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=0, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=0.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=570, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=570.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=450, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=450.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=120, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=120.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=0, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=0.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Monto=570, País=\"Mexico\""
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 getCurrencySymbol: Analizando país \"Mexico\" (normalizado: \"MEXICO\")"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ getCurrencySymbol: Detectado México, usando $"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Símbolo obtenido=$"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💰 formatPrice: Número formateado=570.00"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Cancelación procesada correctamente:",
+      {
+        "reason": "Cancelación de reserva",
+        "message": "Reserva cancelada correctamente con estado de pago \"cancelled\" en todas las tablas",
+        "success": true,
+        "booking_id": "ed1233e8-893f-4c1d-8025-01c16c63ab5d",
+        "payment_id": "ec264ea7-1f08-4e75-8258-80f8382db31d",
+        "charge_amount": 0,
+        "charge_applied": false,
+        "payment_status": "cancelled",
+        "payments_count": 1,
+        "booking_updated": true,
+        "payments_updated": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 BookingQueryService - Consultando reservas para fecha:",
+      {
+        "date": "2025-04-09",
+        "branchId": "04c4b1ad-ae26-4956-82b6-03a43a5f59f6",
+        "timestamp": "2025-04-08T22:53:26.244Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📍 Zona horaria de la sede: America/New_York"
+    ]
+  }
+]

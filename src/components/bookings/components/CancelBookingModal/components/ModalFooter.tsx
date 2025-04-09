@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { IconLoader } from '@tabler/icons-react';
+import { useState } from 'react';
 
 interface ModalFooterProps {
   onCancel: () => void;
@@ -15,17 +16,42 @@ export function ModalFooter({
   isProcessing,
   shouldCharge
 }: ModalFooterProps) {
+  // Estado para controlar la confirmación de cancelación
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+  
+  // Maneja el clic en el botón de cancelar/confirmar
+  const handleCancelClick = () => {
+    if (confirmingCancel) {
+      // Si ya estamos en modo confirmación, ejecutar la acción real
+      onCancel();
+    } else {
+      // Si es el primer clic, cambiar al modo de confirmación
+      setConfirmingCancel(true);
+    }
+  };
+
+  // Maneja el clic en Cerrar, restableciendo el estado de confirmación
+  const handleCloseClick = () => {
+    setConfirmingCancel(false);
+    onClose();
+  };
+
   return (
     <div className="flex gap-3">
       <Button
-        onClick={onCancel}
-        variant="outline"
+        onClick={handleCancelClick}
+        variant={confirmingCancel ? "destructive" : "outline"}
         disabled={isProcessing}
         className={cn(
-          "flex-1 border-gray-200",
-          shouldCharge 
-            ? "hover:border-yellow-200 hover:text-yellow-600 hover:bg-yellow-50"
-            : "hover:border-red-100 hover:text-red-600 hover:bg-red-50",
+          "flex-1",
+          confirmingCancel 
+            ? "bg-red-600 text-white hover:bg-red-700" 
+            : cn(
+                "border-gray-200",
+                shouldCharge 
+                  ? "hover:border-yellow-200 hover:text-yellow-600"
+                  : "hover:border-red-100 hover:text-red-600"
+              ),
           "transition-colors duration-200",
           isProcessing && "opacity-50 cursor-not-allowed"
         )}
@@ -36,16 +62,18 @@ export function ModalFooter({
             Procesando...
           </span>
         ) : (
-          shouldCharge ? 'Cancelar y Aplicar Cargo' : 'Cancelar Reserva'
+          confirmingCancel 
+            ? "Confirmar" 
+            : (shouldCharge ? 'Cancelar y Aplicar Cargo' : 'Cancelar Reserva')
         )}
       </Button>
       <Button
-        onClick={onClose}
+        onClick={handleCloseClick}
         variant="outline"
         disabled={isProcessing}
         className="flex-1 border-gray-200 bg-white hover:bg-gray-50/80 transition-colors duration-200"
       >
-        Cerrar
+        {confirmingCancel ? "Cancelar" : "Cerrar"}
       </Button>
     </div>
   );

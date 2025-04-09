@@ -336,7 +336,7 @@ export const bookingQueryService = {
           class_session_price
         `)
         .eq('date', date)
-        .or('payment_status.neq.cancelled,payment_status.is.null')
+        .or('payment_status.is.null,and(payment_status.neq.cancelled,payment_status.neq.refunded)')
 
       if (branchId) {
         query = query.eq('courts.branch_id', branchId)

@@ -45,10 +45,10 @@ export function ParticipantBookingDetail({
 
   // Función helper para formatear moneda
   const formatCurrency = (amount: number | undefined) => {
-    if (amount === undefined) return '0,00 €'
-    return new Intl.NumberFormat('es-ES', {
+    if (amount === undefined) return '$0.00'
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'USD',
       minimumFractionDigits: 2
     }).format(amount)
   }
@@ -82,6 +82,12 @@ export function ParticipantBookingDetail({
       guarantee_percentage: participant.bookingDetails?.guarantee_percentage
     });
     return participant.bookingDetails?.payment_type === 'guarantee';
+  }
+
+  // Función para verificar si una reserva es elegible para reembolso
+  const isEligibleForRefund = () => {
+    const excludedPaymentTypes = ['guarantee', 'deposit'];
+    return !excludedPaymentTypes.includes(participant.bookingDetails?.payment_type || '');
   }
 
   // Función para obtener el color de la insignia según el estado
@@ -407,7 +413,8 @@ export function ParticipantBookingDetail({
           guaranteePercentage={participant.bookingDetails.guarantee_percentage}
           booking={{
             id: participant.bookingDetails.id,
-            stripe_payment_method_id: undefined // Este dato se obtiene en el modal
+            stripe_payment_method_id: undefined, // Este dato se obtiene en el modal
+            payment_type: participant.bookingDetails.payment_type // Pasamos el tipo de pago para que funcione la exclusión
           }}
         />
       )}

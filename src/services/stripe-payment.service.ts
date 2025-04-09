@@ -63,25 +63,52 @@ export class StripePaymentService {
         var customerId = stripeData.customerId || '';
       } else {
         console.log(`✅ [${requestId}] Usando datos de Stripe proporcionados por parámetro`);
-        // Intentar obtener customerId si no fue proporcionado
-        var customerId = '';
-        try {
-          const { data } = await this.supabase
-            .from('stripe_payment_methods')
-            .select('stripe_customer_id')
-            .eq('payment_method_id', params.stripePaymentMethodId)
-            .single();
-          
-          if (data && data.stripe_customer_id) {
-            customerId = data.stripe_customer_id;
-            console.log(`✅ [${requestId}] Customer ID encontrado:`, customerId);
+        
+        // Usar el customerId proporcionado directamente si está disponible
+        if (params.stripeCustomerId) {
+          var customerId = params.stripeCustomerId;
+          console.log(`✅ [${requestId}] Customer ID proporcionado directamente:`, 
+            customerId.substring(0, 8) + '...');
+        } else {
+          // Intentar obtener customerId si no fue proporcionado
+          var customerId = '';
+          try {
+            const { data } = await this.supabase
+              .from('stripe_payment_methods')
+              .select('stripe_customer_id')
+              .eq('payment_method_id', params.stripePaymentMethodId)
+              .single();
+            
+            if (data && data.stripe_customer_id) {
+              customerId = data.stripe_customer_id;
+              console.log(`✅ [${requestId}] Customer ID encontrado:`, 
+                customerId.substring(0, 8) + '...');
+            }
+          } catch (err) {
+            console.warn(`⚠️ [${requestId}] No se pudo obtener el customerId:`, err);
           }
-        } catch (err) {
-          console.warn(`⚠️ [${requestId}] No se pudo obtener el customerId:`, err);
         }
       }
 
       // 2. Procesar el cargo
+      // Validar que el customer ID no esté vacío
+      if (!customerId || customerId.trim() === '') {
+        console.error(`❌ [${requestId}] Error: Customer ID vacío o nulo`, {
+          hasCustomerId: Boolean(customerId),
+          customerId: customerId === '' ? '(string vacío)' : '(nulo)',
+          paymentMethodPrefix: params.stripePaymentMethodId ? params.stripePaymentMethodId.substring(0, 8) + '...' : 'N/A'
+        });
+
+        throw {
+          code: 'MISSING_CUSTOMER_ID',
+          message: 'El ID de cliente de Stripe es requerido para procesar el cargo',
+          details: {
+            errorType: 'validation_error',
+            requestId
+          }
+        };
+      }
+
       const paymentIntent = await this.processCharge({
         amount: params.amount,
         stripeAccountId: params.stripeAccountId,
@@ -158,7 +185,8 @@ export class StripePaymentService {
       console.log(`✅ [${requestId}] PaymentIntent creado:`, {
         id: paymentIntent.id,
         status: paymentIntent.status,
-        amount: paymentIntent.amount
+        amount: paymentIntent.amount,
+        customerIdPrefix: customerId ? customerId.substring(0, 8) + '...' : 'N/A'
       });
 
       return paymentIntent;

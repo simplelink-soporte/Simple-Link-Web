@@ -234,9 +234,17 @@ export function PaymentTypeList({
             </p>
             {type.details && (
               <ul className="text-xs text-gray-500 list-disc pl-4 space-y-1">
-                {type.details.map((detail, index) => (
-                  <li key={index}>{detail}</li>
-                ))}
+                {type.id === 'deposit' && paymentConfig?.partialPaymentPercentage
+                  ? [
+                      // Reemplazar el detalle de la seña con el porcentaje configurado
+                      `Paga una seña del ${paymentConfig.partialPaymentPercentage}% ahora y el resto al llegar al club`
+                    ].map((detail, index) => (
+                      <li key={index}>{detail}</li>
+                    ))
+                  : type.details.map((detail, index) => (
+                      <li key={index}>{detail}</li>
+                    ))
+                }
               </ul>
             )}
           </div>

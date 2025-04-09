@@ -19,6 +19,7 @@ export interface NoShowChargeRequest {
   // Campos deprecados (mantener por compatibilidad hacia atrás)
   stripeAccountId?: string;
   stripePaymentMethodId?: string;
+  stripeCustomerId?: string; // Añadido para permitir pasar el ID de cliente directamente
   // Datos de cliente para facturación
   customerEmail?: string;
   customerName?: string;

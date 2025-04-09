@@ -24,6 +24,12 @@ interface StripePaymentData {
   customerId?: string | null;
 }
 
+interface StripeCustomerData {
+  id: string;
+  stripeCustomerId: string;
+  stripeAccountId: string;
+}
+
 // Interfaz para mejorar la tipificación de los pagos
 interface PaymentWithStripe {
   id: string;
@@ -289,6 +295,61 @@ export const paymentService = {
         context: isServer ? 'server' : 'client',
         timestamp: new Date().toISOString()
       });
+      return null;
+    }
+  },
+
+  /**
+   * Obtiene los datos del cliente Stripe a partir del ID de usuario
+   * @param userId ID del usuario para el que se busca el cliente Stripe
+   * @returns Datos del cliente Stripe o null si no se encuentra
+   */
+  async getStripeCustomerByUserId(userId: string): Promise<StripeCustomerData | null> {
+    if (!userId) {
+      console.error('⚠️ getStripeCustomerByUserId: userId es requerido');
+      return null;
+    }
+
+    const requestId = createId();
+    console.log(`🔍 [${requestId}] Buscando cliente Stripe para userId: ${userId}`);
+
+    try {
+      // Obtener el cliente autenticado de Supabase
+      const { client } = await getAuthenticatedSupabaseClient();
+      
+      // Buscar en la tabla stripe_customers
+      const { data, error } = await client
+        .from('stripe_customers')
+        .select('id, stripe_customer_id, stripe_account_id')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) {
+        console.error(`❌ [${requestId}] Error al buscar cliente Stripe:`, error);
+        return null;
+      }
+
+      if (!data) {
+        console.warn(`⚠️ [${requestId}] No se encontró cliente Stripe para el usuario:`, userId);
+        return null;
+      }
+
+      console.log(`✅ [${requestId}] Cliente Stripe encontrado:`, {
+        id: data.id,
+        stripeCustomerId: data.stripe_customer_id,
+        stripeAccountIdPrefix: data.stripe_account_id.substring(0, 10) + '...'
+      });
+
+      return {
+        id: data.id,
+        stripeCustomerId: data.stripe_customer_id,
+        stripeAccountId: data.stripe_account_id
+      };
+    } catch (error) {
+      console.error(`❌ [${requestId}] Error inesperado al buscar cliente Stripe:`, error);
       return null;
     }
   }

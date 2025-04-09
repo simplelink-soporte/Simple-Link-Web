@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { toast } from '@/components/ui/use-toast'
@@ -57,6 +57,21 @@ interface CancelBookingModalProps {
   }
 }
 
+interface CancelBookingParams {
+  reason?: string;
+  refundAction?: {
+    type: 'full' | 'percentage';
+    percentage?: number;
+    processMethod: 'stripe' | 'external';
+    amount?: number;
+    refundId?: string;
+  };
+  chargeWasProcessed?: boolean;
+  chargeAmount?: number;
+  guaranteeChargeId?: string;
+  [key: string]: any; // Para permitir propiedades adicionales
+}
+
 export function CancelBookingModal({
   isOpen,
   onClose,
@@ -68,7 +83,32 @@ export function CancelBookingModal({
 }: CancelBookingModalProps) {
   const { organization } = useOrganization();
   const [reason, setReason] = useState('');
-  const [shouldCharge, setShouldCharge] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  // ESTADO UNIFICADO para shouldCharge - Esto es crítico para que funcione el cobro
+  const [shouldCharge, setShouldCharge] = useState(hasGuarantee || false);
+
+  // Mostrar la razón seleccionada en los logs
+  useEffect(() => {
+    if (reason) {
+      console.log('🔖 Razón de cancelación seleccionada:', reason);
+    }
+  }, [reason]);
+  
+  // Depuración: Cada vez que shouldCharge cambia, lo registramos
+  useEffect(() => {
+    console.log('💲 Estado de cobro de garantía actualizado (COMPONENTE PRINCIPAL):', {
+      shouldCharge,
+      hasGuarantee,
+      timestamp: new Date().toISOString()
+    });
+  }, [shouldCharge, hasGuarantee]);
+  
+  // Función de manejo de cambio de shouldCharge - Se pasará al componente hijo
+  const handleShouldChargeChange = useCallback((value: boolean) => {
+    console.log('🔄 Cambiando shouldCharge a:', value, 'en CancelBookingModal');
+    setShouldCharge(value);
+  }, []);
 
   // Usamos el porcentaje de garantía específico de la reserva (tabla bookings) o el valor predeterminado si no está disponible
   const effectiveGuaranteePercentage = guaranteePercentage || 40;
@@ -86,12 +126,15 @@ export function CancelBookingModal({
   }, [isOpen, booking?.id, guaranteePercentage, effectiveGuaranteePercentage, hasGuarantee]);
   
   // Hook para el cobro de garantía
+  const { processGuaranteeCharge } = useGuaranteeCharge();
+  
+  // Hook para obtener la conexión con Stripe
   const {
     stripeEnabled,
     isLoadingStripe,
     stripePaymentMethodId,
-    stripeAccountId: guaranteeStripeAccountId,
-    stripeCustomerId: guaranteeStripeCustomerId,
+    stripeAccountId,
+    stripeCustomerId,
     customerDetails: guaranteeCustomerDetails
   } = useStripeConnection({ isOpen, booking, hasGuarantee });
   
@@ -148,70 +191,45 @@ export function CancelBookingModal({
     setRefundPercentage,
     refundMethod,
     setRefundMethod,
-    isProcessing,
-    setIsProcessing,
+    isProcessing: isProcessingRefund,
+    setIsProcessing: setIsProcessingRefund,
     processStripeRefund,
     registerExternalRefund
   } = useRefundProcessing({
     totalAmount,
-    stripeAccountId: refundData?.stripeAccountId || guaranteeStripeAccountId || null,
+    stripeAccountId: refundData?.stripeAccountId || stripeAccountId || null,
     bookingId: booking?.id || '',
     invoiceId: invoiceData.invoiceId,
     paymentIntentId: invoiceData.paymentIntentId
   });
-
-  // Log inicial de props
-  useEffect(() => {
-    if (isOpen) {
-      console.log('🔍 CancelBookingModal - Props iniciales:', {
-        booking_id: booking?.id,
-        hasGuarantee,
-        totalAmount,
-        payment_type: booking?.payment_type,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [isOpen, booking, hasGuarantee, totalAmount]);
-  
-  // Monitorear el estado de Stripe para depuración
-  useEffect(() => {
-    if (isOpen && hasGuarantee) {
-      console.log('🔍 Estado de cancelación (garantía):', {
-        paymentType: booking?.payment_type,
-        canChargeNoShow: hasGuarantee && stripeEnabled,
-        stripeConnection: {
-          enabled: stripeEnabled,
-          isLoading: isLoadingStripe
-        },
-        totalAmount,
-        stripe_payment_method_id: Boolean(stripePaymentMethodId),
-        stripe_account_id: Boolean(guaranteeStripeAccountId),
-        stripe_customer_id: Boolean(guaranteeStripeCustomerId),
-      });
-    } else if (isOpen && ['booking', 'full'].includes(booking?.payment_type || '')) {
-      console.log('🔍 Estado de cancelación (reembolso):', {
-        paymentType: booking?.payment_type,
-        refundReady: refundData?.isReady || false,
-        hasValidInvoice: refundData?.hasValidInvoice || false,
-        isLoading: isLoadingRefund
-      });
-    }
-  }, [isOpen, hasGuarantee, stripeEnabled, isLoadingStripe, stripePaymentMethodId, 
-      guaranteeStripeAccountId, guaranteeStripeCustomerId, booking?.payment_type, 
-      totalAmount, refundData, isLoadingRefund]);
-
-  // Función para manejar la cancelación
-  // Utilizar el hook para procesar cargos de garantía
-  const { isProcessing: isProcessingGuarantee, processGuaranteeCharge } = useGuaranteeCharge();
 
   /**
    * Procesa el cargo de garantía si es necesario
    * @returns Objeto con resultado del cargo de garantía
    */
   const processGuaranteeChargeIfNeeded = async () => {
-    // Si no hay garantía, no es necesario el cargo
-    if (!hasGuarantee || !shouldCharge || !stripeEnabled) {
+    // Verificación adicional con logs detallados
+    console.log('🧐 Verificando si se debe procesar cargo de garantía:', {
+      hasGuarantee,
+      shouldCharge,
+      stripeEnabled,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Si no hay garantía o no se debe cobrar, no es necesario el cargo
+    if (!hasGuarantee || !shouldCharge) {
+      console.log('🚫 No es necesario procesar cargo de garantía:', {
+        hasGuarantee,
+        shouldCharge,
+        timestamp: new Date().toISOString()
+      });
       return { success: true, chargeProcessed: false };
+    }
+
+    // Verificar la conexión con Stripe
+    if (!stripeEnabled) {
+      console.log('🚫 Stripe no está habilitado para el cobro');
+      return { success: false, error: { message: 'Stripe no está habilitado' } };
     }
 
     // Calcular el monto a cargar basado en el porcentaje específico de garantía
@@ -238,20 +256,23 @@ export function CancelBookingModal({
     };
 
     // Si tenemos los datos de Stripe, incluirlos para el procesamiento
-    if (guaranteeStripeAccountId && stripePaymentMethodId) {
+    if (stripeAccountId && stripePaymentMethodId) {
       console.log('✅ Preparando datos de Stripe para el cargo:', {
-        hasAccountId: Boolean(guaranteeStripeAccountId),
+        hasAccountId: Boolean(stripeAccountId),
         hasPaymentMethodId: Boolean(stripePaymentMethodId),
-        hasCustomerId: Boolean(guaranteeStripeCustomerId),
+        hasCustomerId: Boolean(stripeCustomerId),
       });
 
       Object.assign(chargeParams, {
         stripeData: {
-          accountId: guaranteeStripeAccountId,
+          accountId: stripeAccountId,
           paymentMethodId: stripePaymentMethodId,
-          customerId: guaranteeStripeCustomerId
+          customerId: stripeCustomerId
         }
       });
+    } else {
+      console.error('❌ Faltan datos de Stripe para procesar el cargo');
+      return { success: false, error: { message: 'Faltan datos de Stripe para el cargo' } };
     }
 
     // Utilizar el hook para procesar el cargo
@@ -259,57 +280,119 @@ export function CancelBookingModal({
       const result = await processGuaranteeCharge(chargeParams);
 
       if (!result.success) {
-        console.error('❌ Error al procesar cargo de garantía:', result.error);
-        toast({
-          title: "Error al procesar el cargo",
-          description: result.error?.message || "No se pudo procesar el cargo de garantía",
-          variant: "destructive"
-        });
-        return { success: false, error: result.error };
+        // Si el resultado no fue exitoso, enviar una alerta al usuario
+        console.error('❌ Error al procesar el cargo de garantía:', result.error);
+        
+        // Mostrar modal de confirmación para decidir si continuar con la cancelación
+        // a pesar de que falló el cobro de garantía
+        const shouldContinue = window.confirm(
+          `No se pudo procesar el cargo de garantía. ¿Desea continuar con la cancelación sin procesar el cargo?\n\nError: ${result.error?.message || 'Error desconocido'}`
+        );
+        
+        if (!shouldContinue) {
+          console.log('🛑 Usuario decidió no continuar con la cancelación');
+          return { success: false, error: { message: 'Cancelación abortada por el usuario' } };
+        }
+        
+        console.log('⚠️ Usuario decidió continuar con la cancelación a pesar del error en el cargo');
+        // Retornamos success: false para indicar que el cargo falló, pero con userConfirmedContinue: true
+        return { 
+          success: false, 
+          error: result.error,
+          userConfirmedContinue: true // Flag especial para permitir continuar con la cancelación
+        };
       }
-
+      
+      // Si llegamos aquí, el cargo fue exitoso
       console.log('✅ Cargo de garantía procesado exitosamente:', result);
-      toast({
-        title: "Cargo de garantía procesado",
-        description: "El cargo de garantía se ha procesado correctamente",
-        variant: "default"
-      });
       return { success: true, chargeProcessed: true, chargeId: result.chargeId };
-    } catch (error) {
-      console.error('❌ Error inesperado al procesar cargo de garantía:', error);
-      toast({
-        title: "Error inesperado",
-        description: "Ocurrió un error al procesar el cargo de garantía",
-        variant: "destructive"
-      });
-      return { success: false, error };
+      
+    } catch (error: any) {
+      console.error('❌ Error inesperado al procesar el cargo de garantía:', error);
+      
+      // Mostrar confirmación al usuario
+      const shouldContinue = window.confirm(
+        `Ocurrió un error inesperado al procesar el cargo de garantía. ¿Desea continuar con la cancelación sin procesar el cargo?\n\nError: ${error.message || 'Error desconocido'}`
+      );
+      
+      if (!shouldContinue) {
+        return { success: false, error: { message: 'Cancelación abortada por el usuario' } };
+      }
+      
+      // Si el usuario confirma, permitimos continuar a pesar del error
+      return { 
+        success: false, 
+        error: { message: error.message || 'Error desconocido' },
+        userConfirmedContinue: true
+      };
     }
   };
 
-  const handleCancelBooking = async () => {
+  const handleCancelBooking = async (cancelParams: CancelBookingParams = {}) => {
     setIsProcessing(true);
     
     try {
-      // Generar parámetros de cancelación
-      const cancelParams: any = { reason };
+      // Log importante para depuración
+      console.log('🚀 Iniciando proceso de cancelación en CancelBookingModal:', {
+        hasGuarantee,
+        shouldCharge, // ESTE ES EL ESTADO CLAVE QUE DEBE SER CORRECTO
+        stripeEnabled,
+        params: cancelParams,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Asegurarnos de que cancelParams tenga al menos la propiedad reason
+      cancelParams = {
+        reason: '',
+        ...cancelParams
+      };
+      
+      let chargeWasProcessed = false;
       
       // Paso 1: Procesar cargo de garantía si es necesario
       if (hasGuarantee && shouldCharge && stripeEnabled) {
+        console.log('🔄 Iniciando flujo de cobro de garantía:', {
+          booking_id: booking.id,
+          stripe_enabled: stripeEnabled,
+          has_payment_method: Boolean(stripePaymentMethodId),
+          has_account_id: Boolean(stripeAccountId),
+          timestamp: new Date().toISOString()
+        });
+        
         const guaranteeResult = await processGuaranteeChargeIfNeeded();
         
-        if (!guaranteeResult.success) {
-          // Si falla el cargo de garantía, detenemos el proceso
+        // Verificar el resultado del cargo de garantía
+        if (!guaranteeResult.success && !guaranteeResult.userConfirmedContinue) {
+          // Si falla el cargo de garantía y el usuario no confirmó continuar, detenemos el proceso
+          console.error('❌ Cancelación abortada: el cargo de garantía falló');
+          toast({
+            title: "Error de procesamiento",
+            description: "No se pudo procesar el cargo de garantía. La reserva no ha sido cancelada.",
+            variant: "destructive"
+          });
           setIsProcessing(false);
           return;
         }
         
         // Registrar si se procesó un cargo para la notificación final
-        if (guaranteeResult.chargeProcessed) {
-          cancelParams.chargeProcessed = true;
-          cancelParams.guaranteeChargeId = guaranteeResult.chargeId;
-        }
+        chargeWasProcessed = guaranteeResult.chargeProcessed || false;
         
-        console.log('✅ Cargo de garantía completado con éxito, procediendo con la cancelación');
+        // Si se procesó el cargo, incluirlo en los parámetros de cancelación
+        if (chargeWasProcessed && guaranteeResult.chargeId) {
+          cancelParams.guaranteeChargeId = guaranteeResult.chargeId;
+          console.log('💵 Cargo de garantía registrado en cancelación:', {
+            charge_id: guaranteeResult.chargeId,
+            timestamp: new Date().toISOString()
+          });
+        } else {
+          console.warn('⚠️ No se procesó el cargo de garantía a pesar de que shouldCharge=true:', {
+            has_guarantee: hasGuarantee,
+            should_charge: shouldCharge,
+            stripe_enabled: stripeEnabled,
+            payment_method_id: Boolean(stripePaymentMethodId),
+            account_id: Boolean(stripeAccountId)
+          });
+        }
       }
       
       // Si debe procesar reembolso
@@ -372,6 +455,7 @@ export function CancelBookingModal({
           booking_id: booking.id,
           reason,
           should_charge: false, // El cargo ya se procesó anteriormente
+          charge_was_processed: chargeWasProcessed,
           timestamp: new Date().toISOString()
         });
 
@@ -395,12 +479,16 @@ export function CancelBookingModal({
         console.log('✅ Reserva cancelada exitosamente:', data);
 
         // Enviamos la acción de cancelación al componente padre
-        onConfirm(cancelParams);
+        onConfirm({
+          ...cancelParams,
+          chargeWasProcessed,
+          chargeAmount: chargeWasProcessed ? (totalAmount * (effectiveGuaranteePercentage / 100)) : 0
+        } as CancelBookingParams);
         
         // Mostrar mensaje de éxito
         toast({
           title: "Reserva cancelada",
-          description: (hasGuarantee && shouldCharge)
+          description: (hasGuarantee && shouldCharge && chargeWasProcessed)
             ? "La reserva ha sido cancelada y se ha procesado el cargo de garantía"
             : "La reserva ha sido cancelada exitosamente"
         });
@@ -495,13 +583,13 @@ export function CancelBookingModal({
       booking={booking}
       isOpen={isOpen}
       totalAmount={totalAmount}
-      guaranteeStripeAccountId={guaranteeStripeAccountId}
+      stripeAccountId={stripeAccountId}
     >
       <CancelBookingModalContent
         booking={booking}
         isOpen={isOpen}
         onClose={onClose}
-        onConfirm={onConfirm}
+        onConfirm={handleCancelBooking} // Pasamos la función handleCancelBooking directamente
         hasGuarantee={hasGuarantee}
         totalAmount={totalAmount}
         guaranteePercentage={effectiveGuaranteePercentage}
@@ -523,6 +611,8 @@ export function CancelBookingModal({
         setIsProcessing={setIsProcessing}
         processStripeRefund={processStripeRefund}
         registerExternalRefund={registerExternalRefund}
+        shouldCharge={shouldCharge}
+        setShouldCharge={handleShouldChargeChange}
       />
     </RefundProvider>
   );
@@ -540,17 +630,7 @@ interface CancelBookingModalContentProps {
   };
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (params: { 
-    reason?: string; 
-    shouldCharge?: boolean;
-    refundAction?: {
-      type: 'full' | 'percentage';
-      percentage?: number;
-      processMethod: 'stripe' | 'external';
-      amount?: number;
-      refundId?: string;
-    };
-  }) => void;
+  onConfirm: (params: CancelBookingParams) => void;
   hasGuarantee: boolean;
   totalAmount: number;
   guaranteePercentage: number;
@@ -572,6 +652,8 @@ interface CancelBookingModalContentProps {
   setIsProcessing: (processing: boolean) => void;
   processStripeRefund: () => Promise<boolean>;
   registerExternalRefund: () => Promise<boolean>;
+  shouldCharge: boolean;
+  setShouldCharge: (shouldCharge: boolean) => void;
 }
 
 // Componente de contenido que utiliza el contexto de reembolso
@@ -600,78 +682,106 @@ function CancelBookingModalContent({
   isProcessing,
   setIsProcessing,
   processStripeRefund,
-  registerExternalRefund
+  registerExternalRefund,
+  shouldCharge,
+  setShouldCharge
 }: CancelBookingModalContentProps) {
-  // Usar el contexto de reembolso que contiene todos los datos y funciones necesarias
-  // En lugar de desestructurar totalAmount, usar el objeto context completo para evitar colisiones
-  const refundContext = useRefundContext();
-  
-  // Desestructurar solo lo necesario, evitando totalAmount
+  // Hooks para manejar la conexión Stripe
   const {
-    invoiceId: contextInvoiceId,
-    paymentIntentId,
+    stripeEnabled,
+    isLoadingStripe,
+    stripePaymentMethodId,
     stripeAccountId,
-    hasValidInvoice,
-    isLoading: isLoadingRefundContext,
-    shouldProcessRefund: shouldProcessRefundContext,
-    setShouldProcessRefund: setShouldProcessRefundContext,
-    showRefundOptions: showRefundOptionsContext,
-    setShowRefundOptions: setShowRefundOptionsContext,
-    refundType: refundTypeContext,
-    setRefundType: setRefundTypeContext,
-    refundPercentage: refundPercentageContext,
-    setRefundPercentage: setRefundPercentageContext,
-    refundMethod: refundMethodContext,
-    setRefundMethod: setRefundMethodContext,
-    isProcessing: isProcessingContext,
-    setIsProcessing: setIsProcessingContext,
-    processStripeRefund: processStripeRefundContext,
-    registerExternalRefund: registerExternalRefundContext
-  } = refundContext;
+    stripeCustomerId,
+    customerDetails
+  } = useStripeConnection({ isOpen, booking, hasGuarantee });
+
+  // Usamos el porcentaje de garantía recibido directamente
+  const effectiveGuaranteePercentage = guaranteePercentage || 25; // Valor por defecto 25%
+  
+  // Extraer la función para verificar si está lista para procesar un cargo
+  const isReadyForGuaranteeCharge = () => {
+    if (!hasGuarantee || !stripeEnabled) return false;
+    if (!stripeAccountId || !stripePaymentMethodId) return false;
+    if (totalAmount <= 0 || effectiveGuaranteePercentage <= 0) return false;
+    return true;
+  };
+
+  // Función para depurar el estado actual
+  const logChargeStatus = () => {
+    console.log('🧪 Debug estado de cobro de garantía:', {
+      shouldCharge,
+      hasGuarantee,
+      stripeEnabled,
+      hasStripePaymentMethod: Boolean(stripePaymentMethodId),
+      hasStripeAccount: Boolean(stripeAccountId),
+      totalAmount,
+      guaranteePercentage: effectiveGuaranteePercentage,
+      calculatedAmount: totalAmount * (effectiveGuaranteePercentage / 100),
+      ready: isReadyForGuaranteeCharge(),
+      timestamp: new Date().toISOString()
+    });
+  };
+
+  // Llamar a logChargeStatus cuando cambian las dependencias relevantes
+  useEffect(() => {
+    if (isOpen && hasGuarantee) {
+      logChargeStatus();
+    }
+  }, [isOpen, hasGuarantee, shouldCharge, stripeEnabled, stripePaymentMethodId, 
+      stripeAccountId, totalAmount, effectiveGuaranteePercentage]);
+      
+  // Actualiza la caja de verificación cuando cambia
+  const handleShouldChargeChange = (value: boolean) => {
+    console.log('🔄 Cambiando shouldCharge a:', value);
+    setShouldCharge(value);
+  };
 
   // Log inicial de props y estado para depuración
   console.log('🔍 CancelBookingModal - Props y Contexto:', {
     booking_id: booking?.id,
-    has_invoice_id: Boolean(contextInvoiceId),
-    invoice_id: contextInvoiceId,
-    has_payment_intent_id: Boolean(paymentIntentId),
-    payment_intent_id: paymentIntentId,
+    has_invoice_id: Boolean(invoiceId),
+    invoice_id: invoiceId,
+    has_payment_intent_id: Boolean(refundData?.invoiceData?.paymentIntent),
+    payment_intent_id: refundData?.invoiceData?.paymentIntent,
     has_stripe_account: Boolean(stripeAccountId),
-    can_process_refund: shouldProcessRefundContext && hasValidInvoice,
+    can_process_refund: shouldProcessRefund && refundData?.hasValidInvoice,
     timestamp: new Date().toISOString()
   });
 
   // Función para cerrar el modal
   function handleClose() {
     // Prevenir el cierre si hay un proceso activo
-    if (isProcessingContext || isLoadingRefund) {
+    if (isProcessing || isLoadingRefund) {
       return;
     }
     
     // Reiniciar estados al cerrar
-    setShouldProcessRefundContext(false);
-    setShowRefundOptionsContext(false);
+    setShouldProcessRefund(false);
+    setShowRefundOptions(false);
     onClose();
   }
 
-  // Función para confirmar cancelación con reembolso opcional
-  async function confirmCancel() {
+  // IMPORTANTE: Esta función ahora PREPARA los datos para handleCancelBooking
+  // pero NO ejecuta la cancelación directamente
+  async function prepareRefundData() {
     // Procesamiento de reembolso
     let refundSuccess = true;
     let refundAmount = 0;
     let refundId = '';
+    let refundParams: any = undefined;
     
     // Si se debe procesar un reembolso, intentarlo primero
-    if (shouldProcessRefundContext) {
-      setIsProcessingContext(true);
+    if (shouldProcessRefund) {
+      setIsProcessing(true);
       
       // Calcular el monto basado en el tipo de reembolso
-      refundAmount = refundTypeContext === 'full' 
-        ? refundContext.totalAmount 
-        : refundContext.totalAmount * (refundPercentageContext / 100);
+      refundAmount = refundType === 'full' 
+        ? totalAmount 
+        : totalAmount * (refundPercentage / 100);
         
-      if (refundMethodContext === 'stripe') {
-        refundSuccess = await processStripeRefundContext();
+      if (refundMethod === 'stripe') {
+        refundSuccess = await processStripeRefund();
         // Intentar obtener el ID del reembolso si está disponible en la respuesta
         try {
           const refundResponse = await fetch(`/api/bookings/${booking.id}/refund-data`, {
@@ -687,40 +797,59 @@ function CancelBookingModalContent({
           console.error('Error al obtener detalles del reembolso:', error);
         }
       } else {
-        refundSuccess = await registerExternalRefundContext();
+        refundSuccess = await registerExternalRefund();
       }
       
-      setIsProcessingContext(false);
+      setIsProcessing(false);
       
       // Si el reembolso falló, detener el proceso
       if (!refundSuccess) {
-        return;
+        return null;
       }
-    }
-    
-    // Finalmente, procesar la cancelación de la reserva
-    const cancelParams = { 
-      reason: '',
-      refundAction: shouldProcessRefundContext ? {
-        type: refundTypeContext,
-        percentage: refundTypeContext === 'percentage' ? refundPercentageContext : undefined,
-        processMethod: refundMethodContext,
+      
+      // Crear los parámetros de reembolso
+      refundParams = {
+        type: refundType,
+        percentage: refundType === 'percentage' ? refundPercentage : undefined,
+        processMethod: refundMethod,
         amount: refundAmount,
         refundId: refundId
-      } : undefined
+      };
+    }
+    
+    // Devolver los datos necesarios para la cancelación
+    return { 
+      reason: '',
+      refundAction: shouldProcessRefund ? refundParams : undefined
     };
+  }
+
+  // Función que ahora actúa como puente hacia el componente padre
+  async function confirmCancel() {
+    console.log('🚀 Iniciando proceso de cancelación desde ModalContent:', {
+      hasGuarantee,
+      shouldCharge,
+      stripeEnabled,
+      timestamp: new Date().toISOString()
+    });
     
-    console.log('📦 Enviando parámetros de cancelación con reembolso:', cancelParams);
-    onConfirm(cancelParams);
+    // Preparar los datos de reembolso si es necesario
+    const refundData = await prepareRefundData();
     
-    // Cerrar el modal después de completar
-    handleClose();
+    // Si el reembolso falló y devolvió null, no continuar
+    if (shouldProcessRefund && refundData === null) {
+      return;
+    }
+    
+    // PASO CRUCIAL: Ahora llamamos a onConfirm que está enlazado a handleCancelBooking
+    // Esto ejecutará la lógica de cobro de garantía en el componente padre
+    onConfirm(refundData as CancelBookingParams);
   }
 
   // Función para mostrar opciones de reembolso al usuario
   function showReembolsoOptions() {
-    setShouldProcessRefundContext(true);
-    setShowRefundOptionsContext(true);
+    setShouldProcessRefund(true);
+    setShowRefundOptions(true);
   }
 
   // Función para ocultar opciones de reembolso
@@ -731,10 +860,10 @@ function CancelBookingModalContent({
 
   // Generar descripción personalizada para el botón de reembolso
   const refundButtonLabel = (() => {
-    if (refundTypeContext === 'full') {
-      return `Cancelar con Reembolso Total (${formatAmountWithoutCurrency(refundContext.totalAmount)})`;
+    if (refundType === 'full') {
+      return `Cancelar con Reembolso Total (${formatAmountWithoutCurrency(totalAmount)})`;
     } else {
-      const amount = (refundContext.totalAmount * refundPercentageContext) / 100;
+      const amount = (totalAmount * refundPercentage) / 100;
       return `Cancelar con Reembolso Parcial (${formatAmountWithoutCurrency(amount)})`;
     }
   })();
@@ -770,6 +899,13 @@ function CancelBookingModalContent({
               <p className="mt-1 text-sm text-gray-500">
                 Confirme los detalles para cancelar esta reserva
               </p>
+              {/* Indicador de carga para reservas elegibles para reembolso */}
+              {booking?.payment_type !== 'guarantee' && booking?.payment_type !== 'deposit' && isLoadingRefund && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
+                  <IconLoader className="w-3.5 h-3.5 animate-spin" />
+                  <span>Comprobando si es aplicable reembolso...</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -780,64 +916,40 @@ function CancelBookingModalContent({
                 <h4 className="text-sm font-medium text-yellow-700">
                   Cobro de garantía
                 </h4>
-                {/* Usamos un estado local para manejar el checkbox */}
-                {(() => {
-                  // Estado local para shouldCharge usando el hook useState
-                  const [localShouldCharge, setLocalShouldCharge] = useState(false);
-                  
-                  // Efecto para sincronizar el estado local con refundData cuando sea necesario
-                  useEffect(() => {
-                    if (refundData && typeof refundData === 'object') {
-                      refundData.shouldCharge = localShouldCharge;
-                    }
-                    console.log('🔔 Estado de cobro de garantía actualizado:', {
-                      shouldCharge: localShouldCharge,
-                      timestamp: new Date().toISOString()
-                    });
-                  }, [localShouldCharge, refundData]);
-                  
-                  return (
-                    <GuaranteeSection 
-                      totalAmount={totalAmount || 0}
-                      guaranteePercentage={guaranteePercentage}
-                      country={'MX'}
-                      shouldCharge={localShouldCharge}
-                      setShouldCharge={(value) => {
-                        console.log('🔄 Cambiando shouldCharge a:', value);
-                        setLocalShouldCharge(value);
-                      }}
-                      isProcessing={isProcessing}
-                      isLoading={isLoadingRefund}
-                      stripeEnabled={true} // Habilitado para mostrar la sección
-                    />
-                  );
-                })()}
+                <GuaranteeSection 
+                  totalAmount={totalAmount || 0}
+                  guaranteePercentage={guaranteePercentage}
+                  country={'MX'} // Usar un valor por defecto en lugar de organization?.country
+                  shouldCharge={shouldCharge}
+                  setShouldCharge={handleShouldChargeChange}
+                  isProcessing={isProcessing}
+                  isLoading={isLoadingStripe}
+                  stripeEnabled={stripeEnabled || false}
+                />
               </div>
             )}
             
             {/* Sección de reembolso (si aplica) */}
-            {/* Modificamos la condición para eliminar la referencia a hasGuarantee */}
-            {!isLoadingRefund && refundData && refundData.hasValidInvoice && (
+            {/* Excluimos tipos 'guarantee' y 'deposit' */}
+            {!isLoadingRefund && booking?.payment_type !== 'guarantee' && booking?.payment_type !== 'deposit' && refundData && refundData.hasValidInvoice && (
               <div className="space-y-4">
                 <div className="rounded-md border border-gray-200 overflow-hidden">
                   <div className="p-4 space-y-3 bg-white">
                     <h4 className="text-sm font-medium text-gray-700">
                       ¿Desea procesar un reembolso?
                     </h4>
-                    <div className="mb-2 bg-blue-50 border border-blue-100 rounded-md p-2 text-xs text-blue-700">
-                      <p>Se ha encontrado una factura asociada a esta reserva. Puede procesarse un reembolso automático.</p>
-                    </div>
+
                     
                     {/* Opciones de reembolso */}
-                    {!showRefundOptionsContext && (
+                    {!showRefundOptions && (
                       <div className="pt-1">
                         <RadioGroup
-                          value={shouldProcessRefundContext ? 'with-refund' : 'without-refund'}
+                          value={shouldProcessRefund ? 'with-refund' : 'without-refund'}
                           onValueChange={(value) => {
                             const willProcessRefund = value === 'with-refund';
-                            setShouldProcessRefundContext(willProcessRefund);
+                            setShouldProcessRefund(willProcessRefund);
                             if (willProcessRefund) {
-                              setShowRefundOptionsContext(true);
+                              setShowRefundOptions(true);
                             }
                           }}
                           className="space-y-3"
@@ -870,31 +982,31 @@ function CancelBookingModalContent({
                     )}
                     
                     {/* Estado 2: Mostrar componente de opciones de reembolso */}
-                    {showRefundOptionsContext && (
+                    {showRefundOptions && (
                       <RefundOptions
-                        totalAmount={refundContext.totalAmount}
+                        totalAmount={totalAmount}
                         country={'MX'} // Usar un valor por defecto en lugar de organization?.country
                         initialValues={{
-                          refundType: refundTypeContext,
-                          percentage: refundPercentageContext,
-                          processMethod: refundMethodContext
+                          refundType: refundType,
+                          percentage: refundPercentage,
+                          processMethod: refundMethod
                         }}
                         onBack={() => {
-                          setShowRefundOptionsContext(false);
-                          setShouldProcessRefundContext(false); // Al volver, seleccionar "sin reembolso"
+                          setShowRefundOptions(false);
+                          setShouldProcessRefund(false); // Al volver, seleccionar "sin reembolso"
                         }}
                         onOptionsSelected={(options: { refundType: 'full' | 'percentage', percentage?: number, processMethod: 'stripe' | 'external' }) => {
                           // Guardar las opciones seleccionadas
                           // Arreglar los errores de tipo usando el tipo correcto para cada setter
-                          setRefundTypeContext(options.refundType as 'full' | 'percentage');
+                          setRefundType(options.refundType as 'full' | 'percentage');
                           if (options.percentage) {
-                            setRefundPercentageContext(options.percentage);
+                            setRefundPercentage(options.percentage);
                           }
-                          setRefundMethodContext(options.processMethod as 'stripe' | 'external');
+                          setRefundMethod(options.processMethod as 'stripe' | 'external');
                           
                           // Cerrar el panel de opciones y mantener "con reembolso"
-                          setShowRefundOptionsContext(false);
-                          setShouldProcessRefundContext(true);
+                          setShowRefundOptions(false);
+                          setShouldProcessRefund(true);
                         }}
                       />
                     )}
@@ -907,7 +1019,7 @@ function CancelBookingModalContent({
             <CancellationReasonField
               reason={''}
               setReason={(reason) => {}}
-              isProcessing={isProcessingContext}
+              isProcessing={isProcessing}
             />
           </div>
 
@@ -915,8 +1027,8 @@ function CancelBookingModalContent({
           <ModalFooter
             onCancel={confirmCancel}
             onClose={handleClose}
-            isProcessing={isProcessingContext}
-            shouldCharge={false} // Valor por defecto para evitar el error
+            isProcessing={isProcessing}
+            shouldCharge={shouldCharge} // Valor por defecto para evitar el error
           />
         </div>
       </motion.div>

@@ -20,6 +20,7 @@ interface UseStripeConnectionProps {
     customer_id?: string;
     customer_name?: string;
     customer_email?: string;
+    user_id?: string;
   };
   hasGuarantee: boolean;
 }
@@ -153,13 +154,46 @@ export function useStripeConnection({
             console.log('💡 FALLBACK: Usando datos parciales disponibles');
             setStripePaymentMethodId(booking.stripe_payment_method_id);
             setStripeAccountId(org.stripe_account_id);
-            if (booking.customer_id) setStripeCustomerId(booking.customer_id);
-            setStripeEnabled(true);
-            return;
+            
+            // Solo establecer customerId si es un valor no vacío
+            if (booking.customer_id && booking.customer_id.trim() !== '') {
+              console.log('✅ Customer ID encontrado en booking:', booking.customer_id);
+              setStripeCustomerId(booking.customer_id);
+              setStripeEnabled(true);
+              return;
+            } else {
+              // Intentar buscar el customer_id en la base de datos usando paymentService
+              try {
+                // Verificar que existe user_id antes de buscar
+                if (!booking.user_id) {
+                  console.error('❌ No hay user_id disponible para buscar el cliente Stripe');
+                  setStripeEnabled(false);
+                  return;
+                }
+                
+                console.log('🔍 Intentando obtener customer_id por otras vías...', {
+                  userId: booking.user_id
+                });
+                
+                const customerData = await paymentService.getStripeCustomerByUserId(booking.user_id);
+                
+                if (customerData?.stripeCustomerId) {
+                  console.log('✅ Customer ID encontrado en stripe_customers:', customerData.stripeCustomerId);
+                  setStripeCustomerId(customerData.stripeCustomerId);
+                  setStripeEnabled(true);
+                  return;
+                } else {
+                  console.error('❌ No se pudo encontrar un customer_id válido');
+                  setStripeEnabled(false);
+                  return;
+                }
+              } catch (error) {
+                console.error('❌ Error al buscar customer_id:', error);
+                setStripeEnabled(false);
+                return;
+              }
+            }
           }
-          
-          setStripeEnabled(false);
-          return;
         }
       } else {
         console.log('⚠️ No hay ID de reserva disponible');
@@ -215,9 +249,16 @@ export function useStripeConnection({
         hasPaymentMethodId: Boolean(stripePaymentMethodId),
         hasAccountId: Boolean(stripeAccountId),
         hasCustomerId: Boolean(stripeCustomerId),
+        customerIdLength: stripeCustomerId ? stripeCustomerId.length : 0,
         booking_id: booking?.id,
         timestamp: new Date().toISOString()
       });
+      
+      // Si no tenemos un customerId válido, deshabilitar Stripe
+      if (!stripeCustomerId || stripeCustomerId.trim() === '') {
+        console.error('❌ ERROR CRÍTICO: Customer ID ausente o vacío. Deshabilitando Stripe');
+        setStripeEnabled(false);
+      }
     }
   }, [isOpen, hasGuarantee, isLoadingStripe, loadAttempted, stripeEnabled, 
       stripePaymentMethodId, stripeAccountId, stripeCustomerId, booking?.id]);

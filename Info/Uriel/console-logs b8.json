@@ -1,0 +1,1105 @@
+[
+  
+  {
+    "type": "log",
+    "message": [
+      "💲 Estado de cobro de garantía actualizado (COMPONENTE PRINCIPAL):",
+      {
+        "shouldCharge": true,
+        "hasGuarantee": true,
+        "timestamp": "2025-04-08T23:18:52.216Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💲 Estado de cobro de garantía actualizado (COMPONENTE PRINCIPAL):",
+      {
+        "shouldCharge": true,
+        "hasGuarantee": true,
+        "timestamp": "2025-04-08T23:18:52.226Z"
+      }
+    ]
+  },
+  
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:53.953Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:53.954Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando carga de datos Stripe:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:53.962Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧪 Debug estado de cobro de garantía:",
+      {
+        "shouldCharge": true,
+        "hasGuarantee": true,
+        "stripeEnabled": false,
+        "hasStripePaymentMethod": false,
+        "hasStripeAccount": false,
+        "totalAmount": 570,
+        "guaranteePercentage": 25,
+        "calculatedAmount": 142.5,
+        "ready": false,
+        "timestamp": "2025-04-08T23:18:53.965Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:53.966Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "❌ [RefundContext] No se encontraron datos de factura para reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Porcentaje de garantía:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "guaranteePercentage": 25,
+        "effectiveGuaranteePercentage": 25,
+        "usandoValorPredeterminado": false
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando carga de datos Stripe:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:53.969Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:53.971Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "guarantee",
+        "canChargeNoShow": true,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 570
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando carga de datos Stripe:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:53.975Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Cargando conexión Stripe para:",
+      "2c4c929f-c308-42c9-8306-5857e07d9634"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧪 Debug estado de cobro de garantía:",
+      {
+        "shouldCharge": true,
+        "hasGuarantee": true,
+        "stripeEnabled": false,
+        "hasStripePaymentMethod": false,
+        "hasStripeAccount": false,
+        "totalAmount": 570,
+        "guaranteePercentage": 25,
+        "calculatedAmount": 142.5,
+        "ready": false,
+        "timestamp": "2025-04-08T23:18:53.977Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:53.977Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "❌ [RefundContext] No se encontraron datos de factura para reembolso"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:53.987Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:53.988Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:53.996Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": false,
+        "hasStripeAccountId": false,
+        "hasCustomerId": false,
+        "hasValidInvoice": false,
+        "invoiceCount": 0,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:53.997Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:53.998Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [useStripeRefund] Estado final:",
+      {
+        "isReady": false,
+        "hasStripeAccountId": false,
+        "hasCustomerId": false,
+        "hasValidInvoice": false,
+        "invoiceCount": 0,
+        "hasPaymentIntent": false,
+        "hasChargeId": false,
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:53.999Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Estado de conexión Stripe:",
+      {
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:54.560Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:54.561Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:54.571Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:54.573Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "guarantee",
+        "canChargeNoShow": true,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 570
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Conexión Stripe cargada:",
+      {
+        "stripe_account_id": "acct_1R9AnERYLT0A6sSK",
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Estado de conexión Stripe:",
+      {
+        "charges_enabled": true,
+        "account_status": "active"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛠️ Intentando obtener datos desde paymentService..."
+    ]
+  },
+  {
+  
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:54.743Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": false,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:54.745Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      false
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:54.758Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "⚠️ La organización no tiene stripe_account_id configurado"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 [useStripeRefund] Omitiendo carga de factura para reserva tipo guarantee:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "payment_type": "guarantee",
+        "timestamp": "2025-04-08T23:18:54.760Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 Estado de cancelación:",
+      {
+        "paymentType": "guarantee",
+        "canChargeNoShow": true,
+        "stripeConnection": {
+          "enabled": true,
+          "status": "active"
+        },
+        "totalAmount": 570
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [vpezk8wio9vkfkz8313dmdvo] Iniciando búsqueda de datos Stripe:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "context": "client",
+        "timestamp": "2025-04-08T23:18:54.832Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 [b51ejfc5q4e507t3m801mshy] Iniciando búsqueda de datos Stripe:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "context": "client",
+        "timestamp": "2025-04-08T23:18:54.839Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [w5pry4lcvj0ihby27pyvw0gw] Datos Stripe encontrados:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "paymentMethodId": "pm_1R9OnPR...",
+        "accountId": "acct_1R9An...",
+        "hasCustomerId": true,
+        "context": "client",
+        "timestamp": "2025-04-08T23:18:55.351Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Datos de pago obtenidos:",
+      {
+        "hasPaymentMethod": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "timestamp": "2025-04-08T23:18:55.352Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Stripe habilitado correctamente con datos de paymentService"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos de Stripe cargados correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:55.353Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:55.354Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      true
+    ]
+  },
+  
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      true
+    ]
+  },
+  
+  {
+    "type": "log",
+    "message": [
+      "💯 Estado final de useStripeConnection:",
+      {
+        "stripeEnabled": true,
+        "hasPaymentMethodId": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "customerIdLength": 18,
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:55.370Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧪 Debug estado de cobro de garantía:",
+      {
+        "shouldCharge": true,
+        "hasGuarantee": true,
+        "stripeEnabled": true,
+        "hasStripePaymentMethod": true,
+        "hasStripeAccount": true,
+        "totalAmount": 570,
+        "guaranteePercentage": 25,
+        "calculatedAmount": 142.5,
+        "ready": true,
+        "timestamp": "2025-04-08T23:18:55.371Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [vpezk8wio9vkfkz8313dmdvo] Datos Stripe encontrados:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "paymentMethodId": "pm_1R9OnPR...",
+        "accountId": "acct_1R9An...",
+        "hasCustomerId": true,
+        "context": "client",
+        "timestamp": "2025-04-08T23:18:55.578Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Datos de pago obtenidos:",
+      {
+        "hasPaymentMethod": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "timestamp": "2025-04-08T23:18:55.578Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Stripe habilitado correctamente con datos de paymentService"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos de Stripe cargados correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:55.580Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:55.581Z"
+      }
+    ]
+  },
+  
+  },
+  {
+    "type": "log",
+    "message": [
+      "💯 Estado final de useStripeConnection:",
+      {
+        "stripeEnabled": true,
+        "hasPaymentMethodId": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "customerIdLength": 18,
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "timestamp": "2025-04-08T23:18:55.592Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ [b51ejfc5q4e507t3m801mshy] Datos Stripe encontrados:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "userId": "8e51d239-9a17-42cc-ac9d-4d99dd7a98fc",
+        "paymentMethodId": "pm_1R9OnPR...",
+        "accountId": "acct_1R9An...",
+        "hasCustomerId": true,
+        "context": "client",
+        "timestamp": "2025-04-08T23:18:55.792Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Datos de pago obtenidos:",
+      {
+        "hasPaymentMethod": true,
+        "hasAccountId": true,
+        "hasCustomerId": true,
+        "timestamp": "2025-04-08T23:18:55.792Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Stripe habilitado correctamente con datos de paymentService"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Datos de Stripe cargados correctamente"
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 Iniciando proceso de cancelación desde ModalContent:",
+      {
+        "hasGuarantee": true,
+        "shouldCharge": true,
+        "stripeEnabled": true,
+        "timestamp": "2025-04-08T23:18:57.013Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🚀 Iniciando proceso de cancelación en CancelBookingModal:",
+      {
+        "hasGuarantee": true,
+        "shouldCharge": true,
+        "stripeEnabled": true,
+        "params": {
+          "reason": ""
+        },
+        "timestamp": "2025-04-08T23:18:57.013Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 Iniciando flujo de cobro de garantía:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "stripe_enabled": true,
+        "has_payment_method": true,
+        "has_account_id": true,
+        "timestamp": "2025-04-08T23:18:57.013Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🧐 Verificando si se debe procesar cargo de garantía:",
+      {
+        "hasGuarantee": true,
+        "shouldCharge": true,
+        "stripeEnabled": true,
+        "timestamp": "2025-04-08T23:18:57.013Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "💳 Iniciando proceso de cargo por no-show:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "guaranteePercentage": 25,
+        "amount": 142.5,
+        "stripeEnabled": true,
+        "hasPaymentMethod": true,
+        "timestamp": "2025-04-08T23:18:57.013Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "✅ Preparando datos de Stripe para el cargo:",
+      {
+        "hasAccountId": true,
+        "hasPaymentMethodId": true,
+        "hasCustomerId": true
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [d8phy023hyb] Iniciando proceso de no-show:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "amount": 142.5,
+        "hasCustomerEmail": false,
+        "country": "Mexico",
+        "timestamp": "2025-04-08T23:18:57.014Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔄 [xaik18spy9l] Iniciando proceso de cargo por no-show:",
+      {
+        "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "amount": 142.5,
+        "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+        "stripeAccountIdPrefix": "acct_1R9An...",
+        "stripePaymentMethodIdPrefix": "pm_1R9OnPR...",
+        "timestamp": "2025-04-08T23:18:57.014Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🌐 Enviando solicitud a:",
+      {
+        "url": "/api/stripe/charge-no-show",
+        "method": "POST",
+        "contentType": "application/json",
+        "bodySize": 321,
+        "timestamp": "2025-04-08T23:18:57.014Z",
+        "payload": {
+          "bookingId": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+          "amount": 142.5,
+          "reason": "Cargo por garantía de reserva cancelada",
+          "empresaId": "2c4c929f-c308-42c9-8306-5857e07d9634",
+          "country": "Mexico",
+          "stripeData": {
+            "hasAccountId": true,
+            "hasPaymentMethodId": true,
+            "hasCustomerId": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:57.016Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:57.017Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🟢 GuaranteeSection - stripeEnabled:",
+      true
+    ]
+  },
+ 
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:57.031Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🔍 CancelBookingModal - Props y Contexto:",
+      {
+        "booking_id": "4e7544d4-be1b-46e1-a72f-2f63ad5b8b69",
+        "has_invoice_id": false,
+        "has_payment_intent_id": false,
+        "has_stripe_account": true,
+        "can_process_refund": false,
+        "timestamp": "2025-04-08T23:18:57.032Z"
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "📡 Respuesta recibida de la API:",
+      {
+        "status": 400,
+        "statusText": "Bad Request",
+        "ok": false,
+        "timestamp": "2025-04-08T23:18:57.620Z"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Error al procesar cargo de garantía:",
+      {
+        "code": "STRIPE_ERROR",
+        "message": "Error al procesar el cargo",
+        "details": {
+          "type": "StripeInvalidRequestError",
+          "code": "parameter_invalid_empty",
+          "message": "You passed an empty string for 'customer'. We assume empty values are an attempt to unset a parameter; however 'customer' cannot be unset. You should remove 'customer' from your request or supply a non-empty value."
+        }
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Error al procesar el cargo de garantía:",
+      {
+        "code": "STRIPE_ERROR",
+        "message": "Error al procesar el cargo",
+        "details": {
+          "type": "StripeInvalidRequestError",
+          "code": "parameter_invalid_empty",
+          "message": "You passed an empty string for 'customer'. We assume empty values are an attempt to unset a parameter; however 'customer' cannot be unset. You should remove 'customer' from your request or supply a non-empty value."
+        }
+      }
+    ]
+  },
+  {
+    "type": "log",
+    "message": [
+      "🛑 Usuario decidió no continuar con la cancelación"
+    ]
+  },
+  {
+    "type": "error",
+    "message": [
+      "❌ Cancelación abortada: el cargo de garantía falló"
+    ]
+  },

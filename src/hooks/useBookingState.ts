@@ -60,7 +60,7 @@ const initialState: BookingState = {
   classPaymentConfig: {
     pricePerSession: 0,
     currency: 'EUR',
-    paymentMethods: ['cash'],
+    paymentMethods: [], // Inicializar con array vacío para que solo se incluyan los métodos seleccionados
     paymentStatus: 'pending',
     availableMethods: [
       {

@@ -79,14 +79,14 @@ class AvailabilityService {
       
       // Recuperar todas las reservas para esta fecha y canchas
       // FILTRADO IMPORTANTE:
-      // 1. Excluimos solo 'cancelled' - mantenemos 'pending', 'confirmed', 'partially_paid' y 'completed'
+      // 1. Excluimos 'cancelled' y 'refunded' - mantenemos 'pending', 'confirmed', 'partially_paid' y 'completed'
       // 2. Solo consideramos reservas de tipo 'booking' (no clases)
       const { data: bookings, error } = await supabase
         .from('bookings')
         .select('*')
         .eq('date', formattedDate)
         .in('court_id', courtIds)
-        .neq('payment_status', 'cancelled')
+        .not('payment_status', 'in', '(cancelled,refunded)')
         .eq('reservation_type', 'booking');
       
       if (error) {

@@ -12,6 +12,7 @@ interface ClassInvoiceParams {
   branchId?: string;
   paymentType: 'full' | 'deposit'; // Tipo de pago: completo o seña
   metadata?: Record<string, string>;
+  bookingId?: string; // Añadir booking_id como parámetro opcional
 }
 
 /**
@@ -28,17 +29,28 @@ export class ClassInvoiceService {
     console.log(`🔄 [ClassInvoiceService:Client] Iniciando creación de factura para registro de clase:`, {
       paymentIntentId: params.paymentIntentId,
       classId: params.classId,
-      paymentType: params.paymentType
+      paymentType: params.paymentType,
+      bookingId: params.bookingId || 'no proporcionado'
     });
 
     try {
+      // Preparar metadatos mejorados que incluyan booking_id si está disponible
+      const enhancedMetadata = {
+        ...params.metadata,
+        // Incluir booking_id en los metadatos si está disponible
+        ...(params.bookingId ? { booking_id: params.bookingId } : {})
+      };
+
       // Llamar al endpoint de API en lugar de inicializar Stripe directamente
       const response = await fetch('/api/stripe/class-invoices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params)
+        body: JSON.stringify({
+          ...params,
+          metadata: enhancedMetadata
+        })
       });
       
       if (!response.ok) {
@@ -100,6 +112,7 @@ export class ClassInvoiceService {
     paymentType?: 'full' | 'deposit';
     empresaId?: string;
     stripeAccountId: string; 
+    bookingId?: string;
   }) {
     console.log(`🔄 [ClassInvoiceService:Client] Iniciando creación de factura manual para clase:`, {
       customerId: params.customerId,
@@ -110,7 +123,8 @@ export class ClassInvoiceService {
       classId: params.classId,
       paymentType: params.paymentType || 'full',
       empresaId: params.empresaId, 
-      country: params.metadata?.country 
+      country: params.metadata?.country,
+      bookingId: params.bookingId || 'no proporcionado'
     });
 
     try {
@@ -141,6 +155,7 @@ export class ClassInvoiceService {
         customer_email: params.customerEmail || '',
         customer_name: params.customerName || '',
         payment_date: new Date().toISOString(),
+        booking_id: params.bookingId || 'no proporcionado',
         
         // Asegurarse de que país está siempre en los metadatos si fue proporcionado
         country: params.metadata?.country || ''

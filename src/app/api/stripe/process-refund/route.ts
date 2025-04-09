@@ -16,8 +16,15 @@ async function getStripeInstance(stripeAccountId: string) {
   return { stripe, accountId: stripeAccountId };
 }
 
+// Caché en memoria para idempotencia (en producción debería usarse Redis o similar)
+// Esta caché se mantendrá mientras el servicio esté en ejecución
+const processedRefunds = new Map<string, { success: boolean; result: any }>();
+
 export async function POST(req: Request) {
   try {
+    // Extraer headers y obtener clave de idempotencia
+    const idempotencyKey = req.headers.get('x-idempotency-key');
+    
     // Parseamos el body de la request
     const body = await req.json();
     logger.info('🔄 [API] Procesando solicitud de reembolso:', {
@@ -25,9 +32,21 @@ export async function POST(req: Request) {
       accountId: body.accountId,
       invoiceId: body.invoiceId,
       refundType: body.refundType,
-      percentage: body.percentage
+      percentage: body.percentage,
+      // Usar idempotencyKey del header o del body
+      idempotencyKey: idempotencyKey || body.idempotencyKey
     });
 
+    // Si tenemos clave de idempotencia y ya procesamos esta solicitud, retornar el resultado almacenado
+    const effectiveIdempotencyKey = idempotencyKey || body.idempotencyKey;
+    if (effectiveIdempotencyKey && processedRefunds.has(effectiveIdempotencyKey)) {
+      logger.info('🔁 [API] Retornando resultado almacenado para solicitud idempotente:', {
+        idempotencyKey: effectiveIdempotencyKey,
+        isSuccessResult: processedRefunds.get(effectiveIdempotencyKey)?.success
+      });
+      return NextResponse.json(processedRefunds.get(effectiveIdempotencyKey)?.result);
+    }
+    
     const { 
       bookingId, 
       accountId,      // ID de cuenta Stripe del negocio
@@ -51,10 +70,18 @@ export async function POST(req: Request) {
         hasBookingId: Boolean(bookingId),
         hasAccountId: Boolean(accountId)
       });
-      return NextResponse.json({ 
+      
+      const errorResult = { 
         success: false, 
         error: { message: 'Faltan datos básicos (bookingId, accountId) para procesar el reembolso' } 
-      }, { status: 400 });
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+      }
+      
+      return NextResponse.json(errorResult, { status: 400 });
     }
 
     // Si no tenemos invoiceId ni paymentIntentId, no podemos continuar
@@ -65,10 +92,18 @@ export async function POST(req: Request) {
         hasInvoiceId: Boolean(invoiceId),
         hasPaymentIntentId: Boolean(paymentIntentId)
       });
-      return NextResponse.json({ 
+      
+      const errorResult = { 
         success: false, 
         error: { message: 'Se requiere invoiceId o paymentIntentId para procesar el reembolso' } 
-      }, { status: 400 });
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+      }
+      
+      return NextResponse.json(errorResult, { status: 400 });
     }
 
     let invoice;
@@ -85,10 +120,18 @@ export async function POST(req: Request) {
         
         if (!invoice) {
           logger.error('❌ [API] Error: No se encontró la factura', { invoiceId });
-          return NextResponse.json({ 
+          
+          const errorResult = { 
             success: false, 
             error: { message: 'No se encontró la factura especificada' } 
-          }, { status: 404 });
+          };
+          
+          // Almacenar el resultado si hay clave de idempotencia
+          if (effectiveIdempotencyKey) {
+            processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+          }
+          
+          return NextResponse.json(errorResult, { status: 404 });
         }
         
         // Extraer el charge_id de la factura
@@ -121,19 +164,35 @@ export async function POST(req: Request) {
     // Si después de ambos intentos no tenemos chargeId, no podemos procesar el reembolso
     if (!chargeId) {
       logger.error('❌ [API] Error: No se encontró un cargo asociado para reembolsar');
-      return NextResponse.json({ 
+      
+      const errorResult = { 
         success: false, 
         error: { message: 'No se encontró un cargo que pueda ser reembolsado' } 
-      }, { status: 400 });
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+      }
+      
+      return NextResponse.json(errorResult, { status: 400 });
     }
 
     // 2. Verificar si la factura tiene un cargo asociado
     if (!invoice && !chargeId) {
       logger.error('❌ [API] Error: La factura no tiene un cargo asociado', { invoiceId });
-      return NextResponse.json({ 
+      
+      const errorResult = { 
         success: false, 
         error: { message: 'La factura no tiene un cargo asociado que pueda ser reembolsado' } 
-      }, { status: 400 });
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+      }
+      
+      return NextResponse.json(errorResult, { status: 400 });
     }
 
     // 3. Convertir el monto a centavos para Stripe
@@ -162,9 +221,15 @@ export async function POST(req: Request) {
       else if (chargeId) {
         try {
           // Obtener detalles del cargo
-          const charge = await stripe.charges.retrieve(chargeId as string, {
-            stripeAccount: verifiedAccountId
-          });
+          const chargeParams: Stripe.ChargeRetrieveParams = {
+            expand: ['refunds']
+          };
+          
+          const charge = await stripe.charges.retrieve(
+            chargeId as string,
+            chargeParams,
+            { stripeAccount: verifiedAccountId }
+          );
           
           if (charge && charge.amount > 0) {
             originalAmount = charge.amount;
@@ -206,10 +271,18 @@ export async function POST(req: Request) {
           paymentIntentId,
           chargeId
         });
-        return NextResponse.json({ 
+        
+        const errorResult = { 
           success: false, 
           error: { message: 'No se puede determinar el monto a reembolsar' } 
-        }, { status: 400 });
+        };
+        
+        // Almacenar el resultado si hay clave de idempotencia
+        if (effectiveIdempotencyKey) {
+          processedRefunds.set(effectiveIdempotencyKey, { success: false, result: errorResult });
+        }
+        
+        return NextResponse.json(errorResult, { status: 400 });
       }
       
       // Calcular el monto a reembolsar basado en el tipo de reembolso y porcentaje
@@ -221,7 +294,7 @@ export async function POST(req: Request) {
       }
     }
     
-    const refundAmountCents = Math.round(refundAmount * 100);
+    let refundAmountCents = Math.round(refundAmount * 100);
 
     logger.info('💰 [API] Monto calculado para reembolso:', { 
       refundAmount,
@@ -237,57 +310,275 @@ export async function POST(req: Request) {
       amount: refundAmountCents 
     });
 
-    const refundParams: Stripe.RefundCreateParams = {
-      charge: chargeId as string,
-      amount: refundAmountCents,
-      reason: 'requested_by_customer', // Opciones de Stripe: 'duplicate', 'fraudulent', o 'requested_by_customer'
-      metadata: {
-        bookingId,
-        reason: reason || 'Cancelación de reserva',
-        isFullRefund: isFullRefund ? 'true' : 'false',
-        refundType,
-        percentage: percentage?.toString() || '100'
+    try {
+      // Antes de crear el reembolso, verificar cuánto del cargo ya ha sido reembolsado
+      logger.info('🔍 [API] Verificando reembolsos previos para el cargo:', { chargeId });
+      
+      // Obtener detalles del cargo para saber el monto total y cuánto ya se ha reembolsado
+      const chargeParams: Stripe.ChargeRetrieveParams = {
+        expand: ['refunds']
+      };
+      
+      const charge = await stripe.charges.retrieve(
+        chargeId as string,
+        chargeParams,
+        { stripeAccount: verifiedAccountId }
+      );
+      
+      const totalChargeAmount = charge.amount;
+      const alreadyRefundedAmount = charge.amount_refunded || 0;
+      const availableToRefund = totalChargeAmount - alreadyRefundedAmount;
+      
+      logger.info('💰 [API] Estado actual del cargo:', { 
+        totalAmount: totalChargeAmount / 100,
+        alreadyRefunded: alreadyRefundedAmount / 100,
+        availableToRefund: availableToRefund / 100,
+        attemptingToRefund: refundAmountCents / 100
+      });
+      
+      // Verificar si hay fondos suficientes para el reembolso solicitado
+      if (refundAmountCents > availableToRefund) {
+        logger.warn('⚠️ [API] Ajustando monto de reembolso - solicitado mayor que disponible:', {
+          requestedAmount: refundAmountCents / 100,
+          availableAmount: availableToRefund / 100
+        });
+        
+        // Opciones de manejo:
+        // 1. Fallar con error
+        // 2. Ajustar automáticamente al máximo disponible
+        // 3. Ofrecer opciones al cliente
+      
+        // Opción 2: Ajustar automáticamente si hay al menos algo para reembolsar
+        if (availableToRefund > 0) {
+          refundAmountCents = availableToRefund;
+          refundAmount = availableToRefund / 100;
+          
+          logger.info('🔄 [API] Monto de reembolso ajustado al máximo disponible:', {
+            adjustedAmount: refundAmountCents / 100
+          });
+        } else {
+          // El cargo ya ha sido completamente reembolsado
+          logger.info('ℹ️ [API] El cargo ya ha sido completamente reembolsado');
+          
+          // Verificar si hay reembolsos existentes y usar el primero para actualizar estados
+          if (charge.refunds && charge.refunds.data && charge.refunds.data.length > 0) {
+            const existingRefund = charge.refunds.data[0];
+            
+            // Actualizar estados de pago con el reembolso existente
+            logger.info('🔄 [API] Actualizando estados con reembolso existente:', { 
+              refundId: existingRefund.id
+            });
+            
+            // Intentar actualizar los estados en la BD con el reembolso existente
+            try {
+              await supabase.rpc('update_payment_status_refund', {
+                p_booking_id: bookingId,
+                p_refund_id: existingRefund.id,
+                p_refund_amount: existingRefund.amount / 100,
+                p_reason: reason || 'Reembolso previo detectado',
+                p_update_cancellation: true
+              });
+              
+              const alreadyRefundedResult = { 
+                success: true, 
+                alreadyRefunded: true,
+                refundId: existingRefund.id,
+                refundAmount: existingRefund.amount / 100,
+                message: 'Este cargo ya había sido reembolsado anteriormente'
+              };
+              
+              // Almacenar el resultado si hay clave de idempotencia
+              if (effectiveIdempotencyKey) {
+                processedRefunds.set(effectiveIdempotencyKey, { success: true, result: alreadyRefundedResult });
+              }
+              
+              return NextResponse.json(alreadyRefundedResult);
+            } catch (dbError) {
+              logger.error('⚠️ [API] Error al actualizar estados con reembolso existente:', { error: dbError });
+            }
+          }
+          
+          // No hay reembolsos o hubo un error al actualizarlos
+          const noRefundAvailableResult = { 
+            success: false, 
+            error: { 
+              code: 'nothing_to_refund',
+              message: 'El cargo ya ha sido completamente reembolsado'
+            }
+          };
+          
+          // Almacenar el resultado si hay clave de idempotencia
+          if (effectiveIdempotencyKey) {
+            processedRefunds.set(effectiveIdempotencyKey, { success: false, result: noRefundAvailableResult });
+          }
+          
+          return NextResponse.json(noRefundAvailableResult, { status: 400 });
+        }
       }
-    };
+      
+      const refundParams: Stripe.RefundCreateParams = {
+        charge: chargeId as string,
+        amount: refundAmountCents,
+        reason: 'requested_by_customer', // Opciones de Stripe: 'duplicate', 'fraudulent', o 'requested_by_customer'
+        metadata: {
+          bookingId,
+          reason: reason || 'Cancelación de reserva',
+          isFullRefund: isFullRefund ? 'true' : 'false',
+          refundType,
+          percentage: percentage?.toString() || '100',
+          idempotencyKey: effectiveIdempotencyKey || ''
+        }
+      };
 
-    const refund = await stripe.refunds.create(refundParams, {
-      stripeAccount: verifiedAccountId
-    });
+      // Si hay clave de idempotencia, pasarla a Stripe para su mecanismo interno de idempotencia
+      const idempotencyOptions = effectiveIdempotencyKey 
+        ? { idempotencyKey: effectiveIdempotencyKey } 
+        : undefined;
 
-    // 5. Registrar el reembolso en nuestra base de datos
-    logger.info('✅ [API] Reembolso procesado correctamente:', { 
-      refundId: refund.id, 
-      status: refund.status 
-    });
+      const refund = await stripe.refunds.create(
+        refundParams, 
+        {
+          stripeAccount: verifiedAccountId,
+          ...idempotencyOptions
+        }
+      );
 
-    // Usar la nueva función RPC para actualizar el estado de pago a refunded
-    // en ambas tablas (bookings y payments) de manera transaccional
-    logger.info('🔄 [API] Actualizando estados de pago a "refunded" mediante RPC:', { bookingId });
-    const { data: updateResult, error: updateRpcError } = await supabase.rpc('update_payment_status_refund', {
-      p_booking_id: bookingId,
-      p_refund_id: refund.id,
-      p_refund_amount: refundAmount,
-      p_reason: reason || 'Reembolso por cancelación',
-      p_update_cancellation: true // marcar la reserva como cancelada también
-    });
+      // 5. Registrar el reembolso en nuestra base de datos
+      logger.info('✅ [API] Reembolso procesado correctamente:', { 
+        refundId: refund.id, 
+        status: refund.status 
+      });
 
-    if (updateRpcError) {
-      logger.error('⚠️ [API] Error al actualizar estados de pago mediante RPC:', { error: updateRpcError });
-      // Aunque hay error en la actualización, el reembolso ya se procesó en Stripe, así que continuamos
-      return NextResponse.json({ 
+      // Usar la nueva función RPC para actualizar el estado de pago a refunded
+      // en ambas tablas (bookings y payments) de manera transaccional
+      logger.info('🔄 [API] Actualizando estados de pago a "refunded" mediante RPC:', { bookingId });
+      const { data: updateResult, error: updateRpcError } = await supabase.rpc('update_payment_status_refund', {
+        p_booking_id: bookingId,
+        p_refund_id: refund.id,
+        p_refund_amount: refundAmount,
+        p_reason: reason || 'Reembolso por cancelación',
+        p_update_cancellation: true
+      });
+
+      if (updateRpcError) {
+        logger.error('⚠️ [API] Error al actualizar estados de pago mediante RPC:', { error: updateRpcError });
+        // Aunque hay error en la actualización, el reembolso ya se procesó en Stripe, así que continuamos
+        
+        const warningResult = { 
+          success: true, 
+          refund,
+          warning: 'El reembolso se procesó en Stripe pero hubo un error al actualizar los estados en la base de datos'
+        };
+        
+        // Almacenar el resultado si hay clave de idempotencia
+        if (effectiveIdempotencyKey) {
+          processedRefunds.set(effectiveIdempotencyKey, { success: true, result: warningResult });
+        }
+        
+        return NextResponse.json(warningResult);
+      }
+
+      logger.info('✅ [API] Estados de pago actualizados correctamente:', { updateResult });
+      
+      const successResult = { 
         success: true, 
         refund,
-        warning: 'El reembolso se procesó en Stripe pero hubo un error al actualizar los estados en la base de datos'
+        updateResult,
+        message: `Reembolso de ${refundAmount} procesado correctamente y estados actualizados a refunded en todas las tablas`
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: true, result: successResult });
+      }
+      
+      return NextResponse.json(successResult);
+      
+    } catch (stripeError: any) {
+      // Si el error es porque el cargo ya fue reembolsado, manejar como un caso especial
+      if (stripeError.code === 'charge_already_refunded' || 
+          (stripeError.message && stripeError.message.includes('already been refunded'))) {
+        
+        logger.info('ℹ️ [API] El cargo ya ha sido reembolsado:', { 
+          chargeId,
+          error: stripeError.message
+        });
+        
+        try {
+          // Verificar si hay reembolsos existentes y usar el primero para actualizar estados en la BD
+          const existingRefunds = await stripe.refunds.list(
+            { charge: chargeId as string, limit: 1 },
+            { stripeAccount: verifiedAccountId }
+          );
+          
+          if (existingRefunds.data.length > 0) {
+            const existingRefund = existingRefunds.data[0];
+            
+            // Actualizar estados de pago con el reembolso existente
+            logger.info('🔄 [API] Actualizando estados con reembolso existente:', { 
+              refundId: existingRefund.id
+            });
+            
+            // Intentar actualizar los estados en la BD con el reembolso existente
+            try {
+              await supabase.rpc('update_payment_status_refund', {
+                p_booking_id: bookingId,
+                p_refund_id: existingRefund.id,
+                p_refund_amount: existingRefund.amount / 100, // Convertir centavos a unidades
+                p_reason: reason || 'Reembolso por cancelación (previo)',
+                p_update_cancellation: true
+              });
+            } catch (dbError) {
+              logger.error('⚠️ [API] Error al actualizar estados con reembolso existente:', { error: dbError });
+            }
+          }
+        } catch (secondaryError) {
+          logger.error('⚠️ [API] Error al procesar actualización secundaria:', { error: secondaryError });
+        }
+        
+        // Responder con un "falso éxito" indicando que ya está reembolsado
+        const alreadyRefundedResult = { 
+          success: true, 
+          alreadyRefunded: true,
+          message: 'Este cargo ya había sido reembolsado anteriormente',
+          error: {
+            code: 'charge_already_refunded',
+            message: stripeError.message
+          }
+        };
+        
+        // Almacenar el resultado si hay clave de idempotencia
+        if (effectiveIdempotencyKey) {
+          processedRefunds.set(effectiveIdempotencyKey, { success: true, result: alreadyRefundedResult });
+        }
+        
+        return NextResponse.json(alreadyRefundedResult);
+      }
+      
+      // Para otros errores de Stripe, pasarlos como error
+      logger.error('❌ [API] Error de Stripe al procesar reembolso:', { 
+        error: stripeError,
+        code: stripeError.code,
+        message: stripeError.message 
       });
+      
+      const stripeErrorResult = { 
+        success: false, 
+        error: { 
+          type: stripeError.type || 'StripeError',
+          code: stripeError.code,
+          message: stripeError.message || 'Error al procesar el reembolso en Stripe'
+        }
+      };
+      
+      // Almacenar el resultado si hay clave de idempotencia
+      if (effectiveIdempotencyKey) {
+        processedRefunds.set(effectiveIdempotencyKey, { success: false, result: stripeErrorResult });
+      }
+      
+      return NextResponse.json(stripeErrorResult, { status: 400 });
     }
-
-    logger.info('✅ [API] Estados de pago actualizados correctamente:', { updateResult });
-    return NextResponse.json({ 
-      success: true, 
-      refund,
-      updateResult,
-      message: `Reembolso de ${refundAmount} procesado correctamente y estados actualizados a refunded en todas las tablas`
-    });
+    
   } catch (error: any) {
     logger.error('❌ [API] Error al procesar reembolso:', { error });
     return NextResponse.json({ 

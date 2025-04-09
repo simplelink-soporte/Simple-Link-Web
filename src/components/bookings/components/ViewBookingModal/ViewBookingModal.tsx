@@ -945,7 +945,7 @@ export function ViewBookingModal({
                       <Button
                         onClick={() => setShowCancelModal(true)}
                         variant="outline"
-                        className="flex-1 border-gray-200 hover:border-red-100 hover:text-red-600 hover:bg-red-50 transition-colors duration-200"
+                        className="flex-1 border-gray-200 hover:border-red-100 hover:text-red-600 transition-colors duration-200"
                       >
                         Cancelar Reserva
                       </Button>

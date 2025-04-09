@@ -617,7 +617,7 @@ export function SummaryStep() {
       if (result.error) {
         console.error('❌ [SummaryStep] Error al crear la reserva:', result.error);
         toast({
-          title: 'Error',
+          title: 'Error', 
           description: result.error.message,
           variant: 'destructive'
         })
@@ -631,6 +631,55 @@ export function SummaryStep() {
         description: 'Tu reserva ha sido procesada correctamente',
         variant: 'default'
       })
+      
+      // Actualizar metadatos de la factura con el booking_id si se realizó un pago con tarjeta
+      const isCardPaymentMethod = ['card', 'full', 'deposit'].includes(selectedPaymentType as string);
+      
+      console.log('🔍 [SummaryStep] Verificando si se debe actualizar metadatos de factura:', {
+        paymentType: selectedPaymentType,
+        shouldUpdateInvoice: isCardPaymentMethod,
+        activeGateway,
+        hasBookingIds: result.data?.bookingIds?.length > 0
+      });
+      
+      // Obtener el primer booking_id si existe (para clases individuales habrá solo uno)
+      const bookingId = result.data?.bookingIds?.[0];
+      
+      if (isCardPaymentMethod && (activeGateway === 'stripe') && bookingId) {
+        // Recuperar el último ID de PaymentIntent o la factura desde localStorage
+        const lastPaymentIntentId = localStorage.getItem('lastClassInvoiceId') || 
+                                   localStorage.getItem('lastPaymentIntentId');
+        
+        if (lastPaymentIntentId) {
+          try {
+            console.log('🔄 [SummaryStep] Actualizando metadatos de factura con booking_id:', bookingId);
+            
+            // Llamar al API para actualizar los metadatos de la factura
+            const updateInvoiceResponse = await fetch('/api/stripe/invoices/update-metadata', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                paymentIntentId: lastPaymentIntentId,
+                stripeAccountId: stripeAccountId,
+                metadata: {
+                  booking_id: bookingId,
+                  updated_from: 'class_registration_form'
+                }
+              })
+            });
+            
+            if (updateInvoiceResponse.ok) {
+              console.log('✅ [SummaryStep] Metadatos de factura actualizados correctamente');
+            } else {
+              console.error('❌ [SummaryStep] Error al actualizar metadatos de factura:', await updateInvoiceResponse.json());
+            }
+          } catch (updateError) {
+            console.error('❌ [SummaryStep] Error al actualizar metadatos de factura:', updateError);
+          }
+        } else {
+          console.warn('⚠️ [SummaryStep] No se encontró ID de PaymentIntent para actualizar la factura');
+        }
+      }
       
       // Solo avanzar al paso de confirmación si la reserva fue exitosa
       // Implementamos un retraso mínimo de 1 segundo antes de avanzar
@@ -831,13 +880,21 @@ export function SummaryStep() {
       priceLabel = `Seña (${percentage}%)`;
     }
     
+    // Si el tipo de pago es "guarantee" (garantía)
+    if (selectedPaymentType === 'guarantee') {
+      // Obtener porcentaje de garantía del payment_config o usar el valor por defecto
+      const percentage = state.selectedClass?.payment_config?.guaranteePercentage || guaranteePercentage;
+      price = (price * percentage) / 100;
+      priceLabel = `Cobro en caso de no asistir (${percentage}%)`;
+    }
+    
     // Formatear el precio directamente sin usar formatCurrencyByCountry
     const formatted = price.toFixed(2);
     const [integerPart, decimalPart] = formatted.split('.');
     
     return (
       <div className="flex flex-col items-center justify-center py-5 my-4">
-        {/* Título de Precio Total o Seña */}
+        {/* Título de Precio Total, Seña o Garantía */}
         <p className="text-sm font-semibold mb-2 text-gray-500">
           {priceLabel}
         </p>
@@ -856,7 +913,7 @@ export function SummaryStep() {
         </div>
       </div>
     );
-  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, currencySymbol]);
+  }, [selectedSession, selectedPaymentType, state.selectedClass?.payment_config, currencySymbol, guaranteePercentage]);
 
   // Determinar si el tipo de pago seleccionado requiere tarjeta
   const showCardPaymentSection = useMemo(() => {
@@ -1018,11 +1075,11 @@ export function SummaryStep() {
             onSelect={handlePaymentTypeSelection}
             viewType={isMobile ? 'mobile' : 'desktop'}
             paymentTypes={
-              // Si la configuración de pagos de la clase no permite pagos parciales, 
-              // filtramos esta opción
+              // Primero filtramos por los métodos de pago disponibles en la clase
+              // Luego si la configuración de pagos no permite pagos parciales, filtramos esta opción adicional
               state.selectedClass?.payment_config?.partialPaymentPercentage === undefined 
-                ? FILTERED_PAYMENT_TYPES.filter((type: PaymentType) => type.id !== 'deposit') 
-                : FILTERED_PAYMENT_TYPES
+                ? availablePaymentTypes.filter((type: PaymentType) => type.id !== 'deposit') 
+                : availablePaymentTypes
             }
             paymentConfig={state.selectedClass?.payment_config}
           />
